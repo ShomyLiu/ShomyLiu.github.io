@@ -3,6 +3,48 @@
   
     
     <entry>
+      <title><![CDATA[Hexo-admin后台管理博客]]></title>
+      <url>/2017/07/29/Hexo-admin%E5%90%8E%E5%8F%B0%E7%AE%A1%E7%90%86%E5%8D%9A%E5%AE%A2/</url>
+      <content type="html"><![CDATA[<h2 id="需求">需求</h2>
+<p>像Hexo这种静态博客虽然用起来很方便，但是硬伤就是没有后台管理，每次想写博客或者说想要修改原博客的话，都需要在本机上找markdown文件，修改之后发布，尤其是如果机器上没有安装hexo,git等工具的时候，就无法修改了。因此hexo可不可以以像wp,ghost这种有后台管理的话。 <a id="more"></a> 可能这样的需求比较大， hexo专门有一个插件<a href="https://jaredforsyth.com/hexo-admin/" target="_blank" rel="external">hexo-admin</a> 就是做这个工作的，提供了web 增删改查博客的功能，下面就大致记录下自己使用的hexo-admin时候遇到的一些坑。</p>
+<h2 id="解决方法">解决方法</h2>
+<p>首先说一下条件与需求。 我自己有一个的VPS，本来是可以直接将hexo部署到VPS的，但是考虑到自己维护的VPS的稳定性等问题，最后还是本地写博客，然后把hexo产生的静态页面推送到github-pages上。</p>
+<p>我的目的有两个:</p>
+<ul>
+<li>拥有在线编辑博客的后台</li>
+<li>本地机器同时也可以编辑发布博客</li>
+</ul>
+<p>基于这样的需求，就需要在线VPS的内容与本地机器上的博客的资源要保持一致。就是说我在线修改了某篇博客，然后之后如果可以很简单的同步到本地，使得两端保持同步，反过来一样。</p>
+<p>我的做法是:</p>
+<ul>
+<li>将hexo目录下的相关文件包括_config.yml,source/_posts的所有md文件等建立一个私人repo(使用[coding.net])</li>
+<li>VPS上安装好hexo，然后可以将本地博客目录直接copy到VPS上，不用去一个一个重新安装插件了。</li>
+<li>VPS上安装hexo-admin插件，这样可以在线编辑了(可以解析一个子域名+Nginx做前端转发)</li>
+<li>在博客目录写一个git同步脚本:<code>server-upload.sh</code> 用来同步在线博客目录下的变化，基本过程先git pull之后push</li>
+<li><p>建一个<code>hexo_deploy.sh</code>的脚本,内容是 <figure class="highlight stata"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">hexo <span class="keyword">g</span> &amp;&amp; hexo <span class="built_in">d</span></div><div class="line"><span class="keyword">sh</span> server-upload.<span class="keyword">sh</span></div></pre></td></tr></table></figure></p></li>
+<li>利用hexo-admin的deploy功能，可以在线发布，发布的过程基本就是<code>hexo-deploy.sh</code>的内容，首先需要修改<code>_config.yml</code>加上hexo-admin的admin选型，然后加一个字段: <code>deployCommand: sh</code></li>
+<li>编辑完博客时候，发布的时候，需要在hexo-admin的deploy的输入框内写上<code>hexo-deploy.sh</code>即可。其中执行脚本的原理是调用了nodejs的spawn函数。</li>
+<li><p>本地也需要有一个<code>upload.sh</code>的脚本, 每次同样需要先git pull 在git push 到私人repo,还要多一个过程是将最新的内容pull给VPS。</p></li>
+</ul>
+<p>大致过程就是这样，其中坑点就是部署的时候的spawn一直报错，后来采用上述deployCommand的方式才ok。具体的细节就不再赘述。 需要脚本的可以邮箱或者评论联系。</p>
+]]></content>
+      
+        <categories>
+            
+            <category> 工具使用 </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> hexo </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
       <title><![CDATA[Word2vec数学原理全家桶]]></title>
       <url>/2017/07/28/word2vec-all/</url>
       <content type="html"><![CDATA[<p>目前需要做Network Embedding方面的课题，而复杂网络本身就经常借鉴NLP的一些算法模型, Embedding也不例外. 因此先从Word Embedding入手。之前对Word Embedding(暂且翻译为词嵌入或者词向量)的理解就是将单词根据某种特征转为数值向量，再来做其他工作比如文本分类的工作。而word2vec则是word embedding的一种模型，也是目前使用最广的词向量模型, 由Google的Mikolov团队2013年提出。之前仅仅能够使用第三方库来训练直接使用, 对其中原理并没有多少理解, 这篇博客则比较完整的从背景知识到原理，参数训练等方面整理一下word2Vec。</p>
