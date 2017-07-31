@@ -2,21 +2,14 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
-    <loc>http://yoursite.com/2017/07/29/Hexo-admin%E5%90%8E%E5%8F%B0%E7%AE%A1%E7%90%86%E5%8D%9A%E5%AE%A2/</loc>
-    
-    <lastmod>2017-07-31T02:52:49.581Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://yoursite.com/2017/01/01/tensorflow-fnn-example-1/</loc>
+    <loc>http://yoursite.com/2017/01/02/tensorflow-rnn-example-3/</loc>
     
     <lastmod>2017-07-31T02:42:34.566Z</lastmod>
     
   </url>
   
   <url>
-    <loc>http://yoursite.com/2017/02/17/svm-02-dual/</loc>
+    <loc>http://yoursite.com/tags/index.html</loc>
     
     <lastmod>2017-07-31T02:42:34.566Z</lastmod>
     
@@ -51,14 +44,14 @@
   </url>
   
   <url>
-    <loc>http://yoursite.com/tags/index.html</loc>
+    <loc>http://yoursite.com/2017/01/01/tensorflow-fnn-example-1/</loc>
     
     <lastmod>2017-07-31T02:42:34.566Z</lastmod>
     
   </url>
   
   <url>
-    <loc>http://yoursite.com/2017/01/02/tensorflow-rnn-example-3/</loc>
+    <loc>http://yoursite.com/2017/02/17/svm-02-dual/</loc>
     
     <lastmod>2017-07-31T02:42:34.566Z</lastmod>
     
@@ -184,7 +177,7 @@
   </url>
   
   <url>
-    <loc>http://yoursite.com/2017/01/28/2016-review/</loc>
+    <loc>http://yoursite.com/2015/12/04/Ubuntu-ScreenShot/</loc>
     
     <lastmod>2017-07-31T02:42:34.562Z</lastmod>
     
@@ -261,7 +254,7 @@
   </url>
   
   <url>
-    <loc>http://yoursite.com/2015/12/04/Ubuntu-ScreenShot/</loc>
+    <loc>http://yoursite.com/2017/01/28/2016-review/</loc>
     
     <lastmod>2017-07-31T02:42:34.562Z</lastmod>
     
