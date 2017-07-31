@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>switch中default的认识 | 天空的城</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="偶然看到关于switch的一个基本例子，结果因为好长时间不用，导致遗忘– 虽然很简单，还是记录一下.  直接上代码:">
+<meta name="keywords" content="switch,CPP">
+<meta property="og:type" content="article">
+<meta property="og:title" content="switch中default的认识">
+<meta property="og:url" content="http://yoursite.com/2015/12/30/cpp-switch-break/index.html">
+<meta property="og:site_name" content="天空的城">
+<meta property="og:description" content="偶然看到关于switch的一个基本例子，结果因为好长时间不用，导致遗忘– 虽然很简单，还是记录一下.  直接上代码:">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2017-07-31T02:42:34.562Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="switch中default的认识">
+<meta name="twitter:description" content="偶然看到关于switch的一个基本例子，结果因为好长时间不用，导致遗忘– 虽然很简单，还是记录一下.  直接上代码:">
+  
+  
+    <link rel="icon" href="/image/favicon.ico">
+  
+  <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+  
+<!-- Google Analytics -->
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-74368890-2', 'auto');
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+
+
+  
+
+  
+  <div class="site-search header-inner">
+    <div class="popup">
+        <span class="search-icon fa fa-search"></span>
+        <input type="text" id="local-search-input">
+        <div id="local-search-result"></div>
+        <span class="popup-btn-close">close</span>
+    </div>
+</div>
+
+
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      
+<header id="header">
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">天空的城</a>
+      </h1>
+      
+    </div>
+    <div id="header-menu">
+      <nav id="main-nav">
+        <ul>
+        
+          <li><a href="/"><i class="fa fa-home icon-setting"></i></a></li>
+        
+          <li><a href="/archives"><i class="fa fa-archive icon-setting"></i></a></li>
+        
+          <li><a href="/tags"><i class="fa fa-tag icon-setting"></i></a></li>
+        
+          <li><a href="/about"><i class="fa fa-user icon-setting"></i></a></li>
+        
+        
+          <li><a href="javascript:;" class="popup-trigger"><i class="fa fa-search > icon-setting"></i></a></li>
+        
+        </ul>
+      </nav>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-cpp-switch-break" class="article article-type-post" itemscope itemprop="blogPost">
+  
+  <div class="article-meta">
+    <a href="/2015/12/30/cpp-switch-break/" class="article-date">
+  <time datetime="2015-12-30T05:25:50.000Z" itemprop="datePublished">2015-12-30</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/编程语言/">编程语言</a>
+  </div>
+
+    
+        <div class="counter-tag counter">
+    <!-- 别忘记这个类名... post-title-link -->
+    <span id="/2015/12/30/cpp-switch-break/" class="leancloud_visitors article-hits post-title-link"
+          style="font-size: 12px" data-flag-title="switch中default的认识">
+        次阅读
+    </span>
+
+  </div>
+
+    
+  </div>
+  
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      switch中default的认识
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+        
+        <blockquote>
+<p>偶然看到关于<code>switch</code>的一个基本例子，结果因为好长时间不用，导致遗忘– 虽然很简单，还是记录一下.</p>
+</blockquote>
+<p>直接上代码: <a id="more"></a> <figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;stdio.h&gt;</span></span></div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></div><div class="line"><span class="function"></span>&#123;</div><div class="line"><span class="keyword">int</span> s=<span class="number">0</span>,n;</div><div class="line"><span class="keyword">for</span>(n=<span class="number">0</span>;n&lt;<span class="number">4</span>;n++)</div><div class="line">&#123;</div><div class="line">    <span class="keyword">switch</span>(n)</div><div class="line">    &#123;</div><div class="line">        <span class="keyword">default</span>:s+=<span class="number">4</span>;</div><div class="line">        <span class="keyword">case</span> <span class="number">1</span>: s+=<span class="number">1</span>;<span class="keyword">break</span>;</div><div class="line">        <span class="keyword">case</span> <span class="number">2</span>: s+=<span class="number">2</span>;<span class="keyword">break</span>;</div><div class="line">        <span class="keyword">case</span> <span class="number">3</span>: s+=<span class="number">3</span>;</div><div class="line">    &#125;</div><div class="line"></div><div class="line">&#125;</div><div class="line"><span class="built_in">printf</span>(<span class="string">"%d\n"</span>,s);</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>结果的输出应该是: <figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="number">11</span></div></pre></td></tr></table></figure></p>
+<hr>
+<p>这里面的关键是，把<code>default</code>跟<code>case</code>等同对待，不做区分。 开始 <code>n = 0</code>,然后<code>switch</code>选择<code>default: s+=4</code>执行， 由于该条语句没有<code>break</code>,继续执行直到 遇到<code>break</code>或者<code>switch</code>结束，此时<code>s = 5</code>,后面同理。</p>
+<p>中间输出结果如下: <figure class="highlight c++"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">n = <span class="number">0</span>,s = <span class="number">5</span></div><div class="line">n = <span class="number">1</span>,s = <span class="number">6</span></div><div class="line">n = <span class="number">2</span>,s = <span class="number">8</span></div><div class="line">n = <span class="number">3</span>,s = <span class="number">11</span></div></pre></td></tr></table></figure></p>
+<p>其实很基础的东西–记录一下</p>
+
+      
+    </div>
+
+
+    
+
+    
+	    <div class="article-footer-copyright">
+<!--<p>本文作者: shomy 发表于 <a href="http://shomy.top" target="_blank">个人博客</a></p> -->
+<p>
+本文标题: switch中default的认识<br/>
+</p>
+<p>
+发布时间: 2015-12-30, 13:25:50<br/>
+<p>
+<p>
+最后更新: 2017-07-31, 10:42:34<br/>
+<p>
+本文链接: <a href="/2015/12/30/cpp-switch-break/" target="_blank">http://shomy.top/2015/12/30/cpp-switch-break/</a>
+</p>
+<p>非商业转载请注明作者及出处。商业转载请联系<a href="mailto:shomyliu@gmail.com">作者</a>本人。</p>
+</div>
+
+    
+
+    <footer class="article-footer">
+      
+        <a href="http://yoursite.com/2015/12/30/cpp-switch-break/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/CPP/">CPP</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/switch/">switch</a></li></ul>
+
+    </footer>
+    
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2015/12/30/linux-login-windows/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          Ubuntu登录windows远程主机
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2015/12/15/bootstrap-modal-open-offset/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">bootstrap的modal打开左右抖动问题</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+
+
+<section id="comments">
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+<script>
+  var disqus_shortname = 'shomy';
+  
+  var disqus_url = 'http://yoursite.com/2015/12/30/cpp-switch-break/';
+  
+  (function(){
+    var dsq = document.createElement('script');
+    dsq.type = 'text/javascript';
+    dsq.async = true;
+    dsq.src = 'https://' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  }());
+</script>
+</section>
+
+
+
+  <!-- Go to www.addthis.com/dashboard to customize your tools -->
+<script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-57adc438b914651b"></script>
+
+
+
+</section>
+      </div>
+    </div>
+    
+    
+<a id="rocket" href="#top" ></a>
+
+<script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script>
+<script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+<script>AV.initialize("k883AKdzaz5jccQnH1eIrG2r-gzGzoHsz", "4HBQOmslEp3VdwK1SGL8vB9Y");</script>
+<script src="/js/Counter.js"></script>
+
+
+
+<script id="dsq-count-scr" src="//shomy.disqus.com/count.js" async></script>
+ 
+
+
+  <script src="/js/search.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+  </div>
+</body>
+</html>

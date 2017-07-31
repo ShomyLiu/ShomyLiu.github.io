@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>TensorFlow练习3-RNNs实现分类 | 天空的城</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="接着练习TensorFlow, 这一节开始实现RNNs(循环神经网络), 同样使用mnist数据集，测试正确率也基本可以到99%。 同CNNs, RNNs的结构以及训练方式这里不加赘述，重心放在实现上。  提到循环神经网络(Recurrent Neural Networks)，下面这张图就不得不说:">
+<meta name="keywords" content="TensorFlow,DeepLearning,NN">
+<meta property="og:type" content="article">
+<meta property="og:title" content="TensorFlow练习3-RNNs实现分类">
+<meta property="og:url" content="http://yoursite.com/2017/01/02/tensorflow-rnn-example-3/index.html">
+<meta property="og:site_name" content="天空的城">
+<meta property="og:description" content="接着练习TensorFlow, 这一节开始实现RNNs(循环神经网络), 同样使用mnist数据集，测试正确率也基本可以到99%。 同CNNs, RNNs的结构以及训练方式这里不加赘述，重心放在实现上。  提到循环神经网络(Recurrent Neural Networks)，下面这张图就不得不说:">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/rnns.jpg">
+<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/rnn2.png">
+<meta property="og:updated_time" content="2017-07-31T02:42:34.566Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="TensorFlow练习3-RNNs实现分类">
+<meta name="twitter:description" content="接着练习TensorFlow, 这一节开始实现RNNs(循环神经网络), 同样使用mnist数据集，测试正确率也基本可以到99%。 同CNNs, RNNs的结构以及训练方式这里不加赘述，重心放在实现上。  提到循环神经网络(Recurrent Neural Networks)，下面这张图就不得不说:">
+<meta name="twitter:image" content="http://7xotye.com1.z0.glb.clouddn.com/rnns.jpg">
+  
+  
+    <link rel="icon" href="/image/favicon.ico">
+  
+  <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+  
+<!-- Google Analytics -->
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-74368890-2', 'auto');
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+
+
+  
+
+  
+  <div class="site-search header-inner">
+    <div class="popup">
+        <span class="search-icon fa fa-search"></span>
+        <input type="text" id="local-search-input">
+        <div id="local-search-result"></div>
+        <span class="popup-btn-close">close</span>
+    </div>
+</div>
+
+
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      
+<header id="header">
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">天空的城</a>
+      </h1>
+      
+    </div>
+    <div id="header-menu">
+      <nav id="main-nav">
+        <ul>
+        
+          <li><a href="/"><i class="fa fa-home icon-setting"></i></a></li>
+        
+          <li><a href="/archives"><i class="fa fa-archive icon-setting"></i></a></li>
+        
+          <li><a href="/tags"><i class="fa fa-tag icon-setting"></i></a></li>
+        
+          <li><a href="/about"><i class="fa fa-user icon-setting"></i></a></li>
+        
+        
+          <li><a href="javascript:;" class="popup-trigger"><i class="fa fa-search > icon-setting"></i></a></li>
+        
+        </ul>
+      </nav>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-tensorflow-rnn-example-3" class="article article-type-post" itemscope itemprop="blogPost">
+  
+  <div class="article-meta">
+    <a href="/2017/01/02/tensorflow-rnn-example-3/" class="article-date">
+  <time datetime="2017-01-02T03:37:14.000Z" itemprop="datePublished">2017-01-02</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/工具使用/">工具使用</a>
+  </div>
+
+    
+        <div class="counter-tag counter">
+    <!-- 别忘记这个类名... post-title-link -->
+    <span id="/2017/01/02/tensorflow-rnn-example-3/" class="leancloud_visitors article-hits post-title-link"
+          style="font-size: 12px" data-flag-title="TensorFlow练习3-RNNs实现分类">
+        次阅读
+    </span>
+
+  </div>
+
+    
+  </div>
+  
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      TensorFlow练习3-RNNs实现分类
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+        
+        <blockquote>
+<p>接着练习TensorFlow, 这一节开始实现RNNs(循环神经网络), 同样使用mnist数据集，测试正确率也基本可以到99%。 同CNNs, RNNs的结构以及训练方式这里不加赘述，重心放在实现上。</p>
+</blockquote>
+<p>提到循环神经网络(Recurrent Neural Networks)，下面这张图就不得不说: <a id="more"></a> <img src="http://7xotye.com1.z0.glb.clouddn.com/rnns.jpg"></p>
+<p>RNNs 主要处理时序数据，比如一句话，词与词之间都是有顺序的，因此经常用在NLP领域，比如机器翻译，情感分析等。 一般的RNNs有多个FNN横向连接而成，其中中间有个rnn-cell, 存储的是前面序列的隐含状态s。 分解开来的话， 就相当于三层，第一层是输入x到rnn-cell的连接，第二层是rnn-cell,得到的是隐藏状态s，第三层是rnn-cell到输出o的连接层。下面开始一步一步实现。</p>
+<p>第一步我们需要想办法把mnist的数据定义为时序数据，开始数据是 28X28的，因此我们可以按行来看，第一行是第一个时间点，下一行是第二个时间点的 数据，对应到上图就是: 第一行的数据是<span class="math inline">\(x_0\)</span>，第二行的数据为<span class="math inline">\(x_1\)</span>，依次类推。 另外，这一节我们主要用RNNs做分类，因此只关心最后一个时间点的输出即可。因此我们实现的结构其实是下图这样的: 下一节会讨论回归问题，就是考虑所有输出:</p>
+<div class="figure">
+<img src="http://7xotye.com1.z0.glb.clouddn.com/rnn2.png">
+
+</div>
+<p>首先定义一些后面使用的参数:</p>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"></div><div class="line"><span class="comment"># hyperparameters</span></div><div class="line">lr = 0.001 <span class="comment"># learning rate</span></div><div class="line">batch_size = 128</div><div class="line">n_inputs = 28 <span class="comment"># 每一行的维度</span></div><div class="line">n_steps = 28 <span class="comment"># 28 行</span></div><div class="line">n_hidden_unins = 128 <span class="comment"># 中间FNN的hidden units</span></div><div class="line">n_classes = 10  <span class="comment"># FNN最后的输出类别个数</span></div></pre></td></tr></table></figure>
+<p>接着定义TensorFlow的输入：</p>
+<figure class="highlight vim"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"># <span class="keyword">tf</span> <span class="built_in">input</span></div><div class="line">xs =<span class="keyword">tf</span>.placeholder(<span class="keyword">tf</span>.float32, [None, n_steps, n_inputs], name=<span class="string">"inputs"</span>)</div><div class="line">ys =<span class="keyword">tf</span>.placeholder(<span class="keyword">tf</span>.float32, [None, n_classes], name=<span class="string">"outputs"</span>)</div></pre></td></tr></table></figure>
+<p>RNNs每一个单元里面包含一个三层的普通神经网络， 因此我们事先设置一下这里面的权重矩阵和偏置，需要注意的是，RNNs的一个特点就是权值共享，所有层用的权重矩阵一样 :</p>
+<figure class="highlight applescript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># W &amp; b</span></div><div class="line">weights = &#123;</div><div class="line">    '<span class="keyword">in</span>': tf.Variable(tf.random_uniform([n_inputs, n_hidden_unins], <span class="number">-1.0</span>, <span class="number">1.0</span>), <span class="built_in">name</span>=<span class="string">"in_w"</span>), <span class="comment"># 输入层到中间层权重矩阵</span></div><div class="line">    'out': tf.Variable(tf.random_uniform([n_hidden_unins, n_classes], <span class="number">-1.0</span>, <span class="number">1.0</span>), <span class="built_in">name</span>=<span class="string">"out_w"</span>), <span class="comment"># 中间层到输出层的权重</span></div><div class="line">&#125;</div><div class="line">b = &#123;</div><div class="line">    '<span class="keyword">in</span>': tf.Variable(tf.<span class="built_in">constant</span>(<span class="number">0.1</span>, shape=[n_hidden_unins]), <span class="built_in">name</span>=<span class="string">"in_bias"</span>), <span class="comment"># 偏置</span></div><div class="line">    'out': tf.Variable(tf.<span class="built_in">constant</span>(<span class="number">0.1</span>, shape=[n_classes]), <span class="built_in">name</span>=<span class="string">"out_bias"</span>),</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>下面开始定义RNNs网络结构 首先输入层到rnn-cell：就是一个简单的前馈层，不过要特别注意数据的维度</p>
+<figure class="highlight nix"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># hidden_layer for input</span></div><div class="line"><span class="comment"># X : (128, 28, 28)</span></div><div class="line"><span class="keyword">with</span> tf.name_scope(<span class="string">"inlayer"</span>):</div><div class="line">    <span class="comment"># 本来数据是 batch_size ，28 ， 28,但是这样的无法与权重进行相乘，</span></div><div class="line">    <span class="comment"># 因此需要转为 -1 * 28, 这里的-1表示任意长度，就相当与把原来数据拉伸一下，从厚变长</span></div><div class="line">    <span class="comment"># 但是rnn-cell还需要序列数据，因此后面还需要恢复为batch_size, 28,28的维度，再从长变回厚</span></div><div class="line">    <span class="attr">X</span> = tf.reshape(X, [-<span class="number">1</span>, n_inputs])  <span class="comment"># [batch_size*28, 28]</span></div><div class="line">    <span class="comment"># [batch_size * 28, 28] * [28, hidden_units] =&gt;[batch_size * 28, hidden_units]</span></div><div class="line">    <span class="attr">X_in</span> = tf.matmul(X, weights['<span class="keyword">in</span>']) + b['<span class="keyword">in</span>']</div><div class="line">    <span class="attr">X_in</span> = tf.reshape(X_in, [-<span class="number">1</span>, n_steps, n_hidden_unins]) <span class="comment"># 长-&gt;厚： []batch_size, 28, 128]</span></div></pre></td></tr></table></figure>
+<p>接着是中间的cell，这个TensorFlow作了很好的封装，我们只需要传入需要的参数就可以了： <figure class="highlight nix"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># RNN cell</span></div><div class="line"><span class="keyword">with</span> tf.name_scope(<span class="string">"RNN_CELL"</span>):</div><div class="line">    <span class="attr">lstm_cell</span> = tf.nn.rnn_cell.BasicLSTMCell(n_hidden_unins) <span class="comment">#根据隐层的神经元个数，定义一个基本的Cell</span></div><div class="line">    outputs, <span class="attr">states</span> = tf.nn.dynamic_rnn(lstm_cell, X_in, <span class="attr">dtype=tf.float32)</span> <span class="comment"># 传入lstm_cell与上层的输出:X_in即可</span></div></pre></td></tr></table></figure></p>
+<p>这里有点需要说明的是，本来RNN是需要一个初始状态的，这样才能够向后传递，但是TensorFlow可以随机产生一个初始状态矩阵，但是需要在<code>tf.nn.dynamic_rnn</code>的参数里面指定<code>dtype=tf.float32</code>，不然会报错。当然可以向下面的指定初始状态:</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">lstm_cell = tf<span class="selector-class">.nn</span><span class="selector-class">.rnn_cell</span><span class="selector-class">.BasicLSTMCell</span>(n_hidden_unins) #根据隐层的神经元个数，定义一个基本的Cell</div><div class="line">_init_state = lstm_cell.zero_state(batch_size, dtype=tf.float32)</div><div class="line">ouputs, states = tf<span class="selector-class">.nn</span><span class="selector-class">.dynamic_rnn</span>(lstm_cell, X_in, initial_state=_init_state)</div></pre></td></tr></table></figure>
+<p>这里的输出states表示最后隐层的状态tuple， 实际value在states[1]内。 前面已经说了，我们只需要最后的输出结果，因此只需要加一个输出层就好：</p>
+<figure class="highlight prolog"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"># out layer</div><div class="line">with tf.name_scope(<span class="string">'outlayer'</span>):</div><div class="line">    results = tf.matmul(states[<span class="number">1</span>], weights[<span class="string">'out'</span>]) + b[<span class="string">'out'</span>]</div></pre></td></tr></table></figure>
+<p>到此，网络结构构建完成，后续便是cross-cost, accuracy，这与前面基本一样:</p>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">pred = RNN(xs, weights, b) <span class="comment"># 这里将上述的层，定义为了一个函数</span></div><div class="line"><span class="comment"># cost</span></div><div class="line">cost = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(pred, ys)) <span class="comment"># 交叉熵损失函数</span></div><div class="line">train_op = tf.train.AdamOptimizer(lr).minimize(cost) <span class="comment"># Adam训练方式</span></div><div class="line"><span class="comment"># accuracy</span></div><div class="line">correct_pred = tf.equal(tf.argmax(pred, 1), tf.argmax(ys, 1))</div><div class="line">accuracy = tf.reduce_mean(tf.cast(correct_pred, tf.float32))</div></pre></td></tr></table></figure>
+<p>运行结果如下,正确率可以接近99%，但是比CNN训练快一倍时间, 通过调整参数，应该可以到99%+，从此可以看出来，虽然我们是强行将图片变为时序数据，但是效果也很好,看来RNN的适用范围还是蛮广的.</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line"><span class="string">epoch:</span> <span class="number">1</span> <span class="string">accuracy:</span> <span class="number">0.9519</span></div><div class="line"><span class="string">epoch:</span> <span class="number">2</span> <span class="string">accuracy:</span> <span class="number">0.9709</span></div><div class="line"><span class="string">epoch:</span> <span class="number">3</span> <span class="string">accuracy:</span> <span class="number">0.9789</span></div><div class="line"><span class="string">epoch:</span> <span class="number">4</span> <span class="string">accuracy:</span> <span class="number">0.9788</span></div><div class="line"><span class="string">epoch:</span> <span class="number">5</span> <span class="string">accuracy:</span> <span class="number">0.9819</span></div><div class="line"><span class="string">epoch:</span> <span class="number">6</span> <span class="string">accuracy:</span> <span class="number">0.9829</span></div><div class="line"><span class="string">epoch:</span> <span class="number">7</span> <span class="string">accuracy:</span> <span class="number">0.9828</span></div><div class="line"><span class="string">epoch:</span> <span class="number">8</span> <span class="string">accuracy:</span> <span class="number">0.9848</span></div><div class="line"><span class="string">epoch:</span> <span class="number">9</span> <span class="string">accuracy:</span> <span class="number">0.9829</span></div><div class="line"><span class="string">epoch:</span> <span class="number">10</span> <span class="string">accuracy:</span> <span class="number">0.9831</span></div><div class="line"><span class="string">epoch:</span> <span class="number">11</span> <span class="string">accuracy:</span> <span class="number">0.9851</span></div><div class="line"><span class="string">epoch:</span> <span class="number">12</span> <span class="string">accuracy:</span> <span class="number">0.9854</span></div><div class="line"><span class="string">epoch:</span> <span class="number">13</span> <span class="string">accuracy:</span> <span class="number">0.9815</span></div><div class="line"><span class="string">epoch:</span> <span class="number">14</span> <span class="string">accuracy:</span> <span class="number">0.9846</span></div><div class="line"><span class="string">epoch:</span> <span class="number">15</span> <span class="string">accuracy:</span> <span class="number">0.9832</span></div><div class="line">******************************</div><div class="line">training finish.</div><div class="line">cost <span class="string">time:</span> <span class="number">94</span> seconds</div><div class="line"><span class="string">accuracy:</span> <span class="number">0.9832</span></div></pre></td></tr></table></figure>
+<p>完整代码如下: <figure class="highlight vim"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div></pre></td><td class="code"><pre><div class="line">#!/usr/bin/env <span class="keyword">python</span></div><div class="line"># encodin<span class="variable">g:</span> utf-<span class="number">8</span></div><div class="line"></div><div class="line">import tensorflow <span class="keyword">as</span> <span class="keyword">tf</span></div><div class="line">from tensorflow.examples.tutorials.mnist import input_data</div><div class="line"></div><div class="line">mnist = input_data.read_data_sets(<span class="string">'MNIST_data'</span>, one_hot=True)</div><div class="line"></div><div class="line"># hyperparameters</div><div class="line"><span class="keyword">lr</span> = <span class="number">0.001</span> # learning rate</div><div class="line">batch_size = <span class="number">128</span></div><div class="line"></div><div class="line">n_inputs = <span class="number">28</span> # <span class="number">28</span> <span class="keyword">cl</span></div><div class="line">n_steps = <span class="number">28</span> # <span class="number">28</span> rows -&gt; time stamps</div><div class="line"></div><div class="line">n_hidden_unins = <span class="number">128</span> # hidden units</div><div class="line">n_classes = <span class="number">10</span></div><div class="line"></div><div class="line"># <span class="keyword">tf</span> <span class="built_in">input</span></div><div class="line">xs =<span class="keyword">tf</span>.placeholder(<span class="keyword">tf</span>.float32, [None, n_steps, n_inputs], name=<span class="string">"inputs"</span>)</div><div class="line">ys =<span class="keyword">tf</span>.placeholder(<span class="keyword">tf</span>.float32, [None, n_classes], name=<span class="string">"outputs"</span>)</div><div class="line"></div><div class="line"># W &amp; <span class="keyword">b</span></div><div class="line">weights = &#123;</div><div class="line">    <span class="string">'in'</span>: <span class="keyword">tf</span>.Variable(<span class="keyword">tf</span>.random_uniform([n_inputs, n_hidden_unins], -<span class="number">1.0</span>, <span class="number">1.0</span>), name=<span class="string">"in_w"</span>),</div><div class="line">    <span class="string">'out'</span>: <span class="keyword">tf</span>.Variable(<span class="keyword">tf</span>.random_uniform([n_hidden_unins, n_classes], -<span class="number">1.0</span>, <span class="number">1.0</span>), name=<span class="string">"out_w"</span>),</div><div class="line">&#125;</div><div class="line"><span class="keyword">b</span> = &#123;</div><div class="line">    <span class="string">'in'</span>: <span class="keyword">tf</span>.Variable(<span class="keyword">tf</span>.constant(<span class="number">0.1</span>, shape=[n_hidden_unins]), name=<span class="string">"in_bias"</span>),</div><div class="line">    <span class="string">'out'</span>: <span class="keyword">tf</span>.Variable(<span class="keyword">tf</span>.constant(<span class="number">0.1</span>, shape=[n_classes]), name=<span class="string">"out_bias"</span>),</div><div class="line">&#125;</div><div class="line"></div><div class="line">def RNN(<span class="keyword">X</span>, weights, bias):</div><div class="line"></div><div class="line">    # hidden_layer <span class="keyword">for</span> <span class="built_in">input</span></div><div class="line">    # <span class="keyword">X</span> : (<span class="number">128</span>, <span class="number">28</span>, <span class="number">28</span>)</div><div class="line">    with <span class="keyword">tf</span>.name_scope(<span class="string">"inlayer"</span>):</div><div class="line">        <span class="keyword">X</span> = <span class="keyword">tf</span>.reshape(<span class="keyword">X</span>, [-<span class="number">1</span>, n_inputs])</div><div class="line">        X_in = <span class="keyword">tf</span>.matmul(<span class="keyword">X</span>, weights[<span class="string">'in'</span>]) + <span class="keyword">b</span>[<span class="string">'in'</span>]</div><div class="line">        X_in = <span class="keyword">tf</span>.reshape(X_in, [-<span class="number">1</span>, n_steps, n_hidden_unins])</div><div class="line"></div><div class="line">    # RNN cell</div><div class="line">    with <span class="keyword">tf</span>.name_scope(<span class="string">"RNN_CELL"</span>):</div><div class="line">        lstm_cell = <span class="keyword">tf</span>.<span class="keyword">nn</span>.rnn_cell.BasicLSTMCell(n_hidden_unins)</div><div class="line">        # _init_state = lstm_cell.zero_state(batch_size, dtype=<span class="keyword">tf</span>.float32)</div><div class="line">        # ouputs, states = <span class="keyword">tf</span>.<span class="keyword">nn</span>.dynamic_rnn(lstm_cell, X_in, initial_state=_init_state)</div><div class="line">        outputs, states = <span class="keyword">tf</span>.<span class="keyword">nn</span>.dynamic_rnn(lstm_cell, X_in, dtype=<span class="keyword">tf</span>.float32)</div><div class="line"></div><div class="line"></div><div class="line">    # out layer</div><div class="line">    with <span class="keyword">tf</span>.name_scope(<span class="string">'outlayer'</span>):</div><div class="line">        results = <span class="keyword">tf</span>.matmul(states[<span class="number">1</span>], weights[<span class="string">'out'</span>]) + <span class="keyword">b</span>[<span class="string">'out'</span>]</div><div class="line"></div><div class="line">    <span class="keyword">return</span> results</div><div class="line"></div><div class="line">pred = RNN(xs, weights, <span class="keyword">b</span>)</div><div class="line"></div><div class="line"># cost</div><div class="line">cost = <span class="keyword">tf</span>.reduce_mean(<span class="keyword">tf</span>.<span class="keyword">nn</span>.softmax_cross_entropy_with_logits(pred, ys))</div><div class="line">train_op = <span class="keyword">tf</span>.train.AdamOptimizer(<span class="keyword">lr</span>).minimize(cost)</div><div class="line"></div><div class="line"># accuracy</div><div class="line">correct_pred = <span class="keyword">tf</span>.equal(<span class="keyword">tf</span>.argmax(pred, <span class="number">1</span>), <span class="keyword">tf</span>.argmax(ys, <span class="number">1</span>))</div><div class="line">accuracy = <span class="keyword">tf</span>.reduce_mean(<span class="keyword">tf</span>.cast(correct_pred, <span class="keyword">tf</span>.float32))</div><div class="line"></div><div class="line"># run</div><div class="line">import time</div><div class="line">init = <span class="keyword">tf</span>.global_variables_initializer()</div><div class="line">epochs = <span class="number">15</span></div><div class="line"></div><div class="line"><span class="keyword">st</span> = time.time()</div><div class="line">with <span class="keyword">tf</span>.Session() <span class="keyword">as</span> ses<span class="variable">s:</span></div><div class="line">    writer = <span class="keyword">tf</span>.summary.FileWriter(<span class="string">'logs/'</span>, sess.graph)</div><div class="line">    sess.run(init)</div><div class="line"></div><div class="line">    batch = mnist.train.num_examples / batch_size</div><div class="line">    <span class="keyword">for</span> epoch in <span class="built_in">range</span>(epochs):</div><div class="line">        <span class="keyword">for</span> i in <span class="built_in">range</span>(<span class="keyword">int</span>(batch)):</div><div class="line">            batch_x, batch_y = mnist.train.next_batch(batch_size)</div><div class="line">            batch_x = batch_x.reshape([batch_size, n_inputs, n_steps])</div><div class="line">            sess.run(train_op, feed_dict=&#123;<span class="keyword">x</span><span class="variable">s:</span> batch_x, <span class="keyword">y</span><span class="variable">s:</span> batch_y&#125;)</div><div class="line"></div><div class="line">        <span class="keyword">print</span> <span class="string">'epoch:'</span>, epoch+<span class="number">1</span>, <span class="string">'accuracy:'</span>, sess.run(accuracy, feed_dict=&#123;<span class="keyword">x</span><span class="variable">s:</span> mnist.test.images.reshape([-<span class="number">1</span>, n_steps, n_inputs]), <span class="keyword">y</span><span class="variable">s:</span> mnist.test.labels&#125;)</div><div class="line"></div><div class="line">    end = time.time()</div><div class="line">    <span class="keyword">print</span> <span class="string">'*'</span> * <span class="number">30</span></div><div class="line">    <span class="keyword">print</span> <span class="string">'training finish.\ncost time:'</span>,<span class="keyword">int</span>(end-<span class="keyword">st</span>), <span class="string">'seconds\naccuracy:'</span>, sess.run(accuracy, feed_dict=&#123;<span class="keyword">x</span><span class="variable">s:</span> mnist.test.images.reshape([-<span class="number">1</span>, n_steps, n_inputs]), <span class="keyword">y</span><span class="variable">s:</span> mnist.test.labels&#125;)</div></pre></td></tr></table></figure></p>
+
+      
+    </div>
+
+
+    
+
+    
+	    <div class="article-footer-copyright">
+<!--<p>本文作者: shomy 发表于 <a href="http://shomy.top" target="_blank">个人博客</a></p> -->
+<p>
+本文标题: TensorFlow练习3-RNNs实现分类<br/>
+</p>
+<p>
+发布时间: 2017-01-02, 11:37:14<br/>
+<p>
+<p>
+最后更新: 2017-07-31, 10:42:34<br/>
+<p>
+本文链接: <a href="/2017/01/02/tensorflow-rnn-example-3/" target="_blank">http://shomy.top/2017/01/02/tensorflow-rnn-example-3/</a>
+</p>
+<p>非商业转载请注明作者及出处。商业转载请联系<a href="mailto:shomyliu@gmail.com">作者</a>本人。</p>
+</div>
+
+    
+
+    <footer class="article-footer">
+      
+        <a href="http://yoursite.com/2017/01/02/tensorflow-rnn-example-3/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/DeepLearning/">DeepLearning</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/NN/">NN</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/TensorFlow/">TensorFlow</a></li></ul>
+
+    </footer>
+    
+	    <script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+    
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2017/01/27/hexo-migrate-solution/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          hexo迁移重装
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2017/01/01/tensorflow-cnn-example-2/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">TensorFlow练习2-CNNs实现分类</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+
+
+<section id="comments">
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+<script>
+  var disqus_shortname = 'shomy';
+  
+  var disqus_url = 'http://yoursite.com/2017/01/02/tensorflow-rnn-example-3/';
+  
+  (function(){
+    var dsq = document.createElement('script');
+    dsq.type = 'text/javascript';
+    dsq.async = true;
+    dsq.src = 'https://' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  }());
+</script>
+</section>
+
+
+
+  <!-- Go to www.addthis.com/dashboard to customize your tools -->
+<script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-57adc438b914651b"></script>
+
+
+
+</section>
+      </div>
+    </div>
+    
+    
+<a id="rocket" href="#top" ></a>
+
+<script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script>
+<script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+<script>AV.initialize("k883AKdzaz5jccQnH1eIrG2r-gzGzoHsz", "4HBQOmslEp3VdwK1SGL8vB9Y");</script>
+<script src="/js/Counter.js"></script>
+
+
+
+<script id="dsq-count-scr" src="//shomy.disqus.com/count.js" async></script>
+ 
+
+
+  <script src="/js/search.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+  </div>
+</body>
+</html>

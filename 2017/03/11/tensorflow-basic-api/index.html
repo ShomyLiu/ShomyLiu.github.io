@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>TensorFlow常用API | 天空的城</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="越来越感觉学习python一个第三方库就跟学一门新语言差不多，庞大的TensorFlow更是如此。这篇博客会持续记录关于tensorflow的一些api的用法。">
+<meta name="keywords" content="TensorFlow,api">
+<meta property="og:type" content="article">
+<meta property="og:title" content="TensorFlow常用API">
+<meta property="og:url" content="http://yoursite.com/2017/03/11/tensorflow-basic-api/index.html">
+<meta property="og:site_name" content="天空的城">
+<meta property="og:description" content="越来越感觉学习python一个第三方库就跟学一门新语言差不多，庞大的TensorFlow更是如此。这篇博客会持续记录关于tensorflow的一些api的用法。">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2017-07-31T02:42:34.566Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="TensorFlow常用API">
+<meta name="twitter:description" content="越来越感觉学习python一个第三方库就跟学一门新语言差不多，庞大的TensorFlow更是如此。这篇博客会持续记录关于tensorflow的一些api的用法。">
+  
+  
+    <link rel="icon" href="/image/favicon.ico">
+  
+  <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  <link href="//cdn.bootcss.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+  
+<!-- Google Analytics -->
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-74368890-2', 'auto');
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+
+
+  
+
+  
+  <div class="site-search header-inner">
+    <div class="popup">
+        <span class="search-icon fa fa-search"></span>
+        <input type="text" id="local-search-input">
+        <div id="local-search-result"></div>
+        <span class="popup-btn-close">close</span>
+    </div>
+</div>
+
+
+
+</head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      
+<header id="header">
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">天空的城</a>
+      </h1>
+      
+    </div>
+    <div id="header-menu">
+      <nav id="main-nav">
+        <ul>
+        
+          <li><a href="/"><i class="fa fa-home icon-setting"></i></a></li>
+        
+          <li><a href="/archives"><i class="fa fa-archive icon-setting"></i></a></li>
+        
+          <li><a href="/tags"><i class="fa fa-tag icon-setting"></i></a></li>
+        
+          <li><a href="/about"><i class="fa fa-user icon-setting"></i></a></li>
+        
+        
+          <li><a href="javascript:;" class="popup-trigger"><i class="fa fa-search > icon-setting"></i></a></li>
+        
+        </ul>
+      </nav>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-tensorflow-basic-api" class="article article-type-post" itemscope itemprop="blogPost">
+  
+  <div class="article-meta">
+    <a href="/2017/03/11/tensorflow-basic-api/" class="article-date">
+  <time datetime="2017-03-11T11:53:09.000Z" itemprop="datePublished">2017-03-11</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/工具使用/">工具使用</a>
+  </div>
+
+    
+        <div class="counter-tag counter">
+    <!-- 别忘记这个类名... post-title-link -->
+    <span id="/2017/03/11/tensorflow-basic-api/" class="leancloud_visitors article-hits post-title-link"
+          style="font-size: 12px" data-flag-title="TensorFlow常用API">
+        次阅读
+    </span>
+
+  </div>
+
+    
+  </div>
+  
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      TensorFlow常用API
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+            <div id="toc" class="toc-article">
+                <strong class="toc-title">文章目录</strong>
+                <ol class="post-toc"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#轴axis"><span class="post-toc-text">轴(axis)</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#tf.slice"><span class="post-toc-text">tf.slice</span></a></li></ol>
+            </div>
+        
+        
+        <p>越来越感觉学习python一个第三方库就跟学一门新语言差不多，庞大的TensorFlow更是如此。这篇博客会持续记录关于tensorflow的一些api的用法。</p>
+<a id="more"></a>
+<h2 id="轴axis">轴(axis)</h2>
+<p>在tensorflow中，最基本的变量或者常量都是tensor类型，说直接点就是多维数组，因此涉及到了很多在某一个维度上操作的API，比如<code>tf.reduce_*()</code>，<code>tf_arg*()</code>，<code>tf_expand_dims()</code>等，这些基本的API都有一个共同的参数:<code>axis=</code>，也就说这些操作都是哪些维度(轴)上做运算，除了在tf中，在numpy里面也有这一参数，之前一直是一知半解。现在总结一下这个<strong>axis</strong>，由于numpy与tensorflow的axis基本一样，因此下面以numpy为例。</p>
+<p>首先可以从多维数组(tensor)的shape来得到数组的维度: <code>d=len(array.shape)</code>:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">In [<span class="number">2</span>]: a = np.array([[<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>],[<span class="number">4</span>,<span class="number">5</span>,<span class="number">6</span>]])</div><div class="line">In [<span class="number">3</span>]: a.shape</div><div class="line">Out[<span class="number">3</span>]: (<span class="number">2</span>, <span class="number">3</span>)</div><div class="line">In [<span class="number">4</span>]: len(a.shape)</div><div class="line">Out[<span class="number">4</span>]: <span class="number">2</span></div></pre></td></tr></table></figure>
+<p>也就是说上述的数组a的shape为<code>(2,3)</code>，维度是2维，也就是有两层嵌套数组，看看有多少层<code>[]</code>，因此<code>axis</code>的取值只能为<code>0,1</code>，下面以<code>sum</code>为例，看看不同的axis的结果:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">In [<span class="number">5</span>]: np.sum(a)</div><div class="line">Out[<span class="number">5</span>]: <span class="number">21</span></div><div class="line"></div><div class="line">In [<span class="number">6</span>]: np.sum(a,axis=<span class="number">0</span>)</div><div class="line">Out[<span class="number">6</span>]: array([<span class="number">5</span>, <span class="number">7</span>, <span class="number">9</span>])</div><div class="line"></div><div class="line">In [<span class="number">7</span>]: np.sum(a,axis=<span class="number">1</span>)</div><div class="line">Out[<span class="number">7</span>]: array([ <span class="number">6</span>, <span class="number">15</span>])</div></pre></td></tr></table></figure>
+<p>一个一个的说明。首先需要明白<strong>操作的对象</strong>是谁？这这个例子中，就是那些元素相加。怎么来确定是哪些元素呢？个人使用的原则是:</p>
+<blockquote>
+<p>对原来数组去掉axis+1层嵌套([])，对剩下的元素再分组进行相应的操作。</p>
+</blockquote>
+<p>首先如果不加<code>axis</code>参数，则默认对所有元素直接做<code>sum</code>操作，因此结果就是21。当<code>axis=0</code>的时候， 相加的对象，则是变成了<code>[1,2,3]+[4,5,6]</code>，按照上面的原则，a去掉一层嵌套，也就是<code>[]</code>之后，变为: <code>[1,2,3],[4,5,6]</code> 那么<code>sum</code>的对象: <code>[1,2,3]+[4,5,6]=[5,7,9]</code>。 再接着看<code>axis=1</code>，这时候需要去掉两层嵌套，去掉第一层变为:<code>[1,2,3], [4,5,6]</code>，去掉第二层嵌套，剩下了<code>1,2,3</code> 和 <code>4,5,6</code>两个组，因此两个组内各个相加即可，得到的最终的结果为:<code>[6,15]</code>。 下面以同样的思路，计算最小值:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">In [<span class="number">3</span>]: np.min(a)</div><div class="line">Out[<span class="number">3</span>]: <span class="number">1</span></div><div class="line"></div><div class="line">In [<span class="number">4</span>]: np.min(a, axis=<span class="number">0</span>)</div><div class="line">Out[<span class="number">4</span>]: array([<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>])</div><div class="line"></div><div class="line">In [<span class="number">5</span>]: np.min(a, axis=<span class="number">1</span>)</div><div class="line">Out[<span class="number">5</span>]: array([<span class="number">1</span>, <span class="number">4</span>])</div></pre></td></tr></table></figure>
+<p>有一个稍微特殊的是<code>expand_dims</code> 这个是扩展维度。对于这个api它的axis没有上限约束，不过当所有的元素自成一个列表之后，不再变化。它的<code>axis</code>参数不一样的地方，是在<code>axis</code>的位置加入新的一个轴，也就是说此时对原数组去掉<code>axis</code>层嵌套，而非<code>axis+1</code>层，然后再对每组进行加一个轴，看例子:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line">In [<span class="number">25</span>]: a</div><div class="line">Out[<span class="number">25</span>]:</div><div class="line">array([[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>],</div><div class="line">       [<span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>]])</div><div class="line"></div><div class="line">In [<span class="number">26</span>]: np.expand_dims(a, axis=<span class="number">0</span>) <span class="comment"># 新加的轴为第0轴</span></div><div class="line">Out[<span class="number">26</span>]:</div><div class="line">array([[[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>],</div><div class="line">        [<span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>]]])</div><div class="line"></div><div class="line">In [<span class="number">27</span>]: np.expand_dims(a, axis=<span class="number">1</span>)<span class="comment"># 新加的轴为第1层</span></div><div class="line">Out[<span class="number">27</span>]:</div><div class="line">array([[[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>]],</div><div class="line"></div><div class="line">       [[<span class="number">4</span>, <span class="number">5</span>, <span class="number">6</span>]]])</div><div class="line"></div><div class="line">In [<span class="number">28</span>]: np.expand_dims(a, axis=<span class="number">2</span>)</div><div class="line">Out[<span class="number">28</span>]:</div><div class="line">array([[[<span class="number">1</span>],</div><div class="line">        [<span class="number">2</span>],</div><div class="line">        [<span class="number">3</span>]],</div><div class="line">       [[<span class="number">4</span>],</div><div class="line">        [<span class="number">5</span>],</div><div class="line">        [<span class="number">6</span>]]])</div></pre></td></tr></table></figure>
+<p>到现在基本上tensorflow以及numpy的axis这个参数基本没有问题了。 下面再看几个常用的函数。</p>
+<h2 id="tf.slice">tf.slice</h2>
+<p>这个函数主要用于对多维数组的截取(切片)，首先看看原型:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">tf.slice(input_, begin, size, name=<span class="keyword">None</span>)</div></pre></td></tr></table></figure>
+<ul>
+<li>input_: 输入</li>
+<li>begin: 开始截取的位置</li>
+<li>size: 每一个维度截取的长度</li>
+</ul>
+<p>直接看文档的例子:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># 'input' is [[[1, 1, 1], [2, 2, 2]],</span></div><div class="line"><span class="comment">#             [[3, 3, 3], [4, 4, 4]],</span></div><div class="line"><span class="comment">#             [[5, 5, 5], [6, 6, 6]]]</span></div><div class="line">tf.slice(input, [1, 0, 0], [1, 1, 3]) ==&gt; [[[3, 3, 3]]]</div><div class="line">tf.slice(input, [1, 0, 0], [1, 2, 3]) ==&gt; [[[3, 3, 3],</div><div class="line">                                            [<span class="number">4</span>, <span class="number">4</span>, <span class="number">4</span>]]]</div><div class="line">tf.slice(input, [1, 0, 0], [2, 1, 3]) ==&gt; [[[3, 3, 3]],</div><div class="line">                                           [[<span class="number">5</span>, <span class="number">5</span>, <span class="number">5</span>]]]</div></pre></td></tr></table></figure>
+<p>先看第一个例子:</p>
+<p><code>begin=[1,0,0]</code>也就是开始的元素，这里就是<code>input[1][0][0] = 3</code>,就是第二行<code>[3,3,3]</code>的第一个3,，再看截取距离: <code>[1,1,3]</code>，首先在<code>axis=0</code>的上截取一个距离，得到是第二整行<code>[[3,3,3],[4,4,4]]</code>，在<code>axis=1</code>上截取2个距离，得到<code>[3,3,3]</code>，最后在<code>axis=2</code>上截取了3个距离，也就是<code>[3,3,3]</code>这三个元素都得到，最终结果为:<code>[3,3,3]</code>。</p>
+<p>第二个例子解析:</p>
+<p>开始的元素仍然是<code>input[1][0][0=0]</code>，在<code>axis=0</code>上截取1个距离，得到仍然是<code>[[[3,3,3],[4,4,4]]]</code> ，第二个维度上截取距离为2,得到<code>[[[3,3,3],[4,4,4]]]</code>，最后在第三个维度上截取3，即三个元素都保留，得到结果。这里如果第三个维度截取2的话，那么得到就是<code>[[[3,3],[4,4]]]</code>。</p>
+<p>第三个同理，不再叙述。</p>
+<p>参考: <a href="http://blog.csdn.net/qq_32166627/article/details/52718612" target="_blank" rel="external">1</a></p>
+
+      
+    </div>
+
+
+    
+
+    
+	    <div class="article-footer-copyright">
+<!--<p>本文作者: shomy 发表于 <a href="http://shomy.top" target="_blank">个人博客</a></p> -->
+<p>
+本文标题: TensorFlow常用API<br/>
+</p>
+<p>
+发布时间: 2017-03-11, 19:53:09<br/>
+<p>
+<p>
+最后更新: 2017-07-31, 10:42:34<br/>
+<p>
+本文链接: <a href="/2017/03/11/tensorflow-basic-api/" target="_blank">http://shomy.top/2017/03/11/tensorflow-basic-api/</a>
+</p>
+<p>非商业转载请注明作者及出处。商业转载请联系<a href="mailto:shomyliu@gmail.com">作者</a>本人。</p>
+</div>
+
+    
+
+    <footer class="article-footer">
+      
+        <a href="http://yoursite.com/2017/03/11/tensorflow-basic-api/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/TensorFlow/">TensorFlow</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/api/">api</a></li></ul>
+
+    </footer>
+    
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2017/03/15/blending-bagging/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          机器学习技法笔记(9)-Blending and Bagging(模型融合)
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2017/03/09/support-vector-regression/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">机器学习技法笔记(8)-SVR(支持向量回归)</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+
+
+<section id="comments">
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+<script>
+  var disqus_shortname = 'shomy';
+  
+  var disqus_url = 'http://yoursite.com/2017/03/11/tensorflow-basic-api/';
+  
+  (function(){
+    var dsq = document.createElement('script');
+    dsq.type = 'text/javascript';
+    dsq.async = true;
+    dsq.src = 'https://' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  }());
+</script>
+</section>
+
+
+
+  <!-- Go to www.addthis.com/dashboard to customize your tools -->
+<script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-57adc438b914651b"></script>
+
+
+
+</section>
+      </div>
+    </div>
+    
+    
+<a id="rocket" href="#top" ></a>
+
+<script src="//cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script>
+<script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.1.js"></script>
+<script>AV.initialize("k883AKdzaz5jccQnH1eIrG2r-gzGzoHsz", "4HBQOmslEp3VdwK1SGL8vB9Y");</script>
+<script src="/js/Counter.js"></script>
+
+
+
+<script id="dsq-count-scr" src="//shomy.disqus.com/count.js" async></script>
+ 
+
+
+  <script src="/js/search.js"></script>
+
+
+<script src="/js/script.js"></script>
+
+
+  </div>
+</body>
+</html>
