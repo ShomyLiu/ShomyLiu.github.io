@@ -6,7 +6,7 @@
       <title><![CDATA[Hexo-admin后台管理博客]]></title>
       <url>/2017/07/29/Hexo-admin-for-blogs/</url>
       <content type="html"><![CDATA[<h2 id="需求">需求</h2>
-<p>Hexo这种静态博客虽然用起来很方便，但是硬伤就是没有后台管理，每次想写博客或者说想要修改原博客的话，都需要在本机上找markdown文件，修改之后发布，尤其是如果机器上没有安装hexo,git等工具的时候，就无法修改了。因此hexo可不可以以像wp,ghost这种有后台管理, 随时随地编辑博客呢。 <a id="more"></a></p>
+<p>像Hexo这种静态博客虽然用起来很方便，但是硬伤就是没有后台管理，每次想写博客或者说想要修改原博客的话，都需要在本机上找markdown文件，修改之后发布，尤其是如果机器上没有安装hexo,git等工具的时候，就无法修改了。因此hexo可不可以以像wp,ghost这种有后台管理, 随时随地编辑博客呢? <a id="more"></a></p>
 <p>正巧hexo专门有一个插件<a href="https://jaredforsyth.com/hexo-admin/" target="_blank" rel="external">hexo-admin</a> 提供了在web UI下增删改查博客的功能，我也正好有一个VPS, 于是就有了下面的一种方法.</p>
 <h2 id="解决方法">解决方法</h2>
 <p>首先说一下条件与需求。 我自己有一个的VPS，本来是可以直接将hexo部署到VPS的，但是考虑到自己维护的VPS的稳定性等问题，最后决定将hexo的静态页面部署github-pages上。</p>
