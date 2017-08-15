@@ -4,9 +4,9 @@
   
   <link href="/atom.xml" rel="self"/>
   
-  <link href="http://yoursite.com/"/>
-  <updated>2017-07-31T08:06:34.950Z</updated>
-  <id>http://yoursite.com/</id>
+  <link href="http://shomy.top/"/>
+  <updated>2017-08-15T00:52:12.317Z</updated>
+  <id>http://shomy.top/</id>
   
   <author>
     <name>ShomyLiu</name>
@@ -17,10 +17,10 @@
   
   <entry>
     <title>Hexo-admin后台管理博客</title>
-    <link href="http://yoursite.com/2017/07/29/Hexo-admin-for-blogs/"/>
-    <id>http://yoursite.com/2017/07/29/Hexo-admin-for-blogs/</id>
+    <link href="http://shomy.top/2017/07/29/Hexo-admin-for-blogs/"/>
+    <id>http://shomy.top/2017/07/29/Hexo-admin-for-blogs/</id>
     <published>2017-07-29T07:38:00.000Z</published>
-    <updated>2017-07-31T08:06:34.950Z</updated>
+    <updated>2017-08-15T00:52:12.317Z</updated>
     
     <content type="html"><![CDATA[<h2 id="需求">需求</h2>
 <p>像Hexo这种静态博客用起来很方便，但是硬伤就是没有后台管理，每次想写博客或者说想要修改原博客的话，都需要在本机上找markdown文件，修改之后发布，尤其是如果机器上没有安装hexo,git等工具的时候，就无法修改了。因此hexo可不可以以像wp,ghost这种有后台管理, 随时随地编辑博客呢? <a id="more"></a></p>
@@ -37,7 +37,7 @@
 <p>我的做法是:</p>
 <ul>
 <li>将hexo目录下的相关文件包括_config.yml,source/等文件建立一个私人repo(个人使用coding.net)</li>
-<li>VPS上安装好hexo,具体过程与换台机器安装同理, 可参考这篇博客<a href="http://shomy.top/2017/01/27/hexo-migrate-solution/" target="_blank" rel="external">hexo迁移重装</a>。</li>
+<li>VPS上安装好hexo,具体过程与换台机器安装同理, 可参考这篇博客<a href="http://shomy.top/2017/01/27/hexo-migrate-solution/">hexo迁移重装</a>。</li>
 <li>VPS上安装hexo-admin插件，这样可以在线编辑了. 在这一步的时候, 为了方便,我用了一个子域名以及在VPS上用nginx做前段端口转发.</li>
 </ul>
 <p>到这里后台管理基本没有问题了. 接下来就是在线发布了. 正巧的是hexo-admin提供了这个功能, 有一个Deploy的功能,具体实现是使用nodejs的<code>spawn</code>函数来执行发布脚本的. 一开始不太懂<code>spawn</code>这个函数的使用, 就直接在deploy中随便输入了东西,结果各种 spawn err. 后来查过资料,才知道deploy的输入的位置其实是对<code>hexo-admin</code>的配置里面<code>deployCommand</code>的选项,可以为空. 打个比方,如果我在<code>deployCommand</code>写的是<code>./hexo-deploy</code>, 然后点击deploy按钮之后, 后台就可以执行<code>hexo-deploy</code>脚本的内容了. 有了这个接口就非常灵活了. 因为基于此, 我们不但来发布博客,甚至可以把同步的脚本加进去.具体参考 https://github.com/jaredly/hexo-admin/issues/70</p>
@@ -51,7 +51,7 @@
 </ul>
 <p>到现在基本完成了自己可以随时随地编辑博客并且多端同步的需求了. 之前也考虑过CI持续集成,但是大部分都是再建立一个分支, 需要把博客的source公开, 不太合适. 所以就选择了hexo-admin这种方法.</p>
 <p>这篇博客便是在线完成的. <img src="http://7xotye.com1.z0.glb.clouddn.com/blog/hexo-admin/hexo-admin.png"></p>
-<p>其实这里面的坑还是蛮多的(主要不熟悉node). 此外开始使用supervisor做后台运行监控, 结果不知为何, 在<code>hexo d</code>包括git的pull或者push等操作,都会报错,提示让我确认git用户, 但是我已经设置了<code>git config</code>的email和name. 查了很多资料也没有解决, 后来直接抛弃supervisor, 直接使用<code>nohup</code>来放后台运行了. 大概是这样了, 有什么问题可以留言或者邮件.</p>
+<p>其实这里面的坑还是蛮多的(主要不熟悉node). 此外开始使用supervisor做后台运行监控, 结果不知为何, 在<code>hexo d</code>包括git的pull或者push等操作,都会报错,提示让我确认git用户, 但是我已经设置了<code>git config</code>的email和name. 查了很多资料也没有解决, 后来直接抛弃supervisor, 直接使用<code>nohup</code>来放后台运行了.每个人的需求肯定都不同，这里只是个人的一个思路。大概是这样了, 有什么问题可以留言或者邮件.</p>
 ]]></content>
     
     <summary type="html">
@@ -61,17 +61,17 @@
     
     </summary>
     
-      <category term="工具使用" scheme="http://yoursite.com/categories/%E5%B7%A5%E5%85%B7%E4%BD%BF%E7%94%A8/"/>
+      <category term="工具使用" scheme="http://shomy.top/categories/%E5%B7%A5%E5%85%B7%E4%BD%BF%E7%94%A8/"/>
     
     
-      <category term="hexo" scheme="http://yoursite.com/tags/hexo/"/>
+      <category term="hexo" scheme="http://shomy.top/tags/hexo/"/>
     
   </entry>
   
   <entry>
     <title>Word2vec数学原理全家桶</title>
-    <link href="http://yoursite.com/2017/07/28/word2vec-all/"/>
-    <id>http://yoursite.com/2017/07/28/word2vec-all/</id>
+    <link href="http://shomy.top/2017/07/28/word2vec-all/"/>
+    <id>http://shomy.top/2017/07/28/word2vec-all/</id>
     <published>2017-07-28T07:42:21.000Z</published>
     <updated>2017-07-31T02:42:34.566Z</updated>
     
@@ -286,19 +286,19 @@
     
     </summary>
     
-      <category term="读书笔记" scheme="http://yoursite.com/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/"/>
+      <category term="读书笔记" scheme="http://shomy.top/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/"/>
     
     
-      <category term="machine learning" scheme="http://yoursite.com/tags/machine-learning/"/>
+      <category term="machine learning" scheme="http://shomy.top/tags/machine-learning/"/>
     
-      <category term="word2vec" scheme="http://yoursite.com/tags/word2vec/"/>
+      <category term="word2vec" scheme="http://shomy.top/tags/word2vec/"/>
     
   </entry>
   
   <entry>
     <title>Alias Method离散分布随机取样</title>
-    <link href="http://yoursite.com/2017/05/09/alias-method-sampling/"/>
-    <id>http://yoursite.com/2017/05/09/alias-method-sampling/</id>
+    <link href="http://shomy.top/2017/05/09/alias-method-sampling/"/>
+    <id>http://shomy.top/2017/05/09/alias-method-sampling/</id>
     <published>2017-05-08T16:04:32.000Z</published>
     <updated>2017-07-31T02:42:34.562Z</updated>
     
@@ -346,17 +346,17 @@
     
     </summary>
     
-      <category term="读书笔记" scheme="http://yoursite.com/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/"/>
+      <category term="读书笔记" scheme="http://shomy.top/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/"/>
     
     
-      <category term="alias method" scheme="http://yoursite.com/tags/alias-method/"/>
+      <category term="alias method" scheme="http://shomy.top/tags/alias-method/"/>
     
   </entry>
   
   <entry>
     <title>机器学习技法笔记(10)-AdaBoost(提升算法)</title>
-    <link href="http://yoursite.com/2017/03/16/adaptive-boosting/"/>
-    <id>http://yoursite.com/2017/03/16/adaptive-boosting/</id>
+    <link href="http://shomy.top/2017/03/16/adaptive-boosting/"/>
+    <id>http://shomy.top/2017/03/16/adaptive-boosting/</id>
     <published>2017-03-16T12:55:55.000Z</published>
     <updated>2017-07-31T02:42:34.562Z</updated>
     
@@ -441,19 +441,19 @@
     
     </summary>
     
-      <category term="读书笔记" scheme="http://yoursite.com/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/"/>
+      <category term="读书笔记" scheme="http://shomy.top/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/"/>
     
     
-      <category term="machine learning" scheme="http://yoursite.com/tags/machine-learning/"/>
+      <category term="machine learning" scheme="http://shomy.top/tags/machine-learning/"/>
     
-      <category term="AdaBoost" scheme="http://yoursite.com/tags/AdaBoost/"/>
+      <category term="AdaBoost" scheme="http://shomy.top/tags/AdaBoost/"/>
     
   </entry>
   
   <entry>
     <title>机器学习技法笔记(9)-Blending and Bagging(模型融合)</title>
-    <link href="http://yoursite.com/2017/03/15/blending-bagging/"/>
-    <id>http://yoursite.com/2017/03/15/blending-bagging/</id>
+    <link href="http://shomy.top/2017/03/15/blending-bagging/"/>
+    <id>http://shomy.top/2017/03/15/blending-bagging/</id>
     <published>2017-03-15T04:56:38.000Z</published>
     <updated>2017-07-31T02:42:34.562Z</updated>
     
@@ -555,19 +555,19 @@
     
     </summary>
     
-      <category term="读书笔记" scheme="http://yoursite.com/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/"/>
+      <category term="读书笔记" scheme="http://shomy.top/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/"/>
     
     
-      <category term="machine learning" scheme="http://yoursite.com/tags/machine-learning/"/>
+      <category term="machine learning" scheme="http://shomy.top/tags/machine-learning/"/>
     
-      <category term="blending bagging" scheme="http://yoursite.com/tags/blending-bagging/"/>
+      <category term="blending bagging" scheme="http://shomy.top/tags/blending-bagging/"/>
     
   </entry>
   
   <entry>
     <title>TensorFlow常用API</title>
-    <link href="http://yoursite.com/2017/03/11/tensorflow-basic-api/"/>
-    <id>http://yoursite.com/2017/03/11/tensorflow-basic-api/</id>
+    <link href="http://shomy.top/2017/03/11/tensorflow-basic-api/"/>
+    <id>http://shomy.top/2017/03/11/tensorflow-basic-api/</id>
     <published>2017-03-11T11:53:09.000Z</published>
     <updated>2017-07-31T02:42:34.566Z</updated>
     
@@ -612,19 +612,19 @@
     
     </summary>
     
-      <category term="工具使用" scheme="http://yoursite.com/categories/%E5%B7%A5%E5%85%B7%E4%BD%BF%E7%94%A8/"/>
+      <category term="工具使用" scheme="http://shomy.top/categories/%E5%B7%A5%E5%85%B7%E4%BD%BF%E7%94%A8/"/>
     
     
-      <category term="TensorFlow" scheme="http://yoursite.com/tags/TensorFlow/"/>
+      <category term="TensorFlow" scheme="http://shomy.top/tags/TensorFlow/"/>
     
-      <category term="api" scheme="http://yoursite.com/tags/api/"/>
+      <category term="api" scheme="http://shomy.top/tags/api/"/>
     
   </entry>
   
   <entry>
     <title>机器学习技法笔记(8)-SVR(支持向量回归)</title>
-    <link href="http://yoursite.com/2017/03/09/support-vector-regression/"/>
-    <id>http://yoursite.com/2017/03/09/support-vector-regression/</id>
+    <link href="http://shomy.top/2017/03/09/support-vector-regression/"/>
+    <id>http://shomy.top/2017/03/09/support-vector-regression/</id>
     <published>2017-03-09T04:08:28.000Z</published>
     <updated>2017-07-31T02:42:34.562Z</updated>
     
@@ -705,19 +705,19 @@
     
     </summary>
     
-      <category term="读书笔记" scheme="http://yoursite.com/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/"/>
+      <category term="读书笔记" scheme="http://shomy.top/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/"/>
     
     
-      <category term="machine learning" scheme="http://yoursite.com/tags/machine-learning/"/>
+      <category term="machine learning" scheme="http://shomy.top/tags/machine-learning/"/>
     
-      <category term="svr" scheme="http://yoursite.com/tags/svr/"/>
+      <category term="svr" scheme="http://shomy.top/tags/svr/"/>
     
   </entry>
   
   <entry>
     <title>机器学习技法笔记(7)-Kernel LR(核逻辑回归)</title>
-    <link href="http://yoursite.com/2017/03/07/kernel-lr/"/>
-    <id>http://yoursite.com/2017/03/07/kernel-lr/</id>
+    <link href="http://shomy.top/2017/03/07/kernel-lr/"/>
+    <id>http://shomy.top/2017/03/07/kernel-lr/</id>
     <published>2017-03-07T14:29:33.000Z</published>
     <updated>2017-07-31T02:42:34.562Z</updated>
     
@@ -810,21 +810,21 @@
     
     </summary>
     
-      <category term="读书笔记" scheme="http://yoursite.com/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/"/>
+      <category term="读书笔记" scheme="http://shomy.top/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/"/>
     
     
-      <category term="machine learning" scheme="http://yoursite.com/tags/machine-learning/"/>
+      <category term="machine learning" scheme="http://shomy.top/tags/machine-learning/"/>
     
-      <category term="kernel" scheme="http://yoursite.com/tags/kernel/"/>
+      <category term="kernel" scheme="http://shomy.top/tags/kernel/"/>
     
-      <category term="logistic regression" scheme="http://yoursite.com/tags/logistic-regression/"/>
+      <category term="logistic regression" scheme="http://shomy.top/tags/logistic-regression/"/>
     
   </entry>
   
   <entry>
     <title>机器学习技法笔记(6)-RBF Network(径向基函数网络)</title>
-    <link href="http://yoursite.com/2017/02/26/rbf-network/"/>
-    <id>http://yoursite.com/2017/02/26/rbf-network/</id>
+    <link href="http://shomy.top/2017/02/26/rbf-network/"/>
+    <id>http://shomy.top/2017/02/26/rbf-network/</id>
     <published>2017-02-26T14:18:37.000Z</published>
     <updated>2017-07-31T02:42:34.562Z</updated>
     
@@ -999,19 +999,19 @@
     
     </summary>
     
-      <category term="读书笔记" scheme="http://yoursite.com/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/"/>
+      <category term="读书笔记" scheme="http://shomy.top/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/"/>
     
     
-      <category term="machine learning" scheme="http://yoursite.com/tags/machine-learning/"/>
+      <category term="machine learning" scheme="http://shomy.top/tags/machine-learning/"/>
     
-      <category term="rbf" scheme="http://yoursite.com/tags/rbf/"/>
+      <category term="rbf" scheme="http://shomy.top/tags/rbf/"/>
     
   </entry>
   
   <entry>
     <title>机器学习技法笔记(5)-Soft Margin SVM</title>
-    <link href="http://yoursite.com/2017/02/20/svm04-soft-margin/"/>
-    <id>http://yoursite.com/2017/02/20/svm04-soft-margin/</id>
+    <link href="http://shomy.top/2017/02/20/svm04-soft-margin/"/>
+    <id>http://shomy.top/2017/02/20/svm04-soft-margin/</id>
     <published>2017-02-20T08:30:32.000Z</published>
     <updated>2017-07-31T02:42:34.566Z</updated>
     
@@ -1103,19 +1103,19 @@
     
     </summary>
     
-      <category term="读书笔记" scheme="http://yoursite.com/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/"/>
+      <category term="读书笔记" scheme="http://shomy.top/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/"/>
     
     
-      <category term="machine learning" scheme="http://yoursite.com/tags/machine-learning/"/>
+      <category term="machine learning" scheme="http://shomy.top/tags/machine-learning/"/>
     
-      <category term="svm" scheme="http://yoursite.com/tags/svm/"/>
+      <category term="svm" scheme="http://shomy.top/tags/svm/"/>
     
   </entry>
   
   <entry>
     <title>机器学习技法笔记(4)-Kernel SVM</title>
-    <link href="http://yoursite.com/2017/02/19/svm03-kernel-trick/"/>
-    <id>http://yoursite.com/2017/02/19/svm03-kernel-trick/</id>
+    <link href="http://shomy.top/2017/02/19/svm03-kernel-trick/"/>
+    <id>http://shomy.top/2017/02/19/svm03-kernel-trick/</id>
     <published>2017-02-19T05:28:36.000Z</published>
     <updated>2017-07-31T02:42:34.566Z</updated>
     
@@ -1238,21 +1238,21 @@
     
     </summary>
     
-      <category term="读书笔记" scheme="http://yoursite.com/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/"/>
+      <category term="读书笔记" scheme="http://shomy.top/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/"/>
     
     
-      <category term="machine learning" scheme="http://yoursite.com/tags/machine-learning/"/>
+      <category term="machine learning" scheme="http://shomy.top/tags/machine-learning/"/>
     
-      <category term="kernel" scheme="http://yoursite.com/tags/kernel/"/>
+      <category term="kernel" scheme="http://shomy.top/tags/kernel/"/>
     
-      <category term="svm" scheme="http://yoursite.com/tags/svm/"/>
+      <category term="svm" scheme="http://shomy.top/tags/svm/"/>
     
   </entry>
   
   <entry>
     <title>机器学习技法笔记(3)-对偶SVM</title>
-    <link href="http://yoursite.com/2017/02/17/svm-02-dual/"/>
-    <id>http://yoursite.com/2017/02/17/svm-02-dual/</id>
+    <link href="http://shomy.top/2017/02/17/svm-02-dual/"/>
+    <id>http://shomy.top/2017/02/17/svm-02-dual/</id>
     <published>2017-02-17T08:31:05.000Z</published>
     <updated>2017-07-31T02:42:34.566Z</updated>
     
@@ -1380,19 +1380,19 @@
     
     </summary>
     
-      <category term="读书笔记" scheme="http://yoursite.com/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/"/>
+      <category term="读书笔记" scheme="http://shomy.top/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/"/>
     
     
-      <category term="machine learning" scheme="http://yoursite.com/tags/machine-learning/"/>
+      <category term="machine learning" scheme="http://shomy.top/tags/machine-learning/"/>
     
-      <category term="svm" scheme="http://yoursite.com/tags/svm/"/>
+      <category term="svm" scheme="http://shomy.top/tags/svm/"/>
     
   </entry>
   
   <entry>
     <title>机器学习技法笔记(2)-Linear SVM</title>
-    <link href="http://yoursite.com/2017/02/16/svm-01/"/>
-    <id>http://yoursite.com/2017/02/16/svm-01/</id>
+    <link href="http://shomy.top/2017/02/16/svm-01/"/>
+    <id>http://shomy.top/2017/02/16/svm-01/</id>
     <published>2017-02-16T07:20:25.000Z</published>
     <updated>2017-07-31T02:42:34.562Z</updated>
     
@@ -1482,19 +1482,19 @@
     
     </summary>
     
-      <category term="读书笔记" scheme="http://yoursite.com/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/"/>
+      <category term="读书笔记" scheme="http://shomy.top/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/"/>
     
     
-      <category term="machine learning" scheme="http://yoursite.com/tags/machine-learning/"/>
+      <category term="machine learning" scheme="http://shomy.top/tags/machine-learning/"/>
     
-      <category term="svm" scheme="http://yoursite.com/tags/svm/"/>
+      <category term="svm" scheme="http://shomy.top/tags/svm/"/>
     
   </entry>
   
   <entry>
     <title>2016</title>
-    <link href="http://yoursite.com/2017/01/28/2016-review/"/>
-    <id>http://yoursite.com/2017/01/28/2016-review/</id>
+    <link href="http://shomy.top/2017/01/28/2016-review/"/>
+    <id>http://shomy.top/2017/01/28/2016-review/</id>
     <published>2017-01-28T08:18:53.000Z</published>
     <updated>2017-07-31T02:42:34.562Z</updated>
     
@@ -1526,17 +1526,17 @@
     
     </summary>
     
-      <category term="个人心得" scheme="http://yoursite.com/categories/%E4%B8%AA%E4%BA%BA%E5%BF%83%E5%BE%97/"/>
+      <category term="个人心得" scheme="http://shomy.top/categories/%E4%B8%AA%E4%BA%BA%E5%BF%83%E5%BE%97/"/>
     
     
-      <category term="2016" scheme="http://yoursite.com/tags/2016/"/>
+      <category term="2016" scheme="http://shomy.top/tags/2016/"/>
     
   </entry>
   
   <entry>
     <title>hexo迁移重装</title>
-    <link href="http://yoursite.com/2017/01/27/hexo-migrate-solution/"/>
-    <id>http://yoursite.com/2017/01/27/hexo-migrate-solution/</id>
+    <link href="http://shomy.top/2017/01/27/hexo-migrate-solution/"/>
+    <id>http://shomy.top/2017/01/27/hexo-migrate-solution/</id>
     <published>2017-01-27T14:05:35.000Z</published>
     <updated>2017-07-31T02:42:34.562Z</updated>
     
@@ -1579,17 +1579,17 @@
     
     </summary>
     
-      <category term="工具使用" scheme="http://yoursite.com/categories/%E5%B7%A5%E5%85%B7%E4%BD%BF%E7%94%A8/"/>
+      <category term="工具使用" scheme="http://shomy.top/categories/%E5%B7%A5%E5%85%B7%E4%BD%BF%E7%94%A8/"/>
     
     
-      <category term="hexo" scheme="http://yoursite.com/tags/hexo/"/>
+      <category term="hexo" scheme="http://shomy.top/tags/hexo/"/>
     
   </entry>
   
   <entry>
     <title>TensorFlow练习3-RNNs实现分类</title>
-    <link href="http://yoursite.com/2017/01/02/tensorflow-rnn-example-3/"/>
-    <id>http://yoursite.com/2017/01/02/tensorflow-rnn-example-3/</id>
+    <link href="http://shomy.top/2017/01/02/tensorflow-rnn-example-3/"/>
+    <id>http://shomy.top/2017/01/02/tensorflow-rnn-example-3/</id>
     <published>2017-01-02T03:37:14.000Z</published>
     <updated>2017-07-31T02:42:34.566Z</updated>
     
@@ -1632,21 +1632,21 @@
     
     </summary>
     
-      <category term="工具使用" scheme="http://yoursite.com/categories/%E5%B7%A5%E5%85%B7%E4%BD%BF%E7%94%A8/"/>
+      <category term="工具使用" scheme="http://shomy.top/categories/%E5%B7%A5%E5%85%B7%E4%BD%BF%E7%94%A8/"/>
     
     
-      <category term="TensorFlow" scheme="http://yoursite.com/tags/TensorFlow/"/>
+      <category term="TensorFlow" scheme="http://shomy.top/tags/TensorFlow/"/>
     
-      <category term="DeepLearning" scheme="http://yoursite.com/tags/DeepLearning/"/>
+      <category term="DeepLearning" scheme="http://shomy.top/tags/DeepLearning/"/>
     
-      <category term="NN" scheme="http://yoursite.com/tags/NN/"/>
+      <category term="NN" scheme="http://shomy.top/tags/NN/"/>
     
   </entry>
   
   <entry>
     <title>TensorFlow练习2-CNNs实现分类</title>
-    <link href="http://yoursite.com/2017/01/01/tensorflow-cnn-example-2/"/>
-    <id>http://yoursite.com/2017/01/01/tensorflow-cnn-example-2/</id>
+    <link href="http://shomy.top/2017/01/01/tensorflow-cnn-example-2/"/>
+    <id>http://shomy.top/2017/01/01/tensorflow-cnn-example-2/</id>
     <published>2017-01-01T14:10:12.000Z</published>
     <updated>2017-07-31T02:42:34.566Z</updated>
     
@@ -1698,21 +1698,21 @@
     
     </summary>
     
-      <category term="工具使用" scheme="http://yoursite.com/categories/%E5%B7%A5%E5%85%B7%E4%BD%BF%E7%94%A8/"/>
+      <category term="工具使用" scheme="http://shomy.top/categories/%E5%B7%A5%E5%85%B7%E4%BD%BF%E7%94%A8/"/>
     
     
-      <category term="TensorFlow" scheme="http://yoursite.com/tags/TensorFlow/"/>
+      <category term="TensorFlow" scheme="http://shomy.top/tags/TensorFlow/"/>
     
-      <category term="DeepLearning" scheme="http://yoursite.com/tags/DeepLearning/"/>
+      <category term="DeepLearning" scheme="http://shomy.top/tags/DeepLearning/"/>
     
-      <category term="NN" scheme="http://yoursite.com/tags/NN/"/>
+      <category term="NN" scheme="http://shomy.top/tags/NN/"/>
     
   </entry>
   
   <entry>
     <title>TensorFlow练习1-前馈神经网络实现分类</title>
-    <link href="http://yoursite.com/2017/01/01/tensorflow-fnn-example-1/"/>
-    <id>http://yoursite.com/2017/01/01/tensorflow-fnn-example-1/</id>
+    <link href="http://shomy.top/2017/01/01/tensorflow-fnn-example-1/"/>
+    <id>http://shomy.top/2017/01/01/tensorflow-fnn-example-1/</id>
     <published>2017-01-01T07:19:59.000Z</published>
     <updated>2017-07-31T02:42:34.566Z</updated>
     
@@ -1755,21 +1755,21 @@
     
     </summary>
     
-      <category term="工具使用" scheme="http://yoursite.com/categories/%E5%B7%A5%E5%85%B7%E4%BD%BF%E7%94%A8/"/>
+      <category term="工具使用" scheme="http://shomy.top/categories/%E5%B7%A5%E5%85%B7%E4%BD%BF%E7%94%A8/"/>
     
     
-      <category term="TensorFlow" scheme="http://yoursite.com/tags/TensorFlow/"/>
+      <category term="TensorFlow" scheme="http://shomy.top/tags/TensorFlow/"/>
     
-      <category term="DeepLearning" scheme="http://yoursite.com/tags/DeepLearning/"/>
+      <category term="DeepLearning" scheme="http://shomy.top/tags/DeepLearning/"/>
     
-      <category term="NN" scheme="http://yoursite.com/tags/NN/"/>
+      <category term="NN" scheme="http://shomy.top/tags/NN/"/>
     
   </entry>
   
   <entry>
     <title>Ubuntu安装GPU版TensorFlow</title>
-    <link href="http://yoursite.com/2016/12/29/gpu-tensorflow-install/"/>
-    <id>http://yoursite.com/2016/12/29/gpu-tensorflow-install/</id>
+    <link href="http://shomy.top/2016/12/29/gpu-tensorflow-install/"/>
+    <id>http://shomy.top/2016/12/29/gpu-tensorflow-install/</id>
     <published>2016-12-29T06:39:40.000Z</published>
     <updated>2017-07-31T02:42:34.562Z</updated>
     
@@ -1831,21 +1831,21 @@
     
     </summary>
     
-      <category term="工具使用" scheme="http://yoursite.com/categories/%E5%B7%A5%E5%85%B7%E4%BD%BF%E7%94%A8/"/>
+      <category term="工具使用" scheme="http://shomy.top/categories/%E5%B7%A5%E5%85%B7%E4%BD%BF%E7%94%A8/"/>
     
     
-      <category term="TensorFlow" scheme="http://yoursite.com/tags/TensorFlow/"/>
+      <category term="TensorFlow" scheme="http://shomy.top/tags/TensorFlow/"/>
     
-      <category term="GPU" scheme="http://yoursite.com/tags/GPU/"/>
+      <category term="GPU" scheme="http://shomy.top/tags/GPU/"/>
     
-      <category term="DeepLearning" scheme="http://yoursite.com/tags/DeepLearning/"/>
+      <category term="DeepLearning" scheme="http://shomy.top/tags/DeepLearning/"/>
     
   </entry>
   
   <entry>
     <title>机器学习技法笔记(1)-神经网络</title>
-    <link href="http://yoursite.com/2016/12/07/basic-neural-network/"/>
-    <id>http://yoursite.com/2016/12/07/basic-neural-network/</id>
+    <link href="http://shomy.top/2016/12/07/basic-neural-network/"/>
+    <id>http://shomy.top/2016/12/07/basic-neural-network/</id>
     <published>2016-12-07T15:45:42.000Z</published>
     <updated>2017-07-31T02:42:34.562Z</updated>
     
@@ -1942,12 +1942,12 @@
     
     </summary>
     
-      <category term="读书笔记" scheme="http://yoursite.com/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/"/>
+      <category term="读书笔记" scheme="http://shomy.top/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/"/>
     
     
-      <category term="machine learning" scheme="http://yoursite.com/tags/machine-learning/"/>
+      <category term="machine learning" scheme="http://shomy.top/tags/machine-learning/"/>
     
-      <category term="neural network" scheme="http://yoursite.com/tags/neural-network/"/>
+      <category term="neural network" scheme="http://shomy.top/tags/neural-network/"/>
     
   </entry>
   
