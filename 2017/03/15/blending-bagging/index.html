@@ -190,7 +190,7 @@ ga('send', 'pageview');
 
 </div>
 <p>其中<span class="math inline">\(\overline{g}\)</span>可以代表一堆<span class="math inline">\(g_t\)</span>的达成的共识(consensus)。式子的第一部分称为我们的演算法<span class="math inline">\(\mathcal A\)</span>的在不同的数据集上<span class="math inline">\(D_1,...D_T\)</span>的平均表现，右边式子<span class="math inline">\(E_{out}(\overline g)\)</span>的第二部分就是共识的误差，一般称为 <strong>bias</strong>，描述的是共识与理想函数f的差距；第一部分<span class="math inline">\(avg\)</span>则描述的是一种方差，<span class="math inline">\(g_t\)</span>与<span class="math inline">\(\overline g\)</span>的平均差别，一般叫做<strong>variance</strong>， 因此衡量一个演算法的表现，就是bias+varience。 那么我们的Uniform Blending其实就是减少varience的过程。</p>
-<p>关于这部分<span class="math inline">\(\mathcal {A,D},g\)</span>等概念，请见<a href="http://shomy.top/2016/10/06/feasibility-of-learning-1/" target="_blank" rel="external">机器学习基石笔记</a></p>
+<p>关于这部分<span class="math inline">\(\mathcal {A,D},g\)</span>等概念，请见<a href="http://shomy.top/2016/10/06/feasibility-of-learning-1/">机器学习基石笔记</a></p>
 <h2 id="linear-blending线性融合">Linear Blending(线性融合)</h2>
 <p>上面的均匀融合每个g的作用相同，最后的模型可能会变得中庸一些，稍加改变，如果每个g都一个不同的投票权重，效果应该就会更好，这就是线性融合(Linear Blending):</p>
 <div class="figure">

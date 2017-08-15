@@ -86,7 +86,7 @@
 </ul>
 <h2 id="背景">背景</h2>
 <h3 id="神经网络">神经网络</h3>
-<p>引入word2vec之前需要先对神经网络的知识有一定了解, 这里只贴一张图说明一个简单三层神经网络, 具体的细节不再赘述, 可以参考之前的一篇专门介绍神经网络的博文<a href="http://shomy.top/2016/12/07/basic-neural-network/" target="_blank" rel="external">机器学习技法笔记(1)-神经网络</a> ; 如下图, <span class="math inline">\(x=[x_1, x_2,...x_K]\)</span>是模型的输入, 中间经过与权重矩阵<span class="math inline">\(\{w_{ki}\}\)</span> 运算, 矩阵运算结果再经过非线性激活函数得到隐层的结果<span class="math inline">\(h\)</span>, 从隐层到输出层同理. 这样从输入层到输出层既有线性变换,又有非线性变换, 因此可以更好刻画出输入变量的特征.</p>
+<p>引入word2vec之前需要先对神经网络的知识有一定了解, 这里只贴一张图说明一个简单三层神经网络, 具体的细节不再赘述, 可以参考之前的一篇专门介绍神经网络的博文<a href="http://shomy.top/2016/12/07/basic-neural-network/">机器学习技法笔记(1)-神经网络</a> ; 如下图, <span class="math inline">\(x=[x_1, x_2,...x_K]\)</span>是模型的输入, 中间经过与权重矩阵<span class="math inline">\(\{w_{ki}\}\)</span> 运算, 矩阵运算结果再经过非线性激活函数得到隐层的结果<span class="math inline">\(h\)</span>, 从隐层到输出层同理. 这样从输入层到输出层既有线性变换,又有非线性变换, 因此可以更好刻画出输入变量的特征.</p>
 <div class="figure">
 <img src="http://7xotye.com1.z0.glb.clouddn.com/blog/w2v/nn1.png">
 
@@ -505,7 +505,7 @@
 
 </div>
 <p>其中<span class="math inline">\(\overline{g}\)</span>可以代表一堆<span class="math inline">\(g_t\)</span>的达成的共识(consensus)。式子的第一部分称为我们的演算法<span class="math inline">\(\mathcal A\)</span>的在不同的数据集上<span class="math inline">\(D_1,...D_T\)</span>的平均表现，右边式子<span class="math inline">\(E_{out}(\overline g)\)</span>的第二部分就是共识的误差，一般称为 <strong>bias</strong>，描述的是共识与理想函数f的差距；第一部分<span class="math inline">\(avg\)</span>则描述的是一种方差，<span class="math inline">\(g_t\)</span>与<span class="math inline">\(\overline g\)</span>的平均差别，一般叫做<strong>variance</strong>， 因此衡量一个演算法的表现，就是bias+varience。 那么我们的Uniform Blending其实就是减少varience的过程。</p>
-<p>关于这部分<span class="math inline">\(\mathcal {A,D},g\)</span>等概念，请见<a href="http://shomy.top/2016/10/06/feasibility-of-learning-1/" target="_blank" rel="external">机器学习基石笔记</a></p>
+<p>关于这部分<span class="math inline">\(\mathcal {A,D},g\)</span>等概念，请见<a href="http://shomy.top/2016/10/06/feasibility-of-learning-1/">机器学习基石笔记</a></p>
 <h2 id="linear-blending线性融合">Linear Blending(线性融合)</h2>
 <p>上面的均匀融合每个g的作用相同，最后的模型可能会变得中庸一些，稍加改变，如果每个g都一个不同的投票权重，效果应该就会更好，这就是线性融合(Linear Blending):</p>
 <div class="figure">
@@ -669,7 +669,7 @@
 <p><strong>SVR Dual</strong></p>
 <p>对偶问题首先需要加入拉格朗日乘子，因为每个数据有四个约束条件，因此引入四个<span class="math inline">\(\alpha_n^{\wedge}, \alpha_n^{\vee},\beta_n^{\wedge}, \beta_n^{\vee}\geq0\)</span>:</p>
 <p><span class="math display">\[\begin{align}\mathcal L(b, \mathbf w, \alpha^{\vee}, \alpha^{\wedge}) = &amp;{1\over 2}\mathbf w^T \mathbf w+C\sum(\xi_n^{\vee}+\xi_n^{\wedge}) \\ +&amp;\sum\alpha_n^{\wedge}(\mathbf y_n - \mathbf w^T\mathbf z_n -b-\epsilon-\xi_n^{\wedge}) \\+&amp;\sum\alpha_n^{\vee}(-\epsilon-\xi_n^{\wedge}-\mathbf y_n + \mathbf w^T\mathbf z_n +b) \\+ &amp; \sum\beta_n^{\wedge}(-\xi_n^{\wedge}) + \sum\beta_n^{\vee}(-\xi_n^{\vee})\end{align}\]</span></p>
-<p>根据强对偶理论，以及在<a href="http://shomy.top/2017/02/17/svm-02-dual/" target="_blank" rel="external">对偶SVM</a>介绍的内容，Primal SVR 与下面的对偶问题等价:</p>
+<p>根据强对偶理论，以及在<a href="http://shomy.top/2017/02/17/svm-02-dual/">对偶SVM</a>介绍的内容，Primal SVR 与下面的对偶问题等价:</p>
 <p><span class="math display">\[\max \limits_{\alpha_n^{\vee}, \alpha_{n}^{\wedge}&gt;0} \left( \min\limits_{b, \mathbf w, \epsilon} \mathcal L(b, \mathbf w, \xi^{\vee}, \xi^{\wedge})\right)\]</span></p>
 <p>下面推导Dual SVR(课程中略):</p>
 <p>首先求各个变量微分优化<span class="math inline">\(\min\)</span>:</p>
@@ -1079,7 +1079,7 @@
 <img src="http://7xotye.com1.z0.glb.clouddn.com/svm04-6.png">
 
 </div>
-<p>这里有一点不一样的地方是对<span class="math inline">\(b\)</span>的求解，回想之前是利用转化为拉格朗日对偶问题(min(max) <span class="math inline">\(\Leftrightarrow\)</span> max(min))时候，利用互补条件(complementary slackness)，参考<a href="http://shomy.top/2017/02/17/svm-02-dual/#模型求解" target="_blank" rel="external">Dual SVM</a>, 但是Soft-Margin有两个条件，即:</p>
+<p>这里有一点不一样的地方是对<span class="math inline">\(b\)</span>的求解，回想之前是利用转化为拉格朗日对偶问题(min(max) <span class="math inline">\(\Leftrightarrow\)</span> max(min))时候，利用互补条件(complementary slackness)，参考<a href="http://shomy.top/2017/02/17/svm-02-dual/#模型求解">Dual SVM</a>, 但是Soft-Margin有两个条件，即:</p>
 <p><span class="math display">\[\begin{align} \alpha_n(1-\xi_n-y_n(\mathbf{w}^T\mathbf{z}_n+b)) &amp;=0 \\ \beta_n \xi_n = (C- \alpha_n)\xi_n &amp; =0\end{align}\]</span></p>
 <p>首先对第一个式子，对于SV(<span class="math inline">\(\alpha_s &gt; 0\)</span>)， 那么可以得到 <span class="math inline">\(b=y_s - y_s\xi_s - \mathbf{w}^T\mathbf{z}_s\)</span>，但是里面含有<span class="math inline">\(\xi\)</span>，无法求解。 再看第二个式子，对于<span class="math inline">\(\alpha_s &lt; C\)</span>的那部分SV(也叫free SV)，则有<span class="math inline">\(\xi_s = 0\)</span>，因此利用这部分SV， 加上Kernel Function便可得到<span class="math inline">\(b\)</span>：</p>
 <p><span class="math display">\[b=y_s - \mathbf{w}^T\mathbf{z}_s = y_s - \sum\limits_{free \ SV} \alpha_ny_nK(\mathbf{x}_n, \mathbf{x}_s)\]</span></p>
@@ -1455,7 +1455,7 @@
 <img src="http://7xotye.com1.z0.glb.clouddn.com/svm01-8.png">
 
 </div>
-<p>这种算法同样也可以解决非线性分类问题，通过之前的<a href="http://shomy.top/2016/12/02/nonlinera-transformation/" target="_blank" rel="external">非线性转化</a>，到线性空间: <span class="math inline">\(z_n = \phi(x_n)\)</span>，理论上即可直接应用到非线性问题中。不过缺陷也很明显，要求数据点必须线性可分，由于这个特点，这种算法也叫做: Linear Hard-Margin SVM。</p>
+<p>这种算法同样也可以解决非线性分类问题，通过之前的<a href="http://shomy.top/2016/12/02/nonlinera-transformation/">非线性转化</a>，到线性空间: <span class="math inline">\(z_n = \phi(x_n)\)</span>，理论上即可直接应用到非线性问题中。不过缺陷也很明显，要求数据点必须线性可分，由于这个特点，这种算法也叫做: Linear Hard-Margin SVM。</p>
 <h2 id="svm-与-vc-维">SVM 与 VC 维</h2>
 <p>这里需要提一下，SVM(Support Vector Machine)的含义，我们了解到，SVM就是要找到最胖的那个分类面，如下:</p>
 <div class="figure">

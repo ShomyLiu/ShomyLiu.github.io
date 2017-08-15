@@ -180,7 +180,7 @@ ga('send', 'pageview');
 <p><strong>SVR Dual</strong></p>
 <p>对偶问题首先需要加入拉格朗日乘子，因为每个数据有四个约束条件，因此引入四个<span class="math inline">\(\alpha_n^{\wedge}, \alpha_n^{\vee},\beta_n^{\wedge}, \beta_n^{\vee}\geq0\)</span>:</p>
 <p><span class="math display">\[\begin{align}\mathcal L(b, \mathbf w, \alpha^{\vee}, \alpha^{\wedge}) = &amp;{1\over 2}\mathbf w^T \mathbf w+C\sum(\xi_n^{\vee}+\xi_n^{\wedge}) \\ +&amp;\sum\alpha_n^{\wedge}(\mathbf y_n - \mathbf w^T\mathbf z_n -b-\epsilon-\xi_n^{\wedge}) \\+&amp;\sum\alpha_n^{\vee}(-\epsilon-\xi_n^{\wedge}-\mathbf y_n + \mathbf w^T\mathbf z_n +b) \\+ &amp; \sum\beta_n^{\wedge}(-\xi_n^{\wedge}) + \sum\beta_n^{\vee}(-\xi_n^{\vee})\end{align}\]</span></p>
-<p>根据强对偶理论，以及在<a href="http://shomy.top/2017/02/17/svm-02-dual/" target="_blank" rel="external">对偶SVM</a>介绍的内容，Primal SVR 与下面的对偶问题等价:</p>
+<p>根据强对偶理论，以及在<a href="http://shomy.top/2017/02/17/svm-02-dual/">对偶SVM</a>介绍的内容，Primal SVR 与下面的对偶问题等价:</p>
 <p><span class="math display">\[\max \limits_{\alpha_n^{\vee}, \alpha_{n}^{\wedge}&gt;0} \left( \min\limits_{b, \mathbf w, \epsilon} \mathcal L(b, \mathbf w, \xi^{\vee}, \xi^{\wedge})\right)\]</span></p>
 <p>下面推导Dual SVR(课程中略):</p>
 <p>首先求各个变量微分优化<span class="math inline">\(\min\)</span>:</p>
