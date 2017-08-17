@@ -574,6 +574,17 @@
 <p>开始的元素仍然是<code>input[1][0][0=0]</code>，在<code>axis=0</code>上截取1个距离，得到仍然是<code>[[[3,3,3],[4,4,4]]]</code> ，第二个维度上截取距离为2,得到<code>[[[3,3,3],[4,4,4]]]</code>，最后在第三个维度上截取3，即三个元素都保留，得到结果。这里如果第三个维度截取2的话，那么得到就是<code>[[[3,3],[4,4]]]</code>。</p>
 <p>第三个同理，不再叙述。</p>
 <p>参考: <a href="http://blog.csdn.net/qq_32166627/article/details/52718612" target="_blank" rel="external">1</a></p>
+<h2 id="tf.nn.embedding_lookup">tf.nn.embedding_lookup</h2>
+<p>这个函数在涉及到词向量的NLP的一些task上非常常见，顾名思义，它的功能说白了就是查表。 首先看看基本原型(忽略一些参数):</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">tf<span class="selector-class">.nn</span><span class="selector-class">.embedding_lookup</span>(params, ids, name=None)</div></pre></td></tr></table></figure>
+<p>首先<code>params</code>是一个向量或者Tensor, 也就是我们的表。 比如我们使用word2vec训练出了1000个词的词向量，且维度为128, 存到了<code>params</code>里面, 那么<code>params</code>的维度就是<code>(1000,128)</code> 可以看成1000行128列的矩阵,这个矩阵就是我们要查的表.</p>
+<p><code>ids</code> 这个参数简单来说则是表示要从表中需要取出哪几行元素。 比如<code>ids=[0,1,3]</code> 表示从上述的<code>params</code>中取出第0,1,3行的向量，这里是整行的取。</p>
+<p>先看个简单的例子: <figure class="highlight lua"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;a = tf.constant(<span class="string">[[1,2,3],[4,5,6],[7,8,9]]</span>)</div><div class="line">&gt;&gt;tf.nn.embedding_lookup(a, [<span class="number">0</span>,<span class="number">2</span>]).eval()</div><div class="line">&gt;&gt;Out: array(<span class="string">[[1, 2, 3],</span></div><div class="line"><span class="string">       [7, 8, 9]]</span>, dtype=int32)</div></pre></td></tr></table></figure></p>
+<p>上述例子中<code>ids=[0,2]</code>表示取出第0行和第2行的内容，也就是<code>[1,2,3]</code>和<code>[7,8,9]</code>.</p>
+<p>当然这个函数还可以更强大。 首先<code>ids</code> 可以查多次，并将多次的结果放到数组里:</p>
+<figure class="highlight lua"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;a = tf.constant(<span class="string">[[1,2,3],[4,5,6],[7,8,9]]</span>)</div><div class="line">&gt;&gt;tf.nn.embedding_lookup(a, <span class="string">[[0,2], [1,2]]</span>).eval()</div><div class="line">&gt;&gt;Out: </div><div class="line">array(<span class="string">[[[1, 2, 3],</span></div><div class="line"><span class="string">        [7, 8, 9]]</span>,</div><div class="line"></div><div class="line">       <span class="string">[[4, 5, 6],</span></div><div class="line"><span class="string">        [7, 8, 9]]</span>], dtype=int32)</div></pre></td></tr></table></figure>
+<p>其次，前面都是在说<code>params</code>是二维向量，其实可是高维的Tensor,这样在查的时候，道理一样，结合上面的轴的概念，其实就是取第一层<code>[]</code>里面的某几个元素.</p>
+<p>最后举个常用的例子, 在文本分类任务中，如何表示句子呢？有个词汇表V，首先将每个句子用词袋模型表示，就是把每个句子表示成单词在词汇表下标的形式，以此作为<code>ids</code>这个参数，<code>params</code>就是前面训练好的词向量表，利用这个<code>tf.nn.embedding_lookup</code>，就可以取出这个句子的词向量了。</p>
 ]]></content>
       
         <categories>

@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://shomy.top/2017/03/11/tensorflow-basic-api/</loc>
+    
+    <lastmod>2017-08-17T13:19:36.158Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://shomy.top/2017/07/29/Hexo-admin-for-blogs/</loc>
     
     <lastmod>2017-08-15T00:52:12.317Z</lastmod>
@@ -10,13 +17,6 @@
   
   <url>
     <loc>http://shomy.top/2017/01/01/tensorflow-fnn-example-1/</loc>
-    
-    <lastmod>2017-07-31T02:42:34.566Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://shomy.top/2017/02/17/svm-02-dual/</loc>
     
     <lastmod>2017-07-31T02:42:34.566Z</lastmod>
     
@@ -37,7 +37,7 @@
   </url>
   
   <url>
-    <loc>http://shomy.top/2017/03/11/tensorflow-basic-api/</loc>
+    <loc>http://shomy.top/tags/index.html</loc>
     
     <lastmod>2017-07-31T02:42:34.566Z</lastmod>
     
@@ -51,7 +51,7 @@
   </url>
   
   <url>
-    <loc>http://shomy.top/tags/index.html</loc>
+    <loc>http://shomy.top/2017/02/17/svm-02-dual/</loc>
     
     <lastmod>2017-07-31T02:42:34.566Z</lastmod>
     
