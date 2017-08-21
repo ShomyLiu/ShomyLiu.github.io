@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://shomy.top/"/>
-  <updated>2017-08-15T00:52:12.317Z</updated>
+  <updated>2017-08-21T04:14:18.642Z</updated>
   <id>http://shomy.top/</id>
   
   <author>
@@ -14,6 +14,86 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Python中tuple+=赋值的四个问题</title>
+    <link href="http://shomy.top/2017/08/17/python-tuple-assign/"/>
+    <id>http://shomy.top/2017/08/17/python-tuple-assign/</id>
+    <published>2017-08-17T14:34:00.000Z</published>
+    <updated>2017-08-21T04:14:18.642Z</updated>
+    
+    <content type="html"><![CDATA[<blockquote>
+<p>最近偶尔翻看Fluent Python，遇到有意思的东西就记下来. 下面的是在PyCon2013上提出的一个关于<code>tuple</code>的Augmented Assignment也就是增量赋值的一个问题。 并且基于此问题, 又引申出3个变种问题.</p>
+</blockquote>
+<h2 id="问题">问题</h2>
+<p>首先看第一个问题, 如下面的代码段: <figure class="highlight lsl"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; t = (<span class="number">1</span>,<span class="number">2</span>, [<span class="number">30</span>,<span class="number">40</span>])</div><div class="line">&gt;&gt;&gt; t[<span class="number">2</span>] += [<span class="number">50</span>,<span class="number">60</span>]</div></pre></td></tr></table></figure></p>
+<p>会产生什么结果呢？ 给出了四个选项: 1. <code>t</code> 变成 <code>[1,2, [30,40,50,60]</code> 2. <code>TypeError is raised with the message 'tuple' object does not support item assignment</code> 3. Neither 1 nor 2 4. Both 1 and 2</p>
+<p>按照之前的理解, <code>tuple</code>里面的元素是不能被修改的，因此会选<code>2</code>. 如果真是这样的话，这篇笔记就没必要了，Fluent Python中也就不会拿出一节来讲了。 正确答案是<code>4</code> <figure class="highlight ruby"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&gt;&gt;</span>&gt; t = (<span class="number">1</span>,<span class="number">2</span>,[<span class="number">30</span>,<span class="number">40</span>])</div><div class="line"><span class="meta">&gt;&gt;</span>&gt; t[<span class="number">2</span>] += [<span class="number">50</span>,<span class="number">60</span>]</div><div class="line">Traceback (most recent call last)<span class="symbol">:</span></div><div class="line">  File <span class="string">"&lt;stdin&gt;"</span>, line <span class="number">1</span>, <span class="keyword">in</span> &lt;<span class="class"><span class="keyword">module</span>&gt;</span></div><div class="line"><span class="symbol">TypeError:</span> <span class="string">'tuple'</span> object does <span class="keyword">not</span> support item assignment</div><div class="line"><span class="meta">&gt;&gt;</span>&gt; t</div><div class="line">(<span class="number">1</span>, <span class="number">2</span>, [<span class="number">30</span>, <span class="number">40</span>, <span class="number">50</span>, <span class="number">60</span>])</div></pre></td></tr></table></figure></p>
+<p>问题来了，为什么异常都出来了， <code>t</code>还是变了? 再看第二种情况，稍微变化一下,将<code>+=</code>变为<code>=</code>: <figure class="highlight lsl"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; t = (<span class="number">1</span>,<span class="number">2</span>, [<span class="number">30</span>,<span class="number">40</span>])</div><div class="line">&gt;&gt;&gt; t[<span class="number">2</span>] = [<span class="number">50</span>,<span class="number">60</span>]</div></pre></td></tr></table></figure></p>
+<p>结果就成酱紫了: <figure class="highlight ruby"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&gt;&gt;</span>&gt; t = (<span class="number">1</span>,<span class="number">2</span>, [<span class="number">30</span>,<span class="number">40</span>])</div><div class="line"><span class="meta">&gt;&gt;</span>&gt; t[<span class="number">2</span>] = [<span class="number">50</span>,<span class="number">60</span>]</div><div class="line">Traceback (most recent call last)<span class="symbol">:</span></div><div class="line">  File <span class="string">"&lt;stdin&gt;"</span>, line <span class="number">1</span>, <span class="keyword">in</span> &lt;<span class="class"><span class="keyword">module</span>&gt;</span></div><div class="line"><span class="symbol">TypeError:</span> <span class="string">'tuple'</span> object does <span class="keyword">not</span> support item assignment</div><div class="line"><span class="meta">&gt;&gt;</span>&gt; t</div><div class="line">(<span class="number">1</span>, <span class="number">2</span>, [<span class="number">30</span>, <span class="number">40</span>])</div></pre></td></tr></table></figure></p>
+<p>再看第三种情况,只把<code>+=</code>换为<code>extend</code>或者<code>append</code>,: <figure class="highlight lsl"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; t = (<span class="number">1</span>, <span class="number">2</span>, [<span class="number">30</span>,<span class="number">40</span>])</div><div class="line">&gt;&gt;&gt; t[<span class="number">2</span>].extend([<span class="number">50</span>,<span class="number">60</span>])</div><div class="line">&gt;&gt;&gt; t</div><div class="line">(<span class="number">1</span>, <span class="number">2</span>, [<span class="number">30</span>, <span class="number">40</span>, <span class="number">50</span>, <span class="number">60</span>])</div><div class="line">&gt;&gt;&gt; t[<span class="number">2</span>].append(<span class="number">70</span>)</div><div class="line">&gt;&gt;&gt; t</div><div class="line">(<span class="number">1</span>, <span class="number">2</span>, [<span class="number">30</span>, <span class="number">40</span>, <span class="number">50</span>, <span class="number">60</span>, <span class="number">70</span>])</div></pre></td></tr></table></figure></p>
+<p>又正常了,没抛出异常?</p>
+<p>最后第四种情况, 用变量的形式: <figure class="highlight ruby"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&gt;&gt;</span>&gt; a = [<span class="number">30</span>,<span class="number">40</span>]</div><div class="line"><span class="meta">&gt;&gt;</span>&gt; t = (<span class="number">1</span>, <span class="number">2</span>, a)</div><div class="line"><span class="meta">&gt;&gt;</span>&gt; a+=[<span class="number">50</span>,<span class="number">60</span>]</div><div class="line"><span class="meta">&gt;&gt;</span>&gt; a</div><div class="line">[<span class="number">30</span>, <span class="number">40</span>, <span class="number">50</span>, <span class="number">60</span>]</div><div class="line"><span class="meta">&gt;&gt;</span>&gt; t</div><div class="line">(<span class="number">1</span>, <span class="number">2</span>, [<span class="number">30</span>, <span class="number">40</span>, <span class="number">50</span>, <span class="number">60</span>])</div><div class="line"><span class="meta">&gt;&gt;</span>&gt; t[<span class="number">2</span>] += [<span class="number">70</span>,<span class="number">80</span>]</div><div class="line">Traceback (most recent call last)<span class="symbol">:</span></div><div class="line">  File <span class="string">"&lt;stdin&gt;"</span>, line <span class="number">1</span>, <span class="keyword">in</span> &lt;<span class="class"><span class="keyword">module</span>&gt;</span></div><div class="line"><span class="symbol">TypeError:</span> <span class="string">'tuple'</span> object does <span class="keyword">not</span> support item assignment</div><div class="line"><span class="meta">&gt;&gt;</span>&gt; t</div><div class="line">(<span class="number">1</span>, <span class="number">2</span>, [<span class="number">30</span>, <span class="number">40</span>, <span class="number">50</span>, <span class="number">60</span>, <span class="number">70</span>, <span class="number">80</span>])</div></pre></td></tr></table></figure></p>
+<p>又是一种情况, 下面就探究一下其中的原因.</p>
+<h2 id="原因">原因</h2>
+<p>首先需要重温<code>+=</code>这个运算符,如<code>a+=b</code>:</p>
+<ul>
+<li>对于可变对象(mutable object)如<code>list</code>, <code>+=</code>操作的结果会直接在<code>a</code>对应的变量进行修改，而<code>a</code>对应的地址不变.</li>
+<li>对于不可变对象(imutable object)如<code>tuple</code>, <code>+=</code>则是等价于<code>a = a+b</code> 会产生新的变量，然后绑定到<code>a</code>上而已.</li>
+</ul>
+<p>如下代码段, 可以看出来: <figure class="highlight lsl"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; a = [<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>]</div><div class="line">&gt;&gt;&gt; id(a)</div><div class="line"><span class="number">53430752</span></div><div class="line">&gt;&gt;&gt; a+=[<span class="number">4</span>,<span class="number">5</span>]</div><div class="line">&gt;&gt;&gt; a</div><div class="line">[<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>]</div><div class="line">&gt;&gt;&gt; id(a)</div><div class="line"><span class="number">53430752</span> # 地址没有变化</div><div class="line">&gt;&gt;&gt; b = (<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>)</div><div class="line">&gt;&gt;&gt; id(b)</div><div class="line"><span class="number">49134888</span></div><div class="line">&gt;&gt;&gt; b += (<span class="number">4</span>,<span class="number">5</span>)</div><div class="line">&gt;&gt;&gt; b</div><div class="line">(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>)</div><div class="line">&gt;&gt;&gt; id(b)</div><div class="line"><span class="number">48560912</span> # 地址变化了</div></pre></td></tr></table></figure></p>
+<p>此外还需要注意的是, python中的<code>tuple</code>作为不可变对象, 也就是我们平时说的元素不能改变, 实际上从报错信息<code>TypeError: 'tuple' object does not support item assignment</code>来看, 更准确的说法是指其中的元素不支持赋值操作<code>=</code>(<strong>assignment</strong>).</p>
+<p>先看最简单的第二种情况, 它的结果是符合我们的预期, 因为<code>=</code>产生了<code>assign</code>的操作.(在<a href="http://shomy.top/2016/03/01/python-namespace-1/">由一个例子到python的名字空间</a> 中指出了赋值操作<code>=</code>就是创建新的变量), 因此<code>s[2]=[50,60]</code>就会抛出异常.</p>
+<p>再看第三种情况,包含<code>extend/append</code>的, 结果tuple中的列表值发生了变化,但是没有异常抛出. 这个其实也相对容易理解. 因为我们知道<code>tuple</code>中存储的其实是元素所对应的地址(id), 因此如果没有赋值操作且tuple中的元素的<code>id</code>不变,即可,而<code>list.extend/append</code>只是修改了列表的元素,而列表本身id并没有变化,看看下面的例子: <figure class="highlight lsl"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; a=(<span class="number">1</span>,<span class="number">2</span>,[<span class="number">30</span>,<span class="number">40</span>])</div><div class="line">&gt;&gt;&gt; id(a[<span class="number">2</span>])</div><div class="line"><span class="number">140628739513736</span></div><div class="line">&gt;&gt;&gt; a[<span class="number">2</span>].extend([<span class="number">50</span>,<span class="number">60</span>])</div><div class="line">&gt;&gt;&gt; a</div><div class="line">(<span class="number">1</span>, <span class="number">2</span>, [<span class="number">30</span>, <span class="number">40</span>, <span class="number">50</span>, <span class="number">60</span>])</div><div class="line">&gt;&gt;&gt; id(a[<span class="number">2</span>])</div><div class="line"><span class="number">140628739513736</span></div></pre></td></tr></table></figure></p>
+<p>目前解决了第二个和第三个问题, 先梳理一下, 其实就是两点:</p>
+<ul>
+<li>tuple内部的元素不支持赋值操作</li>
+<li>在第一条的基础上, 如果元素的<code>id</code>没有变化, 元素其实是可以改变的.</li>
+</ul>
+<p>现在再来看最初的第一个问题: <code>t[2] += [50,60]</code> 按照上面的结论, 不应该抛异常啊,因为在我们看来<code>+=</code> 对于可变对象<code>t[2]</code>来说, 属于<code>in-place</code>操作,也就是直接修改自身的内容, <code>id</code>并不变, 确认下id并没有变化: <figure class="highlight ruby"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&gt;&gt;</span>&gt; a=(<span class="number">1</span>,<span class="number">2</span>,[<span class="number">30</span>,<span class="number">40</span>])</div><div class="line"><span class="meta">&gt;&gt;</span>&gt; id(a[<span class="number">2</span>])</div><div class="line"><span class="number">140628739587392</span></div><div class="line"><span class="meta">&gt;&gt;</span>&gt; a[<span class="number">2</span>]+=[<span class="number">50</span>,<span class="number">60</span>]</div><div class="line">Traceback (most recent call last)<span class="symbol">:</span></div><div class="line">  File <span class="string">"&lt;stdin&gt;"</span>, line <span class="number">1</span>, <span class="keyword">in</span> &lt;<span class="class"><span class="keyword">module</span>&gt;</span></div><div class="line"><span class="symbol">TypeError:</span> <span class="string">'tuple'</span> object does <span class="keyword">not</span> support item assignment</div><div class="line"><span class="meta">&gt;&gt;</span>&gt; a</div><div class="line">(<span class="number">1</span>, <span class="number">2</span>, [<span class="number">30</span>, <span class="number">40</span>, <span class="number">50</span>, <span class="number">60</span>])</div><div class="line"><span class="meta">&gt;&gt;</span>&gt; id(a[<span class="number">2</span>]) <span class="comment"># ID 并没有发生改变</span></div><div class="line"><span class="number">140628739587392</span></div></pre></td></tr></table></figure></p>
+<p>跟第三个问题仅仅从<code>t[2].extend</code>改成了<code>t[2]+=</code>, 就抛出异常了,所以问题应该是出在<code>+=</code>上了. 下面用<code>dis</code>模块看看它俩执行的步骤: 对下面的代码块执行<code>dis</code>: <figure class="highlight lsl"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">t = (<span class="number">1</span>,<span class="number">2</span>, [<span class="number">30</span>,<span class="number">40</span>])</div><div class="line">t[<span class="number">2</span>] += [<span class="number">50</span>,<span class="number">60</span>]</div><div class="line">t[<span class="number">2</span>].extend([<span class="number">70</span>, <span class="number">80</span>])</div></pre></td></tr></table></figure></p>
+<p>执行<code>python -m dis test.py</code>,结果如下，下面只保留第2,3行代码的执行过程，以及关键步骤的注释如下: <figure class="highlight lsl"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line"><span class="number">2</span>          <span class="number">21</span> LOAD_NAME                <span class="number">0</span> (t)</div><div class="line">           <span class="number">24</span> LOAD_CONST               <span class="number">1</span> (<span class="number">2</span>)</div><div class="line">           <span class="number">27</span> DUP_TOPX                 <span class="number">2</span></div><div class="line">           <span class="number">30</span> BINARY_SUBSCR							</div><div class="line">           <span class="number">31</span> LOAD_CONST               <span class="number">4</span> (<span class="number">50</span>)</div><div class="line">           <span class="number">34</span> LOAD_CONST               <span class="number">5</span> (<span class="number">60</span>)</div><div class="line">           <span class="number">37</span> BUILD_LIST               <span class="number">2</span>			 </div><div class="line">           <span class="number">40</span> INPLACE_ADD</div><div class="line">           <span class="number">41</span> ROT_THREE</div><div class="line">           <span class="number">42</span> STORE_SUBSCR</div><div class="line"></div><div class="line"><span class="number">3</span>          <span class="number">43</span> LOAD_NAME                <span class="number">0</span> (t)</div><div class="line">           <span class="number">46</span> LOAD_CONST               <span class="number">1</span> (<span class="number">2</span>)</div><div class="line">           <span class="number">49</span> BINARY_SUBSCR</div><div class="line">           <span class="number">50</span> LOAD_ATTR                <span class="number">1</span> (extend)</div><div class="line">           <span class="number">53</span> LOAD_CONST               <span class="number">6</span> (<span class="number">70</span>)</div><div class="line">           <span class="number">56</span> LOAD_CONST               <span class="number">7</span> (<span class="number">80</span>)</div><div class="line">           <span class="number">59</span> BUILD_LIST               <span class="number">2</span></div><div class="line">           <span class="number">62</span> CALL_FUNCTION            <span class="number">1</span></div><div class="line">           <span class="number">65</span> POP_TOP</div><div class="line">           <span class="number">66</span> LOAD_CONST               <span class="number">8</span> (None)</div><div class="line">           <span class="number">69</span> RETURN_VALUE</div></pre></td></tr></table></figure></p>
+<p>解释一下关键的语句:</p>
+<ul>
+<li><code>30 BINARY_SUBSCR</code>: 表示将<code>t[2]</code>的值放在TOS(Top of Stack)，这里是指<code>[30, 40]</code>这个列表</li>
+<li><code>40 INPLACE_ADD</code>: 表示<code>TOS += [50,60]</code> 执行这一步是可以成功的，修改了TOS的列表为<code>[30,40,50,60]</code></li>
+<li><code>42 STORE_SUBSCR</code>: 表示<code>s[2] = TOS</code> 问题就出在这里了，这里产生了一个<strong>赋值操作</strong>，因此会抛异常！但是上述对列表的修改已经完成, 这也就解释了开篇的第一个问题。</li>
+</ul>
+<p>再看<code>extend</code>的过程，前面都一样，只有这一行:</p>
+<ul>
+<li><code>62 CALL_FUNCTION</code>: 这个直接调用内置extend函数完成了对原列表的修改，其中并没有<code>assign</code>操作，因此可以正常执行。</li>
+</ul>
+<p>现在逐渐清晰了， 换句话说，<code>+=</code><strong>并不是原子操作</strong>，相当于下面的两步: <figure class="highlight lsl"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">t[<span class="number">2</span>].extend([<span class="number">50</span>,<span class="number">60</span>])</div><div class="line">t[<span class="number">2</span>] = t[<span class="number">2</span>]</div></pre></td></tr></table></figure></p>
+<p>第一步可以正确执行，但是第二步有了<code>=</code>，肯定会抛异常的。 同样这也可以解释在使用<code>+=</code>的时候，为何<code>t[2]</code>的<code>id</code>明明没有变化，但是仍然抛出异常了。</p>
+<p>现在用一句话总结下:</p>
+<blockquote>
+<p>tuple中元素不支持<code>assign</code>操作，但是对于那些是可变对象的元素如列表，字典等，在没有<code>assign</code>操作的基础上，比如一些<code>in-place</code>操作，是可以修改内容的</p>
+</blockquote>
+<p>可以用第四个问题来简单验证一下，使用一个指向<code>[30,40]</code>的名称<code>a</code>来作为元素的值，然后对<code>a</code>做<code>in-place</code>的修改，其中并没有涉及到对tuple的<code>assign</code>操作，那肯定是正常执行的。</p>
+<h2 id="总结">总结</h2>
+<p>这个问题其实以前也就遇到过，但是没想过具体的原理，后来翻书的时候又看到了， 于是花了点时间把这一个系列查了部分资料以及结合自己的理解都整理了出来, 算是饭后茶点吧, 不严谨的地方烦请指出.</p>
+<p>部分参考如下:</p>
+<ul>
+<li><a href="http://bugs.python.org/issue11562" target="_blank" rel="external">python bugs</a></li>
+<li><a href="https://docs.python.org/2/faq/programming.html#why-does-a-tuple-i-item-raise-an-exception-when-the-addition-works" target="_blank" rel="external">python faq</a></li>
+<li><a href="https://stackoverflow.com/questions/10397121/why-does-of-a-list-within-a-python-tuple-raise-typeerror-but-modify-the-list" target="_blank" rel="external">stackoverflow</a></li>
+<li>Fluent Python</li>
+</ul>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;blockquote&gt;
+&lt;p&gt;最近偶尔翻看Fluent Python，遇到有意思的东西就记下来. 下面的是在PyCon2013上提出的一个关于&lt;code&gt;tuple&lt;/code&gt;的Augmented Assignment也就是增量赋值的一个问题。 并且基于此问题, 又引申出3个
+    
+    </summary>
+    
+      <category term="编程语言" scheme="http://shomy.top/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/"/>
+    
+    
+      <category term="python" scheme="http://shomy.top/tags/python/"/>
+    
+  </entry>
   
   <entry>
     <title>Hexo-admin后台管理博客</title>
@@ -1850,115 +1930,6 @@
       <category term="GPU" scheme="http://shomy.top/tags/GPU/"/>
     
       <category term="DeepLearning" scheme="http://shomy.top/tags/DeepLearning/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>机器学习技法笔记(1)-神经网络</title>
-    <link href="http://shomy.top/2016/12/07/basic-neural-network/"/>
-    <id>http://shomy.top/2016/12/07/basic-neural-network/</id>
-    <published>2016-12-07T15:45:42.000Z</published>
-    <updated>2017-07-31T02:42:34.562Z</updated>
-    
-    <content type="html"><![CDATA[<p>前段时间看完了机器学习基石课程，不过还有regularzation和 validation 没有整理，由于需要，先看了技法课程中的神经网络(Neural Network)。林老师讲的依然很好，将神经网络笔记记录于此。 <a id="more"></a></p>
-<h2 id="神经网络的提出">神经网络的提出</h2>
-<p>首先之前讲过了PLA(Percetron), 对于一个线性可分的数据，我们可以用一条直线来分开; 下面看一个多个percetrons的模型，直接看下面的图: 稍微复杂点的2层的percetron:</p>
-<div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/ml201-1.png">
-
-</div>
-<p>首先给了输入<span class="math inline">\(\textbf{x}\)</span>，是<span class="math inline">\(d\)</span>维的vector, 然后首先经过一堆的sign函数，得到了T个g函数，然后再次通过一层<span class="math inline">\(\alpha\)</span>参数选出最终的结果G，用以下的假设空间函数表示:<span class="math display">\[G(\textbf{x})=sign(\sum\limits_{t=1}^{T} \alpha_t sign(\textbf{w}_t^T\textbf{x}))\]</span>这个2层的percetron其实就可以表示一些简单的逻辑操作了，比如下面的两个g的例子:</p>
-<div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/ml201-2.png">
-
-</div>
-<p>我们如果要表示最右边的区域，即<span class="math inline">\(AND(g_1, g_2)\)</span>，我们可以这样赋值:<span class="math inline">\(\alpha_0 = -1, \alpha_1=1, \alpha_2=1\)</span>，这样方程式变为:<span class="math display">\[G(\textbf{x})=sign(g_1(\textbf{x}) + g_2(\textbf{x}) - 1)\]</span>也就是说只有当<span class="math inline">\(g_1 = g_2 = 1\)</span>时，<span class="math inline">\(G=1\)</span>，其余情况都为0。这样就可以分类了。同样我们可以用<span class="math display">\[G(\textbf{x})=sign(0.5  g_1(\textbf{x}) + 0.5 g_2(\textbf{x}) +1 )\]</span>来表示<span class="math inline">\(OR(g_1, g_2)\)</span>等等。我们可以发现这种两层的percetron十分的powerful，只要我们有足够多的Percetron，就可以划分更细致区域，比如说有足够多的直线，然后执行AND操作，就可以围出来一个近似圆的情况:</p>
-<div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/ml201-3.png">
-
-</div>
-<p>但是这样还是有很多不足的，首先是percetron越多，那么模型的复杂度或者说<span class="math inline">\(d_{vc}\)</span>就会变大。再者上述的两层模型是无法表示出<span class="math inline">\(XOR\)</span>(异或)操作的，也就是说，我们经过两次转化，是无法实现<span class="math inline">\(XOR\)</span>的操作的，但是如果我们再加一层呢？ 是不是就可以解决了，如下：</p>
-<div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/ml201-4.png">
-
-</div>
-<p>转换为方程式，即:<span class="math inline">\(XOR(g_1,g_2)=OR(AND(-g1, g_2), AND(g_1,-g_2))\)</span>，我们会发现，只有<span class="math inline">\(g_1 \neq g_2\)</span>时，该式才为1，因而达到了XOR。</p>
-<p>从最简单的一层Percetron只可以分类线性可分的数据，到二层的可以分出凸多边形的数据，再到三层的可以分XOR这种无法线性可分的数据，我们发现，层数越多，能力就越强。这里也就引出了<strong>神经网络</strong>，即：多层感知机(Multi-Layer Percetrons)，为什么叫做神经网络呢？想想人类的神经元组织，是不是也就是一个一个神经元互相连接，跟我们的感知机很类似，神经元就是上述的一个个的<span class="math inline">\(g\)</span>，神经元的连接就对应这感知机中的权重，最后神经元需要对其它神经元传过来的信号作处理，这个过程就对应上述的sign函数，即转换函数(也叫激活函数)。因此上述一层层的感知机就组成神经网络。</p>
-<h2 id="hypothesis-假设空间">Hypothesis 假设空间</h2>
-<p>前面引出了神经网络，这一节主要深入探究层与层之间的联系方式。首先再看一下我们的神经网络模型:</p>
-<div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/ml201-5.png">
-
-</div>
-<p>先考虑最后的输出层，这个比较容易，因为我们一般解决分类或者回归问题的，所以说一般我们就用一个前面介绍过的linear model 即可，如下</p>
-<div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/ml201-6.png">
-
-</div>
-<p>在文中会以linear regression作为例子讲解，这就意味着使用square error作为cost funtion。如果我们想分类的话，最后一层的激活函数就可以使用logistic regression记性二分类，或者 softmax 进行多分类，这时候就用 cross-entropy作为cost funtion了，别的地方都不会变化。</p>
-<p>现在开始考虑中间层的神经元的(也叫隐含层Hidden Layer)的激活函数，分别考察上述三种函数：</p>
-<ul>
-<li><p>如果层与层之间激活函数都用线性函数表示，其实没有意义了，想想我们这么多层都使用线性连接，其实最终整理出来，输出层还是关于输入层的线性关系，没有意义！</p></li>
-<li><p>使用sign函数的话，输出0或者1，正对应到了神经元的激活与否，然而依然存在老问题，由于是离散值函数，很难去优化。</p></li>
-<li><p>使用第三种的非线性但是平滑的函数作为激活函数(转化函数)是最常见的选择。因为是很接近sign的一个平滑函数，因而很容易优化。常用的有<span class="math inline">\(\sigma(s) = sigmoid(s)= \frac{1}{1+e^{-s}}\)</span>，<span class="math inline">\(tanh(s)=\frac{e^{s} - e^{-s}}{e^s + e^{-s}}=2\sigma(2s)-1\)</span>等，还有其它选择如 Relu等，在某些场景下效果很好。</p></li>
-</ul>
-<p>接下来会以<span class="math inline">\(tanh\)</span>作为我们的激活函数。</p>
-<p>至此，我们已经将所有层之间的激活函数确定好了，因此神经网络的Hypothesis就很明确了，输入层将数据传给后续的隐含层，一直得到最后的输出即可，为了方便描述，我们定义好各个参数，变量的名字，如下图:</p>
-<div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/ml201-7.png">
-
-</div>
-<p>假设我们一共有包含输入层和输出层<span class="math inline">\(L+1\)</span>层的网络，且第<span class="math inline">\(i\)</span>层的神经元(节点)个数为<span class="math inline">\(d^{(i)}\)</span>，这样就构成了<span class="math inline">\(d^{(0)}-d^{(1)}- ... - d^{(L)}\)</span> Neural Network。 下面解释上述参数的意义:<span class="math display">\[w_{ij}^{(l)}: \begin{cases} 1 \leq l \leq L &amp; layers  \\ 0 \leq i \leq d^{(l-1)} &amp; inputs \\ 1 \leq j \leq d^{(l)} &amp;outputs   \end{cases}\]</span> <span class="math inline">\(w_{ij}^{(l)}\)</span>指的是第<span class="math inline">\(l-1\)</span>层的第<span class="math inline">\(i\)</span>个神经元与第<span class="math inline">\(l\)</span>层的第<span class="math inline">\(j\)</span>个神经元之间的权重值。<span class="math display">\[\ s_j^{l} = \sum\limits_{i=0}^{d^{(l-1)}}x_i w_{ij}^{(l)}\]</span> <span class="math inline">\(s_{j}^{(l)}\)</span>指的是第<span class="math inline">\(l\)</span>层的第<span class="math inline">\(j\)</span>个神经元的score(得分)，也可以当作该神经元的输入。<span class="math display">\[x_{j}^{(l)} =\begin{cases} tanh(s_{j}^{(l)}) &amp; \text{ l = L} \\ s_{j}^{(l)} &amp;l=L \end{cases}\]</span> <span class="math inline">\(x_{j}^{(l)}\)</span>是第<span class="math inline">\(l\)</span>层第<span class="math inline">\(j\)</span>个神经元的经过激活函数对其输入<span class="math inline">\(s_{j}^{(l)}\)</span>的输出，特别的是最后的输出层，因为我们以Linear Regression为例子，直接将 <span class="math inline">\(s_1^{L}\)</span>作为最后的输出: <span class="math inline">\(x_{1}^{(L)}\)</span>(最后一层仅仅有一个神经元)。</p>
-<p>这样我们只需要将输入数据赋给<span class="math inline">\(\textbf{x}^{0}\)</span>，然后一层一层计算<span class="math inline">\(\textbf{x}^{l}\)</span>，最后得到我们的预测值: <span class="math inline">\(\textbf{x}_{1}^{(L)}\)</span>。到此Hypothesis已经明确了，下面就是如何使用训练数据学到所有的参数。一般都说NN的训练时间很长，我们先看看有多少参数需要计算:<span class="math display">\[count(W) = \sum\limits_{i=0}^{L-1} (1+d^{(i)})d^{(i+1)}\]</span> 每一层需要加一个常数，上图中的最上面那个(就是偏置项bias)。所以说参数经常上万，因此训练时间很长。这个问题后续还会讲到，下面就是开始如何从数据中学到那一堆的参数，也就是training的过程。</p>
-<h2 id="模型的训练">模型的训练</h2>
-<p>训练的目标很简单，跟之前的模型一样，就是要求出最小化cost function的值<span class="math inline">\(E_{in}\)</span>的各个参数<span class="math inline">\(w_{ij}^{(l)}\)</span>，上面我们也提到了使用平方误差表示cost function，即: <span class="math inline">\(e_{n} = (y_n - NNet(\textbf{x}_n))^2\)</span>，其中NNet是神经网络预测的值，<span class="math inline">\(y_n\)</span>是数据的真实值。有了cost function，那我们就可以尝试使用梯度下降(Gradient Descent)来求最优解，即: <span class="math display">\[ w_{ij}^{(l)} \gets w_{ij}^{(l)}- \eta \ \frac{\partial e_n}{\partial w_{ij}^{(l)}}\]</span>这里我们使用随机梯度下降(SGD)来计算梯度，也就是每次只选择一个数据点。接下来就是求梯度了<span class="math inline">\(\triangledown e_{n}\)</span>，这里会介绍误差反向传播的算法(Back Propagation)</p>
-<p>再看神经网络的图模型:</p>
-<div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/ml201-7.png">
-
-</div>
-<p>我们先尝试看看最后一层的参数: <span class="math inline">\(w_{i1}^{(L)}\)</span>，先看看<span class="math inline">\(e_{n}\)</span>与<span class="math inline">\(w_{i1}^{(L)}\)</span>的关系: <span class="math display">\[e_{n}=(y_n - s_{1}^{(L)})^2 =(y_n - \sum\limits_{i=0}^{d^{(L-1)}}w_{i1}^{L}x_{i}^{(L-1)})^2 \]</span>我们可以看到<span class="math inline">\(e_{n}\)</span>是先影响了<span class="math inline">\(s_{1}^{L}\)</span>，然后<span class="math inline">\(s_{1}^{(L)}\)</span>再影响<span class="math inline">\(w_{i1}^{(L)}\)</span>。所以我们可以用求微分的链式法则，来间接求梯度，如下:</p>
-<p><span class="math display">\[\begin{align*}\frac{\partial e_{n}}{\partial  w_{i1}^{(L)}} &amp;= \frac{\partial e_{n}}{\partial s_{1}^{(L)}} \cdot \frac{\partial s_1^{(L)}}{w_{i1}^{(L)}} \\ &amp;= -2(y_n - s_1^{(L)}) (x_i^{(L-1)}) \end{align*}\]</span>这个式子的变量都是已知的，我们可以很轻松的求出最后一层的参数: <span class="math inline">\(w_{i1}^{(L)}\)</span>。那么隐含层(Hidden Layer)的呢？同理，我们也可以写出类似上述的等式:<span class="math display">\[\begin{align*}\frac{\partial e_{n}}{\partial  w_{ij}^{(l)}} &amp;= \frac{\partial e_{n}}{\partial s_{j}^{(l)}} \cdot \frac{\partial s_j^{(l)}}{w_{ij}^{(l)}} \\ &amp;= \delta_j{(l)}(x_i^{(l-1)}) \end{align*}\]</span>这是对<span class="math inline">\(w_{ij}^{(l)}\)</span>的求微分，其中<span class="math inline">\(1 \leq l &lt; L,\ 0 \leq i \leq d^{(l-1)},\ 0 \leq j \leq d^{(l)}\)</span>，这里我们新引入了一个变量<span class="math inline">\(\delta\)</span>: <span class="math inline">\(\delta_{j}^{(l)} = \frac{\partial e_n}{s_j^{l}}\)</span>，来表示cost function 对第<span class="math inline">\(l\)</span>层的第<span class="math inline">\(j\)</span>个神经元的输入的微分，只需要求出了<span class="math inline">\(\delta\)</span>那么<span class="math inline">\(\frac{\partial e_{n}}{\partial w_{ij}^{(l)}}\)</span> 也就知道了，下面开始求，这也是反向传播的核心所在。</p>
-<p>首先看看<span class="math inline">\(e_n\)</span>是如何一层层的影响着<span class="math inline">\(s_j^{(l)}\)</span>的，如下:</p>
-<div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/ml201-8.png">
-
-</div>
-<p>只考察最近三层的影响如下，我们同样应用链式法则，首先考虑上图绿色的<span class="math inline">\(s_k^{l+1}\)</span>，继而是前一层的<span class="math inline">\(x_j^{(l)}\)</span>，最后通过激活函数作用到<span class="math inline">\(s_j^{(l)}\)</span>：</p>
-<div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/ml201-9.png">
-
-</div>
-<p>这样我们就可以得到了一个递推关系： <span class="math inline">\(\delta_{j}^{(l)}\)</span>是由<span class="math inline">\(\delta_{k}^{(l+1)}\)</span>表示的，也就是要计算<span class="math inline">\(l\)</span>层的参数，需要使用<span class="math inline">\(l+1\)</span>的<span class="math inline">\(\delta\)</span>，这就是为什么叫Back Propagation反向传播的原因，训练过程需要从后往前计算。因为我们已经求出了最后一层的参数: <span class="math inline">\(\delta_1^{(L)} = -2(y_n - s_1^{(L)})\)</span>，这里面的都是已知的，其中<span class="math inline">\(s_1^{(L)}\)</span>就是我们的预测值，是因为最后一层的激活函数是采用了Linear Regression的线性函数，$  = s_1^{(L)}<span class="math inline">\(，那么我们就可以计算出\)</span>L-1<span class="math inline">\(的\)</span>$: <span class="math display">\[\begin{align*}\delta_{i}^{(L-1)} &amp;= \frac{\partial  e_n}{\partial s_j^{(L-1)}} \\ &amp;= \frac{\partial e_n}{s_1^{(L)}} \cdot \frac{s_1^{(L)}}{x_j^{L-1}}  \cdot \frac{\partial x_i^{(L-1)}}{\partial s_j^{(L-1)}} \\ &amp;= \delta_1^{L} \cdot w_{i1}^{L} \cdot tanh^{&#39;}(s_j^{(L-1)})\end{align*} \]</span>这样我们就把所有的倒数第二层<span class="math inline">\(L-1\)</span>的<span class="math inline">\(\delta\)</span>求出来了，然后再依次向后求出所有的<span class="math inline">\(\delta\)</span>，从而可以使用SGD得到所有的<span class="math inline">\(w_{ij}^{(l)}\)</span>，这样一轮训练完成。</p>
-<p>现在就可以给出整个训练算法(BackPropagation)的流程了:</p>
-<div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/ml201-10.png">
-
-</div>
-<p>需要注意的是，算法主要分为两部分，开始需要初始化所有参数<span class="math inline">\(w_{ij}\)</span>，一般情况是随机化，而非0, 然后就是随机梯度下降的过程，选择一个点，利用当前的参数，从前向后依次计算所有的<span class="math inline">\(x_i^{(l)}\)</span>，之后反向计算所有的<span class="math inline">\(\delta_{j}^{(l)}\)</span>， 最后更新<span class="math inline">\(w_{ij}^{(l)}\)</span>，经过多次迭代或者达到设定误差函数的一个阈值之后，模型就训练完毕，返回 <span class="math inline">\(g_{NNET}\)</span>。 这里有一点优化是，除了使用SGD之外，我们一次不再训练一个数据，也不训练所有的数据，而是可以一次性训练一批数据，这样是一种折中的方式，叫做Mini-batch Gradient Densent(MBGD)，这样会加快训练速度，在后续实现中，会使用。</p>
-<h2 id="神经网络的优化">神经网络的优化</h2>
-<h3 id="vc维">VC维</h3>
-<p>首先看看神经网络的复杂度，这里给出神经网络的VC-Dimension: <span class="math inline">\(d_{vc} = O(VD)\)</span>，其中<span class="math inline">\(V\)</span>是神经元的个数，<span class="math inline">\(D\)</span>是权重或者说参数的个数，这个是根据参数的个数得到模型的自由度近似得到的。我们可以发现，如果神经元的数量很多，那么可以解决几乎所有的问题，但是同样神经元越多，那么VC维也就越大，就越容易产生 overfitting，泛化误差可能会很大。</p>
-<h3 id="正则化">正则化</h3>
-<p>我们知道，神经网络的参数很多，为了防止过拟合，就需要加上正则项进行约束，尽可能的减少参数的个数，但是应该加入什么正则项呢？首先考虑常用的二范式:<span class="math display">\[\Omega(\textbf{w})=\sum(w_{ij}^{(l)})^2\]</span>然而这里并不是最好的。因为它并不能减少参数的个数，因为这个正则项属于一个等比缩放，大的权重就缩小比较厉害，小的权重缩小的比较轻，比如一个参数是10，缩放之后是8，那么假设有个参数是5，那么放缩之后就得到了4。这样大的变小了，小的同样也变小了，但是都不会变成0。这样我们的复杂度其实并没有降低。当然那<span class="math inline">\(\sum\|w_{ij}^{(l)} \|\)</span>虽然可以减少复杂度，然而并不能微分，这样就不能优化了。我们需要的是，他们变化的幅度应该差不多，就是说，大的参数缩小缩小一个中等范围，小的参数也缩小中等效果，这样小的参数就会慢慢变成0。在 实际中，经常使用如下的 regualizer: <span class="math display">\[\sum\frac{(w_{ij}^{(l)})^2}{1+(w_{ij}^{(l)})^2}\]</span></p>
-<h3 id="early-stopping">Early Stopping</h3>
-<p>除了正则化，还有一个常用的方式就是EarlyStopping，就是再达到<span class="math inline">\(E_{in}\)</span>最小之前就停止迭代，争取找到最优的参数，至于具体迭代多少次，这个就是需要用Validation里面的方法了，使用交叉验证等方式来找到<span class="math inline">\(E_{test}\)</span>最小的迭代次数。</p>
-<h2 id="总结">总结</h2>
-<p>这一章主要介绍了最基本的神经网络(Neural Network)，层数越多，能做的事情就越多，数据通过一层层的神经元以及激活函数，萃取有用的特征。后续又介绍了BackPropagation算法去训练。由于神经网络的参数众多，因此要使用一些trick来加快训练和避免过拟合，主要是正则化以及提前停止。看完之后，对神经网络有了基本的认识，后续还需要自己实践一遍才能加深理解！</p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;前段时间看完了机器学习基石课程，不过还有regularzation和 validation 没有整理，由于需要，先看了技法课程中的神经网络(Neural Network)。林老师讲的依然很好，将神经网络笔记记录于此。
-    
-    </summary>
-    
-      <category term="读书笔记" scheme="http://shomy.top/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/"/>
-    
-    
-      <category term="machine learning" scheme="http://shomy.top/tags/machine-learning/"/>
-    
-      <category term="neural network" scheme="http://shomy.top/tags/neural-network/"/>
     
   </entry>
   
