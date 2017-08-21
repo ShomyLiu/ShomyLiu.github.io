@@ -13,7 +13,7 @@
 <meta property="og:site_name" content="天空的城">
 <meta property="og:description" content="最近偶尔翻看Fluent Python，遇到有意思的东西就记下来. 下面的是在PyCon2013上提出的一个关于tuple的Augmented Assignment也就是增量赋值的一个问题。 并且基于此问题, 又引申出3个变种问题.  问题 首先看第一个问题, 如下面的代码段: 12&amp;gt;&amp;gt;&amp;gt; t = (1,2, [30,40])&amp;gt;&amp;gt;&amp;gt; t[2] += [50,6">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2017-08-21T04:14:18.642Z">
+<meta property="og:updated_time" content="2017-08-21T04:16:27.489Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Python中tuple+=赋值的四个问题">
 <meta name="twitter:description" content="最近偶尔翻看Fluent Python，遇到有意思的东西就记下来. 下面的是在PyCon2013上提出的一个关于tuple的Augmented Assignment也就是增量赋值的一个问题。 并且基于此问题, 又引申出3个变种问题.  问题 首先看第一个问题, 如下面的代码段: 12&amp;gt;&amp;gt;&amp;gt; t = (1,2, [30,40])&amp;gt;&amp;gt;&amp;gt; t[2] += [50,6">
@@ -139,6 +139,7 @@ ga('send', 'pageview');
 </blockquote>
 <h2 id="问题">问题</h2>
 <p>首先看第一个问题, 如下面的代码段: <figure class="highlight lsl"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; t = (<span class="number">1</span>,<span class="number">2</span>, [<span class="number">30</span>,<span class="number">40</span>])</div><div class="line">&gt;&gt;&gt; t[<span class="number">2</span>] += [<span class="number">50</span>,<span class="number">60</span>]</div></pre></td></tr></table></figure></p>
+<a id="more"></a>
 <p>会产生什么结果呢？ 给出了四个选项: 1. <code>t</code> 变成 <code>[1,2, [30,40,50,60]</code> 2. <code>TypeError is raised with the message 'tuple' object does not support item assignment</code> 3. Neither 1 nor 2 4. Both 1 and 2</p>
 <p>按照之前的理解, <code>tuple</code>里面的元素是不能被修改的，因此会选<code>2</code>. 如果真是这样的话，这篇笔记就没必要了，Fluent Python中也就不会拿出一节来讲了。 正确答案是<code>4</code> <figure class="highlight ruby"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&gt;&gt;</span>&gt; t = (<span class="number">1</span>,<span class="number">2</span>,[<span class="number">30</span>,<span class="number">40</span>])</div><div class="line"><span class="meta">&gt;&gt;</span>&gt; t[<span class="number">2</span>] += [<span class="number">50</span>,<span class="number">60</span>]</div><div class="line">Traceback (most recent call last)<span class="symbol">:</span></div><div class="line">  File <span class="string">"&lt;stdin&gt;"</span>, line <span class="number">1</span>, <span class="keyword">in</span> &lt;<span class="class"><span class="keyword">module</span>&gt;</span></div><div class="line"><span class="symbol">TypeError:</span> <span class="string">'tuple'</span> object does <span class="keyword">not</span> support item assignment</div><div class="line"><span class="meta">&gt;&gt;</span>&gt; t</div><div class="line">(<span class="number">1</span>, <span class="number">2</span>, [<span class="number">30</span>, <span class="number">40</span>, <span class="number">50</span>, <span class="number">60</span>])</div></pre></td></tr></table></figure></p>
 <p>问题来了，为什么异常都出来了， <code>t</code>还是变了? 再看第二种情况，稍微变化一下,将<code>+=</code>变为<code>=</code>: <figure class="highlight lsl"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; t = (<span class="number">1</span>,<span class="number">2</span>, [<span class="number">30</span>,<span class="number">40</span>])</div><div class="line">&gt;&gt;&gt; t[<span class="number">2</span>] = [<span class="number">50</span>,<span class="number">60</span>]</div></pre></td></tr></table></figure></p>
@@ -208,7 +209,7 @@ ga('send', 'pageview');
 发布时间: 2017-08-17, 22:34:00<br/>
 <p>
 <p>
-最后更新: 2017-08-21, 12:14:18<br/>
+最后更新: 2017-08-21, 12:16:27<br/>
 <p>
 本文链接: <a href="/2017/08/17/python-tuple-assign/" target="_blank">http://shomy.top/2017/08/17/python-tuple-assign/</a>
 </p>

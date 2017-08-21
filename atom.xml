@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://shomy.top/"/>
-  <updated>2017-08-21T04:14:18.642Z</updated>
+  <updated>2017-08-21T04:16:27.489Z</updated>
   <id>http://shomy.top/</id>
   
   <author>
@@ -20,13 +20,14 @@
     <link href="http://shomy.top/2017/08/17/python-tuple-assign/"/>
     <id>http://shomy.top/2017/08/17/python-tuple-assign/</id>
     <published>2017-08-17T14:34:00.000Z</published>
-    <updated>2017-08-21T04:14:18.642Z</updated>
+    <updated>2017-08-21T04:16:27.489Z</updated>
     
     <content type="html"><![CDATA[<blockquote>
 <p>最近偶尔翻看Fluent Python，遇到有意思的东西就记下来. 下面的是在PyCon2013上提出的一个关于<code>tuple</code>的Augmented Assignment也就是增量赋值的一个问题。 并且基于此问题, 又引申出3个变种问题.</p>
 </blockquote>
 <h2 id="问题">问题</h2>
 <p>首先看第一个问题, 如下面的代码段: <figure class="highlight lsl"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; t = (<span class="number">1</span>,<span class="number">2</span>, [<span class="number">30</span>,<span class="number">40</span>])</div><div class="line">&gt;&gt;&gt; t[<span class="number">2</span>] += [<span class="number">50</span>,<span class="number">60</span>]</div></pre></td></tr></table></figure></p>
+<a id="more"></a>
 <p>会产生什么结果呢？ 给出了四个选项: 1. <code>t</code> 变成 <code>[1,2, [30,40,50,60]</code> 2. <code>TypeError is raised with the message 'tuple' object does not support item assignment</code> 3. Neither 1 nor 2 4. Both 1 and 2</p>
 <p>按照之前的理解, <code>tuple</code>里面的元素是不能被修改的，因此会选<code>2</code>. 如果真是这样的话，这篇笔记就没必要了，Fluent Python中也就不会拿出一节来讲了。 正确答案是<code>4</code> <figure class="highlight ruby"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&gt;&gt;</span>&gt; t = (<span class="number">1</span>,<span class="number">2</span>,[<span class="number">30</span>,<span class="number">40</span>])</div><div class="line"><span class="meta">&gt;&gt;</span>&gt; t[<span class="number">2</span>] += [<span class="number">50</span>,<span class="number">60</span>]</div><div class="line">Traceback (most recent call last)<span class="symbol">:</span></div><div class="line">  File <span class="string">"&lt;stdin&gt;"</span>, line <span class="number">1</span>, <span class="keyword">in</span> &lt;<span class="class"><span class="keyword">module</span>&gt;</span></div><div class="line"><span class="symbol">TypeError:</span> <span class="string">'tuple'</span> object does <span class="keyword">not</span> support item assignment</div><div class="line"><span class="meta">&gt;&gt;</span>&gt; t</div><div class="line">(<span class="number">1</span>, <span class="number">2</span>, [<span class="number">30</span>, <span class="number">40</span>, <span class="number">50</span>, <span class="number">60</span>])</div></pre></td></tr></table></figure></p>
 <p>问题来了，为什么异常都出来了， <code>t</code>还是变了? 再看第二种情况，稍微变化一下,将<code>+=</code>变为<code>=</code>: <figure class="highlight lsl"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; t = (<span class="number">1</span>,<span class="number">2</span>, [<span class="number">30</span>,<span class="number">40</span>])</div><div class="line">&gt;&gt;&gt; t[<span class="number">2</span>] = [<span class="number">50</span>,<span class="number">60</span>]</div></pre></td></tr></table></figure></p>
@@ -84,7 +85,10 @@
     <summary type="html">
     
       &lt;blockquote&gt;
-&lt;p&gt;最近偶尔翻看Fluent Python，遇到有意思的东西就记下来. 下面的是在PyCon2013上提出的一个关于&lt;code&gt;tuple&lt;/code&gt;的Augmented Assignment也就是增量赋值的一个问题。 并且基于此问题, 又引申出3个
+&lt;p&gt;最近偶尔翻看Fluent Python，遇到有意思的东西就记下来. 下面的是在PyCon2013上提出的一个关于&lt;code&gt;tuple&lt;/code&gt;的Augmented Assignment也就是增量赋值的一个问题。 并且基于此问题, 又引申出3个变种问题.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2 id=&quot;问题&quot;&gt;问题&lt;/h2&gt;
+&lt;p&gt;首先看第一个问题, 如下面的代码段: &lt;figure class=&quot;highlight lsl&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;2&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;&amp;gt;&amp;gt;&amp;gt; t = (&lt;span class=&quot;number&quot;&gt;1&lt;/span&gt;,&lt;span class=&quot;number&quot;&gt;2&lt;/span&gt;, [&lt;span class=&quot;number&quot;&gt;30&lt;/span&gt;,&lt;span class=&quot;number&quot;&gt;40&lt;/span&gt;])&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&amp;gt;&amp;gt;&amp;gt; t[&lt;span class=&quot;number&quot;&gt;2&lt;/span&gt;] += [&lt;span class=&quot;number&quot;&gt;50&lt;/span&gt;,&lt;span class=&quot;number&quot;&gt;60&lt;/span&gt;]&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
     
     </summary>
     
