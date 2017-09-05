@@ -19,7 +19,7 @@
 <meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/ml01-4.png">
 <meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/ml01-5.png">
 <meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/ml01-6.png">
-<meta property="og:updated_time" content="2017-09-05T03:44:01.965Z">
+<meta property="og:updated_time" content="2017-09-05T03:47:23.442Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="机器学习基石笔记(1)">
 <meta name="twitter:description" content="整理自台大林轩田老师的机器学习基石在线课程，以及参考了beader的文章，作为笔记。 一些机器学习入门的书籍大部分都是直接讲模型，却没有来龙去脉，感觉很虚。而林老师的第一部分是机器学习的基石，就是背后的东西，并没有直接去讲各种模型, 在第二部分机器学习技法才开始介绍模型。">
@@ -195,7 +195,7 @@ ga('send', 'pageview');
 <p><span class="math display">\[P[\| E_{in} - E_{out} \| &gt; \epsilon]  \leq 2 exp \lgroup -2 \epsilon ^2 N \rgroup\]</span></p>
 <p>这就意味着，在不等式的上限在足够小的情况下，我们貌似可以说，<span class="math inline">\(E_{in}\)</span>和<span class="math inline">\(E_{out}\)</span> 达到了 PAC, 也就是说 h 在训练集中的表现与在总体中的表现接近，即：用已知的<span class="math inline">\(E_{in}\)</span>去推断未知的<span class="math inline">\(E_{out}\)</span> 。 但现在还不可以说，<span class="math inline">\(h\)</span>是一个好的learning， 因为我们的目的不是<span class="math inline">\(h\)</span>, 而是一个接近<span class="math inline">\(f\)</span>的<span class="math inline">\(g\)</span>, 因此我们需要的不仅仅<span class="math inline">\(E_{in}\)</span>与<span class="math inline">\(E_{out}\)</span>接近，更需要他们尽可能小，这样才是一个最好的最接近真理<span class="math inline">\(f\)</span>的<span class="math inline">\(h\)</span>。</p>
 <h3 id="bad-data-坏数据">Bad Data 坏数据</h3>
-<p>前面说了，使用某个训练集或者说抽样的样本，然后找一个<span class="math inline">\(E_{in}\)</span>尽可能小的<span class="math inline">\(h\)</span>, 作为我们的<span class="math inline">\(g\)</span>. 但是如果训练数据集有问题呢？尤其是当N小的时候，误差是不可避免的，或者说噪音数据集。比如说想知道硬币朝上的概率，然后连续扔了5次，都出现了正面，这种情况下，显然不能说硬币朝上的概率是1吧。因为这样的样本本身是有误差的，对于整体 来说: <span class="math inline">\(E_{in} = 0; E_{out} = \frac{1}{2}\)</span>.这样使<span class="math inline">\(E_{in}\)</span> 和 <span class="math inline">\(E_{out}\)</span>差别很大的样本就称为<strong>BAD SAMPLE</strong> 说到learning, 对于某个 <span class="math inline">\(h\)</span>, 如果某个<span class="math inline">\(\mathcal{D}\)</span>使得 $E_{in}(h) <span class="math inline">\(与\)</span>E_{out}(h)$ 差别很大，比如说<span class="math inline">\(E_{in}(h)\)</span>很小，也就说在训练数据中表现很好，结果我们的算法<span class="math inline">\(\mathcal{A}\)</span>就选择了它， 但是没想到<span class="math inline">\(\mathcal{D}\)</span>之外的数据表现很差，<span class="math inline">\(E_{out}(h)\)</span>很大， 这样就称这个<span class="math inline">\(\mathcal{D}\)</span>对<span class="math inline">\(h\)</span>来说是<strong>BAD DATA</strong>, 它会使得 <span class="math inline">\(\|E_{in} - E_{out}\| &gt; \epsilon\)</span>。那是不是机器学习啥也没学到呢？ 白忙活了？ 很显然，我们不希望遇见<strong>BAD DATA</strong>, 它对我们的learning很不好，那么出现<strong>BAD DATA</strong>的概率有多大呢？ 首先只要某个<span class="math inline">\(\mathcal{D}_i\)</span> 对 <span class="math inline">\(h(h \in \mathcal{H})\)</span> 是BAD DATA, 那么就称该<span class="math inline">\(\mathcal{D}\)</span>是BAD DATA, 如下</p>
+<p>前面说了，使用某个训练集或者说抽样的样本，然后找一个<span class="math inline">\(E_{in}\)</span>尽可能小的<span class="math inline">\(h\)</span>, 作为我们的<span class="math inline">\(g\)</span>. 但是如果训练数据集有问题呢？尤其是当N小的时候，误差是不可避免的，或者说噪音数据集。比如说想知道硬币朝上的概率，然后连续扔了5次，都出现了正面，这种情况下，显然不能说硬币朝上的概率是1吧。因为这样的样本本身是有误差的，对于整体 来说: <span class="math inline">\(E_{in} = 0; E_{out} = \frac{1}{2}\)</span>.这样使<span class="math inline">\(E_{in}\)</span> 和 <span class="math inline">\(E_{out}\)</span>差别很大的样本就称为<strong>BAD SAMPLE</strong> 说到learning, 对于某个 <span class="math inline">\(h\)</span>, 如果某个<span class="math inline">\(\mathcal{D}\)</span>使得 <span class="math inline">\(E_{in}(h)\)</span>与<span class="math inline">\(E_{out}(h)\)</span> 差别很大，比如说<span class="math inline">\(E_{in}(h)\)</span>很小，也就说在训练数据中表现很好，结果我们的算法<span class="math inline">\(\mathcal{A}\)</span>就选择了它， 但是没想到<span class="math inline">\(\mathcal{D}\)</span>之外的数据表现很差，<span class="math inline">\(E_{out}(h)\)</span>很大， 这样就称这个<span class="math inline">\(\mathcal{D}\)</span>对<span class="math inline">\(h\)</span>来说是<strong>BAD DATA</strong>, 它会使得 <span class="math inline">\(\|E_{in} - E_{out}\| &gt; \epsilon\)</span>。那是不是机器学习啥也没学到呢？ 白忙活了？ 很显然，我们不希望遇见<strong>BAD DATA</strong>, 它对我们的learning很不好，那么出现<strong>BAD DATA</strong>的概率有多大呢？ 首先只要某个<span class="math inline">\(\mathcal{D}_i\)</span> 对 <span class="math inline">\(h(h \in \mathcal{H})\)</span> 是BAD DATA, 那么就称该<span class="math inline">\(\mathcal{D}\)</span>是BAD DATA, 如下</p>
 <div class="figure">
 <img src="http://7xotye.com1.z0.glb.clouddn.com/ml01-5.png" alt="bad-data">
 <p class="caption">bad-data</p>
@@ -220,7 +220,7 @@ ga('send', 'pageview');
 发布时间: 2016-10-06, 17:56:18<br/>
 <p>
 <p>
-最后更新: 2017-09-05, 11:44:01<br/>
+最后更新: 2017-09-05, 11:47:23<br/>
 <p>
 本文链接: <a href="/2016/10/06/feasibility-of-learning-1/" target="_blank">http://shomy.top/2016/10/06/feasibility-of-learning-1/</a>
 </p>
