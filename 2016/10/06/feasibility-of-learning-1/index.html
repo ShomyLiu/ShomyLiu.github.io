@@ -19,7 +19,7 @@
 <meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/ml01-4.png">
 <meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/ml01-5.png">
 <meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/ml01-6.png">
-<meta property="og:updated_time" content="2017-07-31T02:42:34.562Z">
+<meta property="og:updated_time" content="2017-09-05T03:44:01.965Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="机器学习基石笔记(1)">
 <meta name="twitter:description" content="整理自台大林轩田老师的机器学习基石在线课程，以及参考了beader的文章，作为笔记。 一些机器学习入门的书籍大部分都是直接讲模型，却没有来龙去脉，感觉很虚。而林老师的第一部分是机器学习的基石，就是背后的东西，并没有直接去讲各种模型, 在第二部分机器学习技法才开始介绍模型。">
@@ -154,7 +154,7 @@ ga('send', 'pageview');
 <li><span class="math inline">\(\gamma\)</span> 则代表的是输出空间。比如前面提到的PLA的输出空间是<span class="math inline">\(\{+1, -1\}^1\)</span>, 在信用卡例子中，可以用+1表示未来会违约，-1表示未来不会违约。</li>
 <li><span class="math inline">\(f\)</span> 是很核心的概念，表示现实中<strong>未知</strong>的某个规律或者某个函数， 我们只能知道的是，把训练数据<span class="math inline">\(\mathcal{D}\)</span>中的数据<span class="math inline">\(x_i\)</span>作为输入，它会输出 <span class="math inline">\(y_i\)</span>.正因为它的未知，learning要做的事情就是找到一个函数<span class="math inline">\(\mathcal{g}\)</span>能构接近<span class="math inline">\(\mathcal{f}\)</span>.接近的意思是指，<span class="math inline">\(\mathcal{g}\)</span>对于训练数据<span class="math inline">\(\mathcal{D}\)</span>中的运行情况与<span class="math inline">\(\mathcal{f}\)</span>的运行情况类似。</li>
 </ul></li>
-<li><span class="math inline">\(\mathcal{D}: {(x_1, y_1), (x_2, y_2),..., (x_N, y_N)}\)</span>： 表示由输入空间<span class="math inline">\(\chi\)</span>中的<span class="math inline">\(x\)</span>以及输出空间gamma<span class="math inline">\(中的\)</span>y$组成的N条数据的训练数据集。</li>
+<li><span class="math inline">\(\mathcal{D}: {(x_1, y_1), (x_2, y_2),..., (x_N, y_N)}\)</span>： 表示由输入空间<span class="math inline">\(\chi\)</span>中的<span class="math inline">\(x\)</span>以及输出空间<span class="math inline">\(gamma\)</span>中的<span class="math inline">\(y\)</span>组成的N条数据的训练数据集。</li>
 <li><span class="math inline">\(\mathcal{H}\)</span>: 表示假设空间，也就是一堆函数的集合:<span class="math inline">\(\{ h_1, h_2, ...\}\)</span>，我们要找的<span class="math inline">\(\mathcal{g}\)</span>就在这里面寻找。</li>
 <li><span class="math inline">\(\mathcal{A}\)</span>：学习算法，通过<span class="math inline">\(\mathcal{A}\)</span>，我们才可以在<span class="math inline">\(\mathcal{H}\)</span>中找到最接近<span class="math inline">\(f\)</span>的那个<span class="math inline">\(h\)</span>. 因为<span class="math inline">\(\mathcal{H}\)</span>的数量是未知的，因此我们必须把学习算法设计的合适，才可以高效的找到那个<span class="math inline">\(h\)</span>。</li>
 <li><span class="math inline">\(\mathcal{g}\)</span>：这个就是我们最后找到的hypothsis,就是通过学习算法<span class="math inline">\(\mathcal{A}\)</span>找到的那个最接近f的函数。</li>
@@ -195,7 +195,7 @@ ga('send', 'pageview');
 <p><span class="math display">\[P[\| E_{in} - E_{out} \| &gt; \epsilon]  \leq 2 exp \lgroup -2 \epsilon ^2 N \rgroup\]</span></p>
 <p>这就意味着，在不等式的上限在足够小的情况下，我们貌似可以说，<span class="math inline">\(E_{in}\)</span>和<span class="math inline">\(E_{out}\)</span> 达到了 PAC, 也就是说 h 在训练集中的表现与在总体中的表现接近，即：用已知的<span class="math inline">\(E_{in}\)</span>去推断未知的<span class="math inline">\(E_{out}\)</span> 。 但现在还不可以说，<span class="math inline">\(h\)</span>是一个好的learning， 因为我们的目的不是<span class="math inline">\(h\)</span>, 而是一个接近<span class="math inline">\(f\)</span>的<span class="math inline">\(g\)</span>, 因此我们需要的不仅仅<span class="math inline">\(E_{in}\)</span>与<span class="math inline">\(E_{out}\)</span>接近，更需要他们尽可能小，这样才是一个最好的最接近真理<span class="math inline">\(f\)</span>的<span class="math inline">\(h\)</span>。</p>
 <h3 id="bad-data-坏数据">Bad Data 坏数据</h3>
-<p>前面说了，使用某个训练集或者说抽样的样本，然后找一个<span class="math inline">\(E_{in}\)</span>尽可能小的<span class="math inline">\(h\)</span>, 作为我们的<span class="math inline">\(g\)</span>. 但是如果训练数据集有问题呢？尤其是当N小的时候，误差是不可避免的，或者说噪音数据集。比如说想知道硬币朝上的概率，然后连续扔了5次，都出现了正面，这种情况下，显然不能说硬币朝上的概率是1吧。因为这样的样本本身是有误差的，对于整体 来说: $E_{in} = 0; E_{out} =  <span class="math inline">\(.这样使\)</span>E_{in} 和 E_{out}$差别很大的样本就称为<strong>BAD SAMPLE</strong> 说到learning, 对于某个 <span class="math inline">\(h\)</span>, 如果某个<span class="math inline">\(\mathcal{D}\)</span>使得 $E_{in}(h) <span class="math inline">\(与\)</span>E_{out}(h)$ 差别很大，比如说<span class="math inline">\(E_{in}(h)\)</span>很小，也就说在训练数据中表现很好，结果我们的算法<span class="math inline">\(\mathcal{A}\)</span>就选择了它， 但是没想到<span class="math inline">\(\mathcal{D}\)</span>之外的数据表现很差，<span class="math inline">\(E_{out}(h)\)</span>很大， 这样就称这个<span class="math inline">\(\mathcal{D}\)</span>对<span class="math inline">\(h\)</span>来说是<strong>BAD DATA</strong>, 它会使得 <span class="math inline">\(\|E_{in} - E_{out}\| &gt; \epsilon\)</span>。那是不是机器学习啥也没学到呢？ 白忙活了？ 很显然，我们不希望遇见<strong>BAD DATA</strong>, 它对我们的learning很不好，那么出现<strong>BAD DATA</strong>的概率有多大呢？ 首先只要某个<span class="math inline">\(\mathcal{D}_i\)</span> 对 <span class="math inline">\(h(h \in \mathcal{H})\)</span> 是BAD DATA, 那么就称该<span class="math inline">\(\mathcal{D}\)</span>是BAD DATA, 如下</p>
+<p>前面说了，使用某个训练集或者说抽样的样本，然后找一个<span class="math inline">\(E_{in}\)</span>尽可能小的<span class="math inline">\(h\)</span>, 作为我们的<span class="math inline">\(g\)</span>. 但是如果训练数据集有问题呢？尤其是当N小的时候，误差是不可避免的，或者说噪音数据集。比如说想知道硬币朝上的概率，然后连续扔了5次，都出现了正面，这种情况下，显然不能说硬币朝上的概率是1吧。因为这样的样本本身是有误差的，对于整体 来说: <span class="math inline">\(E_{in} = 0; E_{out} = \frac{1}{2}\)</span>.这样使<span class="math inline">\(E_{in}\)</span> 和 <span class="math inline">\(E_{out}\)</span>差别很大的样本就称为<strong>BAD SAMPLE</strong> 说到learning, 对于某个 <span class="math inline">\(h\)</span>, 如果某个<span class="math inline">\(\mathcal{D}\)</span>使得 $E_{in}(h) <span class="math inline">\(与\)</span>E_{out}(h)$ 差别很大，比如说<span class="math inline">\(E_{in}(h)\)</span>很小，也就说在训练数据中表现很好，结果我们的算法<span class="math inline">\(\mathcal{A}\)</span>就选择了它， 但是没想到<span class="math inline">\(\mathcal{D}\)</span>之外的数据表现很差，<span class="math inline">\(E_{out}(h)\)</span>很大， 这样就称这个<span class="math inline">\(\mathcal{D}\)</span>对<span class="math inline">\(h\)</span>来说是<strong>BAD DATA</strong>, 它会使得 <span class="math inline">\(\|E_{in} - E_{out}\| &gt; \epsilon\)</span>。那是不是机器学习啥也没学到呢？ 白忙活了？ 很显然，我们不希望遇见<strong>BAD DATA</strong>, 它对我们的learning很不好，那么出现<strong>BAD DATA</strong>的概率有多大呢？ 首先只要某个<span class="math inline">\(\mathcal{D}_i\)</span> 对 <span class="math inline">\(h(h \in \mathcal{H})\)</span> 是BAD DATA, 那么就称该<span class="math inline">\(\mathcal{D}\)</span>是BAD DATA, 如下</p>
 <div class="figure">
 <img src="http://7xotye.com1.z0.glb.clouddn.com/ml01-5.png" alt="bad-data">
 <p class="caption">bad-data</p>
@@ -220,7 +220,7 @@ ga('send', 'pageview');
 发布时间: 2016-10-06, 17:56:18<br/>
 <p>
 <p>
-最后更新: 2017-07-31, 10:42:34<br/>
+最后更新: 2017-09-05, 11:44:01<br/>
 <p>
 本文链接: <a href="/2016/10/06/feasibility-of-learning-1/" target="_blank">http://shomy.top/2016/10/06/feasibility-of-learning-1/</a>
 </p>
