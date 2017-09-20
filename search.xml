@@ -1791,7 +1791,11 @@
 <h2 id="环境准备">环境准备</h2>
 <p>首先检查自己的GPU是否支持CUDA， <figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span><span class="bash">查看显卡类型</span></div><div class="line"><span class="meta">$</span><span class="bash"> lspci | grep -i nvidia</span></div></pre></td></tr></table></figure></p>
 <p>在输出中找到自己的的显卡类型，然后到http://developer.nvidia.com/cuda-gpu 找到自己的型号： <img src="http://7xotye.com1.z0.glb.clouddn.com/nvidia-1.jpg"> <img src="http://7xotye.com1.z0.glb.clouddn.com/nvidia-2.png"></p>
-<p>我本机的环境如下: - Ubuntu 16.04.1 LTS - GeForce GTX 960M</p>
+<p>我本机的环境如下:</p>
+<ul>
+<li>Ubuntu 16.04.1 LTS</li>
+<li>GeForce GTX 960M</li>
+</ul>
 <p>下面开始安装。</p>
 <h2 id="安装cuda和cudnn">安装CUDA和cuDNN</h2>
 <ol style="list-style-type: decimal">
@@ -1818,7 +1822,7 @@
 <h2 id="安装tensorflow">安装TensorFlow</h2>
 <p>直接使用<code>pip</code>安装即可：当前版本为1.3: <figure class="highlight cmake"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo  pip <span class="keyword">install</span> tensorflow-gpu</div></pre></td></tr></table></figure></p>
 <p>安装完成之后，尝试<code>import tensorflow</code>:显示如下即可成功 <figure class="highlight stylus"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">In [<span class="number">1</span>]: import tensorflow</div><div class="line">I tensorflow/stream_executor/dso_loader<span class="selector-class">.cc</span>:<span class="number">128</span>] successfully opened CUDA library libcublas<span class="selector-class">.so</span> locally</div><div class="line">I tensorflow/stream_executor/dso_loader<span class="selector-class">.cc</span>:<span class="number">128</span>] successfully opened CUDA library libcudnn<span class="selector-class">.so</span> locally</div><div class="line">I tensorflow/stream_executor/dso_loader<span class="selector-class">.cc</span>:<span class="number">128</span>] successfully opened CUDA library libcufft<span class="selector-class">.so</span> locally</div><div class="line">I tensorflow/stream_executor/dso_loader<span class="selector-class">.cc</span>:<span class="number">128</span>] successfully opened CUDA library libcuda<span class="selector-class">.so</span>.<span class="number">1</span> locally</div><div class="line">I tensorflow/stream_executor/dso_loader<span class="selector-class">.cc</span>:<span class="number">128</span>] successfully opened CUDA library libcurand<span class="selector-class">.so</span> locally</div><div class="line">In [<span class="number">2</span>]:</div></pre></td></tr></table></figure></p>
-<p>在代码使用的时候，只需要指定<code>GPU</code>即可: <figure class="highlight actionscript"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">with</span> tf.device(<span class="string">'/gpu:0'</span>):</div></pre></td></tr></table></figure></p>
+<p>在代码使用的时候，只需要指定<code>GPU</code>即可(当然tf也会默认使用GPU): <figure class="highlight actionscript"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">with</span> tf.device(<span class="string">'/gpu:0'</span>):</div></pre></td></tr></table></figure></p>
 <p>即可使用GPU运行TensorFlow程序。速度比CPU快很多，跑一个CNN文本分类的程序，CPU版本，用8核i7处理器几乎保持600%的利用率，训练半小时还未结束，换为GPU版本，10分钟结束！ 另外提供一个使用<code>watch</code>实时查看nvidia显卡状态的命令: <figure class="highlight excel"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">watch -<span class="built_in">n</span> <span class="number">10</span> nvidia-smi</div></pre></td></tr></table></figure></p>
 ]]></content>
       
@@ -3024,7 +3028,10 @@ m_{\mathcal{H}}(K) &amp; &lt; 2^K \\
 <p>列表生成器十分方便：如下,求10以内的奇数: <code>[i  for i in range(10) if i % 2]</code></p>
 <p>同样在<code>python 2.4</code>也引入了<code>生成器表达式</code>，而且形式非常类似，就是把<code>[]</code>换成了<code>()</code>. <figure class="highlight stylus"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">In [<span class="number">18</span>]: <span class="selector-tag">a</span> = ( <span class="selector-tag">i</span> <span class="keyword">for</span> <span class="selector-tag">i</span> <span class="keyword">in</span> range(<span class="number">4</span>))</div><div class="line"></div><div class="line">In [<span class="number">19</span>]: a</div><div class="line">Out[<span class="number">19</span>]: &lt;generator <span class="selector-tag">object</span> &lt;genexpr&gt; at <span class="number">0</span>x7f40c2cfe410&gt;</div><div class="line"></div><div class="line">In [<span class="number">20</span>]: <span class="selector-tag">a</span>.next()</div><div class="line">Out[<span class="number">20</span>]: <span class="number">0</span></div></pre></td></tr></table></figure></p>
 <p>可以看出生成器表达式创建了一个生成器，而且生有个特点就是<code>惰性计算</code>, 只有在被检索时候，才会被赋值。 之前有篇文章:<a href="https://shomyliu.github.io/2016/02/28/python-default-para/" target="_blank" rel="external">python 默认参数问题及一个应用</a>,最后有一个例子: <figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">multipliers</span><span class="params">()</span>:</span></div><div class="line">    <span class="keyword">return</span> (<span class="keyword">lambda</span> x : i * x <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">4</span>))  <span class="comment">#修改成生成器</span></div><div class="line"><span class="keyword">print</span> [m(<span class="number">2</span>) <span class="keyword">for</span> m <span class="keyword">in</span> multipliers()]</div></pre></td></tr></table></figure></p>
-<p>这个就是说，只有在执行<code>m(2)</code>的时候，生成器表达式里面的<code>for</code>才会开始从0循环，然后接着才是<code>i * x</code>,因此不存在那篇文章中的问题. <strong>惰性计算</strong>这个特点很有用，上述就是一个应用，<a href="2gua.info">2gua</a>这样说的: &gt;惰性计算想像成水龙头，需要的时候打开，接完水了关掉，这时候数据流就暂停了，再需要的时候再打开水龙头，这时候数据仍是接着输出，不需要从头开始循环</p>
+<p>这个就是说，只有在执行<code>m(2)</code>的时候，生成器表达式里面的<code>for</code>才会开始从0循环，然后接着才是<code>i * x</code>,因此不存在那篇文章中的问题. <strong>惰性计算</strong>这个特点很有用，上述就是一个应用，<a href="http://www.2gua.info/" target="_blank" rel="external">2gua</a>这样说的:</p>
+<blockquote>
+<p>惰性计算想像成水龙头，需要的时候打开，接完水了关掉，这时候数据流就暂停了，再需要的时候再打开水龙头，这时候数据仍是接着输出，不需要从头开始循环</p>
+</blockquote>
 <p>个人理解就是就是可以利用生成器来作为数据管道使用，当被检索的时候，每次拿出一个数据，然后向下面传递,传到最后，再拿第二个数据，在下面的例子中会详细说明。 其实本质跟迭代器差不多,不一次性把数据都那过来，需要的时候，才拿。</p>
 <h1 id="回到例子">回到例子</h1>
 <p>看到这里，开始的例子应该大概可以有点清晰了， 核心语句就是: <figure class="highlight cs"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="function">def <span class="title">gen</span>(<span class="params"></span>):</span></div><div class="line"><span class="function">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="title">range</span>(<span class="params"><span class="number">4</span></span>):</span></div><div class="line"><span class="function">        <span class="keyword">yield</span> i</span></div><div class="line"><span class="function"><span class="keyword">for</span> n <span class="keyword">in</span> [1, 10]:</span></div><div class="line"><span class="function">    <span class="keyword">base</span> </span>= (<span class="keyword">add</span>(i, n) <span class="keyword">for</span> i <span class="keyword">in</span> <span class="keyword">base</span>)</div></pre></td></tr></table></figure></p>
@@ -3035,7 +3042,15 @@ m_{\mathcal{H}}(K) &amp; &lt; 2^K \\
 <p>具体执行过程可以在<a href="http://pythontutor.com/visualize.html#mode=display" target="_blank" rel="external">pythontutor</a>上看看. 之前的解释被误导的原因是，可能会误以为是在第二个管道就把<code>gen()</code>执行完毕了，其实不是这样的。 这种写法的好处显而易见：内存占用低。在数据量极大的时候，用<code>list</code>就只能爆内存，而用生成器模式则完全不用担心</p>
 <h1 id="小结">小结</h1>
 <h2 id="概括">概括</h2>
-<p>主要介绍了大概这样几点： - <code>iterable</code>,<code>iterator</code>与<code>itertion</code>的概念 - 迭代器协议 - 自定义可迭代对象与迭代器分离，保证数据复用 - 生成器: 特殊的迭代器,内部实现了迭代器协议</p>
+<p>主要介绍了大概这样几点：</p>
+<ul>
+<li><code>iterable</code>,<code>iterator</code>与<code>itertion</code>的概念</li>
+<li>迭代器协议
+<ul>
+<li>自定义可迭代对象与迭代器分离，保证数据复用</li>
+</ul></li>
+<li>生成器: 特殊的迭代器,内部实现了迭代器协议</li>
+</ul>
 <p>其实这一块， 那几个概念搞清楚， ,这个很关键， 搞懂了后面就水到渠成了。而且对之前的知识也有很多加深。 比如常见<code>list</code>就是<code>iterator</code>与<code>iteable</code>分离实现的,本身是可迭代对象，但不是迭代器， 类似与<code>xrange</code>,但是又不同。 越来越明白，看源码的重要性了。</p>
 <h2 id="参考">参考</h2>
 <ul>
@@ -3067,7 +3082,7 @@ m_{\mathcal{H}}(K) &amp; &lt; 2^K \\
       <title><![CDATA[hexo同时部署到coding(gitcafe)和github]]></title>
       <url>/2016/03/03/hexo-in-coding-github/</url>
       <content type="html"><![CDATA[<blockquote>
-<p>2017.07.10更新: 注:目前部署到coding需要在网页上表明coding.net 或者开通会员</p>
+<p>2017.07.10更新: 注:目前部署到coding需要在网页上表明coding.net 或者开通会员,否则在首次访问时候, coding.net强加推广页面</p>
 </blockquote>
 <blockquote>
 <p>2016.03.07更新: 部署到coding时，如果使用pages的话，项目名称必须与coding的用户名一致，但是演示并没有这个要求。 而且目前为止：演示不能绑定自己的域名，而pages可以，所以说，为了以后方便，项目名称还是与用户名一致的好，不然部署pages会出现没有样式的bug.</p>

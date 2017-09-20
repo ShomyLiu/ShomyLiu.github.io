@@ -2,6 +2,27 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://shomy.top/2016/03/06/python-generator-1/</loc>
+    
+    <lastmod>2017-09-20T14:35:17.420Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://shomy.top/2016/12/29/gpu-tensorflow-install/</loc>
+    
+    <lastmod>2017-09-05T14:04:55.162Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://shomy.top/2016/03/03/hexo-in-coding-github/</loc>
+    
+    <lastmod>2017-09-05T14:04:55.162Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://shomy.top/2016/10/09/feasibility-of-learning-2/</loc>
     
     <lastmod>2017-09-05T03:48:31.928Z</lastmod>
@@ -12,13 +33,6 @@
     <loc>http://shomy.top/2016/10/06/feasibility-of-learning-1/</loc>
     
     <lastmod>2017-09-05T03:47:23.442Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://shomy.top/2016/12/29/gpu-tensorflow-install/</loc>
-    
-    <lastmod>2017-09-03T02:38:59.116Z</lastmod>
     
   </url>
   
@@ -44,7 +58,7 @@
   </url>
   
   <url>
-    <loc>http://shomy.top/2017/02/17/svm-02-dual/</loc>
+    <loc>http://shomy.top/2017/02/20/svm04-soft-margin/</loc>
     
     <lastmod>2017-07-31T02:42:34.566Z</lastmod>
     
@@ -58,14 +72,14 @@
   </url>
   
   <url>
-    <loc>http://shomy.top/2017/02/20/svm04-soft-margin/</loc>
+    <loc>http://shomy.top/tags/index.html</loc>
     
     <lastmod>2017-07-31T02:42:34.566Z</lastmod>
     
   </url>
   
   <url>
-    <loc>http://shomy.top/tags/index.html</loc>
+    <loc>http://shomy.top/2017/02/17/svm-02-dual/</loc>
     
     <lastmod>2017-07-31T02:42:34.566Z</lastmod>
     
@@ -135,20 +149,6 @@
   </url>
   
   <url>
-    <loc>http://shomy.top/2015/12/01/hexo-for-ubuntu/</loc>
-    
-    <lastmod>2017-07-31T02:42:34.562Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://shomy.top/2016/03/03/hexo-in-coding-github/</loc>
-    
-    <lastmod>2017-07-31T02:42:34.562Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>http://shomy.top/2016/10/22/hexo-markdown-mathjax/</loc>
     
     <lastmod>2017-07-31T02:42:34.562Z</lastmod>
@@ -184,7 +184,7 @@
   </url>
   
   <url>
-    <loc>http://shomy.top/2017/05/09/alias-method-sampling/</loc>
+    <loc>http://shomy.top/2016/12/07/basic-neural-network/</loc>
     
     <lastmod>2017-07-31T02:42:34.562Z</lastmod>
     
@@ -219,7 +219,7 @@
   </url>
   
   <url>
-    <loc>http://shomy.top/2016/03/06/python-generator-1/</loc>
+    <loc>http://shomy.top/2017/03/15/blending-bagging/</loc>
     
     <lastmod>2017-07-31T02:42:34.562Z</lastmod>
     
@@ -240,7 +240,7 @@
   </url>
   
   <url>
-    <loc>http://shomy.top/2016/12/07/basic-neural-network/</loc>
+    <loc>http://shomy.top/2015/12/15/bootstrap-modal-open-offset/</loc>
     
     <lastmod>2017-07-31T02:42:34.562Z</lastmod>
     
@@ -262,20 +262,6 @@
   
   <url>
     <loc>http://shomy.top/2017/02/16/svm-01/</loc>
-    
-    <lastmod>2017-07-31T02:42:34.562Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://shomy.top/2017/03/15/blending-bagging/</loc>
-    
-    <lastmod>2017-07-31T02:42:34.562Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://shomy.top/2015/12/15/bootstrap-modal-open-offset/</loc>
     
     <lastmod>2017-07-31T02:42:34.562Z</lastmod>
     
@@ -352,6 +338,20 @@
   </url>
   
   <url>
+    <loc>http://shomy.top/2017/03/16/adaptive-boosting/</loc>
+    
+    <lastmod>2017-07-31T02:42:34.562Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://shomy.top/2015/12/01/hexo-for-ubuntu/</loc>
+    
+    <lastmod>2017-07-31T02:42:34.562Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://shomy.top/404.html</loc>
     
     <lastmod>2017-07-31T02:42:34.562Z</lastmod>
@@ -359,7 +359,7 @@
   </url>
   
   <url>
-    <loc>http://shomy.top/2017/03/16/adaptive-boosting/</loc>
+    <loc>http://shomy.top/2017/05/09/alias-method-sampling/</loc>
     
     <lastmod>2017-07-31T02:42:34.562Z</lastmod>
     

@@ -13,7 +13,7 @@
 <meta property="og:site_name" content="天空的城">
 <meta property="og:description" content="2016.3.10关于例子解释的补充更新  例子 老规矩，先上一个代码:">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2017-07-31T02:42:34.562Z">
+<meta property="og:updated_time" content="2017-09-20T14:35:17.420Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="python迭代器与生成器小结">
 <meta name="twitter:description" content="2016.3.10关于例子解释的补充更新  例子 老规矩，先上一个代码:">
@@ -187,7 +187,10 @@ ga('send', 'pageview');
 <p>列表生成器十分方便：如下,求10以内的奇数: <code>[i  for i in range(10) if i % 2]</code></p>
 <p>同样在<code>python 2.4</code>也引入了<code>生成器表达式</code>，而且形式非常类似，就是把<code>[]</code>换成了<code>()</code>. <figure class="highlight stylus"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">In [<span class="number">18</span>]: <span class="selector-tag">a</span> = ( <span class="selector-tag">i</span> <span class="keyword">for</span> <span class="selector-tag">i</span> <span class="keyword">in</span> range(<span class="number">4</span>))</div><div class="line"></div><div class="line">In [<span class="number">19</span>]: a</div><div class="line">Out[<span class="number">19</span>]: &lt;generator <span class="selector-tag">object</span> &lt;genexpr&gt; at <span class="number">0</span>x7f40c2cfe410&gt;</div><div class="line"></div><div class="line">In [<span class="number">20</span>]: <span class="selector-tag">a</span>.next()</div><div class="line">Out[<span class="number">20</span>]: <span class="number">0</span></div></pre></td></tr></table></figure></p>
 <p>可以看出生成器表达式创建了一个生成器，而且生有个特点就是<code>惰性计算</code>, 只有在被检索时候，才会被赋值。 之前有篇文章:<a href="https://shomyliu.github.io/2016/02/28/python-default-para/" target="_blank" rel="external">python 默认参数问题及一个应用</a>,最后有一个例子: <figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">multipliers</span><span class="params">()</span>:</span></div><div class="line">    <span class="keyword">return</span> (<span class="keyword">lambda</span> x : i * x <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">4</span>))  <span class="comment">#修改成生成器</span></div><div class="line"><span class="keyword">print</span> [m(<span class="number">2</span>) <span class="keyword">for</span> m <span class="keyword">in</span> multipliers()]</div></pre></td></tr></table></figure></p>
-<p>这个就是说，只有在执行<code>m(2)</code>的时候，生成器表达式里面的<code>for</code>才会开始从0循环，然后接着才是<code>i * x</code>,因此不存在那篇文章中的问题. <strong>惰性计算</strong>这个特点很有用，上述就是一个应用，<a href="2gua.info">2gua</a>这样说的: &gt;惰性计算想像成水龙头，需要的时候打开，接完水了关掉，这时候数据流就暂停了，再需要的时候再打开水龙头，这时候数据仍是接着输出，不需要从头开始循环</p>
+<p>这个就是说，只有在执行<code>m(2)</code>的时候，生成器表达式里面的<code>for</code>才会开始从0循环，然后接着才是<code>i * x</code>,因此不存在那篇文章中的问题. <strong>惰性计算</strong>这个特点很有用，上述就是一个应用，<a href="http://www.2gua.info/" target="_blank" rel="external">2gua</a>这样说的:</p>
+<blockquote>
+<p>惰性计算想像成水龙头，需要的时候打开，接完水了关掉，这时候数据流就暂停了，再需要的时候再打开水龙头，这时候数据仍是接着输出，不需要从头开始循环</p>
+</blockquote>
 <p>个人理解就是就是可以利用生成器来作为数据管道使用，当被检索的时候，每次拿出一个数据，然后向下面传递,传到最后，再拿第二个数据，在下面的例子中会详细说明。 其实本质跟迭代器差不多,不一次性把数据都那过来，需要的时候，才拿。</p>
 <h1 id="回到例子">回到例子</h1>
 <p>看到这里，开始的例子应该大概可以有点清晰了， 核心语句就是: <figure class="highlight cs"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="function">def <span class="title">gen</span>(<span class="params"></span>):</span></div><div class="line"><span class="function">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="title">range</span>(<span class="params"><span class="number">4</span></span>):</span></div><div class="line"><span class="function">        <span class="keyword">yield</span> i</span></div><div class="line"><span class="function"><span class="keyword">for</span> n <span class="keyword">in</span> [1, 10]:</span></div><div class="line"><span class="function">    <span class="keyword">base</span> </span>= (<span class="keyword">add</span>(i, n) <span class="keyword">for</span> i <span class="keyword">in</span> <span class="keyword">base</span>)</div></pre></td></tr></table></figure></p>
@@ -198,7 +201,15 @@ ga('send', 'pageview');
 <p>具体执行过程可以在<a href="http://pythontutor.com/visualize.html#mode=display" target="_blank" rel="external">pythontutor</a>上看看. 之前的解释被误导的原因是，可能会误以为是在第二个管道就把<code>gen()</code>执行完毕了，其实不是这样的。 这种写法的好处显而易见：内存占用低。在数据量极大的时候，用<code>list</code>就只能爆内存，而用生成器模式则完全不用担心</p>
 <h1 id="小结">小结</h1>
 <h2 id="概括">概括</h2>
-<p>主要介绍了大概这样几点： - <code>iterable</code>,<code>iterator</code>与<code>itertion</code>的概念 - 迭代器协议 - 自定义可迭代对象与迭代器分离，保证数据复用 - 生成器: 特殊的迭代器,内部实现了迭代器协议</p>
+<p>主要介绍了大概这样几点：</p>
+<ul>
+<li><code>iterable</code>,<code>iterator</code>与<code>itertion</code>的概念</li>
+<li>迭代器协议
+<ul>
+<li>自定义可迭代对象与迭代器分离，保证数据复用</li>
+</ul></li>
+<li>生成器: 特殊的迭代器,内部实现了迭代器协议</li>
+</ul>
 <p>其实这一块， 那几个概念搞清楚， ,这个很关键， 搞懂了后面就水到渠成了。而且对之前的知识也有很多加深。 比如常见<code>list</code>就是<code>iterator</code>与<code>iteable</code>分离实现的,本身是可迭代对象，但不是迭代器， 类似与<code>xrange</code>,但是又不同。 越来越明白，看源码的重要性了。</p>
 <h2 id="参考">参考</h2>
 <ul>
@@ -224,7 +235,7 @@ ga('send', 'pageview');
 发布时间: 2016-03-06, 15:50:39<br/>
 <p>
 <p>
-最后更新: 2017-07-31, 10:42:34<br/>
+最后更新: 2017-09-20, 22:35:17<br/>
 <p>
 本文链接: <a href="/2016/03/06/python-generator-1/" target="_blank">http://shomy.top/2016/03/06/python-generator-1/</a>
 </p>
