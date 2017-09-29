@@ -6,14 +6,14 @@
   <title>搭建git服务器以及web自动化部署 | 天空的城</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="之前使用sae作为测试服务器，无奈云豆实在是消耗极快，于是就在阿里云上买了一个SEC, 还好当时是学生价。 因为之前用的sae提供的git作开发，迁移过来之后，也就想搭建一个git服务器，可以方便使用，并且还可以做到push上去代码，web页面可以自动更新了。 查了一些资料，大部分都一样，　不过也饶了一点弯路，最终搭建完成，记录于此。">
-<meta name="keywords" content="git-server,hook">
+<meta name="keywords" content="hook,git-server">
 <meta property="og:type" content="article">
 <meta property="og:title" content="搭建git服务器以及web自动化部署">
 <meta property="og:url" content="http://shomy.top/2016/04/14/git-server-hook/index.html">
 <meta property="og:site_name" content="天空的城">
 <meta property="og:description" content="之前使用sae作为测试服务器，无奈云豆实在是消耗极快，于是就在阿里云上买了一个SEC, 还好当时是学生价。 因为之前用的sae提供的git作开发，迁移过来之后，也就想搭建一个git服务器，可以方便使用，并且还可以做到push上去代码，web页面可以自动更新了。 查了一些资料，大部分都一样，　不过也饶了一点弯路，最终搭建完成，记录于此。">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2017-07-31T02:42:34.562Z">
+<meta property="og:updated_time" content="2017-09-26T08:15:55.533Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="搭建git服务器以及web自动化部署">
 <meta name="twitter:description" content="之前使用sae作为测试服务器，无奈云豆实在是消耗极快，于是就在阿里云上买了一个SEC, 还好当时是学生价。 因为之前用的sae提供的git作开发，迁移过来之后，也就想搭建一个git服务器，可以方便使用，并且还可以做到push上去代码，web页面可以自动更新了。 查了一些资料，大部分都一样，　不过也饶了一点弯路，最终搭建完成，记录于此。">
@@ -21,7 +21,11 @@
   
     <link rel="icon" href="/image/favicon.ico">
   
-  <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+
+  
+  <link href="//cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.css" rel="stylesheet">
+  
+  <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
   <link href="//cdn.bootcss.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
   <link rel="stylesheet" href="/css/style.css">
   
@@ -162,7 +166,7 @@ ga('send', 'pageview');
 <blockquote>
 <p>Git 能在特定的重要动作发生时触发自定义脚本。 有两组这样的钩子：客户端的和服务器端的。 客户端钩子由诸如提交和合并这样的操作所调用，而服务器端钩子作用于诸如接收被推送的提交这样的联网操作。</p>
 </blockquote>
-<p>有多种<code>hook</code>可以使用，具体可以看这个介绍:<a href="https://git-scm.com/book/zh/v2/%E8%87%AA%E5%AE%9A%E4%B9%89-Git-Git-%E9%92%A9%E5%AD%90" target="_blank" rel="external">hook</a> 这里我们需要的是<code>post-receive</code>:在整个过程完结以后运行，可以用来更新其他系统服务或者通知用户. 下面开始编写这个小脚本,首先该脚本在<code>myrepo.git</code>目录里面的hooks目录里面。 <figure class="highlight jboss-cli"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">cd</span> ~<span class="string">/myrepo/myrepo.git</span></div><div class="line">vim post-receive</div></pre></td></tr></table></figure></p>
+<p>有多种<code>hook</code>可以使用，具体可以看这个介绍:<a href="https://git-scm.com/book/zh/v2/%E8%87%AA%E5%AE%9A%E4%B9%89-Git-Git-%E9%92%A9%E5%AD%90" target="_blank" rel="external">hook</a> 这里我们需要的是<code>post-receive</code>:在整个过程完结以后运行，可以用来更新其他系统服务或者通知用户. 下面开始编写这个小脚本,首先该脚本在<code>myrepo.git</code>目录里面的hooks目录里面。 <figure class="highlight jboss-cli"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">cd</span> ~<span class="string">/myrepo/myrepo.git/hooks</span></div><div class="line">vim post-receive</div></pre></td></tr></table></figure></p>
 <p>文件的内容如下: <figure class="highlight awk"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#/bin/sh</span></div><div class="line">GIT_WORK_TREE=<span class="regexp">/usr/</span>share<span class="regexp">/nginx/</span>html<span class="regexp">/ git checkout -f</span></div></pre></td></tr></table></figure></p>
 <p>需要修改<code>GTI_WORK_TREE</code> 为你的web工程的目录,<strong>需要注意的是，该目录的own必须是git.</strong> 之后需要给该脚本加入执行权限: <figure class="highlight erlang"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">chmod +x post-<span class="keyword">receive</span></div></pre></td></tr></table></figure></p>
 <p>到此就全部完成了,可以测试一下页面有没有变化.不过还有一个地方可以做一下:就是取消<code>git</code>用户的bash登录，这个是为了安全起见: 打开<code>/etc/passwd</code>,找到 <figure class="highlight elixir"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="symbol">git:</span><span class="symbol">x:</span><span class="number">1001</span><span class="symbol">:</span><span class="number">1001</span><span class="symbol">:</span>,,,<span class="symbol">:/home/git</span><span class="symbol">:/bin/bash</span></div></pre></td></tr></table></figure></p>
@@ -187,7 +191,7 @@ ga('send', 'pageview');
 发布时间: 2016-04-14, 16:23:49<br/>
 <p>
 <p>
-最后更新: 2017-07-31, 10:42:34<br/>
+最后更新: 2017-09-26, 16:15:55<br/>
 <p>
 本文链接: <a href="/2016/04/14/git-server-hook/" target="_blank">http://shomy.top/2016/04/14/git-server-hook/</a>
 </p>
@@ -254,10 +258,6 @@ ga('send', 'pageview');
 
 
 
-  <!-- Go to www.addthis.com/dashboard to customize your tools -->
-<script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-57adc438b914651b"></script>
-
-
 
 </section>
       </div>
@@ -277,8 +277,12 @@ ga('send', 'pageview');
  
 
 
-  <script src="/js/search.js"></script>
+  <script src="//cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.js"></script>
+  <script src="/js/fancybox.js"></script>
 
+
+
+  <script src="/js/search.js"></script>
 
 <script src="/js/script.js"></script>
 

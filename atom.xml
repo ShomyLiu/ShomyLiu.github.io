@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://shomy.top/"/>
-  <updated>2017-08-21T04:16:27.489Z</updated>
+  <updated>2017-09-29T09:56:23.643Z</updated>
   <id>http://shomy.top/</id>
   
   <author>
@@ -14,6 +14,46 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>codings/github等webhook工具的使用</title>
+    <link href="http://shomy.top/2017/09/29/codings-webhook/"/>
+    <id>http://shomy.top/2017/09/29/codings-webhook/</id>
+    <published>2017-09-29T09:48:00.000Z</published>
+    <updated>2017-09-29T09:56:23.643Z</updated>
+    
+    <content type="html"><![CDATA[<h2 id="需求">需求</h2>
+<p>一些代码托管网站比如coding.net/github.com 等都提供了webhook的工具， 经常用于自动化部署。 之前写过一篇博客<a href="http://shomy.top/2016/04/14/git-server-hook/">搭建git服务器以及web自动化部署</a> 主要记录的是在自己服务器上如何搭建git服务，并且利用hook进行自动化部署。不过这种方式有个缺点，没有像github或者coding.net的web界面，管理起来可能稍微麻烦，因此我们还是习惯在github,coding.net上进行代码托管。然后再部署到服务器上，这样有些不方便。还好这些托管网站均提供了webhook的工具，功能与git的hook一致。 <a id="more"></a></p>
+<p>因此可以用来做自动化部署，用一张图来说明区别(参考<a href="https://laravel-china.org/topics/2096/using-webhook-to-realize-automatic-deployment-of-online-server" target="_blank" rel="external">1</a>]:</p>
+<p><img src="http://7xotye.com1.z0.glb.clouddn.com/blog/coding-web-hook/webhook-1.png"> 这样以来， 开发者只需要push代码到github上即可，无需在服务器操作，即可将服务器代码同步最新状态。原理很简单，当coding.net收到<code>PUSH</code>或者<code>PR</code>之后，向服务器发起一个<code>POST</code>的请求， 服务器执行<code>git pull</code>的操作，拉取最新代码。 下面记录下总体的流程(github与coding.net操作基本相同，下面以coding.net为例)</p>
+<h2 id="操作">操作</h2>
+<p>基本流程分为以下几步: 1. 建立仓库，这一个没什么好说的，就是自己的项目 repo. 2. 将服务器的ssh公钥加入到项目的公钥: <img src="http://7xotye.com1.z0.glb.clouddn.com/blog/coding-web-hook/ssh-coding-1.png"> 3. 建立WebHook <img src="http://7xotye.com1.z0.glb.clouddn.com/blog/coding-web-hook/web-hook-new.png"> 4. 在服务器端写响应API 这部分就是写个响应POST请求的小程序就好，我这里用python的Flask来完成的。代码如下，其中使用了第三方执行命令库<code>sh</code>，可以方便执行一些Unix命令: <figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#!/usr/bin/env python</span></div><div class="line"><span class="comment"># encoding: utf-8</span></div><div class="line"><span class="keyword">from</span> flask <span class="keyword">import</span> Flask, request</div><div class="line">eimport sh</div><div class="line"><span class="keyword">import</span> logging</div><div class="line">app = Flask(__name__)</div><div class="line"></div><div class="line"><span class="meta">@app.route('/api/git_hook', methods=['POST'])</span></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">git_hook</span><span class="params">()</span>:</span></div><div class="line">    token = request.form.get(<span class="string">'token'</span>, <span class="string">''</span>) <span class="comment"># 提取token</span></div><div class="line">    <span class="keyword">if</span> <span class="string">'your-token'</span> == token:</div><div class="line">        sh.cd(<span class="string">'/var/www/html/web'</span>) <span class="comment"># 进入web项目的目录</span></div><div class="line">        <span class="comment"># 执行pull操作</span></div><div class="line">        sh.git.pull([<span class="string">'origin'</span>, <span class="string">'master'</span>])</div><div class="line">        <span class="keyword">return</span> <span class="string">'&lt;pre&gt;pull&lt;/pre&gt;'</span></div><div class="line">    <span class="keyword">else</span>:         </div><div class="line">        <span class="keyword">return</span> <span class="string">'&lt;pre&gt;Wrong Toen &lt;/pre&gt;'</span></div><div class="line"></div><div class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>: </div><div class="line">    app.run(port=<span class="number">5000</span>)</div></pre></td></tr></table></figure></p>
+<pre><code>这里需要说明的是，服务器端的用户需要有项目目录的读写权限，最好直接把目录的own设置为用户。 之后直接执行该文件即可:
+<figure class="highlight lsl"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">nohup python app.py <span class="number">2</span>&gt;&amp;<span class="number">1</span> &amp;</div></pre></td></tr></table></figure>
+
+这样就可以在后台执行，端口是5000.</code></pre>
+<ol start="5" style="list-style-type: decimal">
+<li><p>设置nginx域名转发 这一步其实就是Nginx的转发，将5000端口转到80端口，这样就可以使用域名访问了，直接在Nginx的server 80的配置文件，加上如下的一项: <figure class="highlight nginx"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="attribute">location</span> /api &#123;</div><div class="line">    <span class="attribute">proxy_set_header</span>    X-REAL-IP <span class="variable">$remote_addr</span>;</div><div class="line">    <span class="attribute">proxy_set_header</span>    Host    <span class="variable">$http_host</span>;</div><div class="line">    <span class="attribute">proxy_pass</span>                http://127.0.0.1:5000</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>这样就可以直接使用域名<code>http://yoursite.com/api/git_hook</code>访问了，记得重启下nginx服务。</p></li>
+<li><p>测试 服务器的服务启动之后， 使用webhook做个测试， Test的部分是coding自己的测试，没有携带token。 <img src="http://7xotye.com1.z0.glb.clouddn.com/blog/coding-web-hook/result-1.png"></p></li>
+</ol>
+<h2 id="总结">总结</h2>
+<p>这样就算完成了利用webhook的自动化部署的过程。 整体比较简单清晰。 这里需要提另外一个代码托管工具，<a href="https://about.gitlab.com/" target="_blank" rel="external">gitlab</a> 它除了github/coding.net的功能之外，提供了在自己服务器上搭建gitlab，同样可以拥有web管理的界面。 但是目前不直接用它的原因，就是这货比较吃配置，最小4G内存(包含SWAP)，而我现在的学生腾讯云服务器仅仅是1G内存，1核的CPU… 以后如果装备上去了 ，肯定会直接上gitlab. 一步到位。</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;h2 id=&quot;需求&quot;&gt;需求&lt;/h2&gt;
+&lt;p&gt;一些代码托管网站比如coding.net/github.com 等都提供了webhook的工具， 经常用于自动化部署。 之前写过一篇博客&lt;a href=&quot;http://shomy.top/2016/04/14/git-server-hook/&quot;&gt;搭建git服务器以及web自动化部署&lt;/a&gt; 主要记录的是在自己服务器上如何搭建git服务，并且利用hook进行自动化部署。不过这种方式有个缺点，没有像github或者coding.net的web界面，管理起来可能稍微麻烦，因此我们还是习惯在github,coding.net上进行代码托管。然后再部署到服务器上，这样有些不方便。还好这些托管网站均提供了webhook的工具，功能与git的hook一致。
+    
+    </summary>
+    
+      <category term="工具使用" scheme="http://shomy.top/categories/%E5%B7%A5%E5%85%B7%E4%BD%BF%E7%94%A8/"/>
+    
+    
+      <category term="hook" scheme="http://shomy.top/tags/hook/"/>
+    
+  </entry>
   
   <entry>
     <title>Python中tuple+=赋值的四个问题</title>
@@ -1752,7 +1792,7 @@
 <a id="more"></a>
 <figure class="highlight ini"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># 图像的维度 28*28 -&gt;784</span></div><div class="line"><span class="attr">x_img</span> = <span class="number">28</span></div><div class="line"><span class="attr">y_img</span> = <span class="number">28</span></div><div class="line"><span class="attr">n_classes</span> = <span class="number">10</span></div></pre></td></tr></table></figure>
 <p>接下来定义几个函数，方便使用，一些注释说明，在代码中说明:</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">weight_variable</span><span class="params">(shape)</span>:</span></div><div class="line">    <span class="comment"># 初始化卷积核的权重参数，一般使用高斯正太分布随机值</span></div><div class="line">    initial = tf.truncated_normal(shape, stddev=<span class="number">0.1</span>)</div><div class="line">    <span class="keyword">return</span> tf.Variable(initial, name=<span class="string">"W"</span>)</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">bias_variable</span><span class="params">(shape)</span>:</span></div><div class="line">    <span class="comment"># 定义卷积操作之后的偏置项，初始化为一个常数即可</span></div><div class="line">    initial = tf.constant(<span class="number">0.1</span>, shape=shape)</div><div class="line">    <span class="keyword">return</span> tf.Variable(initial, name=<span class="string">"bias"</span>)</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">conv2d</span><span class="params">(x, W)</span>:</span></div><div class="line">    <span class="comment"># 定义卷积操作,直接使用tf的函数即可</span></div><div class="line">    <span class="comment"># x和W的参数都要求是4维的tensor</span></div><div class="line">    <span class="comment"># strides是卷积滑动的窗口的跨度，其中strides[0],与strides[3]一般为1, strides[1],strides[2]为每次滑动的height和width</span></div><div class="line">    <span class="comment"># padding 有两个取值: SAME:表示卷积之后结果的维度与X相同，是宽卷积，VALID则表示窄卷积，结果维度比X小。</span></div><div class="line"></div><div class="line">    <span class="keyword">return</span> tf.nn.conv2d(x, W, strides=[<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>], padding=<span class="string">"SAME"</span>, name=<span class="string">"conv2d"</span>)</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">max_pool</span><span class="params">(x)</span>:</span></div><div class="line">    <span class="comment"># 对卷积之后结果进行pool的层</span></div><div class="line">    <span class="comment"># ksize 是取多大的块作为pool的单元，一般ksize[0] = ksize[3] =1, 中间两项为表示pool单元为2X2,就是取这四个值的最大值</span></div><div class="line">    <span class="comment"># strides 和 padding 与上述卷积操作含义相同</span></div><div class="line"></div><div class="line">    <span class="keyword">return</span> tf.nn.max_pool(x, ksize=[<span class="number">1</span>,<span class="number">2</span>,<span class="number">2</span>,<span class="number">1</span>], strides=[<span class="number">1</span>,<span class="number">2</span>,<span class="number">2</span>,<span class="number">1</span>], padding=<span class="string">"SAME"</span>, name=<span class="string">"pooled"</span>)</div></pre></td></tr></table></figure>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">weight_variable</span><span class="params">(shape)</span></span><span class="symbol">:</span></div><div class="line">    <span class="comment"># 初始化卷积核的权重参数，一般使用高斯正太分布随机值</span></div><div class="line">    initial = tf.truncated_normal(shape, stddev=<span class="number">0</span>.<span class="number">1</span>)</div><div class="line">    <span class="keyword">return</span> tf.Variable(initial, name=<span class="string">"W"</span>)</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">bias_variable</span><span class="params">(shape)</span></span><span class="symbol">:</span></div><div class="line">    <span class="comment"># 定义卷积操作之后的偏置项，初始化为一个常数即可</span></div><div class="line">    initial = tf.constant(<span class="number">0</span>.<span class="number">1</span>, shape=shape)</div><div class="line">    <span class="keyword">return</span> tf.Variable(initial, name=<span class="string">"bias"</span>)</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">conv2d</span><span class="params">(x, W)</span></span><span class="symbol">:</span></div><div class="line">    <span class="comment"># 定义卷积操作,直接使用tf的函数即可</span></div><div class="line">    <span class="comment"># x和W的参数都要求是4维的tensor</span></div><div class="line">    <span class="comment"># strides是卷积滑动的窗口的跨度，其中strides[0],与strides[3]一般为1, strides[1],strides[2]为每次滑动的height和width</span></div><div class="line">    <span class="comment"># padding 有两个取值: SAME:表示卷积之后结果的维度与X相同，是宽卷积，VALID则表示窄卷积，结果维度比X小。</span></div><div class="line"></div><div class="line">    <span class="keyword">return</span> tf.nn.conv2d(x, W, strides=[<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>], padding=<span class="string">"SAME"</span>, name=<span class="string">"conv2d"</span>)</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">max_pool</span><span class="params">(x)</span></span><span class="symbol">:</span></div><div class="line">    <span class="comment"># 对卷积之后结果进行pool的层</span></div><div class="line">    <span class="comment"># ksize 是取多大的块作为pool的单元，一般ksize[0] = ksize[3] =1, 中间两项为表示pool单元为2X2,就是取这四个值的最大值</span></div><div class="line">    <span class="comment"># strides 和 padding 与上述卷积操作含义相同</span></div><div class="line"></div><div class="line">    <span class="keyword">return</span> tf.nn.max_pool(x, ksize=[<span class="number">1</span>,<span class="number">2</span>,<span class="number">2</span>,<span class="number">1</span>], strides=[<span class="number">1</span>,<span class="number">2</span>,<span class="number">2</span>,<span class="number">1</span>], padding=<span class="string">"SAME"</span>, name=<span class="string">"pooled"</span>)</div></pre></td></tr></table></figure>
 <p>然后开始构造CNN的输入输出:</p>
 <figure class="highlight makefile"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">xs = tf.placeholder(tf.float32, [None, x_img * y_img]) <span class="comment"># shape: 784</span></div><div class="line">ys = tf.placeholder(tf.float32, [None, n_classes]) <span class="comment"># 10</span></div><div class="line">keep_prob = tf.placeholder(tf.float32)</div></pre></td></tr></table></figure>
 <p>这里需要注意的是是<code>tf.nn.conv2d</code>的参数，先看看它的文档:</p>
@@ -1858,86 +1898,6 @@
       <category term="DeepLearning" scheme="http://shomy.top/tags/DeepLearning/"/>
     
       <category term="NN" scheme="http://shomy.top/tags/NN/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>Ubuntu安装GPU版TensorFlow</title>
-    <link href="http://shomy.top/2016/12/29/gpu-tensorflow-install/"/>
-    <id>http://shomy.top/2016/12/29/gpu-tensorflow-install/</id>
-    <published>2016-12-29T06:39:40.000Z</published>
-    <updated>2017-09-05T14:04:55.162Z</updated>
-    
-    <content type="html"><![CDATA[<blockquote>
-<p>当前环境如下:</p>
-</blockquote>
-<ul>
-<li>Ubuntu 16.04.1 LTS</li>
-<li>GeForce GTX 960M</li>
-<li>CUDA 8.0</li>
-<li>cuDNN V5.1 Library</li>
-</ul>
-<a id="more"></a>
-<h2 id="环境准备">环境准备</h2>
-<p>首先检查自己的GPU是否支持CUDA， <figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span><span class="bash">查看显卡类型</span></div><div class="line"><span class="meta">$</span><span class="bash"> lspci | grep -i nvidia</span></div></pre></td></tr></table></figure></p>
-<p>在输出中找到自己的的显卡类型，然后到http://developer.nvidia.com/cuda-gpu 找到自己的型号： <img src="http://7xotye.com1.z0.glb.clouddn.com/nvidia-1.jpg"> <img src="http://7xotye.com1.z0.glb.clouddn.com/nvidia-2.png"></p>
-<p>我本机的环境如下:</p>
-<ul>
-<li>Ubuntu 16.04.1 LTS</li>
-<li>GeForce GTX 960M</li>
-</ul>
-<p>下面开始安装。</p>
-<h2 id="安装cuda和cudnn">安装CUDA和cuDNN</h2>
-<ol style="list-style-type: decimal">
-<li><p>下载CUDA: https://developer.nvidia.com/cuda-downloads，下载对应版本的cuda安装包，下载对应版本的cuda安装包，推荐下载最新版本的8.0版本，deb版的本地安装比较方便。</p>
-<div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/nvidia-3.png">
-
-</div></li>
-<li><p>下载完成之后，直接执行如下的命令进行安装即可: <figure class="highlight lsl"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">sudo dpkg -i cuda-repo-ubuntu1604<span class="number">-8</span><span class="number">-0</span>-local_8<span class="number">.0</span><span class="number">.44</span><span class="number">-1</span>_amd64.deb</div><div class="line">sudo apt update</div><div class="line">sudo apt install cuda</div></pre></td></tr></table></figure></p>
-<p>注: 下载完成之后，deb的名称可能有一个oauth的后缀，直接重命令删掉就好了。</p></li>
-<li><p>下载cuDDN：https://developer.nvidia.com/rdp/cudnn-download ， 这里需要注册个帐号，然后才可以下载。</p>
-<div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/nvidia-4.png">
-
-</div>
-<p><strong>这里有个版本需要注意，最好下载 <code>cuDNNv5.1 Library</code>版本的。 虽然V5.0也支持 CUDA 8.0，但是在后续跑TensorFlow的时候，会报错，后来才重新下载了V5.1的，才能正常运行。 </strong></p></li>
-<li><p>拷贝库文件 将下载下的cuDNN压缩包执行如下命令: <figure class="highlight awk"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">tar -zxvf cudnn-<span class="number">8.0</span>-linux-x64-v5.<span class="number">1</span>.tgz</div><div class="line">cd cuda</div><div class="line">sudo cp lib64<span class="regexp">/* /u</span>sr<span class="regexp">/local/</span>cuda<span class="regexp">/lib64/</span></div><div class="line">sudo cp include<span class="regexp">/cudnn.h /u</span>sr<span class="regexp">/local/</span>cuda<span class="regexp">/include/</span></div></pre></td></tr></table></figure></p></li>
-<li><p>修改环境变量 修改<code>.bashrc</code>或者<code>/etc/profile</code>等，加入如下的环境变量: <figure class="highlight routeros"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="comment">## CUDA</span></div><div class="line"><span class="builtin-name">export</span> <span class="attribute">CUDA_HOME</span>=/usr/local/cuda</div><div class="line"><span class="builtin-name">export</span> <span class="attribute">PATH</span>=<span class="variable">$&#123;CUDA_HOME&#125;</span>/bin/:$PATH</div><div class="line"><span class="builtin-name">export</span> <span class="attribute">LD_LIBRARY_PATH</span>=<span class="variable">$LD_LIBRARY_PATH</span>:$CUDA_HOME/lib64:$CUDA_HOME/extras/CUPTI/lib64</div></pre></td></tr></table></figure></p>
-<p>之后执行<code>source .bashrc</code>立即生效</p></li>
-<li><p>测试是否成功 进入<code>/usr/local/cuda/samples</code>，编译运行某个sample: <figure class="highlight vim"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo <span class="keyword">make</span> <span class="keyword">all</span> -j4</div></pre></td></tr></table></figure></p>
-<p>全部编译完成后，进入 <code>samples/bin/x86_64/linux/release</code>，运行<code>deviceQuery</code>： <figure class="highlight jboss-cli"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="string">./deviceQuery</span></div></pre></td></tr></table></figure></p>
-<p>显示有可用的GPU，即可成功: <img src="http://7xotye.com1.z0.glb.clouddn.com/nvidia-5.png"></p></li>
-</ol>
-<h2 id="安装tensorflow">安装TensorFlow</h2>
-<p>直接使用<code>pip</code>安装即可：当前版本为1.3: <figure class="highlight cmake"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo  pip <span class="keyword">install</span> tensorflow-gpu</div></pre></td></tr></table></figure></p>
-<p>安装完成之后，尝试<code>import tensorflow</code>:显示如下即可成功 <figure class="highlight stylus"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">In [<span class="number">1</span>]: import tensorflow</div><div class="line">I tensorflow/stream_executor/dso_loader<span class="selector-class">.cc</span>:<span class="number">128</span>] successfully opened CUDA library libcublas<span class="selector-class">.so</span> locally</div><div class="line">I tensorflow/stream_executor/dso_loader<span class="selector-class">.cc</span>:<span class="number">128</span>] successfully opened CUDA library libcudnn<span class="selector-class">.so</span> locally</div><div class="line">I tensorflow/stream_executor/dso_loader<span class="selector-class">.cc</span>:<span class="number">128</span>] successfully opened CUDA library libcufft<span class="selector-class">.so</span> locally</div><div class="line">I tensorflow/stream_executor/dso_loader<span class="selector-class">.cc</span>:<span class="number">128</span>] successfully opened CUDA library libcuda<span class="selector-class">.so</span>.<span class="number">1</span> locally</div><div class="line">I tensorflow/stream_executor/dso_loader<span class="selector-class">.cc</span>:<span class="number">128</span>] successfully opened CUDA library libcurand<span class="selector-class">.so</span> locally</div><div class="line">In [<span class="number">2</span>]:</div></pre></td></tr></table></figure></p>
-<p>在代码使用的时候，只需要指定<code>GPU</code>即可(当然tf也会默认使用GPU): <figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">with</span> tf.device(<span class="string">'/gpu:0'</span>):</div></pre></td></tr></table></figure></p>
-<p>即可使用GPU运行TensorFlow程序。速度比CPU快很多，跑一个CNN文本分类的程序，CPU版本，用8核i7处理器几乎保持600%的利用率，训练半小时还未结束，换为GPU版本，10分钟结束！ 另外提供一个使用<code>watch</code>实时查看nvidia显卡状态的命令: <figure class="highlight excel"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">watch -<span class="built_in">n</span> <span class="number">10</span> nvidia-smi</div></pre></td></tr></table></figure></p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;blockquote&gt;
-&lt;p&gt;当前环境如下:&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;ul&gt;
-&lt;li&gt;Ubuntu 16.04.1 LTS&lt;/li&gt;
-&lt;li&gt;GeForce GTX 960M&lt;/li&gt;
-&lt;li&gt;CUDA 8.0&lt;/li&gt;
-&lt;li&gt;cuDNN V5.1 Library&lt;/li&gt;
-&lt;/ul&gt;
-    
-    </summary>
-    
-      <category term="工具使用" scheme="http://shomy.top/categories/%E5%B7%A5%E5%85%B7%E4%BD%BF%E7%94%A8/"/>
-    
-    
-      <category term="TensorFlow" scheme="http://shomy.top/tags/TensorFlow/"/>
-    
-      <category term="GPU" scheme="http://shomy.top/tags/GPU/"/>
-    
-      <category term="DeepLearning" scheme="http://shomy.top/tags/DeepLearning/"/>
     
   </entry>
   
