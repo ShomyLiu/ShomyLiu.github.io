@@ -2,9 +2,16 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://shomy.top/2016/11/16/logistic-regression-1/</loc>
+    
+    <lastmod>2017-10-23T09:14:57.053Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://shomy.top/2017/09/29/codings-webhook/</loc>
     
-    <lastmod>2017-09-29T10:58:52.206Z</lastmod>
+    <lastmod>2017-09-29T14:31:55.763Z</lastmod>
     
   </url>
   
@@ -23,14 +30,14 @@
   </url>
   
   <url>
-    <loc>http://shomy.top/2016/03/03/hexo-in-coding-github/</loc>
+    <loc>http://shomy.top/2016/12/29/gpu-tensorflow-install/</loc>
     
     <lastmod>2017-09-05T14:04:55.162Z</lastmod>
     
   </url>
   
   <url>
-    <loc>http://shomy.top/2016/12/29/gpu-tensorflow-install/</loc>
+    <loc>http://shomy.top/2016/03/03/hexo-in-coding-github/</loc>
     
     <lastmod>2017-09-05T14:04:55.162Z</lastmod>
     
@@ -135,13 +142,6 @@
   </url>
   
   <url>
-    <loc>http://shomy.top/2015/12/14/ubuntu-32bit-clang-3-7-x/</loc>
-    
-    <lastmod>2017-07-31T02:42:34.566Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>http://shomy.top/2016/03/11/ubuntu-python-pyv8/</loc>
     
     <lastmod>2017-07-31T02:42:34.566Z</lastmod>
@@ -156,16 +156,16 @@
   </url>
   
   <url>
-    <loc>http://shomy.top/about/index.html</loc>
+    <loc>http://shomy.top/2015/12/14/ubuntu-32bit-clang-3-7-x/</loc>
     
     <lastmod>2017-07-31T02:42:34.566Z</lastmod>
     
   </url>
   
   <url>
-    <loc>http://shomy.top/2017/01/27/hexo-migrate-solution/</loc>
+    <loc>http://shomy.top/about/index.html</loc>
     
-    <lastmod>2017-07-31T02:42:34.562Z</lastmod>
+    <lastmod>2017-07-31T02:42:34.566Z</lastmod>
     
   </url>
   
@@ -198,7 +198,7 @@
   </url>
   
   <url>
-    <loc>http://shomy.top/2016/11/16/logistic-regression-1/</loc>
+    <loc>http://shomy.top/2015/12/15/bootstrap-modal-vertical-center/</loc>
     
     <lastmod>2017-07-31T02:42:34.562Z</lastmod>
     
@@ -226,7 +226,7 @@
   </url>
   
   <url>
-    <loc>http://shomy.top/2015/12/15/bootstrap-modal-vertical-center/</loc>
+    <loc>http://shomy.top/2016/04/04/chrome-http2https-google/</loc>
     
     <lastmod>2017-07-31T02:42:34.562Z</lastmod>
     
@@ -247,7 +247,7 @@
   </url>
   
   <url>
-    <loc>http://shomy.top/2016/04/04/chrome-http2https-google/</loc>
+    <loc>http://shomy.top/2017/01/28/2016-review/</loc>
     
     <lastmod>2017-07-31T02:42:34.562Z</lastmod>
     
@@ -269,13 +269,6 @@
   
   <url>
     <loc>http://shomy.top/2017/02/16/svm-01/</loc>
-    
-    <lastmod>2017-07-31T02:42:34.562Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://shomy.top/2017/01/28/2016-review/</loc>
     
     <lastmod>2017-07-31T02:42:34.562Z</lastmod>
     
@@ -359,6 +352,13 @@
   </url>
   
   <url>
+    <loc>http://shomy.top/2016/10/22/hexo-markdown-mathjax/</loc>
+    
+    <lastmod>2017-07-31T02:42:34.562Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://shomy.top/404.html</loc>
     
     <lastmod>2017-07-31T02:42:34.562Z</lastmod>
@@ -366,7 +366,7 @@
   </url>
   
   <url>
-    <loc>http://shomy.top/2016/10/22/hexo-markdown-mathjax/</loc>
+    <loc>http://shomy.top/2017/01/27/hexo-migrate-solution/</loc>
     
     <lastmod>2017-07-31T02:42:34.562Z</lastmod>
     
