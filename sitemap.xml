@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://shomy.top/2016/12/29/gpu-tensorflow-install/</loc>
+    
+    <lastmod>2017-12-05T08:33:31.941Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://shomy.top/2016/11/16/logistic-regression-1/</loc>
     
     <lastmod>2017-10-23T09:14:57.053Z</lastmod>
@@ -26,13 +33,6 @@
     <loc>http://shomy.top/2016/03/06/python-generator-1/</loc>
     
     <lastmod>2017-09-20T14:35:17.420Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://shomy.top/2016/12/29/gpu-tensorflow-install/</loc>
-    
-    <lastmod>2017-09-05T14:04:55.162Z</lastmod>
     
   </url>
   
@@ -142,6 +142,13 @@
   </url>
   
   <url>
+    <loc>http://shomy.top/2015/12/14/ubuntu-32bit-clang-3-7-x/</loc>
+    
+    <lastmod>2017-07-31T02:42:34.566Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://shomy.top/2016/03/11/ubuntu-python-pyv8/</loc>
     
     <lastmod>2017-07-31T02:42:34.566Z</lastmod>
@@ -150,13 +157,6 @@
   
   <url>
     <loc>http://shomy.top/2017/07/28/word2vec-all/</loc>
-    
-    <lastmod>2017-07-31T02:42:34.566Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://shomy.top/2015/12/14/ubuntu-32bit-clang-3-7-x/</loc>
     
     <lastmod>2017-07-31T02:42:34.566Z</lastmod>
     

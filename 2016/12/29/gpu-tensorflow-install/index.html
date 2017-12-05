@@ -5,23 +5,23 @@
   
   <title>Ubuntu安装GPU版TensorFlow | 天空的城</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="当前环境如下:   Ubuntu 16.04.1 LTS GeForce GTX 960M CUDA 8.0 cuDNN V5.1 Library">
+  <meta name="description" content="2017.12.5 CUDA 与 cuDNN的最新版本均已经有所变化，不过安装方式相同。   当前环境如下:   Ubuntu 16.04.1 LTS GeForce GTX 960M CUDA 8.0 cuDNN V5.1 Library">
 <meta name="keywords" content="TensorFlow,GPU,DeepLearning">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Ubuntu安装GPU版TensorFlow">
 <meta property="og:url" content="http://shomy.top/2016/12/29/gpu-tensorflow-install/index.html">
 <meta property="og:site_name" content="天空的城">
-<meta property="og:description" content="当前环境如下:   Ubuntu 16.04.1 LTS GeForce GTX 960M CUDA 8.0 cuDNN V5.1 Library">
+<meta property="og:description" content="2017.12.5 CUDA 与 cuDNN的最新版本均已经有所变化，不过安装方式相同。   当前环境如下:   Ubuntu 16.04.1 LTS GeForce GTX 960M CUDA 8.0 cuDNN V5.1 Library">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/nvidia-1.jpg">
 <meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/nvidia-2.png">
 <meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/nvidia-3.png">
 <meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/nvidia-4.png">
 <meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/nvidia-5.png">
-<meta property="og:updated_time" content="2017-09-05T14:04:55.162Z">
+<meta property="og:updated_time" content="2017-12-05T08:33:31.941Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Ubuntu安装GPU版TensorFlow">
-<meta name="twitter:description" content="当前环境如下:   Ubuntu 16.04.1 LTS GeForce GTX 960M CUDA 8.0 cuDNN V5.1 Library">
+<meta name="twitter:description" content="2017.12.5 CUDA 与 cuDNN的最新版本均已经有所变化，不过安装方式相同。   当前环境如下:   Ubuntu 16.04.1 LTS GeForce GTX 960M CUDA 8.0 cuDNN V5.1 Library">
 <meta name="twitter:image" content="http://7xotye.com1.z0.glb.clouddn.com/nvidia-1.jpg">
   
   
@@ -145,6 +145,9 @@ ga('send', 'pageview');
         
         
         <blockquote>
+<p>2017.12.5 CUDA 与 cuDNN的最新版本均已经有所变化，不过安装方式相同。</p>
+</blockquote>
+<blockquote>
 <p>当前环境如下:</p>
 </blockquote>
 <ul>
@@ -178,7 +181,7 @@ ga('send', 'pageview');
 
 </div>
 <p><strong>这里有个版本需要注意，最好下载 <code>cuDNNv5.1 Library</code>版本的。 虽然V5.0也支持 CUDA 8.0，但是在后续跑TensorFlow的时候，会报错，后来才重新下载了V5.1的，才能正常运行。 </strong></p></li>
-<li><p>拷贝库文件 将下载下的cuDNN压缩包执行如下命令: <figure class="highlight awk"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">tar -zxvf cudnn-<span class="number">8.0</span>-linux-x64-v5.<span class="number">1</span>.tgz</div><div class="line">cd cuda</div><div class="line">sudo cp lib64<span class="regexp">/* /u</span>sr<span class="regexp">/local/</span>cuda<span class="regexp">/lib64/</span></div><div class="line">sudo cp include<span class="regexp">/cudnn.h /u</span>sr<span class="regexp">/local/</span>cuda<span class="regexp">/include/</span></div></pre></td></tr></table></figure></p></li>
+<li><p>拷贝库文件 将下载下的cuDNN压缩包执行如下命令: <figure class="highlight awk"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">tar -zxvf cudnn-<span class="number">8.0</span>-linux-x64-v5.<span class="number">1</span>.tgz</div><div class="line">cd cuda</div><div class="line">sudo cp lib64<span class="regexp">/* /u</span>sr<span class="regexp">/local/</span>cuda<span class="regexp">/lib64/</span> -d</div><div class="line">sudo cp include<span class="regexp">/cudnn.h /u</span>sr<span class="regexp">/local/</span>cuda<span class="regexp">/include/</span></div></pre></td></tr></table></figure></p></li>
 <li><p>修改环境变量 修改<code>.bashrc</code>或者<code>/etc/profile</code>等，加入如下的环境变量: <figure class="highlight routeros"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="comment">## CUDA</span></div><div class="line"><span class="builtin-name">export</span> <span class="attribute">CUDA_HOME</span>=/usr/local/cuda</div><div class="line"><span class="builtin-name">export</span> <span class="attribute">PATH</span>=<span class="variable">$&#123;CUDA_HOME&#125;</span>/bin/:$PATH</div><div class="line"><span class="builtin-name">export</span> <span class="attribute">LD_LIBRARY_PATH</span>=<span class="variable">$LD_LIBRARY_PATH</span>:$CUDA_HOME/lib64:$CUDA_HOME/extras/CUPTI/lib64</div></pre></td></tr></table></figure></p>
 <p>之后执行<code>source .bashrc</code>立即生效</p></li>
 <li><p>测试是否成功 进入<code>/usr/local/cuda/samples</code>，编译运行某个sample: <figure class="highlight vim"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo <span class="keyword">make</span> <span class="keyword">all</span> -j4</div></pre></td></tr></table></figure></p>
@@ -186,10 +189,10 @@ ga('send', 'pageview');
 <p>显示有可用的GPU，即可成功: <img src="http://7xotye.com1.z0.glb.clouddn.com/nvidia-5.png"></p></li>
 </ol>
 <h2 id="安装tensorflow">安装TensorFlow</h2>
-<p>直接使用<code>pip</code>安装即可：当前版本为1.3: <figure class="highlight cmake"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo  pip <span class="keyword">install</span> tensorflow-gpu</div></pre></td></tr></table></figure></p>
-<p>安装完成之后，尝试<code>import tensorflow</code>:显示如下即可成功 <figure class="highlight stylus"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">In [<span class="number">1</span>]: import tensorflow</div><div class="line">I tensorflow/stream_executor/dso_loader<span class="selector-class">.cc</span>:<span class="number">128</span>] successfully opened CUDA library libcublas<span class="selector-class">.so</span> locally</div><div class="line">I tensorflow/stream_executor/dso_loader<span class="selector-class">.cc</span>:<span class="number">128</span>] successfully opened CUDA library libcudnn<span class="selector-class">.so</span> locally</div><div class="line">I tensorflow/stream_executor/dso_loader<span class="selector-class">.cc</span>:<span class="number">128</span>] successfully opened CUDA library libcufft<span class="selector-class">.so</span> locally</div><div class="line">I tensorflow/stream_executor/dso_loader<span class="selector-class">.cc</span>:<span class="number">128</span>] successfully opened CUDA library libcuda<span class="selector-class">.so</span>.<span class="number">1</span> locally</div><div class="line">I tensorflow/stream_executor/dso_loader<span class="selector-class">.cc</span>:<span class="number">128</span>] successfully opened CUDA library libcurand<span class="selector-class">.so</span> locally</div><div class="line">In [<span class="number">2</span>]:</div></pre></td></tr></table></figure></p>
+<p>直接使用<code>pip</code>安装即可：当前版本为1.4: <figure class="highlight cmake"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo  pip <span class="keyword">install</span> tensorflow-gpu</div></pre></td></tr></table></figure></p>
+<p>安装完成之后，尝试<code>import tensorflow</code>:显示如下即可成功（最新版tf显示信息有所差异） <figure class="highlight stylus"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">In [<span class="number">1</span>]: import tensorflow</div><div class="line">I tensorflow/stream_executor/dso_loader<span class="selector-class">.cc</span>:<span class="number">128</span>] successfully opened CUDA library libcublas<span class="selector-class">.so</span> locally</div><div class="line">I tensorflow/stream_executor/dso_loader<span class="selector-class">.cc</span>:<span class="number">128</span>] successfully opened CUDA library libcudnn<span class="selector-class">.so</span> locally</div><div class="line">I tensorflow/stream_executor/dso_loader<span class="selector-class">.cc</span>:<span class="number">128</span>] successfully opened CUDA library libcufft<span class="selector-class">.so</span> locally</div><div class="line">I tensorflow/stream_executor/dso_loader<span class="selector-class">.cc</span>:<span class="number">128</span>] successfully opened CUDA library libcuda<span class="selector-class">.so</span>.<span class="number">1</span> locally</div><div class="line">I tensorflow/stream_executor/dso_loader<span class="selector-class">.cc</span>:<span class="number">128</span>] successfully opened CUDA library libcurand<span class="selector-class">.so</span> locally</div><div class="line">In [<span class="number">2</span>]:</div></pre></td></tr></table></figure></p>
 <p>在代码使用的时候，只需要指定<code>GPU</code>即可(当然tf也会默认使用GPU): <figure class="highlight actionscript"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">with</span> tf.device(<span class="string">'/gpu:0'</span>):</div></pre></td></tr></table></figure></p>
-<p>即可使用GPU运行TensorFlow程序。速度比CPU快很多，跑一个CNN文本分类的程序，CPU版本，用8核i7处理器几乎保持600%的利用率，训练半小时还未结束，换为GPU版本，10分钟结束！ 另外提供一个使用<code>watch</code>实时查看nvidia显卡状态的命令: <figure class="highlight excel"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">watch -<span class="built_in">n</span> <span class="number">10</span> nvidia-smi</div></pre></td></tr></table></figure></p>
+<p>即可使用GPU运行TensorFlow程序。速度比CPU快很多，跑一个CNN文本分类的程序，CPU版本，用8核i7处理器几乎保持600%的利用率，训练半小时还未结束，换为GPU版本，10分钟结束！ 另外提供一个使用<code>watch</code>实时查看nvidia显卡状态的命令，每隔1s显示状态: <figure class="highlight excel"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">watch -<span class="built_in">n</span> <span class="number">1</span> nvidia-smi</div></pre></td></tr></table></figure></p>
 
       
     </div>
@@ -207,7 +210,7 @@ ga('send', 'pageview');
 发布时间: 2016-12-29, 14:39:40<br/>
 <p>
 <p>
-最后更新: 2017-09-05, 22:04:55<br/>
+最后更新: 2017-12-05, 16:33:31<br/>
 <p>
 本文链接: <a href="/2016/12/29/gpu-tensorflow-install/" target="_blank">http://shomy.top/2016/12/29/gpu-tensorflow-install/</a>
 </p>
