@@ -465,12 +465,18 @@ body {
 .icon-setting {
   color: #5c97bf;
   font-size: 30px;
-  padding: 0px 10px;
+  padding: 0px 15px;
   cursor: pointer;
   opacity: 0.7;
 }
 .icon-setting:hover {
   opacity: 1;
+}
+@media screen and (max-width: 479px) {
+  .icon-setting {
+    padding: 0px 11px;
+    font-size: 25px;
+  }
 }
 .nav-icon {
   font-family: FontAwesome;
@@ -809,13 +815,18 @@ a.article-title:hover {
 }
 .article-nav-caption {
   text-transform: uppercase;
-  letter-spacing: 0.7px;
+  letter-spacing: 2px;
   color: #ddd;
   line-height: 1em;
   font-weight: bold;
 }
 #article-nav-newer .article-nav-caption {
   margin-right: -2px;
+}
+@media mq mobile {
+  .article-nav-caption {
+    letter-spacing: 0.1px;
+  }
 }
 .article-nav-title {
   font-size: 0.85em;
