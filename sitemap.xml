@@ -86,20 +86,6 @@
   </url>
   
   <url>
-    <loc>http://shomy.top/2017/02/17/svm-02-dual/</loc>
-    
-    <lastmod>2017-07-31T02:42:34.566Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://shomy.top/2017/02/19/svm03-kernel-trick/</loc>
-    
-    <lastmod>2017-07-31T02:42:34.566Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>http://shomy.top/2017/02/20/svm04-soft-margin/</loc>
     
     <lastmod>2017-07-31T02:42:34.566Z</lastmod>
@@ -114,14 +100,14 @@
   </url>
   
   <url>
-    <loc>http://shomy.top/2017/01/02/tensorflow-rnn-example-3/</loc>
+    <loc>http://shomy.top/2017/01/01/tensorflow-fnn-example-1/</loc>
     
     <lastmod>2017-07-31T02:42:34.566Z</lastmod>
     
   </url>
   
   <url>
-    <loc>http://shomy.top/2017/01/01/tensorflow-fnn-example-1/</loc>
+    <loc>http://shomy.top/2017/01/02/tensorflow-rnn-example-3/</loc>
     
     <lastmod>2017-07-31T02:42:34.566Z</lastmod>
     
@@ -136,6 +122,13 @@
   
   <url>
     <loc>http://shomy.top/2016/07/09/twilio-flask-slack/</loc>
+    
+    <lastmod>2017-07-31T02:42:34.566Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://shomy.top/2017/02/19/svm03-kernel-trick/</loc>
     
     <lastmod>2017-07-31T02:42:34.566Z</lastmod>
     
@@ -163,6 +156,13 @@
   </url>
   
   <url>
+    <loc>http://shomy.top/2017/02/17/svm-02-dual/</loc>
+    
+    <lastmod>2017-07-31T02:42:34.566Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://shomy.top/tags/index.html</loc>
     
     <lastmod>2017-07-31T02:42:34.566Z</lastmod>
@@ -184,6 +184,20 @@
   </url>
   
   <url>
+    <loc>http://shomy.top/2017/03/07/kernel-lr/</loc>
+    
+    <lastmod>2017-07-31T02:42:34.562Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://shomy.top/2015/12/15/bootstrap-modal-vertical-center/</loc>
+    
+    <lastmod>2017-07-31T02:42:34.562Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://shomy.top/2016/03/29/linux-bash-find/</loc>
     
     <lastmod>2017-07-31T02:42:34.562Z</lastmod>
@@ -191,7 +205,7 @@
   </url>
   
   <url>
-    <loc>http://shomy.top/2015/12/04/Ubuntu-ScreenShot/</loc>
+    <loc>http://shomy.top/2016/02/28/python-default-para/</loc>
     
     <lastmod>2017-07-31T02:42:34.562Z</lastmod>
     
@@ -212,35 +226,7 @@
   </url>
   
   <url>
-    <loc>http://shomy.top/2016/02/28/python-default-para/</loc>
-    
-    <lastmod>2017-07-31T02:42:34.562Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>http://shomy.top/2015/12/15/bootstrap-modal-open-offset/</loc>
-    
-    <lastmod>2017-07-31T02:42:34.562Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://shomy.top/2016/04/04/chrome-http2https-google/</loc>
-    
-    <lastmod>2017-07-31T02:42:34.562Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://shomy.top/2017/03/16/adaptive-boosting/</loc>
-    
-    <lastmod>2017-07-31T02:42:34.562Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://shomy.top/2015/12/30/cpp-switch-break/</loc>
     
     <lastmod>2017-07-31T02:42:34.562Z</lastmod>
     
@@ -282,14 +268,21 @@
   </url>
   
   <url>
-    <loc>http://shomy.top/2015/12/11/dns-probe-possible/</loc>
+    <loc>http://shomy.top/2016/04/04/chrome-http2https-google/</loc>
     
     <lastmod>2017-07-31T02:42:34.562Z</lastmod>
     
   </url>
   
   <url>
-    <loc>http://shomy.top/2017/05/09/alias-method-sampling/</loc>
+    <loc>http://shomy.top/2015/12/30/cpp-switch-break/</loc>
+    
+    <lastmod>2017-07-31T02:42:34.562Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://shomy.top/2015/12/11/dns-probe-possible/</loc>
     
     <lastmod>2017-07-31T02:42:34.562Z</lastmod>
     
@@ -317,7 +310,14 @@
   </url>
   
   <url>
-    <loc>http://shomy.top/2016/12/07/basic-neural-network/</loc>
+    <loc>http://shomy.top/2015/12/04/Ubuntu-ScreenShot/</loc>
+    
+    <lastmod>2017-07-31T02:42:34.562Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://shomy.top/2017/03/16/adaptive-boosting/</loc>
     
     <lastmod>2017-07-31T02:42:34.562Z</lastmod>
     
@@ -331,7 +331,7 @@
   </url>
   
   <url>
-    <loc>http://shomy.top/2017/03/15/blending-bagging/</loc>
+    <loc>http://shomy.top/2017/05/09/alias-method-sampling/</loc>
     
     <lastmod>2017-07-31T02:42:34.562Z</lastmod>
     
@@ -345,14 +345,7 @@
   </url>
   
   <url>
-    <loc>http://shomy.top/2015/12/15/bootstrap-modal-vertical-center/</loc>
-    
-    <lastmod>2017-07-31T02:42:34.562Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://shomy.top/2017/03/07/kernel-lr/</loc>
+    <loc>http://shomy.top/2016/10/22/hexo-markdown-mathjax/</loc>
     
     <lastmod>2017-07-31T02:42:34.562Z</lastmod>
     
@@ -366,6 +359,13 @@
   </url>
   
   <url>
+    <loc>http://shomy.top/2016/12/07/basic-neural-network/</loc>
+    
+    <lastmod>2017-07-31T02:42:34.562Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://shomy.top/404.html</loc>
     
     <lastmod>2017-07-31T02:42:34.562Z</lastmod>
@@ -373,7 +373,7 @@
   </url>
   
   <url>
-    <loc>http://shomy.top/2016/10/22/hexo-markdown-mathjax/</loc>
+    <loc>http://shomy.top/2017/03/15/blending-bagging/</loc>
     
     <lastmod>2017-07-31T02:42:34.562Z</lastmod>
     
