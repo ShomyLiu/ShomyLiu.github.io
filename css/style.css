@@ -224,9 +224,9 @@ body {
   -webkit-text-size-adjust: 100%;
 }
 .outer {
-  max-width: 1020px;
+  max-width: 1075px;
   margin: 0px auto;
-  padding: 0 20px;
+  padding: 0 25px;
 }
 .outer:before,
 .outer:after {
@@ -239,8 +239,8 @@ body {
 .inner {
   display: inline;
   float: left;
-  width: 97.5%;
-  margin: 0 1.25%;
+  width: 97.02380952380952%;
+  margin: 0 1.488095238095238%;
 }
 .left,
 .alignleft {
