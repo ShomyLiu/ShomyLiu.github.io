@@ -4,7 +4,7 @@
   <url>
     <loc>http://shomy.top/2018/03/01/2017-review/</loc>
     
-    <lastmod>2018-03-06T06:28:12.273Z</lastmod>
+    <lastmod>2018-03-06T06:43:33.002Z</lastmod>
     
   </url>
   
@@ -107,7 +107,7 @@
   </url>
   
   <url>
-    <loc>http://shomy.top/2017/02/19/svm03-kernel-trick/</loc>
+    <loc>http://shomy.top/tags/index.html</loc>
     
     <lastmod>2017-07-31T02:42:34.566Z</lastmod>
     
@@ -121,14 +121,7 @@
   </url>
   
   <url>
-    <loc>http://shomy.top/tags/index.html</loc>
-    
-    <lastmod>2017-07-31T02:42:34.566Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://shomy.top/2017/01/01/tensorflow-cnn-example-2/</loc>
+    <loc>http://shomy.top/2017/02/19/svm03-kernel-trick/</loc>
     
     <lastmod>2017-07-31T02:42:34.566Z</lastmod>
     
@@ -142,7 +135,7 @@
   </url>
   
   <url>
-    <loc>http://shomy.top/2017/01/02/tensorflow-rnn-example-3/</loc>
+    <loc>http://shomy.top/2017/01/01/tensorflow-cnn-example-2/</loc>
     
     <lastmod>2017-07-31T02:42:34.566Z</lastmod>
     
@@ -150,6 +143,13 @@
   
   <url>
     <loc>http://shomy.top/2016/05/05/trans-8-powerful-awk-built-in-variables/</loc>
+    
+    <lastmod>2017-07-31T02:42:34.566Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://shomy.top/2017/01/02/tensorflow-rnn-example-3/</loc>
     
     <lastmod>2017-07-31T02:42:34.566Z</lastmod>
     
@@ -191,7 +191,7 @@
   </url>
   
   <url>
-    <loc>http://shomy.top/2016/11/17/linear-models-summary/</loc>
+    <loc>http://shomy.top/2017/03/07/kernel-lr/</loc>
     
     <lastmod>2017-07-31T02:42:34.562Z</lastmod>
     
@@ -205,14 +205,7 @@
   </url>
   
   <url>
-    <loc>http://shomy.top/2015/12/30/linux-login-windows/</loc>
-    
-    <lastmod>2017-07-31T02:42:34.562Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://shomy.top/2015/12/15/bootstrap-modal-vertical-center/</loc>
+    <loc>http://shomy.top/2016/03/29/linux-bash-find/</loc>
     
     <lastmod>2017-07-31T02:42:34.562Z</lastmod>
     
@@ -226,7 +219,7 @@
   </url>
   
   <url>
-    <loc>http://shomy.top/2015/12/04/pic-for-github/</loc>
+    <loc>http://shomy.top/2015/12/15/bootstrap-modal-vertical-center/</loc>
     
     <lastmod>2017-07-31T02:42:34.562Z</lastmod>
     
@@ -240,7 +233,7 @@
   </url>
   
   <url>
-    <loc>http://shomy.top/2016/04/04/chrome-http2https-google/</loc>
+    <loc>http://shomy.top/2015/12/04/pic-for-github/</loc>
     
     <lastmod>2017-07-31T02:42:34.562Z</lastmod>
     
@@ -248,6 +241,13 @@
   
   <url>
     <loc>http://shomy.top/2016/03/01/python-namespace-1/</loc>
+    
+    <lastmod>2017-07-31T02:42:34.562Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://shomy.top/2016/04/04/chrome-http2https-google/</loc>
     
     <lastmod>2017-07-31T02:42:34.562Z</lastmod>
     
@@ -275,21 +275,14 @@
   </url>
   
   <url>
-    <loc>http://shomy.top/2015/12/30/cpp-switch-break/</loc>
-    
-    <lastmod>2017-07-31T02:42:34.562Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://shomy.top/2017/03/09/support-vector-regression/</loc>
-    
-    <lastmod>2017-07-31T02:42:34.562Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>http://shomy.top/2017/02/16/svm-01/</loc>
+    
+    <lastmod>2017-07-31T02:42:34.562Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://shomy.top/2015/12/30/cpp-switch-break/</loc>
     
     <lastmod>2017-07-31T02:42:34.562Z</lastmod>
     
@@ -310,13 +303,6 @@
   </url>
   
   <url>
-    <loc>http://shomy.top/2017/03/16/adaptive-boosting/</loc>
-    
-    <lastmod>2017-07-31T02:42:34.562Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>http://shomy.top/2016/10/17/feasibility-of-learning-3/</loc>
     
     <lastmod>2017-07-31T02:42:34.562Z</lastmod>
@@ -325,6 +311,13 @@
   
   <url>
     <loc>http://shomy.top/2016/08/11/flask-sqlalchemy-relation-lazy/</loc>
+    
+    <lastmod>2017-07-31T02:42:34.562Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://shomy.top/2017/03/16/adaptive-boosting/</loc>
     
     <lastmod>2017-07-31T02:42:34.562Z</lastmod>
     
@@ -345,6 +338,13 @@
   </url>
   
   <url>
+    <loc>http://shomy.top/2017/03/15/blending-bagging/</loc>
+    
+    <lastmod>2017-07-31T02:42:34.562Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://shomy.top/2016/12/07/basic-neural-network/</loc>
     
     <lastmod>2017-07-31T02:42:34.562Z</lastmod>
@@ -353,13 +353,6 @@
   
   <url>
     <loc>http://shomy.top/2015/12/01/hexo-for-ubuntu/</loc>
-    
-    <lastmod>2017-07-31T02:42:34.562Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://shomy.top/2017/03/15/blending-bagging/</loc>
     
     <lastmod>2017-07-31T02:42:34.562Z</lastmod>
     
@@ -380,6 +373,13 @@
   </url>
   
   <url>
+    <loc>http://shomy.top/2017/03/09/support-vector-regression/</loc>
+    
+    <lastmod>2017-07-31T02:42:34.562Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://shomy.top/404.html</loc>
     
     <lastmod>2017-07-31T02:42:34.562Z</lastmod>
@@ -387,14 +387,14 @@
   </url>
   
   <url>
-    <loc>http://shomy.top/2017/03/07/kernel-lr/</loc>
+    <loc>http://shomy.top/2016/11/17/linear-models-summary/</loc>
     
     <lastmod>2017-07-31T02:42:34.562Z</lastmod>
     
   </url>
   
   <url>
-    <loc>http://shomy.top/2016/03/29/linux-bash-find/</loc>
+    <loc>http://shomy.top/2015/12/30/linux-login-windows/</loc>
     
     <lastmod>2017-07-31T02:42:34.562Z</lastmod>
     
