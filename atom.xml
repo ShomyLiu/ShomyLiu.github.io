@@ -71,9 +71,12 @@
     <link href="http://shomy.top/2018/02/28/relation-extraction/"/>
     <id>http://shomy.top/2018/02/28/relation-extraction/</id>
     <published>2018-02-28T03:58:30.000Z</published>
-    <updated>2018-03-06T02:33:44.867Z</updated>
+    <updated>2018-04-04T03:09:46.497Z</updated>
     
     <content type="html"><![CDATA[<blockquote>
+<p>2018.04.04更新：z增加对NYT+Freebase数据集的两个版本的说明</p>
+</blockquote>
+<blockquote>
 <p>对近几年(到2017)一些关系抽取/分类(Relation Extraction)的部分文献的一个简单总结。</p>
 </blockquote>
 <a id="more"></a>
@@ -109,7 +112,7 @@
 <p>其中Fully Supervised 一般评测使用label完全准确的SemEval 2010 Task 8 数据集。 Distant Supervised 使用NYT+FreeBase数据集。 SemEval 2010 Task 8 训练数据样例: <figure class="highlight dts"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"> The <span class="params">&lt;e1&gt;</span>microphone<span class="params">&lt;/e1&gt;</span> converts sound into an electrical <span class="params">&lt;e2&gt;</span>signal<span class="params">&lt;/e2&gt;</span>.</div><div class="line">Cause-Effect(e1,e2)</div><div class="line"><span class="symbol">Comment:</span></div></pre></td></tr></table></figure></p>
 <p>其中第一行为sentence，第二行为两个entity的relation，第三行为备注。 NYT + FreeBase 训练数据集: <figure class="highlight clean"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">m<span class="number">.0</span>ccvx    m<span class="number">.05</span>gf08    queens    belle_harbor    /location/location/contains    .....officials yesterday to reopen their investigation into the fatal crash <span class="keyword">of</span> a passenger jet <span class="keyword">in</span> belle_harbor , queens...... ###END###</div></pre></td></tr></table></figure></p>
 <p>一共6列，前两列为两个entity的Freebase mid, 第三四列为两个entity在句子中的string。第五列为relation，最后一列为sentence（有省略），以###END###结尾</p>
-<p>这两个数据集相对来说用的最广泛。 此外关于Joint Learning with entity and relation和Linguistics(NER, POS Tagging, Dependency Tree) Methods 部分暂时还没有关注，仅仅列在这里。</p>
+<p>这两个数据集相对来说用的最广泛。关于Distant Supervision的NYT+Freebase数据集有两个版本，会在文末说明。 此外关于Joint Learning with entity and relation和Linguistics(NER, POS Tagging, Dependency Tree) Methods 部分暂时还没有关注，仅仅列在这里。</p>
 <h2 id="fully-supervised-learning">Fully Supervised Learning</h2>
 <h3 id="相关文献">相关文献</h3>
 <p>这一部分基本是在SemEval 2010 Task 8 数据集上做关系分类的工作，是一个完全监督的任务。</p>
@@ -438,15 +441,25 @@
 <blockquote>
 <p>Zhu, (2017). Relation Classification via Target-Concentrated Attention CNNs. ICONIP</p>
 </blockquote>
-<p>这篇文章基本上是以上一篇为模板，稍微改动了一些， 动机则是每个词在不同的relation有不同的权重Attention 矩阵。 几点不同: - Input Layer 引入一个权重矩阵<span class="math inline">\(M\)</span>，直接计算word 与 relation的相关度， 而不是计算word 与 entity的相关性: <img src="http://7xotye.com1.z0.glb.clouddn.com/blog/relation-extraction/zhuatt-1.png"> <img src="http://7xotye.com1.z0.glb.clouddn.com/blog/relation-extraction/zhuatt-2.png"></p>
+<p>这篇文章基本上是以上一篇为模板，稍微改动了一些， 动机则是每个词在不同的relation有不同的权重Attention 矩阵。 几点不同:</p>
 <ul>
+<li><p>Input Layer 引入一个权重矩阵<span class="math inline">\(M\)</span>，直接计算word 与 relation的相关度， 而不是计算word 与 entity的相关性: <img src="http://7xotye.com1.z0.glb.clouddn.com/blog/relation-extraction/zhuatt-1.png"> <img src="http://7xotye.com1.z0.glb.clouddn.com/blog/relation-extraction/zhuatt-2.png"></p></li>
 <li>去掉了Pool Attention 部分，直接max pooling</li>
-<li>目标函数: 没有使用上一篇的自定义的距离函数，而是直接使用类似Santos 2015的那种向量内积计算score的方式. 最终仍然使用ranking loss</li>
+<li><p>目标函数: 没有使用上一篇的自定义的距离函数，而是直接使用类似Santos 2015的那种向量内积计算score的方式. 最终仍然使用ranking loss</p></li>
 </ul>
 <p>实验结果, 并没有对比88%的结果: <img src="http://7xotye.com1.z0.glb.clouddn.com/blog/relation-extraction/zhuatt-3.png"></p>
 <p>这篇文章在Input Layer的Attention的改进比较符合直观。 在没有使用二级Attention 以及改进的损失函数的情况下， 可以达到87.5%，相对于上一篇的86.1%还是有提升。不过整体来看，文章的创新点比较少。</p>
 <h3 id="总结1">总结1</h3>
-<p>目前从论文结果来看，在SemEval 2010 Task 8 数据集上最高的F1-Score为88%，不过貌似还未有人可以复现。 总结一下已有的模型: - word embedding + position embedding 成为输入层的标配。 - 损失函数Ranking Loss 比 softmax 效果好。 - Attention的作用明显。 - Input Layer加入Attention给每个word赋予weight，可以是word 与 relation的相关性，也可以是word 与 entity的相关性. - RNN/LSTM的所有step 的输出加一个Attention，本质也属于每个word与relation的相关性。</p>
+<p>目前从论文结果来看，在SemEval 2010 Task 8 数据集上最高的F1-Score为88%，不过貌似还未有人可以复现。 总结一下已有的模型:</p>
+<ul>
+<li>word embedding + position embedding 成为输入层的标配。</li>
+<li>损失函数Ranking Loss 比 softmax 效果好。</li>
+<li>Attention的作用明显。
+<ul>
+<li>Input Layer加入Attention给每个word赋予weight，可以是word 与 relation的相关性，也可以是word 与 entity的相关性.</li>
+<li>RNN/LSTM的所有step 的输出加一个Attention，本质也属于每个word与relation的相关性。</li>
+</ul></li>
+</ul>
 <p>可能改进的方向: 单纯从神经网络的结构出发，改进的余地很小了，因为这个数据集很封闭， 可以利用的信息仅仅是这些sentence 以及 标注的word entity。 在上述的基础上可能可以考虑的方向，从两个target word与relation的关系上加约束。</p>
 <h2 id="distant-supervised-learning">Distant Supervised Learning</h2>
 <p>上一章的全监督方法都是在完全正确的标注数据集上来做的，因此数据量很小，SemEval 2010 一共是10000左右条文本。因此开始考虑研究如何在大数据集上做关系抽取。2010年提出Distant Supervision可以自动标注训练样本，原理很简单。利用知识图谱中的两个entity以及对应的某个relation，在corpus中进行回标，如果某个句子中同时包含了两个entity，那么就假定这个句子包含了上述的relation. 这样就可以获得大量的标注数据。当然缺陷就是假设太强，会引入了很多噪音数据， 因为包含两个entity的句子不一定可以刻画对应的relation，如下, 对于NYT 语料中的第一个句子的确描述了 Founder的关系，但是第二句就不是这个关系，因此属于噪音:</p>
@@ -713,12 +726,29 @@
 </ul>
 <h2 id="附">附</h2>
 <p>关系抽取这个方向相对来说比较成熟了, 包括数据集,评测等. 改进的出发点很多; 相对比较容易做的就是从distant supervision下手, 如何减轻噪音数据带来的影响. 此外用一些时髦的东西套过来也可以,比如强化学习(AAAI2018有2篇)</p>
+<blockquote>
 <p>此外正在用Pytorch来复现相关模型, 然而一些经典模型仍然无法复现出结果, 还在调试.</p>
+</blockquote>
+<p>大概原因找到了， 数据集的问题。 在NYT数据集上，常用的有两个版本的数据集(刘康老师组他们在AAAI2018的文章 Large Scaled Relation Extraction with Reinforcement Learning Task 也提到了):</p>
+<ul>
+<li>27类关系，Zeng2015,Ji2017等用到的经过过滤之后的数据集，相对较小，以SMALL表示。</li>
+<li>53类关系，Lin2016 发布的数据集，相对较大，训练数据大概是小数据的4倍，以LARGE表示。</li>
+</ul>
+<p>根据个人及同学的使用Pytorch复现的实验结果，有下面经验结论（可能有误差):</p>
+<ul>
+<li>PCNN+ATT(Lin 2016) 在SMALL数据集上很难达到在LARGE数据集上的效果，甚至达不到PCNN+ONE(Zeng 2015)的效果, 原因正在探索</li>
+<li>在LARGE数据集上，复现的模型中， PCNN+ATT可以达到Lin 2016文中的效果，PCNN+ONE在该版本数据集上的表现也比SMALL数据集要好。</li>
+</ul>
+<p>鉴于上述的发现，正好也有个很有趣的现象与之对应，使用SMALL数据集的文章貌似没有与PCNN+ATT这一经典模型做对比实验的。另外在刘康老师组的AAAI2018的文中，也是在两个数据集上分开比较的，仅仅在LARGE数据集上与PCNN+ATT模型做了对比。</p>
+<p>…待续</p>
 ]]></content>
     
     <summary type="html">
     
       &lt;blockquote&gt;
+&lt;p&gt;2018.04.04更新：z增加对NYT+Freebase数据集的两个版本的说明&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;blockquote&gt;
 &lt;p&gt;对近几年(到2017)一些关系抽取/分类(Relation Extraction)的部分文献的一个简单总结。&lt;/p&gt;
 &lt;/blockquote&gt;
     
