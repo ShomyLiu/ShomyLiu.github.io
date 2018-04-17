@@ -870,6 +870,9 @@ a.article-title:hover {
 #toc .toc-child {
   padding-left: 1.5em;
 }
+#tag-category ul {
+  text-align: center;
+}
 #tag-category .category-list li {
   display: inline-block;
   margin: 0 1em 0.5em 0;

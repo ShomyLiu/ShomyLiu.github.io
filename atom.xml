@@ -836,7 +836,7 @@
     <link href="http://shomy.top/2017/09/29/codings-webhook/"/>
     <id>http://shomy.top/2017/09/29/codings-webhook/</id>
     <published>2017-09-29T09:48:00.000Z</published>
-    <updated>2017-09-29T14:31:55.763Z</updated>
+    <updated>2018-04-17T11:07:14.369Z</updated>
     
     <content type="html"><![CDATA[<h2 id="需求">需求</h2>
 <p>一些代码托管网站比如coding.net/github.com 等都提供了webhook的工具， 经常用于自动化部署。 之前写过一篇博客<a href="http://shomy.top/2016/04/14/git-server-hook/">搭建git服务器以及web自动化部署</a> 主要记录的是在自己服务器上如何搭建git服务，并且利用hook进行自动化部署。不过这种方式有个缺点，没有像github或者coding.net的web界面，管理起来可能稍微麻烦，因此我们还是习惯在github,coding.net上进行代码托管。然后再部署到服务器上，这样有些不方便。还好这些托管网站均提供了webhook的工具，功能与git的hook一致。 <a id="more"></a></p>
@@ -850,7 +850,7 @@
 <ol start="5" style="list-style-type: decimal">
 <li>设置nginx域名转发 这一步其实就是Nginx的转发，将5000端口转到80端口，这样就可以使用域名访问了，直接在Nginx的server 80的配置文件，加上如下的一项:</li>
 </ol>
-<p><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">location /api &#123;</div><div class="line">    proxy_set_header    X-REAL-IP $remote_addr;</div><div class="line">    proxy_set_header    Host    $http_host;</div><div class="line">    proxy_pass                http://<span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span>:<span class="number">5000</span></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">location /api &#123;</div><div class="line">    proxy_set_header    X-REAL-IP $remote_addr;</div><div class="line">    proxy_set_header    Host    $http_host;</div><div class="line">    proxy_pass          http://<span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span>:<span class="number">5000</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
 <pre><code>这样就可以直接使用域名`http://yoursite.com/api/git_hook`访问了，记得重启下nginx服务。</code></pre>
 <ol start="6" style="list-style-type: decimal">
 <li>测试 服务器的服务启动之后， 使用webhook做个测试， Test的部分是coding自己的测试，没有携带token。 <img src="http://7xotye.com1.z0.glb.clouddn.com/blog/coding-web-hook/result-1.png"></li>
