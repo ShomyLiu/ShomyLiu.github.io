@@ -3,6 +3,125 @@
   
     
     <entry>
+      <title><![CDATA[Neo4j初探]]></title>
+      <url>/2018/06/08/neo4j-start/</url>
+      <content type="html"><![CDATA[<p>近期需要处理图数据，考察后打算使用<a href="https://neo4j.com/" target="_blank" rel="external">neo4j</a>, 相比其他一些图数据库，neo4j开源，跨平台，接口友好，文档齐全，完整支持ACID。 首先放一张网上的图片，关系型数据库与图数据库存储网络数据的差异:</p>
+<div class="figure">
+<img src="https://pic4.zhimg.com/v2-c6882ae9c34b627833aefba7580e57ee_b.jpg">
+
+</div>
+<p>初次接触neo4j 踩了不少坑，这里记录一下。</p>
+<a id="more"></a>
+<p>关于如何安装Neo4j和使用web ui进行查询操作就不再赘述。</p>
+<h2 id="cypher基本操作">Cypher基本操作</h2>
+<p>相比关系型数据库的SQL查询语言，Neo4j的查询语言为<code>Cypher</code>，语法更加友好，更适合图数据做查询操作。首先介绍在图数据里面几个概念:</p>
+<ul>
+<li>节点(Node): 使用小括号表示<code>(n)</code>表示n这个节点，同时一般都会赋予节点某个标签(Label), 等同于关系书库里面的表名。比如<code>(n: Person)</code>表示n是一个<code>Person</code>类的节点，当然一个节点可以同时有多个label.</li>
+<li>关系(Relation)：关系使用中括号表示<code>[r:Knows]</code>表示<code>r</code>是<code>Knows</code>这种关系。两个节点的关系用<code>--</code>表示，如果有方向的话，加个箭头即可。如<code>(a)-[r:Knowns]-&gt;(b)</code>表示节点a和b之间有r关系，其中<code>Knowns</code>为<code>r</code>的类型</li>
+<li>属性(Property): 节点和关系都可以附带属性，这个也是图数据库的优势，储存属性非常方便，直接用key-value表示即可。比如<code>(n:Person{name:&quot;John&quot;})</code>表示name为John的节点n。同样关系也可以有属性:<code>[r:Knows]{year: 2018}</code>表示为r赋予一个year属性。</li>
+</ul>
+<p>几个常用的关键字介绍:</p>
+<ul>
+<li><strong>MATCH</strong>: 表示查询，是读数据库操作。比如查属于Person的节点:<code>MATCH (n:Person)</code>，查找姓名为“John”的节点:<code>MATCH (n:Person){name: &quot;John&quot;}</code>或者使用<code>where</code>语句:<code>MATCH (n:Person) WHERE n.name=&quot;John&quot;</code>。当然这里面很多语法可以使用，比如正则匹配等，这里就不再赘述了。当然在实际使用中，MATCH不能单独使用，需要结合<code>RETURN</code>。</li>
+<li><strong>CREATE</strong>: 表示创建，可以新增节点，关系，索引，约束等等，是一种写操作。比如<code>CREATE (n:Person{name:&quot;Ana&quot;})</code>表示创建一个name为“Ana”的Person节点。在创建的同时可以设置属性:<code>CREATE (n:Person{name:&quot;Ana&quot;}) set n.age=20</code>。同样在某个属性上创建索引:<code>CREATE INDEX ON :Person(name)</code>，这里需要提一下，<strong>尽量所有的Label都设置索引或者UNIQUE约束</strong>，在后续的读操作比如MATCH会大大提高性能(创建索引可以在导入节点之前执行)。</li>
+<li><strong>DELETE</strong>: 表示删除节点，关系等，也是写操作。一般需要结合<code>MATCH</code>匹配查询要删除的节点。<code>MATCH (n:Person) DELETE n</code>。如果在删除有关系的节点，这样删除会报错，可以先删除边<code>MATCH (n:Person)-[r:KNOWS]-&gt;() DELETE r</code>再删除节点。不过更推荐使用<code>DETACH DELETE</code>来级联删除，<code>MATCH (n:Person) DETACH DELETE n</code>可以同时删除节点及节点的关系。</li>
+<li><strong>MERGE</strong>：合并节点或者关系，属于先读后写操作，相当于<code>MATCH + CREATE</code>，先检查数据库中节点/关系是否存在，如果存在的话就不再创建，反之执行CREATE。如:MERGE(a:Person{name:“John”}) on create set a.age=20 //创建节点，先检测是否存在 // 给节点a,b建立关系，如果a,b已经存在，就无需新建。 MATCH (a:Person{name:“John”}), (b:Person{name:“Ana”}) MERGE (a)-[:KNOWS]-&gt;(b)</li>
+</ul>
+<p>这几个只是最基本的操作，在复杂查询中，会用到诸如<code>WITH, UNWIND</code>等命令。这里不再详细描述。</p>
+<p>几个注意事项:</p>
+<ul>
+<li>节点名称与节点Label的定义容易混乱。比如<code>CREATE (n:Person)</code>创建了一个属于Person的节点n。这里的n仅仅属于一个变量名，跟节点本身没有关系，命令执行结束，n的生命周期也就结束了，而Person则是节点本身的Label，会一直存在。</li>
+<li>索引一定要建立</li>
+</ul>
+<p>关于Neo4j浏览器的初次使用有几个快捷键:</p>
+<ul>
+<li>默认单行输入，按回车执行命令</li>
+<li>输入一行命令之后，按<code>SHIFT + ENTER</code>进入多行输入状态</li>
+<li>在多行输入时，<code>CTRL + ENTER</code>执行命令</li>
+<li><code>ESC</code>可以放大输入框至屏幕大小，复杂查询的时候，很方便。</li>
+</ul>
+<p>关于内存配置的几个参数<a href="https://neo4j.com/docs/operations-manual/3.4/performance/memory-configuration/" target="_blank" rel="external">内存配置</a>:</p>
+<ul>
+<li><code>dbms.memory.heap.initial_size</code></li>
+<li><code>dbms.memory.heap.max_size</code></li>
+<li><code>dbms.memory.pagecache.size</code>可以使用<code>neo4j-admin memrec</code>来根据当前数据库数据，查看推荐的内存配置</li>
+</ul>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">bin/neo4j-admin memrec <span class="attribute">--database</span>=graph.db</div></pre></td></tr></table></figure>
+<h2 id="导入数据">导入数据</h2>
+<p>这一部分主要记录下如何将图数据从文件中导入库，常见的格式为CSV和JSON格式。</p>
+<h2 id="导入csv-格式数据">导入CSV 格式数据</h2>
+<p>Neo4j内置了命令来导入CSV数据：使用方法也很简单。假设CSV格式如下:</p>
+<figure class="highlight 1c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="string">"Id"</span>,<span class="string">"Name"</span>,<span class="string">"Year"</span></div><div class="line"><span class="string">"1"</span>,<span class="string">"ABBA"</span>,<span class="string">"1992"</span></div><div class="line"><span class="string">"2"</span>,<span class="string">"Roxette"</span>,<span class="string">"1986"</span></div><div class="line"><span class="string">"3"</span>,<span class="string">"Europe"</span>,<span class="string">"1979"</span></div><div class="line"><span class="string">"4"</span>,<span class="string">"The Cardigans"</span>,<span class="string">"1992"</span></div></pre></td></tr></table></figure>
+<p>直接使用如下命令导入并直接引用headers来表示属性并创建节点:</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">LOAD</span> CSV <span class="keyword">WITH</span> HEADERS <span class="keyword">FROM</span> <span class="string">'FILE:/artists.csv'</span> <span class="keyword">AS</span> line</div><div class="line"><span class="keyword">CREATE</span> (:Artist &#123; <span class="keyword">name</span>: line.Name, <span class="keyword">year</span>: toInteger(line.Year)&#125;)</div></pre></td></tr></table></figure>
+<p>注意事项:</p>
+<ul>
+<li>分隔符默认是<code>,</code>, 可以用<code>FIELDTERMINATOR</code>自定义分隔符:LOAD CSV WITH HEADERS FROM ‘FILE:/artists.csv’ AS line FIELDTERMINATOR “;”</li>
+<li>文件位置: 可以直接使用URL地址作为文件位置，如果是本地文件的话，直接使用“FILE:”表明，文件的位置是相对位置，在配置文件<code>neo4j.conf</code>中的<code>dbms.directories.import</code>参数可以指定，默认是neo4j安装目录下的<code>import</code>文件夹，将CSV文件放到该目录下即可。</li>
+<li>对于大规模数据，如果一次性导入可能会超内存，此时可以用<code>PERIODIC COMMIT</code>来分批提交导入数据，默认是1000行提交一次，具体如下:</li>
+</ul>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">USING PERIODIC COMMIT 500</div><div class="line">LOAD CSV WITH HEADERS <span class="keyword">FROM</span><span class="built_in">..</span>.</div><div class="line"><span class="built_in">..</span><span class="built_in">..</span></div></pre></td></tr></table></figure>
+<ul>
+<li>文本内容存在<code>&quot;</code>的字段需要特殊处理</li>
+</ul>
+<h2 id="导入json格式数据">导入JSON格式数据</h2>
+<p>图数据里面更常见的则是JSON数据， 假设数据格式如下：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">[</div><div class="line">    &#123;</div><div class="line">    <span class="attr">"id"</span>:<span class="number">1</span>, <span class="attr">"friends"</span>:[<span class="number">2</span>,<span class="number">3</span>], <span class="attr">"name"</span>: <span class="string">"Bob"</span>, <span class="attr">"age"</span>: <span class="number">27</span>,</div><div class="line">    <span class="attr">"book"</span>:[&#123;<span class="attr">"name"</span>:<span class="string">"book1"</span>, <span class="attr">"year"</span>:<span class="number">2000</span>&#125;, &#123;<span class="attr">"name"</span>:<span class="string">"book3"</span>, <span class="attr">"year"</span>:<span class="number">1990</span>&#125;]</div><div class="line">    &#125;,</div><div class="line">    &#123;</div><div class="line">    <span class="attr">"id"</span>:<span class="number">2</span>, <span class="attr">"friends"</span>:[<span class="number">1</span>], <span class="attr">"name"</span>: <span class="string">"Alice"</span>, <span class="attr">"age"</span>: <span class="number">29</span>,</div><div class="line">    <span class="attr">"book"</span>:[&#123;<span class="attr">"name"</span>:<span class="string">"book1"</span>, <span class="attr">"year"</span>:<span class="number">2000</span>&#125;, &#123;<span class="attr">"name"</span>:<span class="string">"book2"</span>, <span class="attr">"year"</span>:<span class="number">1999</span>&#125;]</div><div class="line">    &#125;,</div><div class="line">    &#123;</div><div class="line">    <span class="attr">"id"</span>:<span class="number">3</span>, <span class="attr">"friends"</span>:[<span class="number">2</span>], <span class="attr">"name"</span>: <span class="string">"John"</span>, <span class="attr">"age"</span>: <span class="number">20</span>,</div><div class="line">    <span class="attr">"book"</span>:[&#123;<span class="attr">"name"</span>:<span class="string">"book3"</span>, <span class="attr">"year"</span>:<span class="number">1990</span>&#125;]</div><div class="line">    &#125;</div><div class="line">]</div></pre></td></tr></table></figure>
+<p>列表中每一个map都代表一个User, 其属性有<code>id</code>,<code>name</code>,<code>age</code>; 同时<code>friends</code>字段表示朋友关系，<code>book</code>字段表示读过某本书。 现在我们需要创建 Person 和 Book两类节点，同时Person和Book 之间有READ关系。 Neo4j 并没有内置直接导入Json的函数，不过在Neo3.3版本之后，推出了一个函数存储包APOC，里面包含了非常丰富的函数和存储过程，如各种图计算算法，是Cypher的有力补充，其中就包含了从Json中导入数据。安装APOC很简单，只需要三步:</p>
+<ul>
+<li>从<a href="https://github.com/neo4j-contrib/neo4j-apoc-procedures/releases/" target="_blank" rel="external">github</a>中下载与Neo4j对应版本的APOCjar包</li>
+<li>将jar包拷贝到neo4j安装目录的plugins目录下</li>
+<li>在配置文件neo4j.conf中加入一行允许APOC导入文件:apoc.import.file.enabled=true</li>
+<li>重启Neo4j即可</li>
+</ul>
+<p>在Neo4j浏览器中，输入<code>return apoc.version()</code>即可查看版本号</p>
+<div class="figure">
+<img src="https://pic3.zhimg.com/v2-f32fca879d250ec3af6e5d0909547b39_b.jpg">
+
+</div>
+<p>此外我们可以看到apoc支持导入非常多格式的数据：</p>
+<div class="figure">
+<img src="https://pic3.zhimg.com/v2-412829e569cb57be8ace756d8ed9adc1_b.jpg">
+
+</div>
+<p>导入方式很简单，我们要创建两类节点，首先创建索引，方便后续导入。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">CREATE</span> <span class="keyword">INDEX</span> <span class="keyword">ON</span> :Person(<span class="keyword">id</span>)</div><div class="line"><span class="keyword">CREATE</span> <span class="keyword">INDEX</span> <span class="keyword">ON</span> :Book(<span class="keyword">name</span>)</div></pre></td></tr></table></figure>
+<p>导入代码如下:</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// YIELD关键字表示每次导入json数据中的一组数据，即`[...]`中的每一个`&#123;&#125;`</span></div><div class="line">CALL apoc<span class="selector-class">.load</span><span class="selector-class">.json</span>(<span class="string">"file:///usr/local/neo4j-community-3.4.0/htliu/person.json"</span>) YIELD value as person</div><div class="line"><span class="comment">// 需要对book属性进行列表展开，后续建立Person和Book关系的时候，需要用。</span></div><div class="line">UNWIND person<span class="selector-class">.book</span> as book</div><div class="line"><span class="comment">// 创建Person节点</span></div><div class="line">MERGE (<span class="selector-tag">p</span>:Person&#123;id:person.id&#125;)</div><div class="line">SET <span class="selector-tag">p</span>.name=person<span class="selector-class">.name</span>, <span class="selector-tag">p</span>.age=person<span class="selector-class">.age</span>, <span class="selector-tag">p</span>.friends=person.friends</div><div class="line"><span class="comment">//创建book节点</span></div><div class="line">MERGE (<span class="selector-tag">b</span>:Book&#123;name:book.name&#125;)</div><div class="line">SET <span class="selector-tag">b</span>.year=book.year</div><div class="line"><span class="comment">//建立person-&gt;book关系</span></div><div class="line">MERGE (p)-[:READ]-&gt;(b)</div></pre></td></tr></table></figure>
+<p>然后再根据已有的<code>friends</code>导入<code>Friend</code>关系:</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//对每一个 person遍历</span></div><div class="line">MATCH (<span class="selector-tag">p</span>:Person)</div><div class="line"><span class="comment">// 对p的friends进行列表展开，</span></div><div class="line">UNWIND <span class="selector-tag">p</span><span class="selector-class">.friends</span> as f</div><div class="line"><span class="comment">// 根据id搜索Person节点</span></div><div class="line">MATCH (<span class="selector-tag">q</span>:Person&#123;id:f&#125;)</div><div class="line"><span class="comment">// 建立关系</span></div><div class="line">MERGE (p)-[:Friend]-(q)</div></pre></td></tr></table></figure>
+<p>执行按成之后，可视化看一下 ，:</p>
+<div class="figure">
+<img src="https://pic3.zhimg.com/v2-a2b4514f1757fde35dfc5f4fde87cf5e_b.jpg">
+
+</div>
+<p>到这里导入基本完成了，不过还有一点问题，暂时没有解决，使用<code>UNWIND person.book as book</code>的时候，如果某个节点没有book这个一个属性，那么后续代码将不再执行，即该Person节点不会创建。但是如果将UNWIND放到创建Person之后，建立的READ关系会有问题，还在查找原因。</p>
+<h2 id="参考资源">参考资源</h2>
+<ul>
+<li><a href="https://neo4j.com/docs/developer-manual/current/" target="_blank" rel="external">官方文档</a></li>
+<li><a href="https://blog.csdn.net/GraphWay/article/details/78957415" target="_blank" rel="external">APOC</a></li>
+<li><a href="http://gitbook.cn/books/5a33782c5778440a9d906017/index.html" target="_blank" rel="external">Neo4j应用</a></li>
+</ul>
+]]></content>
+      
+        <categories>
+            
+            <category> 工具使用 </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> neo4j </tag>
+            
+            <tag> graph </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
       <title><![CDATA[2017]]></title>
       <url>/2018/03/01/2017-review/</url>
       <content type="html"><![CDATA[<div class="figure">
