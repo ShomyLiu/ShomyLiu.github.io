@@ -13,15 +13,15 @@
 <meta property="og:site_name" content="天空的城">
 <meta property="og:description" content="近期需要处理图数据，考察后打算使用neo4j, 相比其他一些图数据库，neo4j开源，跨平台，接口友好，文档齐全，完整支持ACID。 首先放一张网上的图片，关系型数据库与图数据库存储网络数据的差异:     初次接触neo4j 踩了不少坑，这里记录一下。">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="https://pic4.zhimg.com/v2-c6882ae9c34b627833aefba7580e57ee_b.jpg">
-<meta property="og:image" content="https://pic3.zhimg.com/v2-f32fca879d250ec3af6e5d0909547b39_b.jpg">
-<meta property="og:image" content="https://pic3.zhimg.com/v2-412829e569cb57be8ace756d8ed9adc1_b.jpg">
-<meta property="og:image" content="https://pic3.zhimg.com/v2-a2b4514f1757fde35dfc5f4fde87cf5e_b.jpg">
-<meta property="og:updated_time" content="2018-06-08T12:57:33.158Z">
+<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/blog/neo4j-start/neo4j-1.jpg">
+<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/blog/neo4j-start/neo4j-2.jpg">
+<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/blog/neo4j-start/neo4j-3.jpg">
+<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/blog/neo4j-start/neo4j-4.jpg">
+<meta property="og:updated_time" content="2018-06-26T09:08:49.595Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Neo4j初探">
 <meta name="twitter:description" content="近期需要处理图数据，考察后打算使用neo4j, 相比其他一些图数据库，neo4j开源，跨平台，接口友好，文档齐全，完整支持ACID。 首先放一张网上的图片，关系型数据库与图数据库存储网络数据的差异:     初次接触neo4j 踩了不少坑，这里记录一下。">
-<meta name="twitter:image" content="https://pic4.zhimg.com/v2-c6882ae9c34b627833aefba7580e57ee_b.jpg">
+<meta name="twitter:image" content="http://7xotye.com1.z0.glb.clouddn.com/blog/neo4j-start/neo4j-1.jpg">
   
   
     <link rel="icon" href="/image/favicon.ico">
@@ -145,7 +145,7 @@ ga('send', 'pageview');
         
         <p>近期需要处理图数据，考察后打算使用<a href="https://neo4j.com/" target="_blank" rel="external">neo4j</a>, 相比其他一些图数据库，neo4j开源，跨平台，接口友好，文档齐全，完整支持ACID。 首先放一张网上的图片，关系型数据库与图数据库存储网络数据的差异:</p>
 <div class="figure">
-<img src="https://pic4.zhimg.com/v2-c6882ae9c34b627833aefba7580e57ee_b.jpg">
+<img src="http://7xotye.com1.z0.glb.clouddn.com/blog/neo4j-start/neo4j-1.jpg">
 
 </div>
 <p>初次接触neo4j 踩了不少坑，这里记录一下。</p>
@@ -189,7 +189,7 @@ ga('send', 'pageview');
 <p>这一部分主要记录下如何将图数据从文件中导入库，常见的格式为CSV和JSON格式。</p>
 <h3 id="导入csv-格式数据">导入CSV 格式数据</h3>
 <p>Neo4j内置了命令来导入CSV数据：使用方法也很简单。假设CSV格式如下:</p>
-<figure class="highlight 1c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="string">"Id"</span>,<span class="string">"Name"</span>,<span class="string">"Year"</span></div><div class="line"><span class="string">"1"</span>,<span class="string">"ABBA"</span>,<span class="string">"1992"</span></div><div class="line"><span class="string">"2"</span>,<span class="string">"Roxette"</span>,<span class="string">"1986"</span></div><div class="line"><span class="string">"3"</span>,<span class="string">"Europe"</span>,<span class="string">"1979"</span></div><div class="line"><span class="string">"4"</span>,<span class="string">"The Cardigans"</span>,<span class="string">"1992"</span></div></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="string">"Id"</span>,<span class="string">"Name"</span>,<span class="string">"Year"</span></div><div class="line"><span class="string">"1"</span>,<span class="string">"ABBA"</span>,<span class="string">"1992"</span></div><div class="line"><span class="string">"2"</span>,<span class="string">"Roxette"</span>,<span class="string">"1986"</span></div><div class="line"><span class="string">"3"</span>,<span class="string">"Europe"</span>,<span class="string">"1979"</span></div><div class="line"><span class="string">"4"</span>,<span class="string">"The Cardigans"</span>,<span class="string">"1992"</span></div></pre></td></tr></table></figure>
 <p>直接使用如下命令导入并直接引用headers来表示属性并创建节点:</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">LOAD</span> CSV <span class="keyword">WITH</span> HEADERS <span class="keyword">FROM</span> <span class="string">'FILE:/artists.csv'</span> <span class="keyword">AS</span> line</div><div class="line"><span class="keyword">CREATE</span> (:Artist &#123; <span class="keyword">name</span>: line.Name, <span class="keyword">year</span>: toInteger(line.Year)&#125;)</div></pre></td></tr></table></figure>
 <p>注意事项:</p>
@@ -214,12 +214,12 @@ ga('send', 'pageview');
 </ul>
 <p>在Neo4j浏览器中，输入<code>return apoc.version()</code>即可查看版本号</p>
 <div class="figure">
-<img src="https://pic3.zhimg.com/v2-f32fca879d250ec3af6e5d0909547b39_b.jpg">
+<img src="http://7xotye.com1.z0.glb.clouddn.com/blog/neo4j-start/neo4j-2.jpg">
 
 </div>
 <p>此外我们可以看到apoc支持导入非常多格式的数据：</p>
 <div class="figure">
-<img src="https://pic3.zhimg.com/v2-412829e569cb57be8ace756d8ed9adc1_b.jpg">
+<img src="http://7xotye.com1.z0.glb.clouddn.com/blog/neo4j-start/neo4j-3.jpg">
 
 </div>
 <p>导入方式很简单，我们要创建两类节点，首先创建索引，方便后续导入。</p>
@@ -230,7 +230,7 @@ ga('send', 'pageview');
 <figure class="highlight stylus"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//对每一个 person遍历</span></div><div class="line">MATCH (<span class="selector-tag">p</span>:Person)</div><div class="line"><span class="comment">// 对p的friends进行列表展开，</span></div><div class="line">UNWIND <span class="selector-tag">p</span><span class="selector-class">.friends</span> as f</div><div class="line"><span class="comment">// 根据id搜索Person节点</span></div><div class="line">MATCH (<span class="selector-tag">q</span>:Person&#123;id:f&#125;)</div><div class="line"><span class="comment">// 建立关系</span></div><div class="line">MERGE (p)-[:Friend]-(q)</div></pre></td></tr></table></figure>
 <p>执行按成之后，可视化看一下 ，:</p>
 <div class="figure">
-<img src="https://pic3.zhimg.com/v2-a2b4514f1757fde35dfc5f4fde87cf5e_b.jpg">
+<img src="http://7xotye.com1.z0.glb.clouddn.com/blog/neo4j-start/neo4j-4.jpg">
 
 </div>
 <p>到这里导入基本完成了，不过还有一点问题，暂时没有解决，使用<code>UNWIND person.book as book</code>的时候，如果某个节点没有book这个一个属性，那么后续代码将不再执行，即该Person节点不会创建。但是如果将UNWIND放到创建Person之后，建立的READ关系会有问题，还在查找原因。</p>
@@ -257,7 +257,7 @@ ga('send', 'pageview');
 发布时间: 2018-06-08, 20:52:49<br/>
 <p>
 <p>
-最后更新: 2018-06-08, 20:57:33<br/>
+最后更新: 2018-06-26, 17:08:49<br/>
 <p>
 本文链接: <a href="/2018/06/08/neo4j-start/" target="_blank">http://shomy.top/2018/06/08/neo4j-start/</a>
 </p>
@@ -279,6 +279,15 @@ ga('send', 'pageview');
   
     
 <nav id="article-nav">
+  
+    <a href="/2018/06/26/neo4j-aminer-import/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          Neo4j导入Aminer论文数据
+        
+      </div>
+    </a>
   
   
     <a href="/2018/03/01/2017-review/" id="article-nav-older" class="article-nav-link-wrap">
