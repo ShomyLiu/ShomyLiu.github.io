@@ -18,7 +18,7 @@
 <meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/nvidia-3.png">
 <meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/nvidia-4.png">
 <meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/nvidia-5.png">
-<meta property="og:updated_time" content="2017-12-05T08:33:31.941Z">
+<meta property="og:updated_time" content="2018-08-08T01:57:41.065Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Ubuntu安装GPU版TensorFlow">
 <meta name="twitter:description" content="2017.12.5 CUDA 与 cuDNN的最新版本均已经有所变化，不过安装方式相同。   当前环境如下:   Ubuntu 16.04.1 LTS GeForce GTX 960M CUDA 8.0 cuDNN V5.1 Library">
@@ -174,7 +174,8 @@ ga('send', 'pageview');
 
 </div></li>
 <li><p>下载完成之后，直接执行如下的命令进行安装即可: <figure class="highlight lsl"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">sudo dpkg -i cuda-repo-ubuntu1604<span class="number">-8</span><span class="number">-0</span>-local_8<span class="number">.0</span><span class="number">.44</span><span class="number">-1</span>_amd64.deb</div><div class="line">sudo apt update</div><div class="line">sudo apt install cuda</div></pre></td></tr></table></figure></p>
-<p>注: 下载完成之后，deb的名称可能有一个oauth的后缀，直接重命令删掉就好了。</p></li>
+<p>注: 下载完成之后，deb的名称可能有一个oauth的后缀，直接重命令删掉就好了。如果报错<strong>由于没有公钥，无法验证下列签名： NO_PUBKEY FAF69C646FF2377B的问题</strong>, 则添加下公钥即可: <figure class="highlight stylus"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo apt-key adv --keyserver keyserver<span class="selector-class">.ubuntu</span><span class="selector-class">.com</span> --recv-keys FAF69C646FF2377B</div></pre></td></tr></table></figure></p>
+<p>之后再<code>sudo apt update</code> 即可</p></li>
 <li><p>下载cuDDN：https://developer.nvidia.com/rdp/cudnn-download ， 这里需要注册个帐号，然后才可以下载。</p>
 <div class="figure">
 <img src="http://7xotye.com1.z0.glb.clouddn.com/nvidia-4.png">
@@ -210,7 +211,7 @@ ga('send', 'pageview');
 发布时间: 2016-12-29, 14:39:40<br/>
 <p>
 <p>
-最后更新: 2017-12-05, 16:33:31<br/>
+最后更新: 2018-08-08, 09:57:41<br/>
 <p>
 本文链接: <a href="/2016/12/29/gpu-tensorflow-install/" target="_blank">http://shomy.top/2016/12/29/gpu-tensorflow-install/</a>
 </p>
