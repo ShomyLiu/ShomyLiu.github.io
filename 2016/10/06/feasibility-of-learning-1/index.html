@@ -13,17 +13,17 @@
 <meta property="og:site_name" content="天空的城">
 <meta property="og:description" content="整理自台大林轩田老师的机器学习基石在线课程，以及参考了beader的文章，作为笔记。 一些机器学习入门的书籍大部分都是直接讲模型，却没有来龙去脉，感觉很虚。而林老师的第一部分是机器学习的基石，就是背后的东西，并没有直接去讲各种模型, 在第二部分机器学习技法才开始介绍模型。">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/ml01-1.png">
-<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/ml01-2.png">
-<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/ml01-3.png">
-<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/ml01-4.png">
-<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/ml01-5.png">
-<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/ml01-6.png">
-<meta property="og:updated_time" content="2017-09-05T03:47:23.442Z">
+<meta property="og:image" content="http://cdn.htliu.cn/ml01-1.png">
+<meta property="og:image" content="http://cdn.htliu.cn/ml01-2.png">
+<meta property="og:image" content="http://cdn.htliu.cn/ml01-3.png">
+<meta property="og:image" content="http://cdn.htliu.cn/ml01-4.png">
+<meta property="og:image" content="http://cdn.htliu.cn/ml01-5.png">
+<meta property="og:image" content="http://cdn.htliu.cn/ml01-6.png">
+<meta property="og:updated_time" content="2018-09-29T03:52:04.744Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="机器学习基石笔记(1)">
 <meta name="twitter:description" content="整理自台大林轩田老师的机器学习基石在线课程，以及参考了beader的文章，作为笔记。 一些机器学习入门的书籍大部分都是直接讲模型，却没有来龙去脉，感觉很虚。而林老师的第一部分是机器学习的基石，就是背后的东西，并没有直接去讲各种模型, 在第二部分机器学习技法才开始介绍模型。">
-<meta name="twitter:image" content="http://7xotye.com1.z0.glb.clouddn.com/ml01-1.png">
+<meta name="twitter:image" content="http://cdn.htliu.cn/ml01-1.png">
   
   
     <link rel="icon" href="/image/favicon.ico">
@@ -150,7 +150,7 @@ ga('send', 'pageview');
 <a id="more"></a>
 <p>课程前三节主要介绍了机器学习的一些基本概念(未知函数f, 学习算法A, 假设空间H等等)，以及讲了一个最简单的线性分类器: 感知器模型(PLA). 相对简单，比较容易接受。 这节开始主要介绍一些算法背后的理论，比如为什么机器学习为什么可行，以及为什么训练数据集越大，训练结果就越好。</p>
 <h2 id="learning的概览"><code>learning</code>的概览</h2>
-<p>learning的流程图: <img src="http://7xotye.com1.z0.glb.clouddn.com/ml01-1.png" alt="learning-flow"> 下面仔细说明每个符号代表的意义: 当时看的时候，没搞透彻这几个符号，后面就很费劲了。</p>
+<p>learning的流程图: <img src="http://cdn.htliu.cn/ml01-1.png" alt="learning-flow"> 下面仔细说明每个符号代表的意义: 当时看的时候，没搞透彻这几个符号，后面就很费劲了。</p>
 <ul>
 <li><span class="math inline">\(\mathcal{f}: \chi \to \gamma\)</span>
 <ul>
@@ -171,12 +171,12 @@ ga('send', 'pageview');
 <p>那么问题来了，假设我们找到了那个<span class="math inline">\(g\)</span>, 它在训练数据集上表现不错，但是在<span class="math inline">\(\mathcal{D}\)</span>之外的其它数据表现也会跟<span class="math inline">\(f\)</span>很接近吗？ 我们关心的不是它在训练数据集上表现多好，而是在未知数据集上的结果是不是很好，那么如果一个hypothesis在训练数据集上接近f，那么是不是在测试数据上跟f也差不多呢。这就是检验learning是不是真正学到了东西。</p>
 <h2 id="learning是否可行feasibility">learning是否可行?（Feasibility）</h2>
 <h3 id="learning是-impossible">learning是 impossible?</h3>
-<p>我们经验上感觉g如果在<span class="math inline">\(\mathcal{D}\)</span>上的表现好的话， 那么它就是一个好的hypothesis。但是事实是这样吗？有这么一个二分类的简单例子：看训练数据如下： <img src="http://7xotye.com1.z0.glb.clouddn.com/ml01-2.png" alt="binary-classify-sample"></p>
+<p>我们经验上感觉g如果在<span class="math inline">\(\mathcal{D}\)</span>上的表现好的话， 那么它就是一个好的hypothesis。但是事实是这样吗？有这么一个二分类的简单例子：看训练数据如下： <img src="http://cdn.htliu.cn/ml01-2.png" alt="binary-classify-sample"></p>
 <p>其中<span class="math inline">\(\chi \in \{ 0, 1\}^3, \gamma \in \{ o, X\}^1\)</span>.</p>
-<p>举着个例子是因为很简单， 所有的数据以及<span class="math inline">\(\mathcal{H}\)</span>里面所有的<span class="math inline">\(h\)</span>都可以列举出来，如下: <img src="http://7xotye.com1.z0.glb.clouddn.com/ml01-3.png" alt="all-h-in-H"></p>
+<p>举着个例子是因为很简单， 所有的数据以及<span class="math inline">\(\mathcal{H}\)</span>里面所有的<span class="math inline">\(h\)</span>都可以列举出来，如下: <img src="http://cdn.htliu.cn/ml01-3.png" alt="all-h-in-H"></p>
 <p>我们发现8个<span class="math inline">\(h\)</span> 在<span class="math inline">\(\mathcal{D}\)</span>上都等于 <span class="math inline">\(f\)</span>. 但是在<span class="math inline">\(\mathcal{D}\)</span>之外，却各不相同，那么我们应该选择那个作为我们最终的<span class="math inline">\(g\)</span>呢？这里看来，好像机器学习并不能学到东西，我们好像并不能保证在训练数据集之外<span class="math inline">\(g\)</span>是否还能跟<span class="math inline">\(f\)</span>很接近。 这个问题需要后面解释</p>
 <h3 id="inferring-something-unknown与统计结合">Inferring Something Unknown与统计结合</h3>
-<p>我们在统计里面知道抽样的概念，使用样本估计总体，比如样本均值估计总体期望， 或者用样本构造一些统计量来估计总体分布的参数。 比如下面的摸球的例子，一个罐子里面有橙色的球和绿色的球，但是不知道各自所占的比例。这时候我们呢经常采用抽样的方式，在罐子中抽出N个球，看看橙色和绿色占的比例，依次作为总体的概率。 如下: <img src="http://7xotye.com1.z0.glb.clouddn.com/ml01-4.png" alt="sample"></p>
+<p>我们在统计里面知道抽样的概念，使用样本估计总体，比如样本均值估计总体期望， 或者用样本构造一些统计量来估计总体分布的参数。 比如下面的摸球的例子，一个罐子里面有橙色的球和绿色的球，但是不知道各自所占的比例。这时候我们呢经常采用抽样的方式，在罐子中抽出N个球，看看橙色和绿色占的比例，依次作为总体的概率。 如下: <img src="http://cdn.htliu.cn/ml01-4.png" alt="sample"></p>
 <p>那我们可不可以使用 样本中的<span class="math inline">\(\nu\)</span>来代替总体中的<span class="math inline">\(\mu\)</span>呢？ 似乎可以，但是好像仍有风险， 比如总体中，橙色，绿色占比例差不多，但是碰巧有一个Sample抽了10个都是绿色的(后面提到的BadData) ， 那这个时候，我们不能使用<span class="math inline">\(\nu\)</span>代替 <span class="math inline">\(mu\)</span>, 不过经验还告诉我们好像10个都是绿色的发生概率并不是很大，尤其是随着样本数目的增加。 在统计中的<a href="https://en.wikipedia.org/wiki/Hoeffding%27s_inequality" target="_blank" rel="external">Hoeffdiing’s inequality</a> 给出了具体的计算公式: <span class="math display">\[P[\| \nu - \mu \| &gt; \epsilon]  \leq 2 exp \lgroup -2 \epsilon ^2 N \rgroup \]</span></p>
 <p>称式子中的<span class="math inline">\(\epsilon\)</span> 是允许误差的容忍度， 我们可以看到就是说 <span class="math inline">\(\nu\)</span>与<span class="math inline">\(\mu\)</span>的差距由<span class="math inline">\(\epsilon, N\)</span> 控制的。当<span class="math inline">\(N\)</span>变大的时候，<span class="math inline">\(\mu, \nu\)</span>的差距的上限会降低。当<span class="math inline">\(\mu, \nu\)</span>的差距小到一定程度了， 可以说它俩是差不多一样(PAC, probably approximately correct)。</p>
 <p>以上是基于统计的观点，使用样本估计总体。 那该怎么与我们的 learning 对应起来呢？我们假设那一罐子球是假设空间<span class="math inline">\(\chi\)</span>, 对于某个hypothesis h，开始抽样，作如下对应:</p>
@@ -201,10 +201,10 @@ ga('send', 'pageview');
 <h3 id="bad-data-坏数据">Bad Data 坏数据</h3>
 <p>前面说了，使用某个训练集或者说抽样的样本，然后找一个<span class="math inline">\(E_{in}\)</span>尽可能小的<span class="math inline">\(h\)</span>, 作为我们的<span class="math inline">\(g\)</span>. 但是如果训练数据集有问题呢？尤其是当N小的时候，误差是不可避免的，或者说噪音数据集。比如说想知道硬币朝上的概率，然后连续扔了5次，都出现了正面，这种情况下，显然不能说硬币朝上的概率是1吧。因为这样的样本本身是有误差的，对于整体 来说: <span class="math inline">\(E_{in} = 0; E_{out} = \frac{1}{2}\)</span>.这样使<span class="math inline">\(E_{in}\)</span> 和 <span class="math inline">\(E_{out}\)</span>差别很大的样本就称为<strong>BAD SAMPLE</strong> 说到learning, 对于某个 <span class="math inline">\(h\)</span>, 如果某个<span class="math inline">\(\mathcal{D}\)</span>使得 <span class="math inline">\(E_{in}(h)\)</span>与<span class="math inline">\(E_{out}(h)\)</span> 差别很大，比如说<span class="math inline">\(E_{in}(h)\)</span>很小，也就说在训练数据中表现很好，结果我们的算法<span class="math inline">\(\mathcal{A}\)</span>就选择了它， 但是没想到<span class="math inline">\(\mathcal{D}\)</span>之外的数据表现很差，<span class="math inline">\(E_{out}(h)\)</span>很大， 这样就称这个<span class="math inline">\(\mathcal{D}\)</span>对<span class="math inline">\(h\)</span>来说是<strong>BAD DATA</strong>, 它会使得 <span class="math inline">\(\|E_{in} - E_{out}\| &gt; \epsilon\)</span>。那是不是机器学习啥也没学到呢？ 白忙活了？ 很显然，我们不希望遇见<strong>BAD DATA</strong>, 它对我们的learning很不好，那么出现<strong>BAD DATA</strong>的概率有多大呢？ 首先只要某个<span class="math inline">\(\mathcal{D}_i\)</span> 对 <span class="math inline">\(h(h \in \mathcal{H})\)</span> 是BAD DATA, 那么就称该<span class="math inline">\(\mathcal{D}\)</span>是BAD DATA, 如下</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/ml01-5.png" alt="bad-data">
+<img src="http://cdn.htliu.cn/ml01-5.png" alt="bad-data">
 <p class="caption">bad-data</p>
 </div>
-<p>那我们就需要计算: <img src="http://7xotye.com1.z0.glb.clouddn.com/ml01-6.png" alt="bad-data-prob"> 其中<span class="math inline">\(M = \| \mathcal{H} \|\)</span>, 从式子中我们可以看出，遇到<strong>BAD DATA</strong>的概率的上限 与<span class="math inline">\(N, M, \epsilon\)</span>有关。 因而也可以看出如果训练数据N越大，也就更不容易遇见BAD DATA, 对应到硬币则是，连续投硬币10次均出现正面的概率 小于 连续投5次。同理如果 M 越小，BAD DATA概率越小。</p>
+<p>那我们就需要计算: <img src="http://cdn.htliu.cn/ml01-6.png" alt="bad-data-prob"> 其中<span class="math inline">\(M = \| \mathcal{H} \|\)</span>, 从式子中我们可以看出，遇到<strong>BAD DATA</strong>的概率的上限 与<span class="math inline">\(N, M, \epsilon\)</span>有关。 因而也可以看出如果训练数据N越大，也就更不容易遇见BAD DATA, 对应到硬币则是，连续投硬币10次均出现正面的概率 小于 连续投5次。同理如果 M 越小，BAD DATA概率越小。</p>
 <h2 id="总结">总结</h2>
 <p>说完了<span class="math inline">\(P[\| E_{in}(h) - E_{out}(h) \| &gt; \epsilon] \leq 2 exp \lgroup -2 \epsilon ^2 N \rgroup\)</span>， 我们知道<span class="math inline">\(E_{in}(h)\)</span>与<span class="math inline">\(E_{out}(h)\)</span>可以很接近,我们就可以大胆的选择<span class="math inline">\(E_{in}\)</span>最小的<span class="math inline">\(h\)</span>来作为我们的<span class="math inline">\(g\)</span>。但是<strong>BAD DATA</strong>又告诉我们群众里面有坏人，如果遇到了，那么会影响我们的<span class="math inline">\(\mathcal{A}\)</span> 挑选<span class="math inline">\(h\)</span>. 幸好，Hoeffding’s Inequality 告诉我们 出现 BAD DATA的概率有个bound。 所以我们只要控制了BAD DATA出现的几率，还可以继续选择最小的<span class="math inline">\(E_{in}(h)\)</span>了。 不过还有问题，<span class="math inline">\(M\)</span> 如果很大了，比如在PAL中，<span class="math inline">\(\mathcal{H}\)</span> 就是无穷多的直线，这时候，Hoeffding’s Inequality貌似也不能起作用了，这就是后面要讨论的问题了: 当<span class="math inline">\(\| \mathcal{H} \| \to infty\)</span>，我们该怎么办。</p>
 
@@ -224,7 +224,7 @@ ga('send', 'pageview');
 发布时间: 2016-10-06, 17:56:18<br/>
 <p>
 <p>
-最后更新: 2017-09-05, 11:47:23<br/>
+最后更新: 2018-09-29, 11:52:04<br/>
 <p>
 本文链接: <a href="/2016/10/06/feasibility-of-learning-1/" target="_blank">http://shomy.top/2016/10/06/feasibility-of-learning-1/</a>
 </p>

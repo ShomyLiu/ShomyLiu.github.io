@@ -13,12 +13,12 @@
 <meta property="og:site_name" content="天空的城">
 <meta property="og:description" content="在国内访问google的时候，总是需要费一番周折，之前一直修改hosts,可以访问https://google.com.hk，后来发现总是出现连接被重置的情况，如下图：">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/google.png">
-<meta property="og:updated_time" content="2017-07-31T02:42:34.562Z">
+<meta property="og:image" content="http://cdn.htliu.cn/google.png">
+<meta property="og:updated_time" content="2018-09-29T03:52:04.736Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="利用chrome扩展使用HTTPS访问google">
 <meta name="twitter:description" content="在国内访问google的时候，总是需要费一番周折，之前一直修改hosts,可以访问https://google.com.hk，后来发现总是出现连接被重置的情况，如下图：">
-<meta name="twitter:image" content="http://7xotye.com1.z0.glb.clouddn.com/google.png">
+<meta name="twitter:image" content="http://cdn.htliu.cn/google.png">
   
   
     <link rel="icon" href="/image/favicon.ico">
@@ -135,7 +135,7 @@ ga('send', 'pageview');
       
         
         
-        <p>在国内访问<code>google</code>的时候，总是需要费一番周折，之前一直修改hosts,可以访问<code>https://google.com.hk</code>，后来发现总是出现连接被重置的情况，如下图： <a id="more"></a> <img src="http://7xotye.com1.z0.glb.clouddn.com/google.png"></p>
+        <p>在国内访问<code>google</code>的时候，总是需要费一番周折，之前一直修改hosts,可以访问<code>https://google.com.hk</code>，后来发现总是出现连接被重置的情况，如下图： <a id="more"></a> <img src="http://cdn.htliu.cn/google.png"></p>
 <p>而且可以发现，连接是<code>http://google.com.hk</code>, 如果改为<code>https://google.com.hk</code>还是可以正常访问的。但是每次手动修改就太麻烦了，因此想到可以用chrome的扩展程序来做这件事情。查阅了一些文档，发现chrome提供了很直接的接口，就是<code>chrome.tabs.update</code>方法，就是可以修改重定向的。主要代码如下:</p>
 <p><code>manifest.json</code>的代码: <figure class="highlight json"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">  <span class="attr">"manifest_version"</span>: <span class="number">2</span>,</div><div class="line">  <span class="attr">"name"</span>: <span class="string">"http2https"</span>,</div><div class="line">  <span class="attr">"description"</span>: <span class="string">"visit google with https"</span>,</div><div class="line">  <span class="attr">"version"</span>: <span class="string">"1.0"</span>,</div><div class="line">  <span class="attr">"browser_action"</span>: &#123;</div><div class="line">    <span class="attr">"default_icon"</span>: <span class="string">"icon.png"</span></div><div class="line">  &#125;,</div><div class="line">  <span class="attr">"background"</span>:&#123;</div><div class="line">    <span class="attr">"page"</span>:<span class="string">"runjs.html"</span></div><div class="line">  &#125;,</div><div class="line">  <span class="attr">"permissions"</span>:[</div><div class="line">      <span class="string">"tabs"</span></div><div class="line">  ]</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
 <p><code>js</code>的代码</p>
@@ -158,7 +158,7 @@ ga('send', 'pageview');
 发布时间: 2016-04-04, 22:01:33<br/>
 <p>
 <p>
-最后更新: 2017-07-31, 10:42:34<br/>
+最后更新: 2018-09-29, 11:52:04<br/>
 <p>
 本文链接: <a href="/2016/04/04/chrome-http2https-google/" target="_blank">http://shomy.top/2016/04/04/chrome-http2https-google/</a>
 </p>

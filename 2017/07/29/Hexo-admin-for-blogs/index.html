@@ -13,12 +13,12 @@
 <meta property="og:site_name" content="天空的城">
 <meta property="og:description" content="需求 像Hexo这种静态博客用起来很方便，但是硬伤就是没有后台管理，每次想写博客或者说想要修改原博客的话，都需要在本机上找markdown文件，修改之后发布，尤其是如果机器上没有安装hexo,git等工具的时候，就无法修改了。因此hexo可不可以以像wp,ghost这种有后台管理, 随时随地编辑博客呢?">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/blog/hexo-admin/hexo-admin.png">
-<meta property="og:updated_time" content="2017-08-15T00:52:12.317Z">
+<meta property="og:image" content="http://cdn.htliu.cn/blog/hexo-admin/hexo-admin.png">
+<meta property="og:updated_time" content="2018-09-29T03:52:04.756Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Hexo-admin后台管理博客">
 <meta name="twitter:description" content="需求 像Hexo这种静态博客用起来很方便，但是硬伤就是没有后台管理，每次想写博客或者说想要修改原博客的话，都需要在本机上找markdown文件，修改之后发布，尤其是如果机器上没有安装hexo,git等工具的时候，就无法修改了。因此hexo可不可以以像wp,ghost这种有后台管理, 随时随地编辑博客呢?">
-<meta name="twitter:image" content="http://7xotye.com1.z0.glb.clouddn.com/blog/hexo-admin/hexo-admin.png">
+<meta name="twitter:image" content="http://cdn.htliu.cn/blog/hexo-admin/hexo-admin.png">
   
   
     <link rel="icon" href="/image/favicon.ico">
@@ -168,7 +168,7 @@ ga('send', 'pageview');
 <li><p>本地机器也需要有一个<code>upload.sh</code>的脚本, 每次同样需要先git pull 在git push 到私人repo. 其实就是版本控制那一套.</p></li>
 </ul>
 <p>到现在基本完成了自己可以随时随地编辑博客并且多端同步的需求了. 之前也考虑过CI持续集成,但是大部分都是再建立一个分支, 需要把博客的source公开, 不太合适. 所以就选择了hexo-admin这种方法.</p>
-<p>这篇博客便是在线完成的. <img src="http://7xotye.com1.z0.glb.clouddn.com/blog/hexo-admin/hexo-admin.png"></p>
+<p>这篇博客便是在线完成的. <img src="http://cdn.htliu.cn/blog/hexo-admin/hexo-admin.png"></p>
 <p>其实这里面的坑还是蛮多的(主要不熟悉node). 此外开始使用supervisor做后台运行监控, 结果不知为何, 在<code>hexo d</code>包括git的pull或者push等操作,都会报错,提示让我确认git用户, 但是我已经设置了<code>git config</code>的email和name. 查了很多资料也没有解决, 后来直接抛弃supervisor, 直接使用<code>nohup</code>来放后台运行了.每个人的需求肯定都不同，这里只是个人的一个思路。大概是这样了, 有什么问题可以留言或者邮件.</p>
 
       
@@ -187,7 +187,7 @@ ga('send', 'pageview');
 发布时间: 2017-07-29, 15:38:00<br/>
 <p>
 <p>
-最后更新: 2017-08-15, 08:52:12<br/>
+最后更新: 2018-09-29, 11:52:04<br/>
 <p>
 本文链接: <a href="/2017/07/29/Hexo-admin-for-blogs/" target="_blank">http://shomy.top/2017/07/29/Hexo-admin-for-blogs/</a>
 </p>

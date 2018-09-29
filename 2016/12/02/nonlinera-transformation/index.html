@@ -13,19 +13,19 @@
 <meta property="og:site_name" content="天空的城">
 <meta property="og:description" content="引入 前面介绍了PLA，Linear Regression 和 Logistic Regression 这三种线性分类(回归)模型，已经知道可以很好地用来处理线性可分的数据集或者说大概可以线性可分，然而现实世界中很多数据并不是线性可分的，起码很难找到一个超平面去分开两类数据，而Linean Model的限制也就是无法很好地处理无法用超平面区分的数据，这种数据很常见，如下图的一个2维数据集:">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/ml07-1.png">
-<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/ml07-2.png">
-<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/ml07-3.png">
-<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/ml07-4.png">
-<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/ml03-5.png">
-<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/ml07-5.png">
-<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/ml07-6.png">
-<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/ml07-7.png">
-<meta property="og:updated_time" content="2017-07-31T02:42:34.562Z">
+<meta property="og:image" content="http://cdn.htliu.cn/ml07-1.png">
+<meta property="og:image" content="http://cdn.htliu.cn/ml07-2.png">
+<meta property="og:image" content="http://cdn.htliu.cn/ml07-3.png">
+<meta property="og:image" content="http://cdn.htliu.cn/ml07-4.png">
+<meta property="og:image" content="http://cdn.htliu.cn/ml03-5.png">
+<meta property="og:image" content="http://cdn.htliu.cn/ml07-5.png">
+<meta property="og:image" content="http://cdn.htliu.cn/ml07-6.png">
+<meta property="og:image" content="http://cdn.htliu.cn/ml07-7.png">
+<meta property="og:updated_time" content="2018-09-29T03:52:04.756Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="机器学习基石笔记(7)-非线性转换">
 <meta name="twitter:description" content="引入 前面介绍了PLA，Linear Regression 和 Logistic Regression 这三种线性分类(回归)模型，已经知道可以很好地用来处理线性可分的数据集或者说大概可以线性可分，然而现实世界中很多数据并不是线性可分的，起码很难找到一个超平面去分开两类数据，而Linean Model的限制也就是无法很好地处理无法用超平面区分的数据，这种数据很常见，如下图的一个2维数据集:">
-<meta name="twitter:image" content="http://7xotye.com1.z0.glb.clouddn.com/ml07-1.png">
+<meta name="twitter:image" content="http://cdn.htliu.cn/ml07-1.png">
   
   
     <link rel="icon" href="/image/favicon.ico">
@@ -148,8 +148,8 @@ ga('send', 'pageview');
         
         
         <h2 id="引入">引入</h2>
-<p>前面介绍了PLA，Linear Regression 和 Logistic Regression 这三种线性分类(回归)模型，已经知道可以很好地用来处理线性可分的数据集或者说大概可以线性可分，然而现实世界中很多数据并不是线性可分的，起码很难找到一个超平面去分开两类数据，而Linean Model的限制也就是无法很好地处理无法用超平面区分的数据，这种数据很常见，如下图的一个2维数据集: <a id="more"></a> <img src="http://7xotye.com1.z0.glb.clouddn.com/ml07-1.png"></p>
-<p>不过，我们可以发现，虽然它不是线性可分，但是貌似可以曲线可分，比如下面的分类方式: <img src="http://7xotye.com1.z0.glb.clouddn.com/ml07-2.png"></p>
+<p>前面介绍了PLA，Linear Regression 和 Logistic Regression 这三种线性分类(回归)模型，已经知道可以很好地用来处理线性可分的数据集或者说大概可以线性可分，然而现实世界中很多数据并不是线性可分的，起码很难找到一个超平面去分开两类数据，而Linean Model的限制也就是无法很好地处理无法用超平面区分的数据，这种数据很常见，如下图的一个2维数据集: <a id="more"></a> <img src="http://cdn.htliu.cn/ml07-1.png"></p>
+<p>不过，我们可以发现，虽然它不是线性可分，但是貌似可以曲线可分，比如下面的分类方式: <img src="http://cdn.htliu.cn/ml07-2.png"></p>
 <p>我们可以把圆内的数据划分为o，圆外的数据归为x，看起来很不错，再进一步抽象出如下的模型，<span class="math inline">\(h_{SEP}=sign(r^2-x_1^2-x^2_2)\)</span> 用来解决上述的问题:其中<span class="math inline">\(r\)</span>为上述的圆的半径，这并不是线性的，而是高阶多项式的，在优化求解的时候，会相对麻烦，这就引出了这节的非线性转换，将非线性的hypothese转为线性，这样我们才可以用我们之前学得线性知识去求解。</p>
 <h2 id="非线性转换">非线性转换</h2>
 <p>上述我们得到了<span class="math inline">\(h_{SEP}=sign(r^2-x_1^2-x^2_2)\)</span>，我们做如下的转换： <span class="math display">\[\begin{aligned}
@@ -164,7 +164,7 @@ ga('send', 'pageview');
 &amp;=sign(\color{orange}{\tilde{w}^T}\color{purple}{z})
 \end{aligned}\]</span> 这样就变成线性的Hypothese。这里面其实将 X-Space转换到了Z-Space，或者说换了坐标系(基)，X下的一个圆就对应了Z下的一条直线。如下图，左边是X-Space的数据点，右边是一一对应的Z-Space的数据点:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/ml07-3.png">
+<img src="http://cdn.htliu.cn/ml07-3.png">
 
 </div>
 <p>作了上述转换之后，我们只需要对<span class="math inline">\(\mathcal{D}^{&#39;}_{z} = \{ (z_n, y_n)\}\)</span>，其中<span class="math inline">\(z = \phi(x)=(1, x_1^2, x_2^2)\)</span>作为样本数据，然后使用之前学过的线性分类模型来求就可以了。</p>
@@ -180,12 +180,12 @@ ga('send', 'pageview');
 <p>一个最直接的代价就是存储空间变大了，比如开头的2D例子里面，本来只有<span class="math inline">\((1, x_1, x_2)\)</span>三维数据，结果映射之后，变成了<span class="math inline">\(1, x_1,x_2, x_1^2, x_1x_2, x_1^2,x_2^2\)</span>，变成了6维！求解的参数也就是6维，因此需要一倍的空间去存储。</p>
 <p>其次在考虑模型复杂度，假设原始数据 <span class="math inline">\(\textbf{x} \in R^d\)</span>，经过<span class="math inline">\(Q\)</span> 阶的转换(上述例子中Q=2)，首先看看我们的<span class="math inline">\(\phi_{Q}(\textbf{x})\)</span>为:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/ml07-4.png">
+<img src="http://cdn.htliu.cn/ml07-4.png">
 
 </div>
 <p>一共有<span class="math inline">\(1+\widetilde{d}\)</span>种，其中1是<span class="math inline">\(x_0\)</span>，剩下的<span class="math inline">\(\widetilde{d}\)</span>是剩下的数量。总的数量其实就相当与从<span class="math inline">\(Q+d\)</span>中找Q个元素，即:<span class="math inline">\(C_{d}^{(Q+d)} = O(Q^d)\)</span>，因此模型的自由度也就是<span class="math inline">\(O(Q^d)\)</span>，前面介绍VC维的时候，我们知道模型自由度，可以近似为VC维：<span class="math inline">\(1+\widetilde{d} = d_{vc}(\mathcal{H}_{\phi_Q})\)</span>，因此阶数Q越大，VC维就越大，模型复杂度就越大，而且这个增长是指数级的，这样并不好，因为根据:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/ml03-5.png">
+<img src="http://cdn.htliu.cn/ml03-5.png">
 
 </div>
 <p><span class="math inline">\(d_{vc}\)</span>越大，虽然<span class="math inline">\(E_{in}\)</span>会变小，不过<span class="math inline">\(E_{out}\)</span>会变大，也就是说容易发生后面讲的过拟合。</p>
@@ -199,17 +199,17 @@ ga('send', 'pageview');
 <h3 id="假设空间的变化">假设空间的变化</h3>
 <p>再看不同阶的转换函数：</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/ml07-5.png">
+<img src="http://cdn.htliu.cn/ml07-5.png">
 
 </div>
 <p>我们可以发现，其实有递推的关系，<span class="math inline">\(\pgi_{Q}(\textbf{x})\)</span>包含着，<span class="math inline">\(\pgi_{Q-1}(\textbf{x})\)</span>阶的所有项与Q阶部分组成的。也就是说，阶数大的可以表示的空间肯定包含阶数小的空间，即他们的<span class="math inline">\(\mathcal{H}\)</span>有如下的关系:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/ml07-6.png">
+<img src="http://cdn.htliu.cn/ml07-6.png">
 
 </div>
 <p>我们也知道了Q越大， <span class="math inline">\(d_{vc}\)</span>就越大， 因此又有如下的关系:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/ml07-7.png">
+<img src="http://cdn.htliu.cn/ml07-7.png">
 
 </div>
 <p>这个跟我们前面提到的很吻合。阶数越高越容易发生过拟合，泛化误差越高，因此原则是<strong>Linear Model First</strong>，如果我们可以用线性模型就可以得到<span class="math inline">\(E_{in}\)</span>很低的结果，那就不要考虑高维的非线性转化了，代价很大！</p>
@@ -230,7 +230,7 @@ ga('send', 'pageview');
 发布时间: 2016-12-02, 10:16:05<br/>
 <p>
 <p>
-最后更新: 2017-07-31, 10:42:34<br/>
+最后更新: 2018-09-29, 11:52:04<br/>
 <p>
 本文链接: <a href="/2016/12/02/nonlinera-transformation/" target="_blank">http://shomy.top/2016/12/02/nonlinera-transformation/</a>
 </p>

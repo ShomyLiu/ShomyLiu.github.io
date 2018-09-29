@@ -13,16 +13,16 @@
 <meta property="og:site_name" content="天空的城">
 <meta property="og:description" content="课程到此为止，一共介绍了PLA(感知机)，Linear Regression(线性回归)，Logistic Regression(逻辑回归)三种很相近的线性模型。这一节主要从error function分析介绍三种模型的联系，一些优化方法，最后如何延伸到多分类的情况。">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/ml06-1.png">
-<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/ml06-2.png">
-<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/ml06-3.png">
-<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/ml06-4.png">
-<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/ml06-5.png">
-<meta property="og:updated_time" content="2017-07-31T02:42:34.562Z">
+<meta property="og:image" content="http://cdn.htliu.cn/ml06-1.png">
+<meta property="og:image" content="http://cdn.htliu.cn/ml06-2.png">
+<meta property="og:image" content="http://cdn.htliu.cn/ml06-3.png">
+<meta property="og:image" content="http://cdn.htliu.cn/ml06-4.png">
+<meta property="og:image" content="http://cdn.htliu.cn/ml06-5.png">
+<meta property="og:updated_time" content="2018-09-29T03:52:04.756Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="机器学习基石笔记(6)-线性模型总结">
 <meta name="twitter:description" content="课程到此为止，一共介绍了PLA(感知机)，Linear Regression(线性回归)，Logistic Regression(逻辑回归)三种很相近的线性模型。这一节主要从error function分析介绍三种模型的联系，一些优化方法，最后如何延伸到多分类的情况。">
-<meta name="twitter:image" content="http://7xotye.com1.z0.glb.clouddn.com/ml06-1.png">
+<meta name="twitter:image" content="http://cdn.htliu.cn/ml06-1.png">
   
   
     <link rel="icon" href="/image/favicon.ico">
@@ -149,7 +149,7 @@ ga('send', 'pageview');
 </blockquote>
 <a id="more"></a>
 <h1 id="线性模型回顾">线性模型回顾</h1>
-<p>首先PLA和Logistic Regression是分类模型，(严格来说, PLA是一个Algorithm而非Model，这里不作细分)，而Linear Regression是一个回归模型，三者都是基于如下的线性方程进行建模的，这个方程也叫Linear Scoring Function(线性评分方程):<span class="math display">\[\color{purple}{s}=w^Tx\]</span>不同的是它们的hypothsis, 进而error function产生区别，如下图所示: <img src="http://7xotye.com1.z0.glb.clouddn.com/ml06-1.png"></p>
+<p>首先PLA和Logistic Regression是分类模型，(严格来说, PLA是一个Algorithm而非Model，这里不作细分)，而Linear Regression是一个回归模型，三者都是基于如下的线性方程进行建模的，这个方程也叫Linear Scoring Function(线性评分方程):<span class="math display">\[\color{purple}{s}=w^Tx\]</span>不同的是它们的hypothsis, 进而error function产生区别，如下图所示: <img src="http://cdn.htliu.cn/ml06-1.png"></p>
 <p>我们下面简单总结一下三者:</p>
 <ul>
 <li>PLA: 硬分类，直接输出+1 or -1，使用0/1损失函数，但是该损失函数是离散的函数，在优化的过程很难解(NP-HARD)，也因此是使用另外的方式进行迭代求解。</li>
@@ -157,7 +157,7 @@ ga('send', 'pageview');
 <li>Logistic Regression，软分类，输出某类的概率。使用对数损失函数也叫 cross error，得到连续二阶可微的凸函数，不过一阶微分函数非线性，很难直接求解，因此使用梯度下降的方式来迭代求解。</li>
 </ul>
 <h2 id="损失函数">损失函数</h2>
-<p>可以看出，线性回归的求解相对来说，最简单，那我们能不能把它用到分类上呢？设置一个阈值，如果回归值大于阈值为+1, 小于为-1，就跟Logistic Regression一样，有个阈值即可。既然可以，那为什么不直接使用求解简单线性回归来分类呢？我们知道PLA的在线性可分的条件下，分类效果是最好的，那如果我们用其余两个做分类的时候，效果会怎么样呢？我们从它们三个的损失函数入手，为了统一形式，均构造为<span class="math inline">\($ys\)</span>的形式，如下图: <img src="http://7xotye.com1.z0.glb.clouddn.com/ml06-2.png"></p>
+<p>可以看出，线性回归的求解相对来说，最简单，那我们能不能把它用到分类上呢？设置一个阈值，如果回归值大于阈值为+1, 小于为-1，就跟Logistic Regression一样，有个阈值即可。既然可以，那为什么不直接使用求解简单线性回归来分类呢？我们知道PLA的在线性可分的条件下，分类效果是最好的，那如果我们用其余两个做分类的时候，效果会怎么样呢？我们从它们三个的损失函数入手，为了统一形式，均构造为<span class="math inline">\($ys\)</span>的形式，如下图: <img src="http://cdn.htliu.cn/ml06-2.png"></p>
 <p>每个error-function里面都有<span class="math inline">\(ys\)</span>，我们可以考虑一下<span class="math inline">\(ys\)</span>与<span class="math inline">\(err\)</span>的大致关系：</p>
 <ul>
 <li>0/1: 0 iff ys &lt;0</li>
@@ -166,7 +166,7 @@ ga('send', 'pageview');
 </ul>
 <p>我们作出函数图像看得更加直观，以ys为横坐标，err为纵坐标，如下:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/ml06-3.png">
+<img src="http://cdn.htliu.cn/ml06-3.png">
 
 </div>
 <p>我们已经知道了PLA的分类效果是最好的，因为只要线性可分的话，肯定可以把<span class="math inline">\(E_{in}\)</span>降到最低，但是不容易优化！首先考虑Linear Regression，在图像上看到，当<span class="math inline">\(ys &lt; 0\)</span>时，<span class="math inline">\(err\)</span>比较大，这个我们可以勉强接受，因为这时候PLA的分类也是错误的。但是当<span class="math inline">\(ys\)</span>很大的时候，Linear Regression的<span class="math inline">\(err\)</span>也很大，这种情况就不太理想了，因为此时PLA可以分类正确！接下来再看看Logistic Regression的损失函数整体趋势与PLA的0/1损失函数很接近，尤其在<span class="math inline">\(ys&gt;0\)</span>时。在<span class="math inline">\(ys&lt;0\)</span>的时候，<span class="math inline">\(err\)</span>也比较大。</p>
@@ -186,7 +186,7 @@ ga('send', 'pageview');
 <p>OVA 即One Versus All，就是每次选中一个类别<span class="math inline">\(K\)</span>作为圈圈，所有其它类别的作为叉叉，这样就构成了一个二分类的问题，然后我们用Logistic Regression得到一个模型，进而计算一下概率<span class="math inline">\(P_{K}\)</span>，同理一共构造<span class="math inline">\(N\)</span>个分类器，然后选择概率最大的类别就可以了。</p>
 <p>如下示意图，四个类别时候的情况:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/ml06-4.png">
+<img src="http://cdn.htliu.cn/ml06-4.png">
 
 </div>
 <p>这种方式很直观，有效。但是有缺点就是， 不平衡的问题，因为类别比较多而且很平均，这时候，每个类别的数据量远小于其它类别数据总量，这样的不平衡会导致算法不稳定。下面的OVO就是为了解决这个问题的。</p>
@@ -194,7 +194,7 @@ ga('send', 'pageview');
 <p>与OVA不同的是， OVO(One Versus One)每次只选出两个类别的数据进行分类，也就是说一共有<span class="math inline">\(\frac{n \times (n-1)}{2}\)</span>个分类器，每个分类器会得到一种类别，然后我们只需要找出这<span class="math inline">\(\frac{n\times (n-1)}{2}\)</span>中出现次数最多的，也就是被选中的最多的类别，作为最终的类别即可。</p>
 <p>示意图如下，一共有四个类别,需要6个分类器，然后选出6个里面出现次数最多的类别，有点类似KNN算法。</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/ml06-5.png">
+<img src="http://cdn.htliu.cn/ml06-5.png">
 
 </div>
 <h1 id="总结">总结</h1>
@@ -216,7 +216,7 @@ ga('send', 'pageview');
 发布时间: 2016-11-17, 21:30:01<br/>
 <p>
 <p>
-最后更新: 2017-07-31, 10:42:34<br/>
+最后更新: 2018-09-29, 11:52:04<br/>
 <p>
 本文链接: <a href="/2016/11/17/linear-models-summary/" target="_blank">http://shomy.top/2016/11/17/linear-models-summary/</a>
 </p>

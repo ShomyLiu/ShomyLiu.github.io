@@ -13,15 +13,15 @@
 <meta property="og:site_name" content="天空的城">
 <meta property="og:description" content="Kernel Logistic Regression  这一节主要介绍如何将Kernel Trick引入到Logistic Regression，以及LR与SVM的结合  SVM 与 正则化">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/klr-1.png">
-<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/klr-2.png">
-<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/klr-3.png">
-<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/klr-4.png">
-<meta property="og:updated_time" content="2017-07-31T02:42:34.562Z">
+<meta property="og:image" content="http://cdn.htliu.cn/klr-1.png">
+<meta property="og:image" content="http://cdn.htliu.cn/klr-2.png">
+<meta property="og:image" content="http://cdn.htliu.cn/klr-3.png">
+<meta property="og:image" content="http://cdn.htliu.cn/klr-4.png">
+<meta property="og:updated_time" content="2018-09-29T03:52:04.756Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="机器学习技法笔记(7)-Kernel LR(核逻辑回归)">
 <meta name="twitter:description" content="Kernel Logistic Regression  这一节主要介绍如何将Kernel Trick引入到Logistic Regression，以及LR与SVM的结合  SVM 与 正则化">
-<meta name="twitter:image" content="http://7xotye.com1.z0.glb.clouddn.com/klr-1.png">
+<meta name="twitter:image" content="http://cdn.htliu.cn/klr-1.png">
   
   
     <link rel="icon" href="/image/favicon.ico">
@@ -157,7 +157,7 @@ ga('send', 'pageview');
 <p><span class="math display">\[\min\limits_{b,\mathbf w}\left({\lambda\over N}\mathbf w^T\mathbf w + {1\over N}\sum\mbox{err}\right)\]</span></p>
 <p>在<span class="math inline">\(L_2\)</span>中，通过最小化<span class="math inline">\(E_{in}\)</span>的同时控制<span class="math inline">\(\mathbf{w}\)</span>的大小，防止模型过度复杂。从正则化的角度来看的话，Soft-Margin 的SVM其实就属于一种正则化模型，如下的对比:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/klr-1.png">
+<img src="http://cdn.htliu.cn/klr-1.png">
 
 </div>
 <p>其中SVM中的<span class="math inline">\(C\)</span>与<span class="math inline">\(L_2\)</span>中的<span class="math inline">\(\lambda\)</span>对应，<span class="math inline">\(C\)</span>越大，表示注重<span class="math inline">\(E_{in}\)</span>，那么<span class="math inline">\(\lambda\)</span>就越小，正则化的效果相对就弱。</p>
@@ -167,7 +167,7 @@ ga('send', 'pageview');
 <p><span class="math display">\[\begin{align} PLA: \quad &amp; err_{0/1}(s, y) = [[ys \leq 0]] \\ LR: \quad &amp; err_{SCE}(s,y) = \log_{2}(1+\exp(-ys)) \\ SVM: \quad &amp; \widehat{err}_{SVM}(y,s) = \max(1-ys,0)\end{align}\]</span></p>
 <p>然后把三者的图像绘出来，如下:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/klr-2.png">
+<img src="http://cdn.htliu.cn/klr-2.png">
 
 </div>
 <p>我们可以看出来SVM与LR的误差函数很类似，都表示0/1误差的上限，我们知道误差函数对于一个模型来说是至关重要的，那么从这个角度看的话，再结合第一部分Soft-Margin SVM与<span class="math inline">\(L_2\)</span>的正则项的形式很相似，那我们可以在一定程度上认为:Soft margin SVM $ L_2 $ Regulared LR。 不过二者各有优点，比如SVM可以通过Kernel Trick 分类非线性的数据，而LR通过最大似然的方式则可以得到属于某类的概率值。</p>
@@ -181,7 +181,7 @@ ga('send', 'pageview');
 <p>首先使用Kernel SVM得到<span class="math inline">\((\mathbf w_{SVM}, b_{SVM})\)</span>, 对数据做变换，如果令<span class="math inline">\(z_n=\mathbf w^T_{SVM}\phi(\mathbf x)+b_{SVM}\)</span>, 那么后面就是一个很简单的LR模型:<span class="math inline">\(g(x)=\theta(A\cdot z_n + B)\)</span>这样来看，第一个阶段其实就属于一种基于SVM的特征转换，或者说某种映射，将数据映射到了<span class="math inline">\(z\)</span>-space,，得到新的数据:<span class="math inline">\(\{ z_n, y_n\}\)</span>。然后在新数据上跑一个LR模型，得到最终的结果，这里需要注意的是，得到的<span class="math inline">\(z_n\)</span>是一个一维的实数，这样大大减少了LR的计算复杂度。LR的两个参数<span class="math inline">\(A,B\)</span>的作用则是fine-tune(微调)，平移或者放缩。一般情况下，如果SVM的效果好的话，<span class="math inline">\(A&gt;0, B \approx 0\)</span>。</p>
 <p>这样一来，新的模型就可以结合了SVM与LR二者的优势，这种模型最早是由Platt提出的，因此也叫作<strong>Platt’s Model of Probabilisitc SVM</strong>(概率模型)，具体步骤总结如下:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/klr-3.png">
+<img src="http://cdn.htliu.cn/klr-3.png">
 
 </div>
 <p>如果把Kernel体现到模型的话，直接展开即可，最后的模型就是:</p>
@@ -212,7 +212,7 @@ ga('send', 'pageview');
 <p><span class="math display">\[\min_{\mathbf w} \quad {\lambda\over N}\mathbf w^T\mathbf w+{1\over N}\sum_{n=1}^N\log\left(1+\exp\left(-y_n\mathbf w^T\mathbf z_n\right)\right)\]</span></p>
 <p>很显然，LR的最优解: <span class="math inline">\(\mathbf w_{*} = \sum \beta_n\mathbf z_n = \beta^T\mathbf Z\)</span>，既然这样，那么我们就直接不再求<span class="math inline">\(\mathbf w\)</span>,直接求解<span class="math inline">\(\beta\)</span>，然后加入Kernel Function，这样目标函数如下:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/klr-4.png">
+<img src="http://cdn.htliu.cn/klr-4.png">
 
 </div>
 <p>这是一个无约束的优化问题，可以使用梯度下降等方式来来得到最优解。</p>
@@ -237,7 +237,7 @@ ga('send', 'pageview');
 发布时间: 2017-03-07, 22:29:33<br/>
 <p>
 <p>
-最后更新: 2017-07-31, 10:42:34<br/>
+最后更新: 2018-09-29, 11:52:04<br/>
 <p>
 本文链接: <a href="/2017/03/07/kernel-lr/" target="_blank">http://shomy.top/2017/03/07/kernel-lr/</a>
 </p>

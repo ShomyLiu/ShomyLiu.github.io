@@ -13,16 +13,16 @@
 <meta property="og:site_name" content="天空的城">
 <meta property="og:description" content="2017.12.5 CUDA 与 cuDNN的最新版本均已经有所变化，不过安装方式相同。   当前环境如下:   Ubuntu 16.04.1 LTS GeForce GTX 960M CUDA 8.0 cuDNN V5.1 Library">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/nvidia-1.jpg">
-<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/nvidia-2.png">
-<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/nvidia-3.png">
-<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/nvidia-4.png">
-<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/nvidia-5.png">
-<meta property="og:updated_time" content="2018-08-08T01:57:41.065Z">
+<meta property="og:image" content="http://cdn.htliu.cn/nvidia-1.jpg">
+<meta property="og:image" content="http://cdn.htliu.cn/nvidia-2.png">
+<meta property="og:image" content="http://cdn.htliu.cn/nvidia-3.png">
+<meta property="og:image" content="http://cdn.htliu.cn/nvidia-4.png">
+<meta property="og:image" content="http://cdn.htliu.cn/nvidia-5.png">
+<meta property="og:updated_time" content="2018-09-29T03:52:04.756Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Ubuntu安装GPU版TensorFlow">
 <meta name="twitter:description" content="2017.12.5 CUDA 与 cuDNN的最新版本均已经有所变化，不过安装方式相同。   当前环境如下:   Ubuntu 16.04.1 LTS GeForce GTX 960M CUDA 8.0 cuDNN V5.1 Library">
-<meta name="twitter:image" content="http://7xotye.com1.z0.glb.clouddn.com/nvidia-1.jpg">
+<meta name="twitter:image" content="http://cdn.htliu.cn/nvidia-1.jpg">
   
   
     <link rel="icon" href="/image/favicon.ico">
@@ -159,7 +159,7 @@ ga('send', 'pageview');
 <a id="more"></a>
 <h2 id="环境准备">环境准备</h2>
 <p>首先检查自己的GPU是否支持CUDA， <figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#</span><span class="bash">查看显卡类型</span></div><div class="line"><span class="meta">$</span><span class="bash"> lspci | grep -i nvidia</span></div></pre></td></tr></table></figure></p>
-<p>在输出中找到自己的的显卡类型，然后到http://developer.nvidia.com/cuda-gpu 找到自己的型号： <img src="http://7xotye.com1.z0.glb.clouddn.com/nvidia-1.jpg"> <img src="http://7xotye.com1.z0.glb.clouddn.com/nvidia-2.png"></p>
+<p>在输出中找到自己的的显卡类型，然后到http://developer.nvidia.com/cuda-gpu 找到自己的型号： <img src="http://cdn.htliu.cn/nvidia-1.jpg"> <img src="http://cdn.htliu.cn/nvidia-2.png"></p>
 <p>我本机的环境如下:</p>
 <ul>
 <li>Ubuntu 16.04.1 LTS</li>
@@ -170,7 +170,7 @@ ga('send', 'pageview');
 <ol style="list-style-type: decimal">
 <li><p>下载CUDA: https://developer.nvidia.com/cuda-downloads，下载对应版本的cuda安装包，下载对应版本的cuda安装包，推荐下载最新版本的8.0版本，deb版的本地安装比较方便。</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/nvidia-3.png">
+<img src="http://cdn.htliu.cn/nvidia-3.png">
 
 </div></li>
 <li><p>下载完成之后，直接执行如下的命令进行安装即可: <figure class="highlight lsl"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">sudo dpkg -i cuda-repo-ubuntu1604<span class="number">-8</span><span class="number">-0</span>-local_8<span class="number">.0</span><span class="number">.44</span><span class="number">-1</span>_amd64.deb</div><div class="line">sudo apt update</div><div class="line">sudo apt install cuda</div></pre></td></tr></table></figure></p>
@@ -178,7 +178,7 @@ ga('send', 'pageview');
 <p>之后再<code>sudo apt update</code> 即可</p></li>
 <li><p>下载cuDDN：https://developer.nvidia.com/rdp/cudnn-download ， 这里需要注册个帐号，然后才可以下载。</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/nvidia-4.png">
+<img src="http://cdn.htliu.cn/nvidia-4.png">
 
 </div>
 <p><strong>这里有个版本需要注意，最好下载 <code>cuDNNv5.1 Library</code>版本的。 虽然V5.0也支持 CUDA 8.0，但是在后续跑TensorFlow的时候，会报错，后来才重新下载了V5.1的，才能正常运行。 </strong></p></li>
@@ -187,7 +187,7 @@ ga('send', 'pageview');
 <p>之后执行<code>source .bashrc</code>立即生效</p></li>
 <li><p>测试是否成功 进入<code>/usr/local/cuda/samples</code>，编译运行某个sample: <figure class="highlight vim"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo <span class="keyword">make</span> <span class="keyword">all</span> -j4</div></pre></td></tr></table></figure></p>
 <p>全部编译完成后，进入 <code>samples/bin/x86_64/linux/release</code>，运行<code>deviceQuery</code>： <figure class="highlight jboss-cli"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="string">./deviceQuery</span></div></pre></td></tr></table></figure></p>
-<p>显示有可用的GPU，即可成功: <img src="http://7xotye.com1.z0.glb.clouddn.com/nvidia-5.png"></p></li>
+<p>显示有可用的GPU，即可成功: <img src="http://cdn.htliu.cn/nvidia-5.png"></p></li>
 </ol>
 <h2 id="安装tensorflow">安装TensorFlow</h2>
 <p>直接使用<code>pip</code>安装即可：当前版本为1.4: <figure class="highlight cmake"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">sudo  pip <span class="keyword">install</span> tensorflow-gpu</div></pre></td></tr></table></figure></p>
@@ -211,7 +211,7 @@ ga('send', 'pageview');
 发布时间: 2016-12-29, 14:39:40<br/>
 <p>
 <p>
-最后更新: 2018-08-08, 09:57:41<br/>
+最后更新: 2018-09-29, 11:52:04<br/>
 <p>
 本文链接: <a href="/2016/12/29/gpu-tensorflow-install/" target="_blank">http://shomy.top/2016/12/29/gpu-tensorflow-install/</a>
 </p>

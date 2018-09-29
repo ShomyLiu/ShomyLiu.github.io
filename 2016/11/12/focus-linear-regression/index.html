@@ -13,13 +13,13 @@
 <meta property="og:site_name" content="天空的城">
 <meta property="og:description" content="11.25日更新: Linear-Regression练习    前面的学习基本都是介绍机器学习可以学习的原因。这里开始讲如何学习。也就是如何选择算法去找到最好的hypothesis.接下来几篇将会介绍线性模型，包括前面的PLA(感知机), 以及这一节的Linear Regression(线性回归)，还有下一节的Logistic Regression(逻辑回归)，以及它们的联系。">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/ml04-1.png">
-<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/ml04-2.png">
-<meta property="og:updated_time" content="2017-07-31T02:42:34.562Z">
+<meta property="og:image" content="http://cdn.htliu.cn/ml04-1.png">
+<meta property="og:image" content="http://cdn.htliu.cn/ml04-2.png">
+<meta property="og:updated_time" content="2018-09-29T03:52:04.756Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="机器学习基石笔记(4)-线性回归">
 <meta name="twitter:description" content="11.25日更新: Linear-Regression练习    前面的学习基本都是介绍机器学习可以学习的原因。这里开始讲如何学习。也就是如何选择算法去找到最好的hypothesis.接下来几篇将会介绍线性模型，包括前面的PLA(感知机), 以及这一节的Linear Regression(线性回归)，还有下一节的Logistic Regression(逻辑回归)，以及它们的联系。">
-<meta name="twitter:image" content="http://7xotye.com1.z0.glb.clouddn.com/ml04-1.png">
+<meta name="twitter:image" content="http://cdn.htliu.cn/ml04-1.png">
   
   
     <link rel="icon" href="/image/favicon.ico">
@@ -152,10 +152,10 @@ ga('send', 'pageview');
 <p>仍然拿申请信用卡为例，PLA算法是用来判断给不给信用卡的，而如果我们想要知道给多少额度呢？ 这个时候，我们可以就可以直接使用<span class="math inline">\(score=W^TX\)</span>值了，而不用sign函数了。因此就可以很容易的定义出Linear Regression的模型:<span class="math display">\[ y= \sum\limits_{i=0}^{d}w_ix_i=W^TX\]</span>是不是跟PLA:<span class="math inline">\(y=sign( \sum\limits_{i=0}^{d}w_ix_i)\)</span>很像。注意，这里面的<span class="math inline">\(W,X\)</span>都是<span class="math inline">\((d+1)\)</span>维的列向量。下面就是开始找到一个算法来找到最好的h即可。</p>
 <p>我们的数据集是<span class="math inline">\(D=\{ (x_1, y_1),...,(x_n,y_n)\}\)</span>，那么最好的<span class="math inline">\(h(x_i)\)</span>得到的<span class="math inline">\(\hat{y_i}\)</span>应该与<span class="math inline">\(y_i\)</span>很接近，这样自然而然就可以想到使用如下的损失函数作为评估每个h的标准:<span class="math inline">\(err(\hat{y},y) = (\hat{y}-y)^2\)</span>那么训练数据集<span class="math inline">\(D\)</span>对应的损失就应该是<span class="math display">\[err(w) = E_{in}(w) = \frac{1}{N}\sum\limits_{i=0}^{N}(\hat{y}_i-y_i)^2=\frac{1}{N}\sum\limits_{i=0}^{N}(w^Tx_i-y_i)^2\]</span></p>
 <p>下面的事情就是如何求出使得这个<span class="math inline">\(err\)</span>最小的<span class="math inline">\(w\)</span>。先化简为矩阵的形式:<span class="math display">\[\begin{aligned} E_{in}(\color{blue}{w}) &amp;= \frac{1}{N}\sum_{n=1}^{N}(\color{blue}{w^T}\color{red}{x_n}-\color{purple}{y_n})^2=\frac{1}{N}\sum_{n=1}^{N}(\color{red}{x_n^T}\color{blue}{w}-\color{purple}{y_n})^2 \\\ &amp;=\frac{1}{N}\begin{Vmatrix} \color{red}{x_1^T}\color{blue}{w}-\color{purple}{y_1}\\\ \color{red}{x_2^T}\color{blue}{w}-\color{purple}{y_2}\\\ ...\\\ \color{red}{x_N^T}\color{blue}{w}-\color{purple}{y_N} \end{Vmatrix}^2 \\\ &amp;=\frac{1}{N}\begin{Vmatrix} \color{red}{\begin{bmatrix} --x_1^T--\\\ --x_2^T--\\\ ...\\\ --x_N^T-- \end{bmatrix}} \color{blue}{w} - \color{purple}{\begin{bmatrix} y_1\\\ y_2\\\ ...\\\ y_3 \end{bmatrix}} \end{Vmatrix}^2 \\\ &amp;=\frac{1}{N}|| \underbrace{\color{red}{X}}_{N\times (d+1)}\;\;\; \underbrace{\color{blue}{w}}_{(d+1)\times 1} \; - \; \underbrace{\color{purple}{y}}_{N\times 1} ||^2 \end{aligned}\]</span></p>
-<p>这样我们的目标就是:<span class="math inline">\(\min E_{in}(w) = \frac{1}{N}\begin{Vmatrix}{X}{w}-{y}\end{Vmatrix}^2\)</span>, 这个可以近似看成关于<span class="math inline">\(w\)</span>的二次函数，图像大致如下:<img src="http://7xotye.com1.z0.glb.clouddn.com/ml04-1.png">这个是凸函数，因此我们可以通过求一阶导数然后为0的<span class="math inline">\(w\)</span>即可。这就是线性代数的范围了，类比二次函数即可，结果如下:</p>
+<p>这样我们的目标就是:<span class="math inline">\(\min E_{in}(w) = \frac{1}{N}\begin{Vmatrix}{X}{w}-{y}\end{Vmatrix}^2\)</span>, 这个可以近似看成关于<span class="math inline">\(w\)</span>的二次函数，图像大致如下:<img src="http://cdn.htliu.cn/ml04-1.png">这个是凸函数，因此我们可以通过求一阶导数然后为0的<span class="math inline">\(w\)</span>即可。这就是线性代数的范围了，类比二次函数即可，结果如下:</p>
 <p><span class="math display">\[\nabla E_{in}(w)=\frac{2}{N}(X^TXw-w^TX^T)\]</span> 接下来的事情就简单了，让<span class="math inline">\(\nabla E_{in} = 0\)</span>, 可以得到我们的最优的参数<span class="math inline">\(w_{lin}\)</span>:</p>
 <p><span class="math display">\[w_{lin} = (X^TX)^{-1}X^Ty\]</span>，我们一般把<span class="math inline">\((X^TX)^{-1}X^T\)</span>设为 pseudo-iinverse: <span class="math inline">\(X^{\dagger}\)</span>, 这样我们经常这样写:<span class="math inline">\(w_{lin}=X^{\dagger}\)</span>。另外需要注意的，这是在<span class="math inline">\(X^TX\)</span>可逆的情况下，也就是<span class="math inline">\(X\)</span>满秩，如果不可逆的情况下，会使用其它方式定义，比如岭回归，就是对<span class="math inline">\(X^TX\)</span>进行修正，这里不多说。到此为止，我们求出了最优的<span class="math inline">\(w\)</span>, 这样再来一个新的数据点<span class="math inline">\(X\)</span>, 那么预测值就是:<span class="math display">\[\hat{y} = X w_{lin} = XX^{\dagger}y\]</span></p>
-<p>现在，我们可以给出完整的线性回归算法了: <img src="http://7xotye.com1.z0.glb.clouddn.com/ml04-2.png"></p>
+<p>现在，我们可以给出完整的线性回归算法了: <img src="http://cdn.htliu.cn/ml04-2.png"></p>
 <h2 id="小结">小结</h2>
 <p>我们可以看到，线性回归模型并不是一次一次的迭代获得最优解的过程，而是一次求解就可以，这个就归功于损失函数有解析解。复杂度都集中在求逆的过程，效率还是很高的。</p>
 
@@ -175,7 +175,7 @@ ga('send', 'pageview');
 发布时间: 2016-11-12, 16:54:49<br/>
 <p>
 <p>
-最后更新: 2017-07-31, 10:42:34<br/>
+最后更新: 2018-09-29, 11:52:04<br/>
 <p>
 本文链接: <a href="/2016/11/12/focus-linear-regression/" target="_blank">http://shomy.top/2016/11/12/focus-linear-regression/</a>
 </p>

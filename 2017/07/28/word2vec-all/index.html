@@ -13,18 +13,18 @@
 <meta property="og:site_name" content="天空的城">
 <meta property="og:description" content="目前需要做Network Embedding方面的课题，而复杂网络本身就经常借鉴NLP的一些算法模型, Embedding也不例外. 因此先从Word Embedding入手。之前对Word Embedding(暂且翻译为词嵌入或者词向量)的理解就是将单词根据某种特征转为数值向量，再来做其他工作比如文本分类的工作。而word2vec则是word embedding的一种模型，也是目前使用最广的词向">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/blog/w2v/nn1.png">
-<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/blog/w2v/nnlm1.png">
-<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/blog/w2v/word2vec-1.png">
-<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/blog/w2v/one-word.png">
-<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/blog/w2v/cbow-1.png">
-<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/blog/w2v/sg-1.png">
-<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/blog/w2v/hs-1.png">
-<meta property="og:updated_time" content="2017-07-31T02:42:34.566Z">
+<meta property="og:image" content="http://cdn.htliu.cn/blog/w2v/nn1.png">
+<meta property="og:image" content="http://cdn.htliu.cn/blog/w2v/nnlm1.png">
+<meta property="og:image" content="http://cdn.htliu.cn/blog/w2v/word2vec-1.png">
+<meta property="og:image" content="http://cdn.htliu.cn/blog/w2v/one-word.png">
+<meta property="og:image" content="http://cdn.htliu.cn/blog/w2v/cbow-1.png">
+<meta property="og:image" content="http://cdn.htliu.cn/blog/w2v/sg-1.png">
+<meta property="og:image" content="http://cdn.htliu.cn/blog/w2v/hs-1.png">
+<meta property="og:updated_time" content="2018-09-29T03:52:04.768Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Word2vec数学原理全家桶">
 <meta name="twitter:description" content="目前需要做Network Embedding方面的课题，而复杂网络本身就经常借鉴NLP的一些算法模型, Embedding也不例外. 因此先从Word Embedding入手。之前对Word Embedding(暂且翻译为词嵌入或者词向量)的理解就是将单词根据某种特征转为数值向量，再来做其他工作比如文本分类的工作。而word2vec则是word embedding的一种模型，也是目前使用最广的词向">
-<meta name="twitter:image" content="http://7xotye.com1.z0.glb.clouddn.com/blog/w2v/nn1.png">
+<meta name="twitter:image" content="http://cdn.htliu.cn/blog/w2v/nn1.png">
   
   
     <link rel="icon" href="/image/favicon.ico">
@@ -159,7 +159,7 @@ ga('send', 'pageview');
 <h3 id="神经网络">神经网络</h3>
 <p>引入word2vec之前需要先对神经网络的知识有一定了解, 这里只贴一张图说明一个简单三层神经网络, 具体的细节不再赘述, 可以参考之前的一篇专门介绍神经网络的博文<a href="http://shomy.top/2016/12/07/basic-neural-network/">机器学习技法笔记(1)-神经网络</a> ; 如下图, <span class="math inline">\(x=[x_1, x_2,...x_K]\)</span>是模型的输入, 中间经过与权重矩阵<span class="math inline">\(\{w_{ki}\}\)</span> 运算, 矩阵运算结果再经过非线性激活函数得到隐层的结果<span class="math inline">\(h\)</span>, 从隐层到输出层同理. 这样从输入层到输出层既有线性变换,又有非线性变换, 因此可以更好刻画出输入变量的特征.</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/blog/w2v/nn1.png">
+<img src="http://cdn.htliu.cn/blog/w2v/nn1.png">
 
 </div>
 <h3 id="神经语言模型">神经语言模型</h3>
@@ -173,7 +173,7 @@ ga('send', 'pageview');
 <p><span class="math display">\[P(w_t|w_1,w_2,..,w_{t-1})=P(w_t|w_{t_1}, w_{t_2}...w_{t_n+1})\]</span></p>
 <p>上述便是经典的<code>n-gram</code>模型的近似表示方式. 下面需要介绍一下神经语言模型(NNLM), 最初由Bengio提出的A Neural Probabilistic Language Mode最为经典, word2vec便是从其中简化训练而来. Bengio通过下面的一个三层神经网络来计算<span class="math inline">\(P(w_t|w_{t_1}, w_{t_2}...w_{t_n+1})\)</span>:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/blog/w2v/nnlm1.png">
+<img src="http://cdn.htliu.cn/blog/w2v/nnlm1.png">
 
 </div>
 <p>首先第一层输入就是前<span class="math inline">\(t-1\)</span>个词<span class="math inline">\(w_{t_n+1},...,w_{t-1}\)</span> 去预测第<span class="math inline">\(t\)</span>个词是<span class="math inline">\(w_t\)</span> 的概率. 这里面的矩阵<span class="math inline">\(C\in |V| \times d\)</span>维护着词汇表中所有词的词向量, 其中<span class="math inline">\(|V|\)</span>是词汇表中词的个数, <span class="math inline">\(d\)</span>是词向量的维度. 然后根据输入的前<span class="math inline">\(n-1\)</span>个词, 在C中找到它们对应的词向量, 然后直接串联起来成为一个维度为<span class="math inline">\((n-1)d\)</span>的向量x 作为接下来三层神经网络的输入, 后面就是普通神经网络了. 需要说明的是,因为我们那要预测概率最大的<span class="math inline">\(w_t\)</span>, 因此最后输出层的神经元应该与词汇表大小同样为<span class="math inline">\(|V|\)</span>, 这里使用使用softmax函数归一化输出层的值到[0,1], 代表可能的每个词的概率. 此外在原文中, 存在一些直连边, 也就是上图中的虚线, 从输入层直接到输出层, 是一个线性变换, Bingo在文中表示, 直连边的存在大幅降低迭代次数, 但对语言模型效果无提升, 随着计算能力的提高, 后续的工作基本都去掉了直连边.</p>
@@ -188,14 +188,14 @@ ga('send', 'pageview');
 </ul>
 <p>两个模型图示如下</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/blog/w2v/word2vec-1.png">
+<img src="http://cdn.htliu.cn/blog/w2v/word2vec-1.png">
 
 </div>
 <p>下面将会从最简单的上下文只有一个词的情形入手, 然后扩展到CBOW以及Skip-gram, 介绍原理以及参数训练过程. 关于word2vec的训练这里将会从完全的BP神经网络的过程来介绍.</p>
 <h3 id="one-word-model">One-Word Model</h3>
 <p>首先先看简化版入手: 输入输出都只有一个词, 如下图示:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/blog/w2v/one-word.png">
+<img src="http://cdn.htliu.cn/blog/w2v/one-word.png">
 
 </div>
 <p>首先说明符号:</p>
@@ -244,7 +244,7 @@ ga('send', 'pageview');
 <h3 id="cbow-model">CBOW Model</h3>
 <p>这一部分讲word2vec的第一个形式: Continurous Bag-Of-Word，模型图示如下:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/blog/w2v/cbow-1.png">
+<img src="http://cdn.htliu.cn/blog/w2v/cbow-1.png">
 
 </div>
 <p>跟上一个模型唯一的不同就是输入不再是一个词<span class="math inline">\(w_I\)</span>, 而是多个词，上图中一共有C个单词: <span class="math inline">\(x_{1k},x_{2k},...,x_{Ck}\)</span>，每个<span class="math inline">\(x\)</span>都是one-hot表示。 这样隐层的<span class="math inline">\(\mathbf{h}\)</span>的计算就会不同了: 之前一个单词的模型是直接取出<span class="math inline">\(W\)</span>的一行<span class="math inline">\(v_{w_I}\)</span>作为<span class="math inline">\(h\)</span>的值，在CBOW中则是取出<span class="math inline">\(W\)</span>中输入的所有C个单词的词向量，然后直接取平均，如下:</p>
@@ -259,7 +259,7 @@ ga('send', 'pageview');
 <h3 id="skipgram-model">SkipGram Model</h3>
 <p>现在开始介绍word2vec的第二种形式: SkipGram(根据单词预测上下文)，这个模型与One-Word Model不同的地方在于，SG的输出有多个词，而非One-Word 中输出只有一个词，这样输出层就不是一个多项分布了，而是<span class="math inline">\(C\)</span>个多项分布了，模型图示如下:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/blog/w2v/sg-1.png">
+<img src="http://cdn.htliu.cn/blog/w2v/sg-1.png">
 
 </div>
 <p>因此从输入层到隐层部分与One-Word Model 相同，隐层神经元的计算方式如下:</p>
@@ -296,7 +296,7 @@ ga('send', 'pageview');
 <h3 id="hierarchical-softmax">Hierarchical SoftMax</h3>
 <p>首先Hierarchical SoftMax(HS)并不是word2vec提出来的, 而是之前Bengio在2005年最早提出来专门为了加速计算神经语言模型中的softmax的一种方式, 这里介绍如何在word2vec中使用. HS主要基于哈夫曼树(一种二叉数)将计算量大的部分变为了一种二分类的问题. 先看下面的图, 原来的模型在隐层之后通过<span class="math inline">\(W^{&#39;}\)</span>连接输出层, 现在HS则去掉了<span class="math inline">\(W^{&#39;}\)</span>, 隐层<span class="math inline">\(\mathbf{h}\)</span>直接与下面的二叉树的root节点相连:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/blog/w2v/hs-1.png">
+<img src="http://cdn.htliu.cn/blog/w2v/hs-1.png">
 
 </div>
 <p>其中图中白色的叶子节点表示词汇表中所有的<span class="math inline">\(|V|\)</span>个词, 黑色节点表示非叶子节点, 每一个叶子节点也就是每一个单词, 都对应唯一的一条从root节点出发的路径. 而我们的目的是使的<span class="math inline">\(w=w_O\)</span>这条路径的概率最大，即: <span class="math inline">\(P(w=w_O | w_I)\)</span> 最大, 此时每一个分支都代表一个选择, 向左转还是向右转. 所以如何判断向左还是向右呢? 我们用<span class="math inline">\(n(w,j)\)</span>表示从root到叶子节点<span class="math inline">\(w\)</span>的路径上的第<span class="math inline">\(j\)</span>个非叶子节点, 并且每个非叶子节点都对应一个向量<span class="math inline">\(v^{&#39;}_{n(w, j)}\)</span>, 维度与<span class="math inline">\(\mathbf{h}\)</span>相同, 然后使用一个sigmod函数: <span class="math inline">\(\sigma(x)= \frac{1}{1+\exp(-x)} \in [0, 1]\)</span>, 结合向量的内积, 来判断该向左还是向右, 如下, 第n个节点向左 以及向右的概率定义:</p>
@@ -366,7 +366,7 @@ ga('send', 'pageview');
 发布时间: 2017-07-28, 15:42:21<br/>
 <p>
 <p>
-最后更新: 2017-07-31, 10:42:34<br/>
+最后更新: 2018-09-29, 11:52:04<br/>
 <p>
 本文链接: <a href="/2017/07/28/word2vec-all/" target="_blank">http://shomy.top/2017/07/28/word2vec-all/</a>
 </p>

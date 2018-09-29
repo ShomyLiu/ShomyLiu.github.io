@@ -13,20 +13,20 @@
 <meta property="og:site_name" content="天空的城">
 <meta property="og:description" content="从这一节开始学习机器学习技法课程中的SVM, 这一节主要介绍标准形式的SVM: Linear SVM  引入SVM">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/svm01-1.png">
-<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/svm01-2.png">
-<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/svm01-3.png">
-<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/svm01-4.png">
-<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/svm01-6.png">
-<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/svm01-7.png">
-<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/svm01-8.png">
-<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/svm01-9.png">
-<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/svm01-10.png">
-<meta property="og:updated_time" content="2017-07-31T02:42:34.562Z">
+<meta property="og:image" content="http://cdn.htliu.cn/svm01-1.png">
+<meta property="og:image" content="http://cdn.htliu.cn/svm01-2.png">
+<meta property="og:image" content="http://cdn.htliu.cn/svm01-3.png">
+<meta property="og:image" content="http://cdn.htliu.cn/svm01-4.png">
+<meta property="og:image" content="http://cdn.htliu.cn/svm01-6.png">
+<meta property="og:image" content="http://cdn.htliu.cn/svm01-7.png">
+<meta property="og:image" content="http://cdn.htliu.cn/svm01-8.png">
+<meta property="og:image" content="http://cdn.htliu.cn/svm01-9.png">
+<meta property="og:image" content="http://cdn.htliu.cn/svm01-10.png">
+<meta property="og:updated_time" content="2018-09-29T03:52:04.764Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="机器学习技法笔记(2)-Linear SVM">
 <meta name="twitter:description" content="从这一节开始学习机器学习技法课程中的SVM, 这一节主要介绍标准形式的SVM: Linear SVM  引入SVM">
-<meta name="twitter:image" content="http://7xotye.com1.z0.glb.clouddn.com/svm01-1.png">
+<meta name="twitter:image" content="http://cdn.htliu.cn/svm01-1.png">
   
   
     <link rel="icon" href="/image/favicon.ico">
@@ -155,25 +155,25 @@ ga('send', 'pageview');
 <a id="more"></a>
 <p>首先回顾Percentron Learning Algrithm(感知器算法PLA)是如何分类的，如下图，找到一条线，将两类训练数据点分开即可:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/svm01-1.png">
+<img src="http://cdn.htliu.cn/svm01-1.png">
 
 </div>
 <p>PLA的最后的直线可能有很多条，那到底哪条好呢？好坏的标准则是其泛化性能，即在测试数据集上的正确率，如下，下面三条直线都能正确的分开训练数据，那到底哪个好呢？SVM就是解决这个问题的。</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/svm01-2.png">
+<img src="http://cdn.htliu.cn/svm01-2.png">
 
 </div>
 <h2 id="svm求解">SVM求解</h2>
 <p>直觉告诉我们最右的要好一些，因为测试数据的分布应该与训练数据的分布类似，因此看起来它可以容忍更多的噪音，假设有一个数据在第一个红叉叉下方位置，也是属于叉类别，前两直线则容易把它分到圈圈的类别，而造成错误。因此理想的直线或者分类平面应该距离两类训练数据集越远越好：也就是下面的灰色区域越胖越好:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/svm01-3.png">
+<img src="http://cdn.htliu.cn/svm01-3.png">
 
 </div>
 <p>灰色区域的宽度是由直线与训练数据<span class="math inline">\(x_{1..N}\)</span> 中到分类平面最近的距离决定的，这个距离称为<code>margin</code>，因此我们就可以将问题描述如下:</p>
 <p><span class="math display">\[\begin{align} &amp; \max\limits_{W,b}(margin(W,b))  \\  &amp; s.t. y_n(W^TX_n+b) &gt; 0  \end{align}\]</span></p>
 <p>其中，分类平面由<span class="math inline">\(W,b\)</span>决定，我们要找出最大<span class="math inline">\(margin\)</span>的那条直线，这里的<span class="math inline">\(margin(W)=\min\limits_{n=1...N} distance(x_n,,W,b)\)</span>, 约束条件是这条直线已经将两类完全分开，即:<span class="math inline">\(y_n(X_n+b) &gt;0\)</span> 。下面我们看看点<span class="math inline">\((x_n)\)</span>到平面<span class="math inline">\(W^TX+b = 0\)</span>的距离，看下图:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/svm01-4.png">
+<img src="http://cdn.htliu.cn/svm01-4.png">
 
 </div>
 <p><span class="math inline">\(W\)</span> 为平面<span class="math inline">\(W^TX+b=0\)</span>的法向量，<span class="math inline">\(x^{&#39;}\)</span>与<span class="math inline">\(x^{&#39;&#39;}\)</span>为平面上的两个点，现在如果要求点<span class="math inline">\(X\)</span>到平面的距离<span class="math inline">\(dist(X,W,b)\)</span>，即向量<span class="math inline">\(X-X^{&#39;}\)</span>投影(proj)到法向量<span class="math inline">\(W\)</span>:</p>
@@ -193,31 +193,31 @@ ga('send', 'pageview');
 <p><span class="math display">\[\begin{align} &amp; \min\limits_{W,b} \quad \frac{1}{2}W^TW \\ &amp; s.t. \ y_n(W^TX_n +b) \geq 1, \ for \ all \ n \end{align}\]</span></p>
 <p>这个问题的优化方程为二次方程，条件为一次线性约束，是一个典型的二次规划问题(Quadratic Programming)，而QP问题有很多解法，我们只需要将上述优化问题，转化为QP问题解法的格式，然后直接代入QP Solver,即可，如下:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/svm01-6.png">
+<img src="http://cdn.htliu.cn/svm01-6.png">
 
 </div>
 <p>左侧是我们最后的优化问题，右侧是标准的QP问题的输入格式，一共有4个输入变量: <span class="math inline">\(Q,p,A,c\)</span>, 及一个最终的优化结果: <span class="math inline">\(u\)</span> ，我们只需要表示出上述四个输入变量，就可以输入到某个QP Solver里面即可，通过对应关系，表示如下:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/svm01-7.png">
+<img src="http://cdn.htliu.cn/svm01-7.png">
 
 </div>
 <p>这样就可以得到最优的<span class="math inline">\(W,b\)</span>，进而求出<span class="math inline">\(g_{SVM} = sign(W^TX+b)\)</span>，进行后续预测。</p>
 <p>上述的算法仅仅是最简单的线性SVM, 不过是其它类型SVM的基础，总结一下，流程很简单，如下:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/svm01-8.png">
+<img src="http://cdn.htliu.cn/svm01-8.png">
 
 </div>
 <p>这种算法同样也可以解决非线性分类问题，通过之前的<a href="http://shomy.top/2016/12/02/nonlinera-transformation/">非线性转化</a>，到线性空间: <span class="math inline">\(z_n = \phi(x_n)\)</span>，理论上即可直接应用到非线性问题中。不过缺陷也很明显，要求数据点必须线性可分，由于这个特点，这种算法也叫做: Linear Hard-Margin SVM。</p>
 <h2 id="svm-与-vc-维">SVM 与 VC 维</h2>
 <p>这里需要提一下，SVM(Support Vector Machine)的含义，我们了解到，SVM就是要找到最胖的那个分类面，如下:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/svm01-9.png">
+<img src="http://cdn.htliu.cn/svm01-9.png">
 
 </div>
 <p>其中，在边界上的用黑框圈出来的三个点，我们就称为<strong>SV</strong>,Support Vector，因为它们才是求解过程中，真正起到作用的点，其余的点没有起到作用，后续的课程中也有进一步的介绍SV。</p>
 <p>简单来说，SVM是基于PLA的一个算法，上面开始说了， 直觉告诉我们最胖的直线应该容错性好，其中的原理其实则是SVM相对于PLA，VC维降低了(注: 算法的VC维的定义不太明确，类比与<span class="math inline">\(\mathcal{H}\)</span>的VC维定义即可, 这里只是定性的介绍)，看下图:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/svm01-10.png">
+<img src="http://cdn.htliu.cn/svm01-10.png">
 
 </div>
 <p>以三个输入的数据为例，PLA可以shatter(能够将<span class="math inline">\(2^3\)</span>种情况都分开)，而无法将4个数据点shatter，因此VC(PLA)=3，我们从另外一个角度来考虑， 假设我们规定了Margin的值为<span class="math inline">\(\rho\)</span> ，也就是胖瘦的程度，那么肯定会存在输入数据量为3,且无法shatter的情形，比如上图的后两种，在<span class="math inline">\(\rho\)</span>下 无法shatter，因此大致看起来，<span class="math inline">\(d_{VC}(\rho) &lt; 3\)</span>的。其实有严格的数学证明，可以得到:</p>
@@ -240,7 +240,7 @@ ga('send', 'pageview');
 发布时间: 2017-02-16, 15:20:25<br/>
 <p>
 <p>
-最后更新: 2017-07-31, 10:42:34<br/>
+最后更新: 2018-09-29, 11:52:04<br/>
 <p>
 本文链接: <a href="/2017/02/16/svm-01/" target="_blank">http://shomy.top/2017/02/16/svm-01/</a>
 </p>

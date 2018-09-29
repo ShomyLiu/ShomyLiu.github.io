@@ -13,22 +13,22 @@
 <meta property="og:site_name" content="天空的城">
 <meta property="og:description" content="前段时间看完了机器学习基石课程，不过还有regularzation和 validation 没有整理，由于需要，先看了技法课程中的神经网络(Neural Network)。林老师讲的依然很好，将神经网络笔记记录于此。">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/ml201-1.png">
-<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/ml201-2.png">
-<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/ml201-3.png">
-<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/ml201-4.png">
-<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/ml201-5.png">
-<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/ml201-6.png">
-<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/ml201-7.png">
-<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/ml201-7.png">
-<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/ml201-8.png">
-<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/ml201-9.png">
-<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/ml201-10.png">
-<meta property="og:updated_time" content="2017-07-31T02:42:34.562Z">
+<meta property="og:image" content="http://cdn.htliu.cn/ml201-1.png">
+<meta property="og:image" content="http://cdn.htliu.cn/ml201-2.png">
+<meta property="og:image" content="http://cdn.htliu.cn/ml201-3.png">
+<meta property="og:image" content="http://cdn.htliu.cn/ml201-4.png">
+<meta property="og:image" content="http://cdn.htliu.cn/ml201-5.png">
+<meta property="og:image" content="http://cdn.htliu.cn/ml201-6.png">
+<meta property="og:image" content="http://cdn.htliu.cn/ml201-7.png">
+<meta property="og:image" content="http://cdn.htliu.cn/ml201-7.png">
+<meta property="og:image" content="http://cdn.htliu.cn/ml201-8.png">
+<meta property="og:image" content="http://cdn.htliu.cn/ml201-9.png">
+<meta property="og:image" content="http://cdn.htliu.cn/ml201-10.png">
+<meta property="og:updated_time" content="2018-09-29T03:52:04.736Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="机器学习技法笔记(1)-神经网络">
 <meta name="twitter:description" content="前段时间看完了机器学习基石课程，不过还有regularzation和 validation 没有整理，由于需要，先看了技法课程中的神经网络(Neural Network)。林老师讲的依然很好，将神经网络笔记记录于此。">
-<meta name="twitter:image" content="http://7xotye.com1.z0.glb.clouddn.com/ml201-1.png">
+<meta name="twitter:image" content="http://cdn.htliu.cn/ml201-1.png">
   
   
     <link rel="icon" href="/image/favicon.ico">
@@ -154,22 +154,22 @@ ga('send', 'pageview');
 <h2 id="神经网络的提出">神经网络的提出</h2>
 <p>首先之前讲过了PLA(Percetron), 对于一个线性可分的数据，我们可以用一条直线来分开; 下面看一个多个percetrons的模型，直接看下面的图: 稍微复杂点的2层的percetron:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/ml201-1.png">
+<img src="http://cdn.htliu.cn/ml201-1.png">
 
 </div>
 <p>首先给了输入<span class="math inline">\(\textbf{x}\)</span>，是<span class="math inline">\(d\)</span>维的vector, 然后首先经过一堆的sign函数，得到了T个g函数，然后再次通过一层<span class="math inline">\(\alpha\)</span>参数选出最终的结果G，用以下的假设空间函数表示:<span class="math display">\[G(\textbf{x})=sign(\sum\limits_{t=1}^{T} \alpha_t sign(\textbf{w}_t^T\textbf{x}))\]</span>这个2层的percetron其实就可以表示一些简单的逻辑操作了，比如下面的两个g的例子:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/ml201-2.png">
+<img src="http://cdn.htliu.cn/ml201-2.png">
 
 </div>
 <p>我们如果要表示最右边的区域，即<span class="math inline">\(AND(g_1, g_2)\)</span>，我们可以这样赋值:<span class="math inline">\(\alpha_0 = -1, \alpha_1=1, \alpha_2=1\)</span>，这样方程式变为:<span class="math display">\[G(\textbf{x})=sign(g_1(\textbf{x}) + g_2(\textbf{x}) - 1)\]</span>也就是说只有当<span class="math inline">\(g_1 = g_2 = 1\)</span>时，<span class="math inline">\(G=1\)</span>，其余情况都为0。这样就可以分类了。同样我们可以用<span class="math display">\[G(\textbf{x})=sign(0.5  g_1(\textbf{x}) + 0.5 g_2(\textbf{x}) +1 )\]</span>来表示<span class="math inline">\(OR(g_1, g_2)\)</span>等等。我们可以发现这种两层的percetron十分的powerful，只要我们有足够多的Percetron，就可以划分更细致区域，比如说有足够多的直线，然后执行AND操作，就可以围出来一个近似圆的情况:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/ml201-3.png">
+<img src="http://cdn.htliu.cn/ml201-3.png">
 
 </div>
 <p>但是这样还是有很多不足的，首先是percetron越多，那么模型的复杂度或者说<span class="math inline">\(d_{vc}\)</span>就会变大。再者上述的两层模型是无法表示出<span class="math inline">\(XOR\)</span>(异或)操作的，也就是说，我们经过两次转化，是无法实现<span class="math inline">\(XOR\)</span>的操作的，但是如果我们再加一层呢？ 是不是就可以解决了，如下：</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/ml201-4.png">
+<img src="http://cdn.htliu.cn/ml201-4.png">
 
 </div>
 <p>转换为方程式，即:<span class="math inline">\(XOR(g_1,g_2)=OR(AND(-g1, g_2), AND(g_1,-g_2))\)</span>，我们会发现，只有<span class="math inline">\(g_1 \neq g_2\)</span>时，该式才为1，因而达到了XOR。</p>
@@ -177,12 +177,12 @@ ga('send', 'pageview');
 <h2 id="hypothesis-假设空间">Hypothesis 假设空间</h2>
 <p>前面引出了神经网络，这一节主要深入探究层与层之间的联系方式。首先再看一下我们的神经网络模型:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/ml201-5.png">
+<img src="http://cdn.htliu.cn/ml201-5.png">
 
 </div>
 <p>先考虑最后的输出层，这个比较容易，因为我们一般解决分类或者回归问题的，所以说一般我们就用一个前面介绍过的linear model 即可，如下</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/ml201-6.png">
+<img src="http://cdn.htliu.cn/ml201-6.png">
 
 </div>
 <p>在文中会以linear regression作为例子讲解，这就意味着使用square error作为cost funtion。如果我们想分类的话，最后一层的激活函数就可以使用logistic regression记性二分类，或者 softmax 进行多分类，这时候就用 cross-entropy作为cost funtion了，别的地方都不会变化。</p>
@@ -195,7 +195,7 @@ ga('send', 'pageview');
 <p>接下来会以<span class="math inline">\(tanh\)</span>作为我们的激活函数。</p>
 <p>至此，我们已经将所有层之间的激活函数确定好了，因此神经网络的Hypothesis就很明确了，输入层将数据传给后续的隐含层，一直得到最后的输出即可，为了方便描述，我们定义好各个参数，变量的名字，如下图:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/ml201-7.png">
+<img src="http://cdn.htliu.cn/ml201-7.png">
 
 </div>
 <p>假设我们一共有包含输入层和输出层<span class="math inline">\(L+1\)</span>层的网络，且第<span class="math inline">\(i\)</span>层的神经元(节点)个数为<span class="math inline">\(d^{(i)}\)</span>，这样就构成了<span class="math inline">\(d^{(0)}-d^{(1)}- ... - d^{(L)}\)</span> Neural Network。 下面解释上述参数的意义:<span class="math display">\[w_{ij}^{(l)}: \begin{cases} 1 \leq l \leq L &amp; layers  \\ 0 \leq i \leq d^{(l-1)} &amp; inputs \\ 1 \leq j \leq d^{(l)} &amp;outputs   \end{cases}\]</span> <span class="math inline">\(w_{ij}^{(l)}\)</span>指的是第<span class="math inline">\(l-1\)</span>层的第<span class="math inline">\(i\)</span>个神经元与第<span class="math inline">\(l\)</span>层的第<span class="math inline">\(j\)</span>个神经元之间的权重值。<span class="math display">\[\ s_j^{l} = \sum\limits_{i=0}^{d^{(l-1)}}x_i w_{ij}^{(l)}\]</span> <span class="math inline">\(s_{j}^{(l)}\)</span>指的是第<span class="math inline">\(l\)</span>层的第<span class="math inline">\(j\)</span>个神经元的score(得分)，也可以当作该神经元的输入。<span class="math display">\[x_{j}^{(l)} =\begin{cases} tanh(s_{j}^{(l)}) &amp; \text{ l = L} \\ s_{j}^{(l)} &amp;l=L \end{cases}\]</span> <span class="math inline">\(x_{j}^{(l)}\)</span>是第<span class="math inline">\(l\)</span>层第<span class="math inline">\(j\)</span>个神经元的经过激活函数对其输入<span class="math inline">\(s_{j}^{(l)}\)</span>的输出，特别的是最后的输出层，因为我们以Linear Regression为例子，直接将 <span class="math inline">\(s_1^{L}\)</span>作为最后的输出: <span class="math inline">\(x_{1}^{(L)}\)</span>(最后一层仅仅有一个神经元)。</p>
@@ -204,25 +204,25 @@ ga('send', 'pageview');
 <p>训练的目标很简单，跟之前的模型一样，就是要求出最小化cost function的值<span class="math inline">\(E_{in}\)</span>的各个参数<span class="math inline">\(w_{ij}^{(l)}\)</span>，上面我们也提到了使用平方误差表示cost function，即: <span class="math inline">\(e_{n} = (y_n - NNet(\textbf{x}_n))^2\)</span>，其中NNet是神经网络预测的值，<span class="math inline">\(y_n\)</span>是数据的真实值。有了cost function，那我们就可以尝试使用梯度下降(Gradient Descent)来求最优解，即: <span class="math display">\[ w_{ij}^{(l)} \gets w_{ij}^{(l)}- \eta \ \frac{\partial e_n}{\partial w_{ij}^{(l)}}\]</span>这里我们使用随机梯度下降(SGD)来计算梯度，也就是每次只选择一个数据点。接下来就是求梯度了<span class="math inline">\(\triangledown e_{n}\)</span>，这里会介绍误差反向传播的算法(Back Propagation)</p>
 <p>再看神经网络的图模型:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/ml201-7.png">
+<img src="http://cdn.htliu.cn/ml201-7.png">
 
 </div>
 <p>我们先尝试看看最后一层的参数: <span class="math inline">\(w_{i1}^{(L)}\)</span>，先看看<span class="math inline">\(e_{n}\)</span>与<span class="math inline">\(w_{i1}^{(L)}\)</span>的关系: <span class="math display">\[e_{n}=(y_n - s_{1}^{(L)})^2 =(y_n - \sum\limits_{i=0}^{d^{(L-1)}}w_{i1}^{L}x_{i}^{(L-1)})^2 \]</span>我们可以看到<span class="math inline">\(e_{n}\)</span>是先影响了<span class="math inline">\(s_{1}^{L}\)</span>，然后<span class="math inline">\(s_{1}^{(L)}\)</span>再影响<span class="math inline">\(w_{i1}^{(L)}\)</span>。所以我们可以用求微分的链式法则，来间接求梯度，如下:</p>
 <p><span class="math display">\[\begin{align*}\frac{\partial e_{n}}{\partial  w_{i1}^{(L)}} &amp;= \frac{\partial e_{n}}{\partial s_{1}^{(L)}} \cdot \frac{\partial s_1^{(L)}}{w_{i1}^{(L)}} \\ &amp;= -2(y_n - s_1^{(L)}) (x_i^{(L-1)}) \end{align*}\]</span>这个式子的变量都是已知的，我们可以很轻松的求出最后一层的参数: <span class="math inline">\(w_{i1}^{(L)}\)</span>。那么隐含层(Hidden Layer)的呢？同理，我们也可以写出类似上述的等式:<span class="math display">\[\begin{align*}\frac{\partial e_{n}}{\partial  w_{ij}^{(l)}} &amp;= \frac{\partial e_{n}}{\partial s_{j}^{(l)}} \cdot \frac{\partial s_j^{(l)}}{w_{ij}^{(l)}} \\ &amp;= \delta_j{(l)}(x_i^{(l-1)}) \end{align*}\]</span>这是对<span class="math inline">\(w_{ij}^{(l)}\)</span>的求微分，其中<span class="math inline">\(1 \leq l &lt; L,\ 0 \leq i \leq d^{(l-1)},\ 0 \leq j \leq d^{(l)}\)</span>，这里我们新引入了一个变量<span class="math inline">\(\delta\)</span>: <span class="math inline">\(\delta_{j}^{(l)} = \frac{\partial e_n}{s_j^{l}}\)</span>，来表示cost function 对第<span class="math inline">\(l\)</span>层的第<span class="math inline">\(j\)</span>个神经元的输入的微分，只需要求出了<span class="math inline">\(\delta\)</span>那么<span class="math inline">\(\frac{\partial e_{n}}{\partial w_{ij}^{(l)}}\)</span> 也就知道了，下面开始求，这也是反向传播的核心所在。</p>
 <p>首先看看<span class="math inline">\(e_n\)</span>是如何一层层的影响着<span class="math inline">\(s_j^{(l)}\)</span>的，如下:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/ml201-8.png">
+<img src="http://cdn.htliu.cn/ml201-8.png">
 
 </div>
 <p>只考察最近三层的影响如下，我们同样应用链式法则，首先考虑上图绿色的<span class="math inline">\(s_k^{l+1}\)</span>，继而是前一层的<span class="math inline">\(x_j^{(l)}\)</span>，最后通过激活函数作用到<span class="math inline">\(s_j^{(l)}\)</span>：</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/ml201-9.png">
+<img src="http://cdn.htliu.cn/ml201-9.png">
 
 </div>
 <p>这样我们就可以得到了一个递推关系： <span class="math inline">\(\delta_{j}^{(l)}\)</span>是由<span class="math inline">\(\delta_{k}^{(l+1)}\)</span>表示的，也就是要计算<span class="math inline">\(l\)</span>层的参数，需要使用<span class="math inline">\(l+1\)</span>的<span class="math inline">\(\delta\)</span>，这就是为什么叫Back Propagation反向传播的原因，训练过程需要从后往前计算。因为我们已经求出了最后一层的参数: <span class="math inline">\(\delta_1^{(L)} = -2(y_n - s_1^{(L)})\)</span>，这里面的都是已知的，其中<span class="math inline">\(s_1^{(L)}\)</span>就是我们的预测值，是因为最后一层的激活函数是采用了Linear Regression的线性函数，$  = s_1^{(L)}<span class="math inline">\(，那么我们就可以计算出\)</span>L-1<span class="math inline">\(的\)</span>$: <span class="math display">\[\begin{align*}\delta_{i}^{(L-1)} &amp;= \frac{\partial  e_n}{\partial s_j^{(L-1)}} \\ &amp;= \frac{\partial e_n}{s_1^{(L)}} \cdot \frac{s_1^{(L)}}{x_j^{L-1}}  \cdot \frac{\partial x_i^{(L-1)}}{\partial s_j^{(L-1)}} \\ &amp;= \delta_1^{L} \cdot w_{i1}^{L} \cdot tanh^{&#39;}(s_j^{(L-1)})\end{align*} \]</span>这样我们就把所有的倒数第二层<span class="math inline">\(L-1\)</span>的<span class="math inline">\(\delta\)</span>求出来了，然后再依次向后求出所有的<span class="math inline">\(\delta\)</span>，从而可以使用SGD得到所有的<span class="math inline">\(w_{ij}^{(l)}\)</span>，这样一轮训练完成。</p>
 <p>现在就可以给出整个训练算法(BackPropagation)的流程了:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/ml201-10.png">
+<img src="http://cdn.htliu.cn/ml201-10.png">
 
 </div>
 <p>需要注意的是，算法主要分为两部分，开始需要初始化所有参数<span class="math inline">\(w_{ij}\)</span>，一般情况是随机化，而非0, 然后就是随机梯度下降的过程，选择一个点，利用当前的参数，从前向后依次计算所有的<span class="math inline">\(x_i^{(l)}\)</span>，之后反向计算所有的<span class="math inline">\(\delta_{j}^{(l)}\)</span>， 最后更新<span class="math inline">\(w_{ij}^{(l)}\)</span>，经过多次迭代或者达到设定误差函数的一个阈值之后，模型就训练完毕，返回 <span class="math inline">\(g_{NNET}\)</span>。 这里有一点优化是，除了使用SGD之外，我们一次不再训练一个数据，也不训练所有的数据，而是可以一次性训练一批数据，这样是一种折中的方式，叫做Mini-batch Gradient Densent(MBGD)，这样会加快训练速度，在后续实现中，会使用。</p>
@@ -252,7 +252,7 @@ ga('send', 'pageview');
 发布时间: 2016-12-07, 23:45:42<br/>
 <p>
 <p>
-最后更新: 2017-07-31, 10:42:34<br/>
+最后更新: 2018-09-29, 11:52:04<br/>
 <p>
 本文链接: <a href="/2016/12/07/basic-neural-network/" target="_blank">http://shomy.top/2016/12/07/basic-neural-network/</a>
 </p>

@@ -13,17 +13,17 @@
 <meta property="og:site_name" content="天空的城">
 <meta property="og:description" content="2016.11.30更新: VC维   上一节，我们把 leaning问题归结到了我们提到需要证明dichotomies是多项式的，这样就可以保证在N比较大的时候，BAD DATA出现的概率是很小的，这样就说明我们的 learning学到了东西，可以用来预测。">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/ml03-1.png">
-<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/ml03-2.png">
-<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/ml03-3.png">
-<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/ml03-4.png">
-<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/ml03-5.png">
-<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/ml03-6.png">
-<meta property="og:updated_time" content="2017-07-31T02:42:34.562Z">
+<meta property="og:image" content="http://cdn.htliu.cn/ml03-1.png">
+<meta property="og:image" content="http://cdn.htliu.cn/ml03-2.png">
+<meta property="og:image" content="http://cdn.htliu.cn/ml03-3.png">
+<meta property="og:image" content="http://cdn.htliu.cn/ml03-4.png">
+<meta property="og:image" content="http://cdn.htliu.cn/ml03-5.png">
+<meta property="og:image" content="http://cdn.htliu.cn/ml03-6.png">
+<meta property="og:updated_time" content="2018-09-29T03:52:04.752Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="机器学习基石笔记(3)">
 <meta name="twitter:description" content="2016.11.30更新: VC维   上一节，我们把 leaning问题归结到了我们提到需要证明dichotomies是多项式的，这样就可以保证在N比较大的时候，BAD DATA出现的概率是很小的，这样就说明我们的 learning学到了东西，可以用来预测。">
-<meta name="twitter:image" content="http://7xotye.com1.z0.glb.clouddn.com/ml03-1.png">
+<meta name="twitter:image" content="http://cdn.htliu.cn/ml03-1.png">
   
   
     <link rel="icon" href="/image/favicon.ico">
@@ -157,7 +157,7 @@ ga('send', 'pageview');
 <li><span class="math inline">\(N &lt; K\)</span>: <strong>every</strong> $m_{}{N} = 2^N $</li>
 <li><span class="math inline">\(N \geq K\)</span>: <strong>every</strong> <span class="math inline">\(m_{\mathcal{H}}(N) &lt; 2^N\)</span>，对于 N &gt; K的D, 显然<span class="math inline">\(m &lt; 2^N\)</span></li>
 </ul>
-<p>举一个简单的例子: 假设K=2, 求<span class="math inline">\(m_{\mathcal{H}}(N=3)\)</span>， 如下: <img src="http://7xotye.com1.z0.glb.clouddn.com/ml03-1.png"></p>
+<p>举一个简单的例子: 假设K=2, 求<span class="math inline">\(m_{\mathcal{H}}(N=3)\)</span>， 如下: <img src="http://cdn.htliu.cn/ml03-1.png"></p>
 <p>经过实验发现，其最大为4, 因为k=2,限制了<span class="math inline">\(x_1, x_2, x_3\)</span>中任意两个点都不能被<span class="math inline">\(\mathcal{H}\)</span>给shatter了，这里就会发现 break point的作用了, 限制<span class="math inline">\(m_{\mathcal{H}}\)</span>的上界。下面定义Bounding Function:<span class="math display">\[B(N,K) = max(m_{\mathcal{H}}(N)), s.t. break\ point = K \]</span></p>
 <p>因为成长函数<span class="math inline">\(m_{\mathcal{H}}(N)\)</span>就是<span class="math inline">\(\mathcal{H}\)</span>对输入<span class="math inline">\(x_1...x_N\)</span>可以产生的dichotomies的最大值， 所以B(N,K)就是最大值的最大。</p>
 <p>如下，我们分情况讨论： <span class="math display">\[
@@ -168,7 +168,7 @@ B(N, k) &amp;= 2^N-1,\ N=k \\
 B(N, k) &amp;= ? \ N&gt;K
 \end{align}
 \]</span></p>
-<p>在课程中，老师举了一个求B(4,3)=11的例子: 通过归纳法的思想，推导出N&gt;K下，<span class="math inline">\(B(N,K)\)</span>的递推公式:<span class="math display">\[B(N,K) \leq B(N-1,K) + B(N-1, K-1)\]</span> 正如下面的图所描述的: <img src="http://7xotye.com1.z0.glb.clouddn.com/ml03-2.png"></p>
+<p>在课程中，老师举了一个求B(4,3)=11的例子: 通过归纳法的思想，推导出N&gt;K下，<span class="math inline">\(B(N,K)\)</span>的递推公式:<span class="math display">\[B(N,K) \leq B(N-1,K) + B(N-1, K-1)\]</span> 正如下面的图所描述的: <img src="http://cdn.htliu.cn/ml03-2.png"></p>
 <p>下面我们根据递推式，通过数学归纳法来证明:<span class="math inline">\(B(N,K) \leq \sum\limits_{i=0}^{K-1} \left( \begin{array}{c}N \\ i \end{array}\right)\)</span>.</p>
 <p>当N=1或者K=1时，显然成立。假设当<span class="math inline">\(N=N_0\)</span>时， <span class="math inline">\(B(N_0,K) \leq \sum\limits_{i=0}^{K-1} \left( \begin{array}{c}N_0 \\ i \end{array}\right)\)</span>，则当<span class="math inline">\(N=N_0 + 1\)</span>时: <span class="math display">\[
 \begin{align}
@@ -184,7 +184,7 @@ B(N_0 +1, K) &amp; \leq B(N_0, K) + B(N_0, K-1) \\
 \begin{align} \mathbb{P}[BAD] &amp;= \mathbb{P}[\exists h \in \mathcal{H}\text{ s.t. } |E_{in}(h)-E_{out}(h)|\gt \epsilon] \\\ &amp;\leq 4m_{\mathcal{H}}(2N)exp(-\frac{1}{8}\epsilon^2N) \end{align}
 \]</span> 证明的主要原则是，如果某个<span class="math inline">\(E_{in}\)</span>与<span class="math inline">\(E_{out}\)</span>的差别很大时，那么我们重新找一份数据集<span class="math inline">\(D^{&#39;}\)</span>, 那么<span class="math inline">\(E_{in}^{&#39;}\)</span>也会有很大的几率与<span class="math inline">\(E_{in}\)</span>差别很大。 具体证明还没搞太明白，先记下了。另外，上面的不等式就是<a href="https://en.wikipedia.org/wiki/VC_dimension" target="_blank" rel="external">VC-bound</a>.</p>
 <h2 id="vc-dimension">VC Dimension</h2>
-<p>下面我们基于break point 给出 VC Dimension(VC 维)的定义:<span class="math display">\[d_{VC}(\mathcal{H})= \max\limits_{N} m_{\mathcal{H}} = 2^N\]</span>也就是break point K的前一个: <span class="math inline">\(d_{VC} = K - 1\)</span>(break point存在的前提下)。我们可以看看上述的4种<span class="math inline">\(\mathcal{H}\)</span>的VC Dimension <img src="http://7xotye.com1.z0.glb.clouddn.com/ml03-3.png" alt="pic"></p>
+<p>下面我们基于break point 给出 VC Dimension(VC 维)的定义:<span class="math display">\[d_{VC}(\mathcal{H})= \max\limits_{N} m_{\mathcal{H}} = 2^N\]</span>也就是break point K的前一个: <span class="math inline">\(d_{VC} = K - 1\)</span>(break point存在的前提下)。我们可以看看上述的4种<span class="math inline">\(\mathcal{H}\)</span>的VC Dimension <img src="http://cdn.htliu.cn/ml03-3.png" alt="pic"></p>
 <p>下面我们看看VC维可以给我们带来什么信息。已知成长函数<span class="math inline">\(m_{\mathcal{H}} \leq N^{k-1}=N^{d_{vc}}\)</span>，然后代入上述的VC Bound:</p>
 <p><span class="math display">\[\begin{align*} \mathbb{P}[BAD] &amp;= \mathbb{P}[\exists h \in \mathcal{H}\text{ s.t. } |E_{in}(h)-E_{out}(h)|\gt \epsilon] \\ &amp;\leq 4m_{\mathcal{H}}(2N)exp(-\frac{1}{8}\epsilon^2N) \\ &amp;= 4(2N)^{d_{vc}}  exp(-\frac{1}{8}\epsilon^2N)\end{align*}\]</span> 那么怎么样才可以说明机器学到了东西呢？有以下三点:</p>
 <ul>
@@ -194,7 +194,7 @@ B(N_0 +1, K) &amp; \leq B(N_0, K) + B(N_0, K-1) \\
 </ul>
 <p>这样我们就可以说 learned something。以2D Perceptron 为例如下：</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/ml03-4.png" alt="pic">
+<img src="http://cdn.htliu.cn/ml03-4.png" alt="pic">
 <p class="caption">pic</p>
 </div>
 <p>当然实际中，<span class="math inline">\(E_{in}\)</span>很难为0。那我们可以怎么去理解这个VC 维度呢？ 由定义可以知道，VC 维与学习算法<span class="math inline">\(\mathcal{H}\)</span>，输入数据<span class="math inline">\(\mathcal{D}\)</span>，以及目标的理想函数<span class="math inline">\(f\)</span>都是无关的， 它是假设空间<span class="math inline">\(\mathcal{H}\)</span>的一个描述，刻画出了<span class="math inline">\(\mathcal{H}\)</span>的powerfulness，因为<span class="math inline">\(d_{vc}\)</span>越大，可以shatter的点就越多，能力就越强，也就是说我们的<span class="math inline">\(d_{vc}(\mathcal{H})\)</span>越大，那么就越可以保证存在一个 h,使得<span class="math inline">\(E_{in}(h)\)</span>越小。</p>
@@ -203,13 +203,13 @@ B(N_0 +1, K) &amp; \leq B(N_0, K) + B(N_0, K-1) \\
 <p><span class="math display">\[ \epsilon= \sqrt{\frac{8}{N}ln(\frac{4(2N)^{d_{vc}}}{\delta})} \]</span>它就是<span class="math inline">\(E_{in}\)</span>和<span class="math inline">\(E_{out}\)</span>的差距，对于好数据来说，有很大的几率：<span class="math inline">\(\| E_{in} - E_{out} \| &lt; \epsilon\)</span>，代入 <span class="math inline">\(\epsilon\)</span>即:</p>
 <p><span class="math display">\[E_{in}(g)-\sqrt{\frac{8}{N}ln(\frac{4(2N)^{d_{vc}}}{\delta})} \leq E_{out}(g) \leq E_{in}(g)+\sqrt{\frac{8}{N}ln(\frac{4(2N)^{d_{vc}}}{\delta})}    \]</span>其中根号里面的式子<span class="math inline">\(\Omega (N,\mathcal{H},\delta)=\sqrt{...}\)</span> 称为model complexity(模型复杂度)。自始至终我们最关心的肯定是<span class="math inline">\(E_{out}\)</span>，我们的目标就是让它越小越好，这样才可以在未知数据中表现的好，从不等式中，我们可以看出<span class="math inline">\(E_{out}\)</span>的上限会被模型复杂度影响。根据上述的不等式，有了下述的一个关系图:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/ml03-5.png" alt="pic">
+<img src="http://cdn.htliu.cn/ml03-5.png" alt="pic">
 <p class="caption">pic</p>
 </div>
 <p>这个图很重要，也很常用，随着<span class="math inline">\(d_{vc}\)</span>的上升，<span class="math inline">\(E_{in}\)</span>越来越低，但是 model complexity 会一直变大，这样就会导致<span class="math inline">\(E_{out}\)</span>也会慢慢变大！这并不是我们想要的结果。也就是说并不是你的<span class="math inline">\(\mathcal{H}\)</span>越强大越好其实这个就对应后面讲的过拟合的问题，因此我们需要的是图中的<span class="math inline">\(d_{vc}^{*}\)</span>的位置的模型，一个折中的选择，这个也可以对应奥卡姆剃刀理论，简单至上。</p>
 <p>最后再说明下样本复杂度的影响，以一个例子做说明，如下：</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/ml03-6.png" alt="pic">
+<img src="http://cdn.htliu.cn/ml03-6.png" alt="pic">
 <p class="caption">pic</p>
 </div>
 <p>就是对于2D percetron，给定了误差率<span class="math inline">\(\epsilon\)</span>，置信度<span class="math inline">\(1-\delta=0.9\)</span>。让求需要多少数据量才可以满足条件。很简单直接代入公式就好了，我们可以看出，大概需要3w左右也就是10000倍的<span class="math inline">\(d_{vc}\)</span>的训练数据量才可以达到90%的置信度，这可能有点难以接受。幸亏这只是上界，在实际经验中，仅仅需要10倍的<span class="math inline">\(d_{vc}\)</span>就可以达到要求。我们发现，VC Bound 的 losseness是十分松弛的，这正是因为我们一直都是再取上界的上界，都是在进行放缩操作，比如<span class="math inline">\(m_{\mathcal{H}}(N) \leq N^(k-1)\)</span>。再加上VC Bound的通用性，与数据的分布什么的都没关系。</p>
@@ -231,7 +231,7 @@ B(N_0 +1, K) &amp; \leq B(N_0, K) + B(N_0, K-1) \\
 发布时间: 2016-10-17, 17:59:49<br/>
 <p>
 <p>
-最后更新: 2017-07-31, 10:42:34<br/>
+最后更新: 2018-09-29, 11:52:04<br/>
 <p>
 本文链接: <a href="/2016/10/17/feasibility-of-learning-3/" target="_blank">http://shomy.top/2016/10/17/feasibility-of-learning-3/</a>
 </p>

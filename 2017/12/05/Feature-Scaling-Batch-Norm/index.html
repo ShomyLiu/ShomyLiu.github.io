@@ -13,15 +13,15 @@
 <meta property="og:site_name" content="天空的城">
 <meta property="og:description" content="Batch Normlization是2015年提出的一个加速神经网络训练的技巧，同时对performance也有一定的提高，现在基本已经广泛使用了。这里相对完整的整理一下学习笔记。主要参考李宏毅老师的机器学习课程。  从Feature Scaling 开始">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/blog/feature-scaling-BN/scaling-1.png">
-<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/blog/feature-scaling-BN/scaling-2.png">
-<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/blog/feature-scaling-BN/scaling-3.png">
-<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/blog/feature-scaling-BN/scaling-4.png">
-<meta property="og:updated_time" content="2017-12-06T14:52:25.471Z">
+<meta property="og:image" content="http://cdn.htliu.cn/blog/feature-scaling-BN/scaling-1.png">
+<meta property="og:image" content="http://cdn.htliu.cn/blog/feature-scaling-BN/scaling-2.png">
+<meta property="og:image" content="http://cdn.htliu.cn/blog/feature-scaling-BN/scaling-3.png">
+<meta property="og:image" content="http://cdn.htliu.cn/blog/feature-scaling-BN/scaling-4.png">
+<meta property="og:updated_time" content="2018-09-29T03:52:04.752Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Feature Scaling 和 Batch Norm 笔记">
 <meta name="twitter:description" content="Batch Normlization是2015年提出的一个加速神经网络训练的技巧，同时对performance也有一定的提高，现在基本已经广泛使用了。这里相对完整的整理一下学习笔记。主要参考李宏毅老师的机器学习课程。  从Feature Scaling 开始">
-<meta name="twitter:image" content="http://7xotye.com1.z0.glb.clouddn.com/blog/feature-scaling-BN/scaling-1.png">
+<meta name="twitter:image" content="http://cdn.htliu.cn/blog/feature-scaling-BN/scaling-1.png">
   
   
     <link rel="icon" href="/image/favicon.ico">
@@ -156,7 +156,7 @@ ga('send', 'pageview');
 <li><span class="math inline">\(x_1\)</span>:房间数目，一般比较小，位于1-5左右</li>
 <li><span class="math inline">\(x_2\)</span>: 房屋面积, 一般取值比较大，比如位于80-200等</li>
 </ul>
-<p>一般线性回归的关系函数如下: <span class="math display">\[s = \theta_1x_1 + \theta_2x*2 + b\]</span> 取平方误差的话, 损失函数为(仅仅考虑一个数据): <span class="math display">\[LOSS = (s_\theta(x_i)-y_i)^2\]</span> 因为<span class="math inline">\(x_2\)</span>的尺度比<span class="math inline">\(x_1\)</span>大很多，因此即使两个参数<span class="math inline">\(w_1,w_2\)</span>同样大小的变化，乘上<span class="math inline">\(x_i\)</span>之后，对最后的结果LOSS影响差距也很不同, <span class="math inline">\(w_2\)</span>明显要比<span class="math inline">\(w_1\)</span>的作用要大，也就是说，<span class="math inline">\(\theta_2\)</span>很小的变化就会导致LOSS较大变化，在LOSS的等高线上就会呈现出椭圆的形状, 如图1: <img src="http://7xotye.com1.z0.glb.clouddn.com/blog/feature-scaling-BN/scaling-1.png" alt="img"> 这个图的横纵坐标表示两个特征，然后每一圈代表一个LOSS值，圈越大，LOSS越大，最里面的B则是最优解的位置。 然后考虑梯度更新的过程，上述的等高线即LOSS与<span class="math inline">\(\theta_1,\theta_2\)</span>的函数关系， 因此图中椭圆的切线方向就是梯度下降的方向， 从图1中可以看出来，从初始点A到最有点B需要经过很多次的无用的迭代，并不是每次向着最优的方向走，类似于之字形，这样收敛就会很慢了。 反过来看，如果做了Feature Scaling的话，<span class="math inline">\(\theta_1, \theta_2\)</span>的更新变化对LOSS影响一致，这样等高线就会成近圆形如图2所示，这样沿着切线的方向进行梯度更新就会一直沿着最优的方向走，就会加快收敛速度。</p></li>
+<p>一般线性回归的关系函数如下: <span class="math display">\[s = \theta_1x_1 + \theta_2x*2 + b\]</span> 取平方误差的话, 损失函数为(仅仅考虑一个数据): <span class="math display">\[LOSS = (s_\theta(x_i)-y_i)^2\]</span> 因为<span class="math inline">\(x_2\)</span>的尺度比<span class="math inline">\(x_1\)</span>大很多，因此即使两个参数<span class="math inline">\(w_1,w_2\)</span>同样大小的变化，乘上<span class="math inline">\(x_i\)</span>之后，对最后的结果LOSS影响差距也很不同, <span class="math inline">\(w_2\)</span>明显要比<span class="math inline">\(w_1\)</span>的作用要大，也就是说，<span class="math inline">\(\theta_2\)</span>很小的变化就会导致LOSS较大变化，在LOSS的等高线上就会呈现出椭圆的形状, 如图1: <img src="http://cdn.htliu.cn/blog/feature-scaling-BN/scaling-1.png" alt="img"> 这个图的横纵坐标表示两个特征，然后每一圈代表一个LOSS值，圈越大，LOSS越大，最里面的B则是最优解的位置。 然后考虑梯度更新的过程，上述的等高线即LOSS与<span class="math inline">\(\theta_1,\theta_2\)</span>的函数关系， 因此图中椭圆的切线方向就是梯度下降的方向， 从图1中可以看出来，从初始点A到最有点B需要经过很多次的无用的迭代，并不是每次向着最优的方向走，类似于之字形，这样收敛就会很慢了。 反过来看，如果做了Feature Scaling的话，<span class="math inline">\(\theta_1, \theta_2\)</span>的更新变化对LOSS影响一致，这样等高线就会成近圆形如图2所示，这样沿着切线的方向进行梯度更新就会一直沿着最优的方向走，就会加快收敛速度。</p></li>
 </ul>
 <p>常用的Feature Scaling的方法有:</p>
 <ul>
@@ -165,10 +165,10 @@ ga('send', 'pageview');
 </ul>
 <p>此外， 其实做Feature Scaling或多或少的跟原始数据都有一些差异， 理论上比较好的方法是，不同的Feature设置不同的学习率，尺度大的特征的学习率应该小一点，尺度小的特征的学习率稍微大一些，但是在实际梯度下降中，特征很多，对每个特征设置不通的学习率不切实际，很难实现，因此换一种思路，对特征做scale, 这样也可以避免尺度不一带来的问题。</p>
 <h2 id="batch-normalization">Batch Normalization</h2>
-<p>开始考虑神经网络， 我们知道神经网络有很多个Layer组成， 每个layer的输入都是上一层layer的输出， 那我们就有理由相信对每一层的输入的特征做Feature Scaling 可能会起到不错的作用。 在说BN之前，需要简单提一下 Internal Covariate Shift(ICS) 这个现象. 我们知道多层的神经网络，每一层的输出数据的分布都在随着训练也就是参数更新发生着变化，比如说第一层的输出的分布随着第一层的权重和bias的训练更新而改变，这种数据分布的改变就称之为: Internal Covariate Shift(ICS). 而如果对每一层的输入都做归一化的话，就相当于每一层的分布都保持一致了(均值方差相同), 这样可以一定程度上减小ICS带来的影响，当然显然并不能从根本上解决，只是减弱一些而已(具体关于ICS的内容这里不再介绍，理论知识偏多)。 下面考虑一下Batch Normalization是怎么做的。 有了前面的Feature Scaling, 貌似问题很简单了， 就对每一层的输出做scaling就可以了，直接使用上述的第一种归一化的方式即可: <span class="math display">\[\hat{x} = \frac{x-\mu}{\sigma}\]</span> 但是这里需要考虑一个问题，在做归一化的时候， 会影响原来学到的特征，比如说在输入到sigmod激活函数之前，如果经过Wx+b之后的结果，分布在S型函数的两侧， 也就是近乎平行坐标轴的那部分区域，这样原本经过激活函数之后就是0或者1了， 但是经过归一化之后，结果数据都到了S型函数的中间部分,如下图: <img src="http://7xotye.com1.z0.glb.clouddn.com/blog/feature-scaling-BN/scaling-2.png" alt="img"></p>
+<p>开始考虑神经网络， 我们知道神经网络有很多个Layer组成， 每个layer的输入都是上一层layer的输出， 那我们就有理由相信对每一层的输入的特征做Feature Scaling 可能会起到不错的作用。 在说BN之前，需要简单提一下 Internal Covariate Shift(ICS) 这个现象. 我们知道多层的神经网络，每一层的输出数据的分布都在随着训练也就是参数更新发生着变化，比如说第一层的输出的分布随着第一层的权重和bias的训练更新而改变，这种数据分布的改变就称之为: Internal Covariate Shift(ICS). 而如果对每一层的输入都做归一化的话，就相当于每一层的分布都保持一致了(均值方差相同), 这样可以一定程度上减小ICS带来的影响，当然显然并不能从根本上解决，只是减弱一些而已(具体关于ICS的内容这里不再介绍，理论知识偏多)。 下面考虑一下Batch Normalization是怎么做的。 有了前面的Feature Scaling, 貌似问题很简单了， 就对每一层的输出做scaling就可以了，直接使用上述的第一种归一化的方式即可: <span class="math display">\[\hat{x} = \frac{x-\mu}{\sigma}\]</span> 但是这里需要考虑一个问题，在做归一化的时候， 会影响原来学到的特征，比如说在输入到sigmod激活函数之前，如果经过Wx+b之后的结果，分布在S型函数的两侧， 也就是近乎平行坐标轴的那部分区域，这样原本经过激活函数之后就是0或者1了， 但是经过归一化之后，结果数据都到了S型函数的中间部分,如下图: <img src="http://cdn.htliu.cn/blog/feature-scaling-BN/scaling-2.png" alt="img"></p>
 <p>这样会有问题，归一化都到了[-1, 1]那一部分区域， 而对应的sigmod近乎是一条直线了，如红色虚线所示，那这样就成了线性变换了，那神经网络的非线性变化就没有意义了。所以BN在做完归一化，具体来说是标准化之后，又做了一步特征转换的操作: <span class="math display">\[\hat{x} = \frac{x-\mu}{\sigma} //归一化\]</span> <span class="math display">\[z = \gamma \hat{x} + \beta //重构转换\]</span></p>
-<p>其中 <span class="math inline">\(\gamma, \beta\)</span> 是两个参数，跟权重矩阵参数一样， 也是需要训练更新的。<span class="math inline">\(\hat{x}\)</span>则是标准化之后的值。可以看出来，如果<span class="math inline">\(\gamma=\sigma, \beta=\mu\)</span>的时候，我们就会发现<span class="math inline">\(x=z\)</span>了，这样就恢复到了原始的特征分布，其实可以这样理解，<span class="math inline">\(\gamma, \beta\)</span>这两个参数其实就是来学习前面的Normalization到底有没有作用，如果没有作用那就做一些转换，抵消一部分Normalization带来的影响。 这样完整的BN的步骤如下，需要注意的是，输入是一个Batch的数据，上述求得均值，方差均是对同一个Batch的数据计算得出的也就是说下图的m就是minbatch size： <img src="http://7xotye.com1.z0.glb.clouddn.com/blog/feature-scaling-BN/scaling-3.png" alt="img"></p>
-<p>用图示表示，更加形象一些: <img src="http://7xotye.com1.z0.glb.clouddn.com/blog/feature-scaling-BN/scaling-4.png" alt="img"></p>
+<p>其中 <span class="math inline">\(\gamma, \beta\)</span> 是两个参数，跟权重矩阵参数一样， 也是需要训练更新的。<span class="math inline">\(\hat{x}\)</span>则是标准化之后的值。可以看出来，如果<span class="math inline">\(\gamma=\sigma, \beta=\mu\)</span>的时候，我们就会发现<span class="math inline">\(x=z\)</span>了，这样就恢复到了原始的特征分布，其实可以这样理解，<span class="math inline">\(\gamma, \beta\)</span>这两个参数其实就是来学习前面的Normalization到底有没有作用，如果没有作用那就做一些转换，抵消一部分Normalization带来的影响。 这样完整的BN的步骤如下，需要注意的是，输入是一个Batch的数据，上述求得均值，方差均是对同一个Batch的数据计算得出的也就是说下图的m就是minbatch size： <img src="http://cdn.htliu.cn/blog/feature-scaling-BN/scaling-3.png" alt="img"></p>
+<p>用图示表示，更加形象一些: <img src="http://cdn.htliu.cn/blog/feature-scaling-BN/scaling-4.png" alt="img"></p>
 <p>需要注意的有两点:</p>
 <ul>
 <li>理论上BN可以放到激活函数之前，也可以放在其之后，但是一般情况，BN层会放在激活函数之前，这个其实很容易理解，比如激活函数如果是sigmod或者tanh的话，本身的输出都已经在一定程度上有了归一化了，后面再加一个BN的话，意义不大。</li>
@@ -203,7 +203,7 @@ ga('send', 'pageview');
 发布时间: 2017-12-05, 16:50:00<br/>
 <p>
 <p>
-最后更新: 2017-12-06, 22:52:25<br/>
+最后更新: 2018-09-29, 11:52:04<br/>
 <p>
 本文链接: <a href="/2017/12/05/Feature-Scaling-Batch-Norm/" target="_blank">http://shomy.top/2017/12/05/Feature-Scaling-Batch-Norm/</a>
 </p>

@@ -13,19 +13,19 @@
 <meta property="og:site_name" content="天空的城">
 <meta property="og:description" content="2017.07.10更新: 注:目前部署到coding需要在网页上表明coding.net 或者开通会员,否则在首次访问时候, coding.net强加推广页面   2016.03.07更新: 部署到coding时，如果使用pages的话，项目名称必须与coding的用户名一致，但是演示并没有这个要求。 而且目前为止：演示不能绑定自己的域名，而pages可以，所以说，为了以后方便，项目名称还是与">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/coding6.png">
-<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/coding1.png">
-<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/coding5.png">
-<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/coding2.png">
-<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/coding3.png">
-<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/coding4.png">
-<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/coding9.png">
-<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/coding10.png">
-<meta property="og:updated_time" content="2017-09-05T14:04:55.162Z">
+<meta property="og:image" content="http://cdn.htliu.cn/coding6.png">
+<meta property="og:image" content="http://cdn.htliu.cn/coding1.png">
+<meta property="og:image" content="http://cdn.htliu.cn/coding5.png">
+<meta property="og:image" content="http://cdn.htliu.cn/coding2.png">
+<meta property="og:image" content="http://cdn.htliu.cn/coding3.png">
+<meta property="og:image" content="http://cdn.htliu.cn/coding4.png">
+<meta property="og:image" content="http://cdn.htliu.cn/coding9.png">
+<meta property="og:image" content="http://cdn.htliu.cn/coding10.png">
+<meta property="og:updated_time" content="2018-09-29T03:52:04.756Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="hexo同时部署到coding(gitcafe)和github">
 <meta name="twitter:description" content="2017.07.10更新: 注:目前部署到coding需要在网页上表明coding.net 或者开通会员,否则在首次访问时候, coding.net强加推广页面   2016.03.07更新: 部署到coding时，如果使用pages的话，项目名称必须与coding的用户名一致，但是演示并没有这个要求。 而且目前为止：演示不能绑定自己的域名，而pages可以，所以说，为了以后方便，项目名称还是与">
-<meta name="twitter:image" content="http://7xotye.com1.z0.glb.clouddn.com/coding6.png">
+<meta name="twitter:image" content="http://cdn.htliu.cn/coding6.png">
   
   
     <link rel="icon" href="/image/favicon.ico">
@@ -154,14 +154,14 @@ ga('send', 'pageview');
 <p>2016.03.07更新: 部署到coding时，如果使用pages的话，项目名称必须与coding的用户名一致，但是演示并没有这个要求。 而且目前为止：演示不能绑定自己的域名，而pages可以，所以说，为了以后方便，项目名称还是与用户名一致的好，不然部署pages会出现没有样式的bug.</p>
 </blockquote>
 <a id="more"></a>
-<p>之前已经把<code>hexo</code>部署到<code>github</code>，但是有时候挺慢的，于是就像跟大家一样搞到国内的<code>gitcafe</code>上，岂料，上到<code>gitcafe</code>官网才发现它已经被<code>coding.net</code>收购了,看下图，而且<strong>2016.5.31之后停止服务</strong>, 就直接去了<code>coding</code>上部署了。结果有一点问题，耽误了好长时间。。。记录一下吧。 <img src="http://7xotye.com1.z0.glb.clouddn.com/coding6.png"></p>
+<p>之前已经把<code>hexo</code>部署到<code>github</code>，但是有时候挺慢的，于是就像跟大家一样搞到国内的<code>gitcafe</code>上，岂料，上到<code>gitcafe</code>官网才发现它已经被<code>coding.net</code>收购了,看下图，而且<strong>2016.5.31之后停止服务</strong>, 就直接去了<code>coding</code>上部署了。结果有一点问题，耽误了好长时间。。。记录一下吧。 <img src="http://cdn.htliu.cn/coding6.png"></p>
 <h2 id="coding配置">coding配置</h2>
 <p>基本流程跟<code>github</code>一样，都是先申请帐号。这里需要说一下的是，申请<code>coding</code>的邮箱尽量与<code>github</code>使用同一个邮箱，这样配置<code>ssh</code>就省了事情，不用配置两个ssh了。</p>
 <h3 id="ssh对接">ssh对接</h3>
 <p>基本一样，如果之前生成过<code>ssh</code>的话，就可以直接使用，一般存放在<code>~/.ssh/id_rsa.pub</code>。如果没有的话，那就下面几步就可以了</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="meta">$</span><span class="bash"> ssh-keygen -t rsa -b 4096 -C <span class="string">"你的邮箱"</span></span></div></pre></td></tr></table></figure>
 <p>后面就直接默认，按回车就好。 然后就是: <figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">$ ssh-<span class="keyword">add</span><span class="bash"></span></div></pre></td></tr></table></figure></p>
-<p>然后在<code>coding</code>的个人页面，如下 <img src="http://7xotye.com1.z0.glb.clouddn.com/coding1.png"></p>
+<p>然后在<code>coding</code>的个人页面，如下 <img src="http://cdn.htliu.cn/coding1.png"></p>
 <blockquote>
 <p>注意这是在个人账户下添加了<code>ssh</code>,以后新建了项目，项目也有个<code>ssh</code>，但是那个是只读的，不要加到那里去。只需要在个人账户下，加入了即可。</p>
 </blockquote>
@@ -186,10 +186,10 @@ ga('send', 'pageview');
 <h2 id="部署">部署</h2>
 <p>然后下面开始部署:有两种方式</p>
 <h3 id="使用pages部署">使用<code>Pages</code>部署</h3>
-<p>这种方式的话，可以绑定自己的域名。就跟<code>Github Pages</code>一样。<strong>项目名字必须与coding的用户名一致!!!</strong>只需要在如下: <img src="http://7xotye.com1.z0.glb.clouddn.com/coding5.png"> 因为前面配置的分支是<code>master</code>,因此开启之后，也需要是<code>master</code>。然后看起之后就可访问了,下面两个链接都可以访问</p>
+<p>这种方式的话，可以绑定自己的域名。就跟<code>Github Pages</code>一样。<strong>项目名字必须与coding的用户名一致!!!</strong>只需要在如下: <img src="http://cdn.htliu.cn/coding5.png"> 因为前面配置的分支是<code>master</code>,因此开启之后，也需要是<code>master</code>。然后看起之后就可访问了,下面两个链接都可以访问</p>
 <figure class="highlight dts"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="symbol">http:</span><span class="comment">//shomyliu.coding.me/shomyliu</span></div><div class="line"><span class="symbol">http:</span><span class="comment">//shomyliu.coding.me/</span></div></pre></td></tr></table></figure>
 <h3 id="使用演示">使用<code>演示</code></h3>
-<p>这种方式类似与使用<code>coding.net</code>的主机了。注意此方式不可以绑定自己的域名。 如图，打开自己的新建的项目，在代码区域，可以看到已经<code>push</code>上去了。现在打开<code>演示一栏</code>： <img src="http://7xotye.com1.z0.glb.clouddn.com/coding2.png"> 直接 <code>开始检测</code>, 一般情况，如果按照上面的步骤来的话，尤其是创建了<code>Staticfile</code>这个空文件的话，这里是可以正常开启的。如果不行的话，就强制开始，然后在进去如下: <img src="http://7xotye.com1.z0.glb.clouddn.com/coding3.png"> 如果是正常开启的话，　系统会自动检测运行环境，这时候，就没有必要修改高级选项了，如果是强制开启的话，那就需要修改了，指定运行环境是<code>html</code>. 然后运行内存　可以改小一点，毕竟静态博客也就占用几M内存。 之后在一键部署，稍等一会（时间有长有短），部署成功如下显示: <img src="http://7xotye.com1.z0.glb.clouddn.com/coding4.png"> 这时候，访问你的网页就可以了，与<code>github.io</code>一模一样！ 此时还有一步，就是为了可以每次更新都可以立刻部署到线上，这里就需要配置一下<code>webhook</code>,这里参考了<a href="http://tengj.coding.io/2016/03/06/hexo%E5%B9%B2%E8%B4%A7%E7%B3%BB%E5%88%97%EF%BC%9A%EF%BC%88%E5%9B%9B%EF%BC%89%E5%B0%86hexo%E5%8D%9A%E5%AE%A2%E5%90%8C%E6%97%B6%E6%89%98%E7%AE%A1%E5%88%B0github%E5%92%8Ccoding/" target="_blank" rel="external">这篇</a> 首先在项目设置里面找到<code>webhook</code>:然后新建一个webhook,域名后面记得加上<code>/_</code> <img src="http://7xotye.com1.z0.glb.clouddn.com/coding9.png"> 如图，　tooken可以随意写。之后添加了之后，回到演示页面，找到环境变量:如下：添加即可webhook: <img src="http://7xotye.com1.z0.glb.clouddn.com/coding10.png"> 之后再终止掉演示，重新部署，再次开启虚拟机，就最终完成了.</p>
+<p>这种方式类似与使用<code>coding.net</code>的主机了。注意此方式不可以绑定自己的域名。 如图，打开自己的新建的项目，在代码区域，可以看到已经<code>push</code>上去了。现在打开<code>演示一栏</code>： <img src="http://cdn.htliu.cn/coding2.png"> 直接 <code>开始检测</code>, 一般情况，如果按照上面的步骤来的话，尤其是创建了<code>Staticfile</code>这个空文件的话，这里是可以正常开启的。如果不行的话，就强制开始，然后在进去如下: <img src="http://cdn.htliu.cn/coding3.png"> 如果是正常开启的话，　系统会自动检测运行环境，这时候，就没有必要修改高级选项了，如果是强制开启的话，那就需要修改了，指定运行环境是<code>html</code>. 然后运行内存　可以改小一点，毕竟静态博客也就占用几M内存。 之后在一键部署，稍等一会（时间有长有短），部署成功如下显示: <img src="http://cdn.htliu.cn/coding4.png"> 这时候，访问你的网页就可以了，与<code>github.io</code>一模一样！ 此时还有一步，就是为了可以每次更新都可以立刻部署到线上，这里就需要配置一下<code>webhook</code>,这里参考了<a href="http://tengj.coding.io/2016/03/06/hexo%E5%B9%B2%E8%B4%A7%E7%B3%BB%E5%88%97%EF%BC%9A%EF%BC%88%E5%9B%9B%EF%BC%89%E5%B0%86hexo%E5%8D%9A%E5%AE%A2%E5%90%8C%E6%97%B6%E6%89%98%E7%AE%A1%E5%88%B0github%E5%92%8Ccoding/" target="_blank" rel="external">这篇</a> 首先在项目设置里面找到<code>webhook</code>:然后新建一个webhook,域名后面记得加上<code>/_</code> <img src="http://cdn.htliu.cn/coding9.png"> 如图，　tooken可以随意写。之后添加了之后，回到演示页面，找到环境变量:如下：添加即可webhook: <img src="http://cdn.htliu.cn/coding10.png"> 之后再终止掉演示，重新部署，再次开启虚拟机，就最终完成了.</p>
 <p>可以看出第一种方式使用pages比较方便，建议使用。</p>
 
       
@@ -208,7 +208,7 @@ ga('send', 'pageview');
 发布时间: 2016-03-03, 00:38:51<br/>
 <p>
 <p>
-最后更新: 2017-09-05, 22:04:55<br/>
+最后更新: 2018-09-29, 11:52:04<br/>
 <p>
 本文链接: <a href="/2016/03/03/hexo-in-coding-github/" target="_blank">http://shomy.top/2016/03/03/hexo-in-coding-github/</a>
 </p>

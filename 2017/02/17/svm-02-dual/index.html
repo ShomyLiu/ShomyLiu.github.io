@@ -13,15 +13,15 @@
 <meta property="og:site_name" content="天空的城">
 <meta property="og:description" content="对偶SVM主要解决在非线性转换之后维度变高二次规划问题求解困难的问题。">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/svm02-1.png">
-<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/svm02-3.png">
-<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/svm02-4.png">
-<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/svm02-5.png">
-<meta property="og:updated_time" content="2017-07-31T02:42:34.566Z">
+<meta property="og:image" content="http://cdn.htliu.cn/svm02-1.png">
+<meta property="og:image" content="http://cdn.htliu.cn/svm02-3.png">
+<meta property="og:image" content="http://cdn.htliu.cn/svm02-4.png">
+<meta property="og:image" content="http://cdn.htliu.cn/svm02-5.png">
+<meta property="og:updated_time" content="2018-09-29T03:52:04.764Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="机器学习技法笔记(3)-对偶SVM">
 <meta name="twitter:description" content="对偶SVM主要解决在非线性转换之后维度变高二次规划问题求解困难的问题。">
-<meta name="twitter:image" content="http://7xotye.com1.z0.glb.clouddn.com/svm02-1.png">
+<meta name="twitter:image" content="http://cdn.htliu.cn/svm02-1.png">
   
   
     <link rel="icon" href="/image/favicon.ico">
@@ -154,7 +154,7 @@ ga('send', 'pageview');
 <h2 id="对偶的引入">对偶的引入</h2>
 <p>我们的目标是<strong>将原始的非线性问题，转化为另外一个对等问题，使得新的对等问题的规模或者说复杂度(主要指二次规划问题的规模，比如变量数目，约束条件数目等)仅仅与原始数据的规模(样本量)有关，与转换的高维空间无关</strong>，如下:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/svm02-1.png">
+<img src="http://cdn.htliu.cn/svm02-1.png">
 
 </div>
 <h3 id="拉格朗日函数">拉格朗日函数</h3>
@@ -211,7 +211,7 @@ ga('send', 'pageview');
 <p>相当与将条件再提出来，就转化为QP问题求解！并且上式中<span class="math inline">\(N\)</span>个变量<span class="math inline">\(\alpha_1...\alpha_N\)</span>，以及<span class="math inline">\(N+1\)</span>个约束条件，这样就看着摆脱了高维，求解相对容易，这便得到就是<strong>标准SVM对偶问题</strong>。</p>
 <p>下面便是根据QP问题的格式，写出对应的<span class="math inline">\(Q,p,A,c\)</span>：</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/svm02-3.png">
+<img src="http://cdn.htliu.cn/svm02-3.png">
 
 </div>
 <p>这里需要说明一下:</p>
@@ -243,7 +243,7 @@ ga('send', 'pageview');
 <h3 id="数据表示模型">数据表示模型</h3>
 <p>在开始介绍SVM的时候，就是以PLA为基础的，下面看看二者:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/svm02-4.png">
+<img src="http://cdn.htliu.cn/svm02-4.png">
 
 </div>
 <p>首先在Dual SVM中，<span class="math inline">\(\mathbf{w}\)</span>是以<span class="math inline">\(y_n\mathbf{z}_n\)</span>的线性组合求解的，其中参数为<span class="math inline">\(\alpha_n\)</span>; 在PLA中 同样，每个分类错误的点，都会加上<span class="math inline">\(y_n\mathbf{z}_n\)</span>，因此实质上<span class="math inline">\(\mathbf{w}\)</span>同样线性组合求解得到。</p>
@@ -252,7 +252,7 @@ ga('send', 'pageview');
 <h2 id="后续">后续</h2>
 <p>这一节主要讲的是 <strong>标准对偶SVM</strong>，旨在解决高维空间下，二次规划问题求解困难的问题，下面对比Linear SVM与Dual SVM:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/svm02-5.png">
+<img src="http://cdn.htliu.cn/svm02-5.png">
 
 </div>
 <p>看起来我们的对偶问题的规模成功做到了只与数据样本量<span class="math inline">\(N\)</span>有关，与高维空间的维度<span class="math inline">\(\tilde{d}\)</span>无关，其实不然，实际内部的计算量还是很大的:</p>
@@ -274,7 +274,7 @@ ga('send', 'pageview');
 发布时间: 2017-02-17, 16:31:05<br/>
 <p>
 <p>
-最后更新: 2017-07-31, 10:42:34<br/>
+最后更新: 2018-09-29, 11:52:04<br/>
 <p>
 本文链接: <a href="/2017/02/17/svm-02-dual/" target="_blank">http://shomy.top/2017/02/17/svm-02-dual/</a>
 </p>

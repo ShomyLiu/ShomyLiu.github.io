@@ -13,13 +13,13 @@
 <meta property="og:site_name" content="天空的城">
 <meta property="og:description" content="问题  2017.1.28更新: YouCompleteme 安装步骤  配置了半下午＋一晚上的 vim , 使用的是github上的这个配置： k-vim 结果完全卡在了YouCompleteMe上，提示没有clang-3.7.0, 折腾了好长时间，终于可以安装好了。 赶紧记录下=.=">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/clangversion.png">
-<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/gim.png">
-<meta property="og:updated_time" content="2017-07-31T02:42:34.566Z">
+<meta property="og:image" content="http://cdn.htliu.cn/clangversion.png">
+<meta property="og:image" content="http://cdn.htliu.cn/gim.png">
+<meta property="og:updated_time" content="2018-09-29T03:52:04.768Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Ubuntu 32位安装clang-3.7. 与 YouCompleteme">
 <meta name="twitter:description" content="问题  2017.1.28更新: YouCompleteme 安装步骤  配置了半下午＋一晚上的 vim , 使用的是github上的这个配置： k-vim 结果完全卡在了YouCompleteMe上，提示没有clang-3.7.0, 折腾了好长时间，终于可以安装好了。 赶紧记录下=.=">
-<meta name="twitter:image" content="http://7xotye.com1.z0.glb.clouddn.com/clangversion.png">
+<meta name="twitter:image" content="http://cdn.htliu.cn/clangversion.png">
   
   
     <link rel="icon" href="/image/favicon.ico">
@@ -162,11 +162,11 @@ ga('send', 'pageview');
 <p>是不是可以正常安装～～，最后一步就是软连接了～～</p>
 <h3 id="软连接">　软连接</h3>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">sudo ln -s /usr/lib/llvm-3.7/bin/clang /usr/bin/clang</div><div class="line">sudo ln -s /usr/lib/llvm-3.7/bin/clang++ /usr/bin/clang++</div></pre></td></tr></table></figure>
-<p>这样再终端里面输入：<code>clang --version</code>,便会出现版本号，这样就安装好了,如下： <img src="http://7xotye.com1.z0.glb.clouddn.com/clangversion.png"></p>
+<p>这样再终端里面输入：<code>clang --version</code>,便会出现版本号，这样就安装好了,如下： <img src="http://cdn.htliu.cn/clangversion.png"></p>
 <h2 id="附安装youcompleteme">附安装YouCompleteMe</h2>
 <p>按照<code>k-vim</code> 的教程安装完其他的插件了，进入　 <figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">cd</span> ~/.vim/bundle/YouCompleteMe/</div></pre></td></tr></table></figure></p>
 <p>然后按照<a href="https://github.com/Valloric/YouCompleteMe" target="_blank" rel="external">YCM的文档</a>: <figure class="highlight clean"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">然后在进去YouCompleteMe目录下，执行下面命令可以：</div><div class="line">```Bash</div><div class="line">./install.py --clang-completer --<span class="keyword">system</span>-libclang#有clang的补全</div></pre></td></tr></table></figure></p>
-<p>然后就可以了～！，下面是完成的gvim 截图: <img src="http://7xotye.com1.z0.glb.clouddn.com/gim.png"></p>
+<p>然后就可以了～！，下面是完成的gvim 截图: <img src="http://cdn.htliu.cn/gim.png"></p>
 <hr>
 <p>参考: (http://www.cnblogs.com/zhongcq/p/3630047.html)</p>
 
@@ -186,7 +186,7 @@ ga('send', 'pageview');
 发布时间: 2015-12-14, 10:01:34<br/>
 <p>
 <p>
-最后更新: 2017-07-31, 10:42:34<br/>
+最后更新: 2018-09-29, 11:52:04<br/>
 <p>
 本文链接: <a href="/2015/12/14/ubuntu-32bit-clang-3-7-x/" target="_blank">http://shomy.top/2015/12/14/ubuntu-32bit-clang-3-7-x/</a>
 </p>

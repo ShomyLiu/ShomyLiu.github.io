@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://shomy.top/"/>
-  <updated>2018-07-05T12:52:49.512Z</updated>
+  <updated>2018-09-29T03:52:04.760Z</updated>
   <id>http://shomy.top/</id>
   
   <author>
@@ -20,7 +20,7 @@
     <link href="http://shomy.top/2018/07/05/pytorch-relation-extraction/"/>
     <id>http://shomy.top/2018/07/05/pytorch-relation-extraction/</id>
     <published>2018-07-04T16:02:54.000Z</published>
-    <updated>2018-07-05T12:52:49.512Z</updated>
+    <updated>2018-09-29T03:52:04.760Z</updated>
     
     <content type="html"><![CDATA[<blockquote>
 <p>接前面笔记:<a href="http://shomy.top/2018/02/28/relation-extraction/">关系抽取总结</a>中最后说的，在关系抽取基于Distant Supervision的NYT+Freebase的数据集有两个版本，目前大部分文章都是在这两份数据集上做的。通过纵向实验发现，同一个模型在不同版本数据集上的表现有不少差异，这篇笔记是基于自己使用Pytorch复现的PCNN(Zeng 2015)与PCNN+ATT(Lin 2016)的实验结果来简单对比。</p>
@@ -57,7 +57,7 @@
 <p>总体来说：这两种方法很类似，因为在绘制PR曲线的时候，最后有一个截断，本质相同。</p>
 <h2 id="实验结果">实验结果</h2>
 <h3 id="large数据集">LARGE数据集</h3>
-<p>直接上跑的结果， PR曲线: <img src="http://7xotye.com1.z0.glb.clouddn.com/blog/pytorch-relation-extraction/large.png"></p>
+<p>直接上跑的结果， PR曲线: <img src="http://cdn.htliu.cn/blog/pytorch-relation-extraction/large.png"></p>
 <p>其中:</p>
 <ul>
 <li>PCNN+ATT: Lin2016 论文中给出的结果，直接拿来用</li>
@@ -71,7 +71,7 @@
 <li>PCNN+ONE+My 与 PCNN+ATT+MY 并没有想象中的差距那么多， 这个也很有意思，说明Attention 没有起到很大的作用？</li>
 </ul>
 <h3 id="small数据集">SMALL数据集</h3>
-<p>PR曲线的结果: <img src="http://7xotye.com1.z0.glb.clouddn.com/blog/pytorch-relation-extraction/small.png"></p>
+<p>PR曲线的结果: <img src="http://cdn.htliu.cn/blog/pytorch-relation-extraction/small.png"></p>
 <p>结果:</p>
 <ul>
 <li>测了很多参数，自己实现的PCNN+ONE <strong>在recall比较小的时候，达不到Zeng2015使用Theano实现的模型效果</strong>， 原因还会继续查找。在recall相对较大的时候，基本可以达到Zeng2015的效果。</li>
@@ -113,7 +113,7 @@
     <link href="http://shomy.top/2018/06/26/neo4j-aminer-import/"/>
     <id>http://shomy.top/2018/06/26/neo4j-aminer-import/</id>
     <published>2018-06-26T00:49:46.000Z</published>
-    <updated>2018-06-26T09:09:17.890Z</updated>
+    <updated>2018-09-29T03:52:04.756Z</updated>
     
     <content type="html"><![CDATA[<p>前面一篇介绍了Neo4j一些比较基础的用法。这一篇笔记主要记录下在导入一个大数据集Aminer中MAG论文数据所遇到的一些问题。</p>
 <h2 id="数据集介绍">数据集介绍</h2>
@@ -123,7 +123,7 @@
 <li>作者列表：<code>{&quot;name&quot;:  &quot;org&quot;:}</code> 给出了作者的姓名及所在机构。</li>
 <li>参考文献列表: <code>[mid]</code> 给出了引文的id号</li>
 </ul>
-<p>数据示例如下： <figure class="highlight routeros"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line"><span class="string">"title"</span>: <span class="string">"Activation of Protein Kinase C (PKC) by 3,4-Methylenedioxymethamphetamine (MDMA) Occurs Through the Stimulation of Serotonin Receptors and Transporter"</span>, <span class="string">"lang"</span>: <span class="string">"en"</span>, <span class="string">"n_citation"</span>: 50, <span class="string">"year"</span>: 1997,</div><div class="line"><span class="string">"authors"</span>: [&#123;<span class="string">"name"</span>: <span class="string">"M.D. H.Kenneth Kramer"</span>, <span class="string">"org"</span>: <span class="string">"Department of Psychiatry, New York University, New York, New York USA"</span>&#125;, &#123;<span class="string">"name"</span>: <span class="string">"Jose Conrado Poblete"</span>, <span class="string">"org"</span>: <span class="string">"New York University Medical Center and Department of Biology, New York University, New York, New York USA"</span>&#125;<span class="built_in">..</span>.],</div><div class="line"><span class="string">"references"</span>: [<span class="string">"02a308b0-c362-41b3-94ac-8385992a77a3"</span>, <span class="string">"057af91d-eb27-449c-bc2a-ce1ba41b60c8"</span>, <span class="string">"0b97d99a-4f4e-4ed6-b0e0-594367443594"</span>, <span class="string">"0e62c328-9944-4cac-bff9-12f310c829b1"</span>],</div><div class="line"> <span class="string">"abstract"</span>: <span class="string">"..."</span>, <span class="string">"issue"</span>: <span class="string">"3"</span>, <span class="string">"page_end"</span>: <span class="string">"129"</span>, <span class="string">"publisher"</span>: <span class="string">"Nature Publishing Group"</span>, <span class="string">"url"</span>: [<span class="string">"http://www.nature.com/doifinder/10.1016/S0893-133X(97)00026-2"</span>, <span class="string">"http://cat.inist.fr/?aModele=afficheN&amp;cpsidt=2795397"</span><span class="built_in">..</span>], <span class="string">"doi"</span>: <span class="string">"10.1016/S0893-133X(97)00026-2"</span>, <span class="string">"id"</span>: <span class="string">"0000017a-4ca6-4860-87fa-2f8d742267dd"</span>, <span class="string">"keywords"</span>: [<span class="string">"second messenger"</span>, <span class="string">"transporter"</span>, <span class="string">"voie intraperitoneale"</span><span class="string">", "</span>fos<span class="string">": ["</span>Biology<span class="string">", "</span>Endocrinology<span class="string">"]</span></div><div class="line"><span class="string">&#125;</span></div></pre></td></tr></table></figure></p>
+<p>数据示例如下： <figure class="highlight clojure"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line"><span class="string">"title"</span>: <span class="string">"Activation of Protein Kinase C (PKC) by 3,4-Methylenedioxymethamphetamine (MDMA) Occurs Through the Stimulation of Serotonin Receptors and Transporter"</span>, <span class="string">"lang"</span>: <span class="string">"en"</span>, <span class="string">"n_citation"</span>: <span class="number">50</span>, <span class="string">"year"</span>: <span class="number">1997</span>,</div><div class="line"><span class="string">"authors"</span>: [&#123;<span class="string">"name"</span>: <span class="string">"M.D. H.Kenneth Kramer"</span>, <span class="string">"org"</span>: <span class="string">"Department of Psychiatry, New York University, New York, New York USA"</span>&#125;, &#123;<span class="string">"name"</span>: <span class="string">"Jose Conrado Poblete"</span>, <span class="string">"org"</span>: <span class="string">"New York University Medical Center and Department of Biology, New York University, New York, New York USA"</span>&#125;...],</div><div class="line"><span class="string">"references"</span>: [<span class="string">"02a308b0-c362-41b3-94ac-8385992a77a3"</span>, <span class="string">"057af91d-eb27-449c-bc2a-ce1ba41b60c8"</span>, <span class="string">"0b97d99a-4f4e-4ed6-b0e0-594367443594"</span>, <span class="string">"0e62c328-9944-4cac-bff9-12f310c829b1"</span>],</div><div class="line"> <span class="string">"abstract"</span>: <span class="string">"..."</span>, <span class="string">"issue"</span>: <span class="string">"3"</span>, <span class="string">"page_end"</span>: <span class="string">"129"</span>, <span class="string">"publisher"</span>: <span class="string">"Nature Publishing Group"</span>, <span class="string">"url"</span>: [<span class="string">"http://www.nature.com/doifinder/10.1016/S0893-133X(97)00026-2"</span>, <span class="string">"http://cat.inist.fr/?aModele=afficheN&amp;cpsidt=2795397"</span>..], <span class="string">"doi"</span>: <span class="string">"10.1016/S0893-133X(97)00026-2"</span>, <span class="string">"id"</span>: <span class="string">"0000017a-4ca6-4860-87fa-2f8d742267dd"</span>, <span class="string">"keywords"</span>: [<span class="string">"second messenger"</span>, <span class="string">"transporter"</span>, <span class="string">"voie intraperitoneale"</span><span class="string">", "</span>fos<span class="string">": ["</span>Biology<span class="string">", "</span>Endocrinology<span class="string">"]</span></div><div class="line"><span class="string">&#125;</span></div></pre></td></tr></table></figure></p>
 <p>我们的目的是将论文的数据集导入到Neo4j中来做分析，需要的节点和边类型有: <figure class="highlight haml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"># 节点</div><div class="line">-<span class="ruby"> Paper： 论文及其字段属性</span></div><div class="line"><span class="ruby">- Author： 作者：姓名</span></div><div class="line"><span class="ruby">- Org： 组织：名字</span></div><div class="line"><span class="ruby"></span></div><div class="line"><span class="ruby"><span class="comment"># 边</span></span></div><div class="line"><span class="ruby">- 引文关系: Paper-Paper</span></div><div class="line"><span class="ruby">- 写作关系: Author-Paper</span></div><div class="line"><span class="ruby">- 隶属关系: Author-Org</span></div></pre></td></tr></table></figure></p>
 <h2 id="导入neo4j">导入Neo4j</h2>
 <p>这里我们作为测试,只用了一部分数据集，使用了10个txt文件的论文数据集，即1000万篇论文，数据量大概18G，时间可以接受，在尝试过几种方法之后，基本上可以20分钟左右导入完成。 下面这个遇到的问题及解决方案等记录一下。</p>
@@ -169,11 +169,11 @@
     <link href="http://shomy.top/2018/06/08/neo4j-start/"/>
     <id>http://shomy.top/2018/06/08/neo4j-start/</id>
     <published>2018-06-08T12:52:49.000Z</published>
-    <updated>2018-06-26T09:08:49.595Z</updated>
+    <updated>2018-09-29T03:52:04.756Z</updated>
     
     <content type="html"><![CDATA[<p>近期需要处理图数据，考察后打算使用<a href="https://neo4j.com/" target="_blank" rel="external">neo4j</a>, 相比其他一些图数据库，neo4j开源，跨平台，接口友好，文档齐全，完整支持ACID。 首先放一张网上的图片，关系型数据库与图数据库存储网络数据的差异:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/blog/neo4j-start/neo4j-1.jpg">
+<img src="http://cdn.htliu.cn/blog/neo4j-start/neo4j-1.jpg">
 
 </div>
 <p>初次接触neo4j 踩了不少坑，这里记录一下。</p>
@@ -217,7 +217,7 @@
 <p>这一部分主要记录下如何将图数据从文件中导入库，常见的格式为CSV和JSON格式。</p>
 <h3 id="导入csv-格式数据">导入CSV 格式数据</h3>
 <p>Neo4j内置了命令来导入CSV数据：使用方法也很简单。假设CSV格式如下:</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="string">"Id"</span>,<span class="string">"Name"</span>,<span class="string">"Year"</span></div><div class="line"><span class="string">"1"</span>,<span class="string">"ABBA"</span>,<span class="string">"1992"</span></div><div class="line"><span class="string">"2"</span>,<span class="string">"Roxette"</span>,<span class="string">"1986"</span></div><div class="line"><span class="string">"3"</span>,<span class="string">"Europe"</span>,<span class="string">"1979"</span></div><div class="line"><span class="string">"4"</span>,<span class="string">"The Cardigans"</span>,<span class="string">"1992"</span></div></pre></td></tr></table></figure>
+<figure class="highlight 1c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="string">"Id"</span>,<span class="string">"Name"</span>,<span class="string">"Year"</span></div><div class="line"><span class="string">"1"</span>,<span class="string">"ABBA"</span>,<span class="string">"1992"</span></div><div class="line"><span class="string">"2"</span>,<span class="string">"Roxette"</span>,<span class="string">"1986"</span></div><div class="line"><span class="string">"3"</span>,<span class="string">"Europe"</span>,<span class="string">"1979"</span></div><div class="line"><span class="string">"4"</span>,<span class="string">"The Cardigans"</span>,<span class="string">"1992"</span></div></pre></td></tr></table></figure>
 <p>直接使用如下命令导入并直接引用headers来表示属性并创建节点:</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">LOAD</span> CSV <span class="keyword">WITH</span> HEADERS <span class="keyword">FROM</span> <span class="string">'FILE:/artists.csv'</span> <span class="keyword">AS</span> line</div><div class="line"><span class="keyword">CREATE</span> (:Artist &#123; <span class="keyword">name</span>: line.Name, <span class="keyword">year</span>: toInteger(line.Year)&#125;)</div></pre></td></tr></table></figure>
 <p>注意事项:</p>
@@ -242,12 +242,12 @@
 </ul>
 <p>在Neo4j浏览器中，输入<code>return apoc.version()</code>即可查看版本号</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/blog/neo4j-start/neo4j-2.jpg">
+<img src="http://cdn.htliu.cn/blog/neo4j-start/neo4j-2.jpg">
 
 </div>
 <p>此外我们可以看到apoc支持导入非常多格式的数据：</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/blog/neo4j-start/neo4j-3.jpg">
+<img src="http://cdn.htliu.cn/blog/neo4j-start/neo4j-3.jpg">
 
 </div>
 <p>导入方式很简单，我们要创建两类节点，首先创建索引，方便后续导入。</p>
@@ -258,7 +258,7 @@
 <figure class="highlight stylus"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="comment">//对每一个 person遍历</span></div><div class="line">MATCH (<span class="selector-tag">p</span>:Person)</div><div class="line"><span class="comment">// 对p的friends进行列表展开，</span></div><div class="line">UNWIND <span class="selector-tag">p</span><span class="selector-class">.friends</span> as f</div><div class="line"><span class="comment">// 根据id搜索Person节点</span></div><div class="line">MATCH (<span class="selector-tag">q</span>:Person&#123;id:f&#125;)</div><div class="line"><span class="comment">// 建立关系</span></div><div class="line">MERGE (p)-[:Friend]-(q)</div></pre></td></tr></table></figure>
 <p>执行按成之后，可视化看一下 ，:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/blog/neo4j-start/neo4j-4.jpg">
+<img src="http://cdn.htliu.cn/blog/neo4j-start/neo4j-4.jpg">
 
 </div>
 <p>到这里导入基本完成了，不过还有一点问题，暂时没有解决，使用<code>UNWIND person.book as book</code>的时候，如果某个节点没有book这个一个属性，那么后续代码将不再执行，即该Person节点不会创建。但是如果将UNWIND放到创建Person之后，建立的READ关系会有问题，还在查找原因。</p>
@@ -274,7 +274,7 @@
     
       &lt;p&gt;近期需要处理图数据，考察后打算使用&lt;a href=&quot;https://neo4j.com/&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;neo4j&lt;/a&gt;, 相比其他一些图数据库，neo4j开源，跨平台，接口友好，文档齐全，完整支持ACID。 首先放一张网上的图片，关系型数据库与图数据库存储网络数据的差异:&lt;/p&gt;
 &lt;div class=&quot;figure&quot;&gt;
-&lt;img src=&quot;http://7xotye.com1.z0.glb.clouddn.com/blog/neo4j-start/neo4j-1.jpg&quot;&gt;
+&lt;img src=&quot;http://cdn.htliu.cn/blog/neo4j-start/neo4j-1.jpg&quot;&gt;
 
 &lt;/div&gt;
 &lt;p&gt;初次接触neo4j 踩了不少坑，这里记录一下。&lt;/p&gt;
@@ -295,10 +295,10 @@
     <link href="http://shomy.top/2018/03/01/2017-review/"/>
     <id>http://shomy.top/2018/03/01/2017-review/</id>
     <published>2018-03-01T03:15:09.000Z</published>
-    <updated>2018-03-14T14:39:36.556Z</updated>
+    <updated>2018-09-29T03:52:04.716Z</updated>
     
     <content type="html"><![CDATA[<div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/blog/2017-review/2017-1.png">
+<img src="http://cdn.htliu.cn/blog/2017-review/2017-1.png">
 
 </div>
 <p>翻看了一下从<a href="http://shomy.top/2017/01/28/2016-review/">2016总结</a>开始，到现在一年时间写了16篇博客，也算是对匆匆学习生活的一种留念吧。</p>
@@ -327,7 +327,7 @@
     <summary type="html">
     
       &lt;div class=&quot;figure&quot;&gt;
-&lt;img src=&quot;http://7xotye.com1.z0.glb.clouddn.com/blog/2017-review/2017-1.png&quot;&gt;
+&lt;img src=&quot;http://cdn.htliu.cn/blog/2017-review/2017-1.png&quot;&gt;
 
 &lt;/div&gt;
 &lt;p&gt;翻看了一下从&lt;a href=&quot;http://shomy.top/2017/01/28/2016-review/&quot;&gt;2016总结&lt;/a&gt;开始，到现在一年时间写了16篇博客，也算是对匆匆学习生活的一种留念吧。&lt;/p&gt;
@@ -346,7 +346,7 @@
     <link href="http://shomy.top/2018/02/28/relation-extraction/"/>
     <id>http://shomy.top/2018/02/28/relation-extraction/</id>
     <published>2018-02-28T03:58:30.000Z</published>
-    <updated>2018-07-08T03:07:34.274Z</updated>
+    <updated>2018-09-29T03:52:04.764Z</updated>
     
     <content type="html"><![CDATA[<blockquote>
 <p>2018.07.08更新: 增加对两份数据集补充实验对比: <a href="http://shomy.top/2018/07/05/pytorch-relation-extraction/">关系抽取实验</a>.</p>
@@ -400,20 +400,20 @@
 </blockquote>
 <p><strong>基本介绍</strong> 这篇文章应该是第一次使用CNN来做关系分类任务的，使用的CNN结构也十分简单，甚至没有Pooling层，输入层也没有用word embedding, 而是对synonym的embedding表示作为输入。 具体的输入层的结构如下:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/blog/relation-extraction/1.jpg">
+<img src="http://cdn.htliu.cn/blog/relation-extraction/1.jpg">
 
 </div>
 <p>具体步骤如下:</p>
 <ul>
 <li>首先构建synonym list，使用Wordnet数据集，来找那些词属于同义词，相当于利用同义词关系，聚成若干类，当然有可能会有某个词没有同义词，那他自己就是一个类别</li>
-<li><p>假设Synonym list 一共有<span class="math inline">\(D_s\)</span>个类别，每个词都属于其中一类，这样就可以来对词做one-hot表示了, 如上图所示: <img src="http://7xotye.com1.z0.glb.clouddn.com/blog/relation-extraction/2.png"></p></li>
+<li><p>假设Synonym list 一共有<span class="math inline">\(D_s\)</span>个类别，每个词都属于其中一类，这样就可以来对词做one-hot表示了, 如上图所示: <img src="http://cdn.htliu.cn/blog/relation-extraction/2.png"></p></li>
 <li><p>使用一个Look-Up Table 转换为一个低维vector</p></li>
 </ul>
-<p>输入层之后是卷积网络+一个普通的全连接层以及softmax分类，如下: <img src="http://7xotye.com1.z0.glb.clouddn.com/blog/relation-extraction/3.jpg"></p>
+<p>输入层之后是卷积网络+一个普通的全连接层以及softmax分类，如下: <img src="http://cdn.htliu.cn/blog/relation-extraction/3.jpg"></p>
 <p><strong>实验</strong></p>
 <p>数据集： ACE 2005数据集 这里需要说明的是， 这篇文章除了使用前面说的Synonym的特征之外，还用了该数据集提供的entity type/subtype 以及后续做了POS tagger 的特征，都是先使用one-hot表示，然后用LookUP Table 再转换为低维向量，然后所有的feature vector concat成最终的向量，作为CNN层的输入。 在大类Type上的实验结果，相对于几个Basedline 提升还是比较明显的：</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/blog/relation-extraction/4.png">
+<img src="http://cdn.htliu.cn/blog/relation-extraction/4.png">
 
 </div>
 <p><strong>总结</strong></p>
@@ -434,7 +434,7 @@
 </blockquote>
 <p>这篇是中科院刘康老师的一篇文章，这篇文章使用了比较经典的CNN的结构，包含了Pooling层，以及设计了Position Features，后面会具体介绍。 先看整体架构:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/blog/relation-extraction/5.jpg">
+<img src="http://cdn.htliu.cn/blog/relation-extraction/5.jpg">
 
 </div>
 <ul>
@@ -462,13 +462,13 @@
 <p>这5个特征都是lexical-level的，之后在使用它们的word embedding串联起来 作为最后的lexical-feature.</p>
 <p>下面介绍使用CNN的sentence-level feature, 跟其他文章中使用CNN对句子建模的结构很类似, 先直接放框架图:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/blog/relation-extraction/6.jpg">
+<img src="http://cdn.htliu.cn/blog/relation-extraction/6.jpg">
 
 </div>
 <p>在输入层每个word 有两种特征:</p>
 <ul>
 <li>WF(word feature): 很简单就是词向量 word embedding</li>
-<li>PF(position feature): 位置特征， 每个word与两个entity的相对距离，举个例子如下 <been> 这个单词距离entity1 <people>为2，距离entity2 <downtown>为-4: <img src="http://7xotye.com1.z0.glb.clouddn.com/blog/relation-extraction/7.jpg"> 这样每个word 就有了两个位置特征[d1,d2]，这两个特征也需要再额外使用Lookup-Table 做Embedding，投影成低维向量，也就是每个相对距离，都对应到一个低维实数向量。 这个Position Feature 的引入其实是突出了两个entity的作用，实验证明PF对效果的提升很明显。</downtown></people></been></li>
+<li>PF(position feature): 位置特征， 每个word与两个entity的相对距离，举个例子如下 <been> 这个单词距离entity1 <people>为2，距离entity2 <downtown>为-4: <img src="http://cdn.htliu.cn/blog/relation-extraction/7.jpg"> 这样每个word 就有了两个位置特征[d1,d2]，这两个特征也需要再额外使用Lookup-Table 做Embedding，投影成低维向量，也就是每个相对距离，都对应到一个低维实数向量。 这个Position Feature 的引入其实是突出了两个entity的作用，实验证明PF对效果的提升很明显。</downtown></people></been></li>
 </ul>
 <p>这样每个word的feature维度为: <span class="math inline">\(d_w + d_p * 2\)</span>，其中<span class="math inline">\(d_w\)</span> 为word embedding的维度，<span class="math inline">\(d_p\)</span>为 position embedding的维度。</p>
 <p>介绍完输入之后，接下来就是卷积操作，这里不多介绍。与上一篇不一样的地方是，这里在卷积之后使用了Max Pooling操作，这样可以提取每一个卷积核的最有用的特征，在之后又接了一个全连接层最终得到了sentence-level feature。有一点需要说明的是，MAXPooling直接对卷积操作之后的向量进行的，并没有经过激活函数。</p>
@@ -477,12 +477,12 @@
 <p><strong>实验</strong></p>
 <p>数据集: 使用SemEval 2010 Task 8 Dataset，考虑方向共19种关系。 整体的实验结果如下:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/blog/relation-extraction/8.png">
+<img src="http://cdn.htliu.cn/blog/relation-extraction/8.png">
 
 </div>
 <p>从结果看，没有使用linguistic的一些特征，基本end-to-end, 取得了state-of-art的效果。 再看看单独特征的影响:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/blog/relation-extraction/9.png">
+<img src="http://cdn.htliu.cn/blog/relation-extraction/9.png">
 
 </div>
 <p>可以看出来，L5(word net)和PF两个特征比较关键。</p>
@@ -502,18 +502,18 @@
 <blockquote>
 <p>Nguyen, (2015). Relation Extraction: Perspective from Convolutional Neural Networks.</p>
 </blockquote>
-<p>这一篇文章，在去年zeng的基础上加入了多尺寸卷积核，这样可以提取更多的N-Gram特征；同时完全不再使用zeng的lexical-level feature，完全使用sentence的特征，完整的结构如下: <img src="http://7xotye.com1.z0.glb.clouddn.com/blog/relation-extraction/10.png"></p>
+<p>这一篇文章，在去年zeng的基础上加入了多尺寸卷积核，这样可以提取更多的N-Gram特征；同时完全不再使用zeng的lexical-level feature，完全使用sentence的特征，完整的结构如下: <img src="http://cdn.htliu.cn/blog/relation-extraction/10.png"></p>
 <p>从结构可以看出来，基本与上一篇zeng的sentence-level 部分的CNN很类似，不同的地方有： - 卷积阶段使用<strong>多个尺寸的卷积核</strong> - 卷积之后使用了激活函数</p>
 <p><strong>实验</strong></p>
 <p>数据集：文中使用了ACE 2005 和 SemEval2010 Task 8 两个数据集。 对ACE 2005数据集，做了窗口尺寸不同以及word embedding是否固定的实验分析，结果如下:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/blog/relation-extraction/11.png">
+<img src="http://cdn.htliu.cn/blog/relation-extraction/11.png">
 
 </div>
 <p>从实验结果F1-Score值可以看出来，多窗口尺寸的确有效果提升，而且最好的效果则是在word embedding 不固定，需要参与训练的情况下，卷积核窗口为2,3,4,5。</p>
 <p>在SemEval2010 数据集的结果达到了state-of-art，比zeng的效果好0.1% 但是是不加任何的lexical-feature的情况下:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/blog/relation-extraction/12.png">
+<img src="http://cdn.htliu.cn/blog/relation-extraction/12.png">
 
 </div>
 <p><strong>总结 </strong></p>
@@ -532,7 +532,7 @@
 </blockquote>
 <p>这篇文章同样是在Zeng 2014的CNN基础上做的改进，最大的变化是损失函数，不再使用softmax+cross-entropy的方式，而是margin based的ranking-loss。下面介绍一下细节。 先看整体架构，跟之前的区别很小:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/blog/relation-extraction/13.jpg">
+<img src="http://cdn.htliu.cn/blog/relation-extraction/13.jpg">
 
 </div>
 <ul>
@@ -543,7 +543,7 @@
 </ul>
 <p>图中pooling之后得到的<span class="math inline">\(r_x\)</span> 即作为sentence representation。这一部分跟之前的工作都一样，下面开始引入了margin-based ranking loss, 先看loss function:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/blog/relation-extraction/14.png">
+<img src="http://cdn.htliu.cn/blog/relation-extraction/14.png">
 
 </div>
 <p>在训练过程中的输入有三部分: 当前的句子 x , 该sen的正确标签<span class="math inline">\(y^{+}\)</span>, 以及采样得到的错误的标签<span class="math inline">\(c^{-}\)</span>。<span class="math inline">\(m^{+}, m^{-}\)</span> 对应两个大于0的margin, <span class="math inline">\(\gamma\)</span>起到了一个缩放的作用。 这样最小化<span class="math inline">\(L\)</span>就要求正样本对应的label得分<span class="math inline">\(s_{\theta}(x)_{ {y}_{+} }\)</span>越大越好，负样本对应的得分<span class="math inline">\(s_{\theta}(x)_{ {c}_{-} }\)</span>越小越好。同时margin的存在使得模型尽可能让正样本的得分大于<span class="math inline">\(m^{+}\)</span> ， 以及负样本的得分小于<span class="math inline">\(-m^{-}\)</span>。这样可以讲正负样本分的更加清楚。</p>
@@ -555,13 +555,13 @@
 <p><strong>实验</strong></p>
 <p>数据集: SemEval2010 Task 8 首先看主要实验结果, 再不使用任何lexical-feature的情况下，达到了start-of-art的效果, F1-Score: 84.1%:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/blog/relation-extraction/15.png">
+<img src="http://cdn.htliu.cn/blog/relation-extraction/15.png">
 
 </div>
-<p>再看三组对比实验: - 损失函数: Ranking Loss 以及 Softmax-Entropy. <img src="http://7xotye.com1.z0.glb.clouddn.com/blog/relation-extraction/16.png"> 上面的CNN+Softmax 是文中复现的Zeng 2014的代码，比原文中要好，可能原因是本文使用了300维的word embedding， 而Zeng使用50维. 从前两行可以看出来，使用Ranking的损失函数，Precision, Recall, F1 都有提升。 - 对NA关系的特殊处理的效果: <img src="http://7xotye.com1.z0.glb.clouddn.com/blog/relation-extraction/17.png"></p>
+<p>再看三组对比实验: - 损失函数: Ranking Loss 以及 Softmax-Entropy. <img src="http://cdn.htliu.cn/blog/relation-extraction/16.png"> 上面的CNN+Softmax 是文中复现的Zeng 2014的代码，比原文中要好，可能原因是本文使用了300维的word embedding， 而Zeng使用50维. 从前两行可以看出来，使用Ranking的损失函数，Precision, Recall, F1 都有提升。 - 对NA关系的特殊处理的效果: <img src="http://cdn.htliu.cn/blog/relation-extraction/17.png"></p>
 <pre><code>从结果中可以看出来，训练过程中不考虑NA的话，整体的performance有提升。 但是对于NA这一个单独的类的Precision有所下降，也就是说有更多的其他的类分到了NA，导致P降低，不过反过来看其他类的P,R,F1的值都提高了，说明增加的这部分分到NA类的那些case即使在考虑NA的情况下，也是Bad Case.</code></pre>
 <ul>
-<li><p>使用两个entity之间的word embedding 来代替position feature: <img src="http://7xotye.com1.z0.glb.clouddn.com/blog/relation-extraction/18.png"></p>
+<li><p>使用两个entity之间的word embedding 来代替position feature: <img src="http://cdn.htliu.cn/blog/relation-extraction/18.png"></p>
 <p>其中Full sentence 表示 使用完整的句子， Word Position表示使用Zeng 2014提出的Positon Embedding。从第一列和第四列的对比可以看出来，在使用Full Sentence的情况下，Postion 的作用很明显，可以差出10%。不过从第二列，第三列对比可以看出来，如果仅仅使用两个entity之间的words，position的影响就会小很多，因为这种情况下，就可以一定程度上指代两个entity的位置。有一个比较有趣的现象，第三列仅仅使用两个entity之间的word, 就可以达到82.8%的F1，已经可以跟Zeng2014 中，使用各种lexical-feature+position feature达到相同的效果。可能的原因是长文本的噪音比较大。</p></li>
 </ul>
 <p><strong>总结</strong></p>
@@ -581,7 +581,7 @@
 </blockquote>
 <p>这篇文章不再使用CNN作为基本结构，而是开始尝试RNN，可以达到Zeng 2014 的效果，基本结构如下:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/blog/relation-extraction/rnn-1.jpg">
+<img src="http://cdn.htliu.cn/blog/relation-extraction/rnn-1.jpg">
 
 </div>
 <p>大部分结构相同，有以下几点改进:</p>
@@ -592,12 +592,12 @@
 <p><strong>实验</strong></p>
 <p>数据集: SemEval 2010 Task 8 首先是一个简单的特征对比实验:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/blog/relation-extraction/rnn-2.png">
+<img src="http://cdn.htliu.cn/blog/relation-extraction/rnn-2.png">
 
 </div>
 <p>可以看出来PI这个特征也可以取得不错的效果。 下面是模型对比实验:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/blog/relation-extraction/rnn-3.png">
+<img src="http://cdn.htliu.cn/blog/relation-extraction/rnn-3.png">
 
 </div>
 <p>可以看出来，再不使用任何Lexical-Feature的情况下， RNN + PI 与使用多窗口的Zguyen 2015 以及使用 WordNet信息的Zeng 2014达到类似的效果。此外从这几篇文章实验可以看出来，word embedding的size也可以很明显提高F值。</p>
@@ -609,19 +609,19 @@
 </blockquote>
 <p>这篇文章同样是基于RNN对句子建模，在上一篇RNN的基础上做了一点改进，使用标准的的Attention + BiLSTM，效果与Ranking Loss 类似 84%，基本结构:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/blog/relation-extraction/bilstm-1.png">
+<img src="http://cdn.htliu.cn/blog/relation-extraction/bilstm-1.png">
 
 </div>
 <p>主要介绍一下Attention Layer, 其实就是一个对LSTM的每一个step的输出做一个加权的过程，而非仅仅只取最后一个step. 设 <span class="math inline">\(H=[h_1, h_2, h_3,..h_T]\)</span> 为BiLSTM的所有step的输出矩阵，T为句子长度. 然后经过下面的操作来计算每个step的权重:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/blog/relation-extraction/bilstm-2.png">
+<img src="http://cdn.htliu.cn/blog/relation-extraction/bilstm-2.png">
 
 </div>
 <p>这样<span class="math inline">\(\alpha\)</span> 就是weight vector, <span class="math inline">\(r\)</span> 就是最终的Attention-BiLSTM的输出，也即sentence的embedding, 之后使用了softmax来分类，损失函数使用对数似然。</p>
 <p><strong>实验</strong></p>
 <p>数据集: SemEval 2010 Task 8 dataset 结果:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/blog/relation-extraction/bilstm-3.png">
+<img src="http://cdn.htliu.cn/blog/relation-extraction/bilstm-3.png">
 
 </div>
 <p>在没有使用词法/语法特征的情况下，达到84%的F1 Score，使用Attention 可以起到作用，能够减弱句子中的噪音词语影响，增强关键词的影响。</p>
@@ -634,17 +634,17 @@
 <p>这一篇仍然是基于CNN来做的，按照文中实验效果，这一篇目前是最高的F1：88%。设计了相对复杂的两层Attention机制来尽可能突出句子中哪些部分对relation label有更大的贡献。使用了word similarity来定义句子中word与target entity的相似度，从而根据相似度来引入权重，这是第一层的Attention. 第二层Attention则是对卷积之后Pooling阶段，采用Attention Pooling 而不是Max Pooling. 通过这些操作来减弱噪音，加强相关性强的词的权重。此外也改进了前面Santos提出的Ranking Loss. 下面对文中详细介绍.</p>
 <p>首先是Input Layer, 同Zeng 2014, 特征仍然是 word embedding + position embedding. 当然word embedding使用的word2vec 进行 pre-train的。因此当前每个词表示为:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/blog/relation-extraction/matt-1.png">
+<img src="http://cdn.htliu.cn/blog/relation-extraction/matt-1.png">
 
 </div>
 <p>其中<span class="math inline">\(w_i^d\)</span>为word embedding, 两个<span class="math inline">\(w_i^{p}\)</span>是Position Embedding。在之后，将trigram信息融合进去，设置一个滑动窗口k，以每个word 为中心，左右k/2个词作为上下文，然后直接串起来，这样每个词的embedding size变为:<span class="math inline">\((d_w + 2d_p)*k\)</span>，如下:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/blog/relation-extraction/matt-2.png">
+<img src="http://cdn.htliu.cn/blog/relation-extraction/matt-2.png">
 
 </div>
 <p>这里需要额外说一句，其实这个n-gram过程现在完成，然后卷积的时候，卷积核的size设置为1就可以了。或者现在不做，卷积核设置为k，可以达到同样的效果。但是后面有Attention，因此在这篇文章中，先做了n-gram。 输入层到这里为止，与其他文章完全一样。 下面就是加入 Input Attention 过程。 首先引入两个对角矩阵<span class="math inline">\(A_1, A_2\)</span> 对应每个句子的两个entity. 然后使用word embedding的向量内积运算来衡量某个词<span class="math inline">\(w_i\)</span> 与 entity <span class="math inline">\(e_j,j =1,2\)</span>的相关性，这样对角矩阵A的元素就是: <span class="math inline">\(A_{i,i}^{j}= f(e_j, w_i)\)</span>，其中f就内积运算。最后使用softamx归一化，来定义Attention的权重:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/blog/relation-extraction/matt-3.png">
+<img src="http://cdn.htliu.cn/blog/relation-extraction/matt-3.png">
 
 </div>
 <p>额外补充一句，这里的两个对角矩阵完全可以用两个向量来表示。</p>
@@ -657,52 +657,52 @@
 <p>这样整个句子表示为: <span class="math inline">\(R=[r_1, r_2, ..., r_n]\)</span>, 至此包含第一层的Attention的Input Layer 完成.</p>
 <p>之后是卷积层，这里跟其他文章中卷积相同:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/blog/relation-extraction/matt-4.png">
+<img src="http://cdn.htliu.cn/blog/relation-extraction/matt-4.png">
 
 </div>
 <p>其中 <span class="math inline">\(W_f\)</span>是卷积核，size为<span class="math inline">\(d^{c} \times k(d^w+2d^p)\)</span>, 前面已经说过了，由于已经在input处做过了tri-gram操作，这里的<span class="math inline">\(d_c\)</span>一般为1.</p>
 <p>后面是第二层Attention Based Pooling; 大部分文章直接使用Max Pooling来处理，这样可能会有一些过于简单，有时候并不能抽出跟后续的relation labels 更相关的部分，这也是这篇文章提出Attention Based Pooling的动机。 定义一个关联矩阵表示卷积之后的结果<span class="math inline">\(R^{*}\)</span>的每一个元素与relation labels的相关性，如下:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/blog/relation-extraction/matt-5.png">
+<img src="http://cdn.htliu.cn/blog/relation-extraction/matt-5.png">
 
 </div>
 <p>其中U是Attention中的权重矩阵，<span class="math inline">\(W^L\)</span> 表示relation labels的embedding，跟word/position embedding一样，需要在训练过程更新。这样的G就是一个相关矩阵，每一个元素<span class="math inline">\(G_{i,j}\)</span>就表示<span class="math inline">\(R^{*}\)</span>的第i个元素与第j个label的相关性。然后在对G做列归一化:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/blog/relation-extraction/matt-6.png">
+<img src="http://cdn.htliu.cn/blog/relation-extraction/matt-6.png">
 
 </div>
 <p>有了Attention Pooling矩阵，在做max pooling：</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/blog/relation-extraction/matt-7.png">
+<img src="http://cdn.htliu.cn/blog/relation-extraction/matt-7.png">
 
 </div>
 <p>这样得到的输出直接与relation embedding 最相关，<span class="math inline">\(w_O\)</span>也是模型最后的输出。完整的结构如下, 看起来很复杂，但是每一部分其实都比较简单:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/blog/relation-extraction/matt-8.png">
+<img src="http://cdn.htliu.cn/blog/relation-extraction/matt-8.png">
 
 </div>
 <p>最后介绍模型改进的损失函数，根据Santos 2015提出的Ranking Loss, 这篇文章同样使用margin based ranking loss function. 一般的margin function都需要定义一个distance/score function, 从而来区分正负样例. 在santos文中，直接使用了网络最后的输出score。这篇文章利用relation embedding <span class="math inline">\(W_{y}^{L}\)</span>, 定义了如下的score distance function:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/blog/relation-extraction/matt-9.png">
+<img src="http://cdn.htliu.cn/blog/relation-extraction/matt-9.png">
 
 </div>
 <p>来衡量模型的输出<span class="math inline">\(w^{O}\)</span>与正确label对应的vector <span class="math inline">\(W_{y}^{L}\)</span>的相关度，然后就是margin function:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/blog/relation-extraction/matt-10.png">
+<img src="http://cdn.htliu.cn/blog/relation-extraction/matt-10.png">
 
 </div>
 <p>这里直接设置了1为margin，<span class="math inline">\(y^{-}\)</span>是错误标签，最后用SGD等方法去优化。</p>
 <p><strong>实验</strong></p>
 <p>数据集同样是: SemEval 2010 Task 8 先看主体实验结果, 最好的达到了88%，比BaseLine 提升非常大:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/blog/relation-extraction/matt-11.png">
+<img src="http://cdn.htliu.cn/blog/relation-extraction/matt-11.png">
 
 </div>
 <p>其中仅仅使用Input-Attention可以达到87.5%的效果， 再加上Pooling Attention的效果则达到了88%。从这里可以看出了第一层Attention的作用要更加重要。第二层Pooling复杂度提升很多，performance提升很少。</p>
 <p>再看几个对比辅助实验:</p>
 <ul>
-<li><p>Input Attention的三种融合方式, 结果如下: <img src="http://7xotye.com1.z0.glb.clouddn.com/blog/relation-extraction/matt-12.png"></p></li>
-<li><p>去掉Pooling Attention, 去掉所有的Attention, 不使用自定义的distance function, 三种结果如下: <img src="http://7xotye.com1.z0.glb.clouddn.com/blog/relation-extraction/matt-13.png"> 这个结果也可以看出来，第一层的Input Attention 作用很明显。 其中最后一行去掉Attention, 去掉distance function 基本跟Santos 2015那篇文章相同，因此效果也类似。</p></li>
+<li><p>Input Attention的三种融合方式, 结果如下: <img src="http://cdn.htliu.cn/blog/relation-extraction/matt-12.png"></p></li>
+<li><p>去掉Pooling Attention, 去掉所有的Attention, 不使用自定义的distance function, 三种结果如下: <img src="http://cdn.htliu.cn/blog/relation-extraction/matt-13.png"> 这个结果也可以看出来，第一层的Input Attention 作用很明显。 其中最后一行去掉Attention, 去掉distance function 基本跟Santos 2015那篇文章相同，因此效果也类似。</p></li>
 </ul>
 <p><strong>总结</strong></p>
 <p>优点:</p>
@@ -721,11 +721,11 @@
 </blockquote>
 <p>这篇文章基本上是以上一篇为模板，稍微改动了一些， 动机则是每个词在不同的relation有不同的权重Attention 矩阵。 几点不同:</p>
 <ul>
-<li><p>Input Layer 引入一个权重矩阵<span class="math inline">\(M\)</span>，直接计算word 与 relation的相关度， 而不是计算word 与 entity的相关性: <img src="http://7xotye.com1.z0.glb.clouddn.com/blog/relation-extraction/zhuatt-1.png"> <img src="http://7xotye.com1.z0.glb.clouddn.com/blog/relation-extraction/zhuatt-2.png"></p></li>
+<li><p>Input Layer 引入一个权重矩阵<span class="math inline">\(M\)</span>，直接计算word 与 relation的相关度， 而不是计算word 与 entity的相关性: <img src="http://cdn.htliu.cn/blog/relation-extraction/zhuatt-1.png"> <img src="http://cdn.htliu.cn/blog/relation-extraction/zhuatt-2.png"></p></li>
 <li>去掉了Pool Attention 部分，直接max pooling</li>
 <li><p>目标函数: 没有使用上一篇的自定义的距离函数，而是直接使用类似Santos 2015的那种向量内积计算score的方式. 最终仍然使用ranking loss</p></li>
 </ul>
-<p>实验结果, 并没有对比88%的结果: <img src="http://7xotye.com1.z0.glb.clouddn.com/blog/relation-extraction/zhuatt-3.png"></p>
+<p>实验结果, 并没有对比88%的结果: <img src="http://cdn.htliu.cn/blog/relation-extraction/zhuatt-3.png"></p>
 <p>这篇文章在Input Layer的Attention的改进比较符合直观。 在没有使用二级Attention 以及改进的损失函数的情况下， 可以达到87.5%，相对于上一篇的86.1%还是有提升。不过整体来看，文章的创新点比较少。</p>
 <h3 id="总结1">总结1</h3>
 <p>目前从论文结果来看，在SemEval 2010 Task 8 数据集上最高的F1-Score为88%，不过貌似还未有人可以复现。 总结一下已有的模型:</p>
@@ -742,7 +742,7 @@
 <h2 id="distant-supervised-learning">Distant Supervised Learning</h2>
 <p>上一章的全监督方法都是在完全正确的标注数据集上来做的，因此数据量很小，SemEval 2010 一共是10000左右条文本。因此开始考虑研究如何在大数据集上做关系抽取。2010年提出Distant Supervision可以自动标注训练样本，原理很简单。利用知识图谱中的两个entity以及对应的某个relation，在corpus中进行回标，如果某个句子中同时包含了两个entity，那么就假定这个句子包含了上述的relation. 这样就可以获得大量的标注数据。当然缺陷就是假设太强，会引入了很多噪音数据， 因为包含两个entity的句子不一定可以刻画对应的relation，如下, 对于NYT 语料中的第一个句子的确描述了 Founder的关系，但是第二句就不是这个关系，因此属于噪音:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/blog/relation-extraction/dis-1.png">
+<img src="http://cdn.htliu.cn/blog/relation-extraction/dis-1.png">
 
 </div>
 <p>在2011年提出了Multi Instance Learning的方法来改进原始的Distance supervision的方法，有一个At-Least-One 的前提: 包含两个entity的所有句子中，至少有一个句子可以体现relation，即至少有一个标注正确的句子。通过结合FreeBase 对NYT语料做Entity Linking，Relation Aligning等操作进行标注， 最终得到一个被广泛使用的关系抽取数据集, 在开始已经描述过详情。正如前面声明，这里面会有噪音数据。 因此在这一系列的文章中，都会针对该噪音问题做一些工作，其中大部分基于Multi Instance来做。简单引用介绍Multi Instance Learning:</p>
@@ -762,7 +762,7 @@
 </ul>
 <p>因此文中使用Multi Instance Learning的at least one假设来解决第一个问题； 在Zeng 2014 的CNN基础上修改了Pooling的方式，解决第二个问题。 先介绍改进的CNN: Piece Wise CNN(PCNN). 总体结构如下, 与Zeng 2014 很类似:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/blog/relation-extraction/pcnn-1.png">
+<img src="http://cdn.htliu.cn/blog/relation-extraction/pcnn-1.png">
 
 </div>
 <p>输入仍然是一个sentence，Input Layer依然是word embedding + position embedding, 后面接卷积操作。 之后的Pooling层并没有直接使用全局的Max Pooling, 而是局部的max pooling. 文中把一个句子分为三部分，以两个entity为边界把句子分为三段，然后卷积之后对每一段取max pooling, 这样可以得到三个值，相比传统的max-pooling 每个卷积核只能得到一个值，这样可以更加充分有效的得到句子特征信息。 假设一共有个N个卷积核，最终pooling之后得到的sentence embedding的size为: <span class="math inline">\(3N\)</span>, 后面再加softmax进行分类，最终得到输出向量<span class="math inline">\(o\)</span>, 上面的示意图很清晰了，其中的c1,c2,c3是不同卷积核的结果，然后都分为3段进行Pooling。 下面可以减弱错误label问题的Multi-Instance Learning。这里面有一个概念， 数据中包含两个entity的所有句子称为一个Bag。先做几个定义:</p>
@@ -773,26 +773,26 @@
 </ul>
 <p>这样经过softmax 就可以计算每一个类别的概率了</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/blog/relation-extraction/pcnn-2.png">
+<img src="http://cdn.htliu.cn/blog/relation-extraction/pcnn-2.png">
 
 </div>
 <p>这里需要说明的是，我们的目的得到每个bag的标签，并不关注bag里面instances的。因为每个bag上的label就是两个entity的relation。 而上面的概率是计算的bag里面某一个instance的，所以需要定义基于Bag的损失函数，文中采取的措施是根据At-Least-One的假设，每个Bag都有至少有一个标注正确的句子，这样就可以从每个bag中找一个得分最高的句子来表示整个bag,于是定义如下的目标函数: 假设训练数据为T个bags: <span class="math inline">\(&lt;M_i, y_i&gt;\)</span>:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/blog/relation-extraction/pcnn-3.png">
+<img src="http://cdn.htliu.cn/blog/relation-extraction/pcnn-3.png">
 
 </div>
 <p>这样到此为止，模型部分完毕，完整的算法如下:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/blog/relation-extraction/pcnn-4.png">
+<img src="http://cdn.htliu.cn/blog/relation-extraction/pcnn-4.png">
 
 </div>
 <p><strong>实验</strong></p>
 <p>数据集: NYT+FreeBase，过滤掉了样本少的关系，最后使用了26类关系，数据描述如下:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/blog/relation-extraction/pcnn-5.png">
+<img src="http://cdn.htliu.cn/blog/relation-extraction/pcnn-5.png">
 
 </div>
-<p>评测: - Held-Out Evaluation: 直接在Test Dataset上进行评估，使用多分类的Precision-Recall Curve（基于不同的分类阈值）来衡量, PR曲线越靠近右上，证明分类效果越好: <img src="http://7xotye.com1.z0.glb.clouddn.com/blog/relation-extraction/pcnn-6.jpg"> 可以看出来，PCNN + MIL 表现最好，Precision和recall都要优于baseline。 - Manual Evaluation: 考虑到FreeBase 还不够完备，对于分类为False Negatives的数据，有可能是两个entity有关系，但是在FreeBase中并没有收录。 从上图的PR-Curve中也可以看出来，recall相对很小，一部分原因是FN过大，尤其是将NA分为其他的relation。 因此文中对那些将NA分为其他类别，按照概率高低，排序，手工检查Top-K 里面的entity pair是否的确有关系，结果如下: <img src="http://7xotye.com1.z0.glb.clouddn.com/blog/relation-extraction/pcnn-7.png"> 结果显示PCNN取得了最好的效果。 - 辅助对比实验：原始的CNNs， CNNs + Multi Instance, PCNNs, 以及 PCNNs+Multi Instance的结果: <img src="http://7xotye.com1.z0.glb.clouddn.com/blog/relation-extraction/pcnn-8.jpg"> 可以看出来， 文中提出的两种改进的确都有效果。</p>
+<p>评测: - Held-Out Evaluation: 直接在Test Dataset上进行评估，使用多分类的Precision-Recall Curve（基于不同的分类阈值）来衡量, PR曲线越靠近右上，证明分类效果越好: <img src="http://cdn.htliu.cn/blog/relation-extraction/pcnn-6.jpg"> 可以看出来，PCNN + MIL 表现最好，Precision和recall都要优于baseline。 - Manual Evaluation: 考虑到FreeBase 还不够完备，对于分类为False Negatives的数据，有可能是两个entity有关系，但是在FreeBase中并没有收录。 从上图的PR-Curve中也可以看出来，recall相对很小，一部分原因是FN过大，尤其是将NA分为其他的relation。 因此文中对那些将NA分为其他类别，按照概率高低，排序，手工检查Top-K 里面的entity pair是否的确有关系，结果如下: <img src="http://cdn.htliu.cn/blog/relation-extraction/pcnn-7.png"> 结果显示PCNN取得了最好的效果。 - 辅助对比实验：原始的CNNs， CNNs + Multi Instance, PCNNs, 以及 PCNNs+Multi Instance的结果: <img src="http://cdn.htliu.cn/blog/relation-extraction/pcnn-8.jpg"> 可以看出来， 文中提出的两种改进的确都有效果。</p>
 <p><strong>总结</strong></p>
 <p>这篇文章在NYT + FreeBase 数据集上比较好的效果， 也是第一篇使用CNN+Multi Instance来处理Distant Supervision 的关系抽取。相比与Zeng 2014，将Piecewise Pooling 加入到CNN中，以及将Multi Instance来处理Distance Supervised，从而减弱噪音的影响。当然在MIL中直接取了置信度最高的instance作为bag的，肯定会损失一部分信息，因此后续一些文章在上面做了工作。</p>
 <p><strong>2.Selective Attention over Instances (Lin 2016)</strong></p>
@@ -804,32 +804,32 @@
 <p>在Zeng 2015中的MIL部分，每一个bag仅仅取了置信度最高的instance，这样会丢失很多的信息，因此一个bag内可能有很多个positive instance。应用Attention机制可以减弱噪音，加强正样本，因此可以更充分的利用信息。</p>
 <p><strong>模型</strong> 总体结构:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/blog/relation-extraction/att-1.png">
+<img src="http://cdn.htliu.cn/blog/relation-extraction/att-1.png">
 
 </div>
 <p>其中<span class="math inline">\(m_i\)</span>是某一个bag的instance，图中的CNN模块与Zeng 2015 (PCNNs)的结果相同(Embedding Layer-&gt;Convolution Layer -&gt; Piecewise Max Pooling Layer) 最终得到每个句子的表示<span class="math inline">\(r_i\)</span>。为了能够充分的利用bag内的信息，我们可以对所有instance取加权: <span class="math inline">\(s= \sum_{i} \alpha_i x_i\)</span> 其中<span class="math inline">\(\alpha\)</span>是权重比例，文中给出了两种定义权重的方法:</p>
 <ul>
 <li>Average: 直接取平均: <span class="math inline">\(s=\sum\frac{1}{n}x_i\)</span> ，这种将所有instance同等对待的方式还是有缺陷，放大了噪音影响。</li>
-<li>Attention: 目标是增加positive instance的权重，减小noise instance的权重。但是并不知道每个instance的groud truth，但是知道每个bag的label，因此就可以用instance 与 该relation label的相关度大小引入Attention: 如下: <img src="http://7xotye.com1.z0.glb.clouddn.com/blog/relation-extraction/att-2.png"> <img src="http://7xotye.com1.z0.glb.clouddn.com/blog/relation-extraction/att-3.png"> 其中A为Attention对角矩阵，<span class="math inline">\(r\)</span>可以认为是该数据的relation标签的embedding向量。 这样<span class="math inline">\(e_i\)</span>就可以一定程度表示句子与标签的相关性。</li>
+<li>Attention: 目标是增加positive instance的权重，减小noise instance的权重。但是并不知道每个instance的groud truth，但是知道每个bag的label，因此就可以用instance 与 该relation label的相关度大小引入Attention: 如下: <img src="http://cdn.htliu.cn/blog/relation-extraction/att-2.png"> <img src="http://cdn.htliu.cn/blog/relation-extraction/att-3.png"> 其中A为Attention对角矩阵，<span class="math inline">\(r\)</span>可以认为是该数据的relation标签的embedding向量。 这样<span class="math inline">\(e_i\)</span>就可以一定程度表示句子与标签的相关性。</li>
 </ul>
-<p>之后得到了加权的<span class="math inline">\(s\)</span>就是bag-level的embedding。最后的输出需要注意，并不是直接用一个全连接层+softmax.而是根据向量的相似度计算bag的emebdding 与 每个relation的相似度作为relation的score，比如relation r的score计算方式:<span class="math inline">\(o_r = v_r s + b\)</span> 这里的b是一个bias，每个relation的score计算完之后，利用softmax来归一化成概率： <img src="http://7xotye.com1.z0.glb.clouddn.com/blog/relation-extraction/att-4.png"></p>
+<p>之后得到了加权的<span class="math inline">\(s\)</span>就是bag-level的embedding。最后的输出需要注意，并不是直接用一个全连接层+softmax.而是根据向量的相似度计算bag的emebdding 与 每个relation的相似度作为relation的score，比如relation r的score计算方式:<span class="math inline">\(o_r = v_r s + b\)</span> 这里的b是一个bias，每个relation的score计算完之后，利用softmax来归一化成概率： <img src="http://cdn.htliu.cn/blog/relation-extraction/att-4.png"></p>
 <p>在Test阶段不太一样， 前面说了在计算Attention的时候，使用的是训练数据对应的label 的embedding，但是在test的时候，并没有标签。文中的处理方式是: 对每一个relation r 执行下面的操作:</p>
 <ul>
 <li>计算一个bag里面所有的句子x与r的Attention权重，这一步与训练相同，然后加权求得这个bag的表示<span class="math inline">\(s\)</span></li>
 <li>计算式子10: <span class="math inline">\(o = Ms +d\)</span>, 这里的M就是所有relation的embedding 矩阵。 这样得到了 o 是一个<span class="math inline">\(N_r\)</span> 维度的向量，<span class="math inline">\(N_r\)</span>是relation的number。</li>
 <li>取出o里面的relation <span class="math inline">\(r\)</span> 对应的值， 作为这个r的预测概率</li>
 </ul>
-<p>源码注释如下: <img src="http://7xotye.com1.z0.glb.clouddn.com/blog/relation-extraction/att-5.png"></p>
+<p>源码注释如下: <img src="http://cdn.htliu.cn/blog/relation-extraction/att-5.png"></p>
 <p>遍历完所有的relation之后， 得到每个relation的概率，取max即可。 这个过程其实相当于一个遍历的过程，复杂度有点高，而且解释性比较差，是一个可以改进的一个地方。</p>
 <p><strong>实验</strong></p>
 <p>文中首先做了在CNN/PCNN的基础上，如何使用bag内的信息的对比试验，结果如下，其中CNN/PCNN表示没有引入MIL，+ONE表示ZENG2015的取置信度最高的一个，+AVE与+ATT则是文中提出的两个:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/blog/relation-extraction/att-6.png">
+<img src="http://cdn.htliu.cn/blog/relation-extraction/att-6.png">
 
 </div>
 <p>可以看出来，Attention的效果最好, 而且+ONE比+AVE要稍微好一些，也很容易理解，+AVE对噪音数据放大了影响。 第二个对比实验则是与传统方法的对比:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/blog/relation-extraction/att-7.png">
+<img src="http://cdn.htliu.cn/blog/relation-extraction/att-7.png">
 
 </div>
 <p>最后一组实验则是更进一步验证Attention的作用。 因为在测试数据中，有超过3/4的bags 只有一个句子。 因此文中把拥有多个句子的entity pair 提取出来验证效果，在该子集上使用一下三种设置:</p>
@@ -840,7 +840,7 @@
 </ul>
 <p>评价指标使用P@N，结果如下:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/blog/relation-extraction/att-8.png">
+<img src="http://cdn.htliu.cn/blog/relation-extraction/att-8.png">
 
 </div>
 <p>从结果可以看出来，ATT的确表现最好。</p>
@@ -869,42 +869,42 @@
 </ul>
 <p>模型的结构如图:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/blog/relation-extraction/miml-1.png">
+<img src="http://cdn.htliu.cn/blog/relation-extraction/miml-1.png">
 
 </div>
 <p>输入也是一个bag，然后利用CNN/PCNN来计算每个sentence的embedding，之后的融合方式很直接，直接对embedding的每一维度取所有sentence的对应维度的最大值。</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/blog/relation-extraction/miml-2.png">
+<img src="http://cdn.htliu.cn/blog/relation-extraction/miml-2.png">
 
 </div>
 <p>其中k表示embedding的某一维度，<span class="math inline">\(j\)</span>表示bag中的第j个句子。 这样就可以融合所有sentence的信息了。后面加一个全连接层计算每一个类别的score:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/blog/relation-extraction/miml-3.png">
+<img src="http://cdn.htliu.cn/blog/relation-extraction/miml-3.png">
 
 </div>
 <p>之后不再是加softmax多分类了，而是使用sigmod函数计算每个relation的概率，然后超过某个阈值，就认为该relation是准确的:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/blog/relation-extraction/miml-4.png">
+<img src="http://cdn.htliu.cn/blog/relation-extraction/miml-4.png">
 
 </div>
 <p>其中<span class="math inline">\(l\)</span>就是类别的总数。 文中设计了两种损失函数来做对比, Sigmod Loss Vs Squared Loss：</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/blog/relation-extraction/miml-5.png">
+<img src="http://cdn.htliu.cn/blog/relation-extraction/miml-5.png">
 
 </div>
 <p><strong>实验</strong> 直接看P-R Curve结果，相比PCNN提升比较明显:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/blog/relation-extraction/miml-6.jpg">
+<img src="http://cdn.htliu.cn/blog/relation-extraction/miml-6.jpg">
 
 </div>
 <p>再看取max的设计的作用，与直接取平均对比, 这里有点需要说明，在这个实验中，取平均要比PCNN效果好，而在上一篇平均效果差， 这说明的是multi label有提升的作用:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/blog/relation-extraction/miml-7.jpg">
+<img src="http://cdn.htliu.cn/blog/relation-extraction/miml-7.jpg">
 
 </div>
 <p>最后一个是两种损失函数的对比:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/blog/relation-extraction/miml-8.jpg">
+<img src="http://cdn.htliu.cn/blog/relation-extraction/miml-8.jpg">
 
 </div>
 <p>可以看出，二者在不同的区域各自有优势。</p>
@@ -928,19 +928,19 @@
 <p>对于一个bag来说，使用上面的模型可以得到每个句子的表示，之后文中使用两阶段的Attention: - Selective Attention over Instances 与Lin 2016 相同， 对每个bag内的instances取加权平均，计算方法也一样，首先利用Attention矩阵计算instance与每个relation的相关性: <span class="math inline">\(z_i = x_i A v_{r_j}\)</span>, 之后进行softmax计算权重: <span class="math inline">\(\beta_i = \frac{\exp(z_i)}{\sum \exp (z_p)}\)</span> ， 最终得到加权的bag表示: <span class="math inline">\(R_{j}=\sum \beta_i x_i\)</span>，其中<span class="math inline">\(R_j\)</span>是relation-specific的 - Selective Attention over Relations 这一层的Attention是用在relations之间的，用来挖掘relation之间的依赖关系，前一层的Attention得到了k个向量:<span class="math inline">\(R=\{R_1,...,R_k\}\)</span>，其中k为relation 数量。 计算关系 i 与 j 的相关性如下: <span class="math inline">\(h_i = R_i B R_j\)</span>, 之后softmax 计算权重: <span class="math inline">\(\gamma_i = \frac{\exp(h_i)}{\sum \exp (h_q)}\)</span>， 然后就可以得到融合多relation依赖关系的输出: <span class="math inline">\(R^{*}_{j} = \sum_{i=1}^{k} = \gamma_i R^i\)</span></p>
 <p>之后得到<span class="math inline">\(R={R_{1}^{*}, ..., R_{k}^{*}}\)</span>，对每一个relation 做一个binary classifier， 逻辑回归的sigmod即可 <span class="math display">\[p(i|M,\theta)=\frac{1}{1+\exp(-o_i)}\]</span> 其中<span class="math inline">\(o_i = W_i R^{*}_{i} + b_i\)</span> , 最后使用多标签的损失函数，与上一篇相同:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/blog/relation-extraction/mem-1.png">
+<img src="http://cdn.htliu.cn/blog/relation-extraction/mem-1.png">
 
 </div>
 <p>到此模型介绍完毕。</p>
 <p><strong>实验</strong></p>
 <p>同样用held-out以及P@N 结果如下:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/blog/relation-extraction/mem-2.png">
+<img src="http://cdn.htliu.cn/blog/relation-extraction/mem-2.png">
 
 </div>
 <p>从结果看， 本文的方法比Lin 2016 要好， 毕竟考虑了关系的依赖性，不过提升不是很明显，可能原因是数据问题，relation的overlapping比较少。 再看一组对比实验: 分别是去掉word-attention 以及去掉 relation-attention:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/blog/relation-extraction/mem-3.png">
+<img src="http://cdn.htliu.cn/blog/relation-extraction/mem-3.png">
 
 </div>
 <p>可以看出来，去掉relation之后，下降相对来说比去掉word-level更加明显。</p>
@@ -972,13 +972,13 @@
 </ul>
 <p>首先看Held-Out 实验结果:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/blog/relation-extraction/ent-1.png">
+<img src="http://cdn.htliu.cn/blog/relation-extraction/ent-1.png">
 
 </div>
 <p>其中实验有: PCNN+MIL 为Zeng 2015的模型， APCNNs为本文提出的不包含实体描述的模型， PCNNs+MIL+D为在zeng 2015的基础上加上实体描述的Loss，APCNNs+D为本文包含描述的模型。 可以看出来加上实体描述的确对效果有提升。此外APCNNs 比 PCNN+MIL要好一些，说明Attention要比取置信度最高的instance要好。</p>
 <p>再看manual实验，就是找出那些标签为NA但是预测非NA的数据， 人工检查，检查是否两个entity的确有预测的relation，使用准确率Accuracy来衡量，结果如下,这里的top是指按照预测为某relation的概率大小排序:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/blog/relation-extraction/ent-2.png">
+<img src="http://cdn.htliu.cn/blog/relation-extraction/ent-2.png">
 
 </div>
 <p><strong>总结</strong></p>
@@ -1051,7 +1051,7 @@
     <link href="http://shomy.top/2017/12/05/Feature-Scaling-Batch-Norm/"/>
     <id>http://shomy.top/2017/12/05/Feature-Scaling-Batch-Norm/</id>
     <published>2017-12-05T08:50:00.000Z</published>
-    <updated>2017-12-06T14:52:25.471Z</updated>
+    <updated>2018-09-29T03:52:04.752Z</updated>
     
     <content type="html"><![CDATA[<blockquote>
 <p>Batch Normlization是2015年提出的一个加速神经网络训练的技巧，同时对performance也有一定的提高，现在基本已经广泛使用了。这里相对完整的整理一下学习笔记。主要参考李宏毅老师的机器学习课程。</p>
@@ -1066,7 +1066,7 @@
 <li><span class="math inline">\(x_1\)</span>:房间数目，一般比较小，位于1-5左右</li>
 <li><span class="math inline">\(x_2\)</span>: 房屋面积, 一般取值比较大，比如位于80-200等</li>
 </ul>
-<p>一般线性回归的关系函数如下: <span class="math display">\[s = \theta_1x_1 + \theta_2x*2 + b\]</span> 取平方误差的话, 损失函数为(仅仅考虑一个数据): <span class="math display">\[LOSS = (s_\theta(x_i)-y_i)^2\]</span> 因为<span class="math inline">\(x_2\)</span>的尺度比<span class="math inline">\(x_1\)</span>大很多，因此即使两个参数<span class="math inline">\(w_1,w_2\)</span>同样大小的变化，乘上<span class="math inline">\(x_i\)</span>之后，对最后的结果LOSS影响差距也很不同, <span class="math inline">\(w_2\)</span>明显要比<span class="math inline">\(w_1\)</span>的作用要大，也就是说，<span class="math inline">\(\theta_2\)</span>很小的变化就会导致LOSS较大变化，在LOSS的等高线上就会呈现出椭圆的形状, 如图1: <img src="http://7xotye.com1.z0.glb.clouddn.com/blog/feature-scaling-BN/scaling-1.png" alt="img"> 这个图的横纵坐标表示两个特征，然后每一圈代表一个LOSS值，圈越大，LOSS越大，最里面的B则是最优解的位置。 然后考虑梯度更新的过程，上述的等高线即LOSS与<span class="math inline">\(\theta_1,\theta_2\)</span>的函数关系， 因此图中椭圆的切线方向就是梯度下降的方向， 从图1中可以看出来，从初始点A到最有点B需要经过很多次的无用的迭代，并不是每次向着最优的方向走，类似于之字形，这样收敛就会很慢了。 反过来看，如果做了Feature Scaling的话，<span class="math inline">\(\theta_1, \theta_2\)</span>的更新变化对LOSS影响一致，这样等高线就会成近圆形如图2所示，这样沿着切线的方向进行梯度更新就会一直沿着最优的方向走，就会加快收敛速度。</p></li>
+<p>一般线性回归的关系函数如下: <span class="math display">\[s = \theta_1x_1 + \theta_2x*2 + b\]</span> 取平方误差的话, 损失函数为(仅仅考虑一个数据): <span class="math display">\[LOSS = (s_\theta(x_i)-y_i)^2\]</span> 因为<span class="math inline">\(x_2\)</span>的尺度比<span class="math inline">\(x_1\)</span>大很多，因此即使两个参数<span class="math inline">\(w_1,w_2\)</span>同样大小的变化，乘上<span class="math inline">\(x_i\)</span>之后，对最后的结果LOSS影响差距也很不同, <span class="math inline">\(w_2\)</span>明显要比<span class="math inline">\(w_1\)</span>的作用要大，也就是说，<span class="math inline">\(\theta_2\)</span>很小的变化就会导致LOSS较大变化，在LOSS的等高线上就会呈现出椭圆的形状, 如图1: <img src="http://cdn.htliu.cn/blog/feature-scaling-BN/scaling-1.png" alt="img"> 这个图的横纵坐标表示两个特征，然后每一圈代表一个LOSS值，圈越大，LOSS越大，最里面的B则是最优解的位置。 然后考虑梯度更新的过程，上述的等高线即LOSS与<span class="math inline">\(\theta_1,\theta_2\)</span>的函数关系， 因此图中椭圆的切线方向就是梯度下降的方向， 从图1中可以看出来，从初始点A到最有点B需要经过很多次的无用的迭代，并不是每次向着最优的方向走，类似于之字形，这样收敛就会很慢了。 反过来看，如果做了Feature Scaling的话，<span class="math inline">\(\theta_1, \theta_2\)</span>的更新变化对LOSS影响一致，这样等高线就会成近圆形如图2所示，这样沿着切线的方向进行梯度更新就会一直沿着最优的方向走，就会加快收敛速度。</p></li>
 </ul>
 <p>常用的Feature Scaling的方法有:</p>
 <ul>
@@ -1075,10 +1075,10 @@
 </ul>
 <p>此外， 其实做Feature Scaling或多或少的跟原始数据都有一些差异， 理论上比较好的方法是，不同的Feature设置不同的学习率，尺度大的特征的学习率应该小一点，尺度小的特征的学习率稍微大一些，但是在实际梯度下降中，特征很多，对每个特征设置不通的学习率不切实际，很难实现，因此换一种思路，对特征做scale, 这样也可以避免尺度不一带来的问题。</p>
 <h2 id="batch-normalization">Batch Normalization</h2>
-<p>开始考虑神经网络， 我们知道神经网络有很多个Layer组成， 每个layer的输入都是上一层layer的输出， 那我们就有理由相信对每一层的输入的特征做Feature Scaling 可能会起到不错的作用。 在说BN之前，需要简单提一下 Internal Covariate Shift(ICS) 这个现象. 我们知道多层的神经网络，每一层的输出数据的分布都在随着训练也就是参数更新发生着变化，比如说第一层的输出的分布随着第一层的权重和bias的训练更新而改变，这种数据分布的改变就称之为: Internal Covariate Shift(ICS). 而如果对每一层的输入都做归一化的话，就相当于每一层的分布都保持一致了(均值方差相同), 这样可以一定程度上减小ICS带来的影响，当然显然并不能从根本上解决，只是减弱一些而已(具体关于ICS的内容这里不再介绍，理论知识偏多)。 下面考虑一下Batch Normalization是怎么做的。 有了前面的Feature Scaling, 貌似问题很简单了， 就对每一层的输出做scaling就可以了，直接使用上述的第一种归一化的方式即可: <span class="math display">\[\hat{x} = \frac{x-\mu}{\sigma}\]</span> 但是这里需要考虑一个问题，在做归一化的时候， 会影响原来学到的特征，比如说在输入到sigmod激活函数之前，如果经过Wx+b之后的结果，分布在S型函数的两侧， 也就是近乎平行坐标轴的那部分区域，这样原本经过激活函数之后就是0或者1了， 但是经过归一化之后，结果数据都到了S型函数的中间部分,如下图: <img src="http://7xotye.com1.z0.glb.clouddn.com/blog/feature-scaling-BN/scaling-2.png" alt="img"></p>
+<p>开始考虑神经网络， 我们知道神经网络有很多个Layer组成， 每个layer的输入都是上一层layer的输出， 那我们就有理由相信对每一层的输入的特征做Feature Scaling 可能会起到不错的作用。 在说BN之前，需要简单提一下 Internal Covariate Shift(ICS) 这个现象. 我们知道多层的神经网络，每一层的输出数据的分布都在随着训练也就是参数更新发生着变化，比如说第一层的输出的分布随着第一层的权重和bias的训练更新而改变，这种数据分布的改变就称之为: Internal Covariate Shift(ICS). 而如果对每一层的输入都做归一化的话，就相当于每一层的分布都保持一致了(均值方差相同), 这样可以一定程度上减小ICS带来的影响，当然显然并不能从根本上解决，只是减弱一些而已(具体关于ICS的内容这里不再介绍，理论知识偏多)。 下面考虑一下Batch Normalization是怎么做的。 有了前面的Feature Scaling, 貌似问题很简单了， 就对每一层的输出做scaling就可以了，直接使用上述的第一种归一化的方式即可: <span class="math display">\[\hat{x} = \frac{x-\mu}{\sigma}\]</span> 但是这里需要考虑一个问题，在做归一化的时候， 会影响原来学到的特征，比如说在输入到sigmod激活函数之前，如果经过Wx+b之后的结果，分布在S型函数的两侧， 也就是近乎平行坐标轴的那部分区域，这样原本经过激活函数之后就是0或者1了， 但是经过归一化之后，结果数据都到了S型函数的中间部分,如下图: <img src="http://cdn.htliu.cn/blog/feature-scaling-BN/scaling-2.png" alt="img"></p>
 <p>这样会有问题，归一化都到了[-1, 1]那一部分区域， 而对应的sigmod近乎是一条直线了，如红色虚线所示，那这样就成了线性变换了，那神经网络的非线性变化就没有意义了。所以BN在做完归一化，具体来说是标准化之后，又做了一步特征转换的操作: <span class="math display">\[\hat{x} = \frac{x-\mu}{\sigma} //归一化\]</span> <span class="math display">\[z = \gamma \hat{x} + \beta //重构转换\]</span></p>
-<p>其中 <span class="math inline">\(\gamma, \beta\)</span> 是两个参数，跟权重矩阵参数一样， 也是需要训练更新的。<span class="math inline">\(\hat{x}\)</span>则是标准化之后的值。可以看出来，如果<span class="math inline">\(\gamma=\sigma, \beta=\mu\)</span>的时候，我们就会发现<span class="math inline">\(x=z\)</span>了，这样就恢复到了原始的特征分布，其实可以这样理解，<span class="math inline">\(\gamma, \beta\)</span>这两个参数其实就是来学习前面的Normalization到底有没有作用，如果没有作用那就做一些转换，抵消一部分Normalization带来的影响。 这样完整的BN的步骤如下，需要注意的是，输入是一个Batch的数据，上述求得均值，方差均是对同一个Batch的数据计算得出的也就是说下图的m就是minbatch size： <img src="http://7xotye.com1.z0.glb.clouddn.com/blog/feature-scaling-BN/scaling-3.png" alt="img"></p>
-<p>用图示表示，更加形象一些: <img src="http://7xotye.com1.z0.glb.clouddn.com/blog/feature-scaling-BN/scaling-4.png" alt="img"></p>
+<p>其中 <span class="math inline">\(\gamma, \beta\)</span> 是两个参数，跟权重矩阵参数一样， 也是需要训练更新的。<span class="math inline">\(\hat{x}\)</span>则是标准化之后的值。可以看出来，如果<span class="math inline">\(\gamma=\sigma, \beta=\mu\)</span>的时候，我们就会发现<span class="math inline">\(x=z\)</span>了，这样就恢复到了原始的特征分布，其实可以这样理解，<span class="math inline">\(\gamma, \beta\)</span>这两个参数其实就是来学习前面的Normalization到底有没有作用，如果没有作用那就做一些转换，抵消一部分Normalization带来的影响。 这样完整的BN的步骤如下，需要注意的是，输入是一个Batch的数据，上述求得均值，方差均是对同一个Batch的数据计算得出的也就是说下图的m就是minbatch size： <img src="http://cdn.htliu.cn/blog/feature-scaling-BN/scaling-3.png" alt="img"></p>
+<p>用图示表示，更加形象一些: <img src="http://cdn.htliu.cn/blog/feature-scaling-BN/scaling-4.png" alt="img"></p>
 <p>需要注意的有两点:</p>
 <ul>
 <li>理论上BN可以放到激活函数之前，也可以放在其之后，但是一般情况，BN层会放在激活函数之前，这个其实很容易理解，比如激活函数如果是sigmod或者tanh的话，本身的输出都已经在一定程度上有了归一化了，后面再加一个BN的话，意义不大。</li>
@@ -1119,14 +1119,14 @@
     <link href="http://shomy.top/2017/09/29/codings-webhook/"/>
     <id>http://shomy.top/2017/09/29/codings-webhook/</id>
     <published>2017-09-29T09:48:00.000Z</published>
-    <updated>2018-04-17T11:07:14.369Z</updated>
+    <updated>2018-09-29T03:52:04.736Z</updated>
     
     <content type="html"><![CDATA[<h2 id="需求">需求</h2>
 <p>一些代码托管网站比如coding.net/github.com 等都提供了webhook的工具， 经常用于自动化部署。 之前写过一篇博客<a href="http://shomy.top/2016/04/14/git-server-hook/">搭建git服务器以及web自动化部署</a> 主要记录的是在自己服务器上如何搭建git服务，并且利用hook进行自动化部署。不过这种方式有个缺点，没有像github或者coding.net的web界面，管理起来可能稍微麻烦，因此我们还是习惯在github,coding.net上进行代码托管。然后再部署到服务器上，这样有些不方便。还好这些托管网站均提供了webhook的工具，功能与git的hook一致。 <a id="more"></a></p>
 <p>因此可以用来做自动化部署，用一张图来说明区别(参考<a href="https://laravel-china.org/topics/2096/using-webhook-to-realize-automatic-deployment-of-online-server" target="_blank" rel="external">1</a>]:</p>
-<p><img src="http://7xotye.com1.z0.glb.clouddn.com/blog/coding-web-hook/webhook-1.png"> 这样以来， 开发者只需要push代码到github上即可，无需在服务器操作，即可将服务器代码同步最新状态。原理很简单，当coding.net收到<code>PUSH</code>或者<code>PR</code>之后，向服务器发起一个<code>POST</code>的请求， 服务器执行<code>git pull</code>的操作，拉取最新代码。 下面记录下总体的流程(github与coding.net操作基本相同，下面以coding.net为例)</p>
+<p><img src="http://cdn.htliu.cn/blog/coding-web-hook/webhook-1.png"> 这样以来， 开发者只需要push代码到github上即可，无需在服务器操作，即可将服务器代码同步最新状态。原理很简单，当coding.net收到<code>PUSH</code>或者<code>PR</code>之后，向服务器发起一个<code>POST</code>的请求， 服务器执行<code>git pull</code>的操作，拉取最新代码。 下面记录下总体的流程(github与coding.net操作基本相同，下面以coding.net为例)</p>
 <h2 id="操作">操作</h2>
-<p>基本流程分为以下几步: 1. 建立仓库，这一个没什么好说的，就是自己的项目 repo. 2. 将服务器的ssh公钥加入到项目的公钥: <img src="http://7xotye.com1.z0.glb.clouddn.com/blog/coding-web-hook/ssh-coding-1.png"> 3. 建立WebHook <img src="http://7xotye.com1.z0.glb.clouddn.com/blog/coding-web-hook/web-hook-new.png"> 4. 在服务器端写响应API 这部分就是写个响应POST请求的小程序就好，我这里用python的Flask来完成的。代码如下，其中使用了第三方执行命令库<code>sh</code>，可以方便执行一些Unix命令:</p>
+<p>基本流程分为以下几步: 1. 建立仓库，这一个没什么好说的，就是自己的项目 repo. 2. 将服务器的ssh公钥加入到项目的公钥: <img src="http://cdn.htliu.cn/blog/coding-web-hook/ssh-coding-1.png"> 3. 建立WebHook <img src="http://cdn.htliu.cn/blog/coding-web-hook/web-hook-new.png"> 4. 在服务器端写响应API 这部分就是写个响应POST请求的小程序就好，我这里用python的Flask来完成的。代码如下，其中使用了第三方执行命令库<code>sh</code>，可以方便执行一些Unix命令:</p>
 <p><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#!/usr/bin/env python</span></div><div class="line"><span class="comment"># encoding: utf-8</span></div><div class="line"><span class="keyword">from</span> flask <span class="keyword">import</span> Flask, request</div><div class="line"><span class="keyword">import</span> sh</div><div class="line"><span class="keyword">import</span> logging</div><div class="line">app = Flask(__name__)</div><div class="line"></div><div class="line"><span class="meta">@app.route('/api/git_hook', methods=['POST'])</span></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">git_hook</span><span class="params">()</span>:</span></div><div class="line">    token = request.form.get(<span class="string">'token'</span>, <span class="string">''</span>) <span class="comment"># 提取token</span></div><div class="line">    <span class="keyword">if</span> <span class="string">'your-token'</span> == token:</div><div class="line">        sh.cd(<span class="string">'/var/www/html/web'</span>) <span class="comment"># 进入web项目的目录</span></div><div class="line">        <span class="comment"># 执行pull操作</span></div><div class="line">        sh.git.pull([<span class="string">'origin'</span>, <span class="string">'master'</span>])</div><div class="line">        <span class="keyword">return</span> <span class="string">'&lt;pre&gt;pull&lt;/pre&gt;'</span></div><div class="line">    <span class="keyword">else</span>:</div><div class="line">        <span class="keyword">return</span> <span class="string">'&lt;pre&gt;Wrong Toen &lt;/pre&gt;'</span></div><div class="line"></div><div class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</div><div class="line">    app.run(port=<span class="number">5000</span>)</div></pre></td></tr></table></figure></p>
 <p>这里需要说明的是，服务器端的用户需要有项目目录的读写权限，最好直接把目录的own设置为用户。 之后直接执行该文件即可: <figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">nohup python app.py <span class="number">2</span>&gt;&amp;<span class="number">1</span> &amp;</div></pre></td></tr></table></figure></p>
 <p>这样就可以在后台执行，端口是5000.</p>
@@ -1136,7 +1136,7 @@
 <p><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">location /api &#123;</div><div class="line">    proxy_set_header    X-REAL-IP $remote_addr;</div><div class="line">    proxy_set_header    Host    $http_host;</div><div class="line">    proxy_pass          http://<span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span>:<span class="number">5000</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
 <pre><code>这样就可以直接使用域名`http://yoursite.com/api/git_hook`访问了，记得重启下nginx服务。</code></pre>
 <ol start="6" style="list-style-type: decimal">
-<li>测试 服务器的服务启动之后， 使用webhook做个测试， Test的部分是coding自己的测试，没有携带token。 <img src="http://7xotye.com1.z0.glb.clouddn.com/blog/coding-web-hook/result-1.png"></li>
+<li>测试 服务器的服务启动之后， 使用webhook做个测试， Test的部分是coding自己的测试，没有携带token。 <img src="http://cdn.htliu.cn/blog/coding-web-hook/result-1.png"></li>
 </ol>
 <h2 id="总结">总结</h2>
 <p>这样就算完成了利用webhook的自动化部署的过程。 整体比较简单清晰。 这里需要提另外一个代码托管工具，<a href="https://about.gitlab.com/" target="_blank" rel="external">gitlab</a> 它除了github/coding.net的功能之外，提供了在自己服务器上搭建gitlab，同样可以拥有web管理的界面。 但是目前不直接用它的原因，就是这货比较吃配置，最小4G内存(包含SWAP)，而我现在的学生腾讯云服务器仅仅是1G内存，1核的CPU… 以后如果装备上去了 ，肯定会直接上gitlab. 一步到位。</p>
@@ -1161,7 +1161,7 @@
     <link href="http://shomy.top/2017/08/17/python-tuple-assign/"/>
     <id>http://shomy.top/2017/08/17/python-tuple-assign/</id>
     <published>2017-08-17T14:34:00.000Z</published>
-    <updated>2017-08-21T04:16:27.489Z</updated>
+    <updated>2018-09-29T03:52:04.760Z</updated>
     
     <content type="html"><![CDATA[<blockquote>
 <p>最近偶尔翻看Fluent Python，遇到有意思的东西就记下来. 下面的是在PyCon2013上提出的一个关于<code>tuple</code>的Augmented Assignment也就是增量赋值的一个问题。 并且基于此问题, 又引申出3个变种问题.</p>
@@ -1245,7 +1245,7 @@
     <link href="http://shomy.top/2017/07/29/Hexo-admin-for-blogs/"/>
     <id>http://shomy.top/2017/07/29/Hexo-admin-for-blogs/</id>
     <published>2017-07-29T07:38:00.000Z</published>
-    <updated>2017-08-15T00:52:12.317Z</updated>
+    <updated>2018-09-29T03:52:04.756Z</updated>
     
     <content type="html"><![CDATA[<h2 id="需求">需求</h2>
 <p>像Hexo这种静态博客用起来很方便，但是硬伤就是没有后台管理，每次想写博客或者说想要修改原博客的话，都需要在本机上找markdown文件，修改之后发布，尤其是如果机器上没有安装hexo,git等工具的时候，就无法修改了。因此hexo可不可以以像wp,ghost这种有后台管理, 随时随地编辑博客呢? <a id="more"></a></p>
@@ -1275,7 +1275,7 @@
 <li><p>本地机器也需要有一个<code>upload.sh</code>的脚本, 每次同样需要先git pull 在git push 到私人repo. 其实就是版本控制那一套.</p></li>
 </ul>
 <p>到现在基本完成了自己可以随时随地编辑博客并且多端同步的需求了. 之前也考虑过CI持续集成,但是大部分都是再建立一个分支, 需要把博客的source公开, 不太合适. 所以就选择了hexo-admin这种方法.</p>
-<p>这篇博客便是在线完成的. <img src="http://7xotye.com1.z0.glb.clouddn.com/blog/hexo-admin/hexo-admin.png"></p>
+<p>这篇博客便是在线完成的. <img src="http://cdn.htliu.cn/blog/hexo-admin/hexo-admin.png"></p>
 <p>其实这里面的坑还是蛮多的(主要不熟悉node). 此外开始使用supervisor做后台运行监控, 结果不知为何, 在<code>hexo d</code>包括git的pull或者push等操作,都会报错,提示让我确认git用户, 但是我已经设置了<code>git config</code>的email和name. 查了很多资料也没有解决, 后来直接抛弃supervisor, 直接使用<code>nohup</code>来放后台运行了.每个人的需求肯定都不同，这里只是个人的一个思路。大概是这样了, 有什么问题可以留言或者邮件.</p>
 ]]></content>
     
@@ -1298,7 +1298,7 @@
     <link href="http://shomy.top/2017/07/28/word2vec-all/"/>
     <id>http://shomy.top/2017/07/28/word2vec-all/</id>
     <published>2017-07-28T07:42:21.000Z</published>
-    <updated>2017-07-31T02:42:34.566Z</updated>
+    <updated>2018-09-29T03:52:04.768Z</updated>
     
     <content type="html"><![CDATA[<p>目前需要做Network Embedding方面的课题，而复杂网络本身就经常借鉴NLP的一些算法模型, Embedding也不例外. 因此先从Word Embedding入手。之前对Word Embedding(暂且翻译为词嵌入或者词向量)的理解就是将单词根据某种特征转为数值向量，再来做其他工作比如文本分类的工作。而word2vec则是word embedding的一种模型，也是目前使用最广的词向量模型, 由Google的Mikolov团队2013年提出。之前仅仅能够使用第三方库来训练直接使用, 对其中原理并没有多少理解, 这篇博客则比较完整的从背景知识到原理，参数训练等方面整理一下word2Vec。</p>
 <a id="more"></a>
@@ -1313,7 +1313,7 @@
 <h3 id="神经网络">神经网络</h3>
 <p>引入word2vec之前需要先对神经网络的知识有一定了解, 这里只贴一张图说明一个简单三层神经网络, 具体的细节不再赘述, 可以参考之前的一篇专门介绍神经网络的博文<a href="http://shomy.top/2016/12/07/basic-neural-network/">机器学习技法笔记(1)-神经网络</a> ; 如下图, <span class="math inline">\(x=[x_1, x_2,...x_K]\)</span>是模型的输入, 中间经过与权重矩阵<span class="math inline">\(\{w_{ki}\}\)</span> 运算, 矩阵运算结果再经过非线性激活函数得到隐层的结果<span class="math inline">\(h\)</span>, 从隐层到输出层同理. 这样从输入层到输出层既有线性变换,又有非线性变换, 因此可以更好刻画出输入变量的特征.</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/blog/w2v/nn1.png">
+<img src="http://cdn.htliu.cn/blog/w2v/nn1.png">
 
 </div>
 <h3 id="神经语言模型">神经语言模型</h3>
@@ -1327,7 +1327,7 @@
 <p><span class="math display">\[P(w_t|w_1,w_2,..,w_{t-1})=P(w_t|w_{t_1}, w_{t_2}...w_{t_n+1})\]</span></p>
 <p>上述便是经典的<code>n-gram</code>模型的近似表示方式. 下面需要介绍一下神经语言模型(NNLM), 最初由Bengio提出的A Neural Probabilistic Language Mode最为经典, word2vec便是从其中简化训练而来. Bengio通过下面的一个三层神经网络来计算<span class="math inline">\(P(w_t|w_{t_1}, w_{t_2}...w_{t_n+1})\)</span>:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/blog/w2v/nnlm1.png">
+<img src="http://cdn.htliu.cn/blog/w2v/nnlm1.png">
 
 </div>
 <p>首先第一层输入就是前<span class="math inline">\(t-1\)</span>个词<span class="math inline">\(w_{t_n+1},...,w_{t-1}\)</span> 去预测第<span class="math inline">\(t\)</span>个词是<span class="math inline">\(w_t\)</span> 的概率. 这里面的矩阵<span class="math inline">\(C\in |V| \times d\)</span>维护着词汇表中所有词的词向量, 其中<span class="math inline">\(|V|\)</span>是词汇表中词的个数, <span class="math inline">\(d\)</span>是词向量的维度. 然后根据输入的前<span class="math inline">\(n-1\)</span>个词, 在C中找到它们对应的词向量, 然后直接串联起来成为一个维度为<span class="math inline">\((n-1)d\)</span>的向量x 作为接下来三层神经网络的输入, 后面就是普通神经网络了. 需要说明的是,因为我们那要预测概率最大的<span class="math inline">\(w_t\)</span>, 因此最后输出层的神经元应该与词汇表大小同样为<span class="math inline">\(|V|\)</span>, 这里使用使用softmax函数归一化输出层的值到[0,1], 代表可能的每个词的概率. 此外在原文中, 存在一些直连边, 也就是上图中的虚线, 从输入层直接到输出层, 是一个线性变换, Bingo在文中表示, 直连边的存在大幅降低迭代次数, 但对语言模型效果无提升, 随着计算能力的提高, 后续的工作基本都去掉了直连边.</p>
@@ -1342,14 +1342,14 @@
 </ul>
 <p>两个模型图示如下</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/blog/w2v/word2vec-1.png">
+<img src="http://cdn.htliu.cn/blog/w2v/word2vec-1.png">
 
 </div>
 <p>下面将会从最简单的上下文只有一个词的情形入手, 然后扩展到CBOW以及Skip-gram, 介绍原理以及参数训练过程. 关于word2vec的训练这里将会从完全的BP神经网络的过程来介绍.</p>
 <h3 id="one-word-model">One-Word Model</h3>
 <p>首先先看简化版入手: 输入输出都只有一个词, 如下图示:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/blog/w2v/one-word.png">
+<img src="http://cdn.htliu.cn/blog/w2v/one-word.png">
 
 </div>
 <p>首先说明符号:</p>
@@ -1398,7 +1398,7 @@
 <h3 id="cbow-model">CBOW Model</h3>
 <p>这一部分讲word2vec的第一个形式: Continurous Bag-Of-Word，模型图示如下:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/blog/w2v/cbow-1.png">
+<img src="http://cdn.htliu.cn/blog/w2v/cbow-1.png">
 
 </div>
 <p>跟上一个模型唯一的不同就是输入不再是一个词<span class="math inline">\(w_I\)</span>, 而是多个词，上图中一共有C个单词: <span class="math inline">\(x_{1k},x_{2k},...,x_{Ck}\)</span>，每个<span class="math inline">\(x\)</span>都是one-hot表示。 这样隐层的<span class="math inline">\(\mathbf{h}\)</span>的计算就会不同了: 之前一个单词的模型是直接取出<span class="math inline">\(W\)</span>的一行<span class="math inline">\(v_{w_I}\)</span>作为<span class="math inline">\(h\)</span>的值，在CBOW中则是取出<span class="math inline">\(W\)</span>中输入的所有C个单词的词向量，然后直接取平均，如下:</p>
@@ -1413,7 +1413,7 @@
 <h3 id="skipgram-model">SkipGram Model</h3>
 <p>现在开始介绍word2vec的第二种形式: SkipGram(根据单词预测上下文)，这个模型与One-Word Model不同的地方在于，SG的输出有多个词，而非One-Word 中输出只有一个词，这样输出层就不是一个多项分布了，而是<span class="math inline">\(C\)</span>个多项分布了，模型图示如下:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/blog/w2v/sg-1.png">
+<img src="http://cdn.htliu.cn/blog/w2v/sg-1.png">
 
 </div>
 <p>因此从输入层到隐层部分与One-Word Model 相同，隐层神经元的计算方式如下:</p>
@@ -1450,7 +1450,7 @@
 <h3 id="hierarchical-softmax">Hierarchical SoftMax</h3>
 <p>首先Hierarchical SoftMax(HS)并不是word2vec提出来的, 而是之前Bengio在2005年最早提出来专门为了加速计算神经语言模型中的softmax的一种方式, 这里介绍如何在word2vec中使用. HS主要基于哈夫曼树(一种二叉数)将计算量大的部分变为了一种二分类的问题. 先看下面的图, 原来的模型在隐层之后通过<span class="math inline">\(W^{&#39;}\)</span>连接输出层, 现在HS则去掉了<span class="math inline">\(W^{&#39;}\)</span>, 隐层<span class="math inline">\(\mathbf{h}\)</span>直接与下面的二叉树的root节点相连:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/blog/w2v/hs-1.png">
+<img src="http://cdn.htliu.cn/blog/w2v/hs-1.png">
 
 </div>
 <p>其中图中白色的叶子节点表示词汇表中所有的<span class="math inline">\(|V|\)</span>个词, 黑色节点表示非叶子节点, 每一个叶子节点也就是每一个单词, 都对应唯一的一条从root节点出发的路径. 而我们的目的是使的<span class="math inline">\(w=w_O\)</span>这条路径的概率最大，即: <span class="math inline">\(P(w=w_O | w_I)\)</span> 最大, 此时每一个分支都代表一个选择, 向左转还是向右转. 所以如何判断向左还是向右呢? 我们用<span class="math inline">\(n(w,j)\)</span>表示从root到叶子节点<span class="math inline">\(w\)</span>的路径上的第<span class="math inline">\(j\)</span>个非叶子节点, 并且每个非叶子节点都对应一个向量<span class="math inline">\(v^{&#39;}_{n(w, j)}\)</span>, 维度与<span class="math inline">\(\mathbf{h}\)</span>相同, 然后使用一个sigmod函数: <span class="math inline">\(\sigma(x)= \frac{1}{1+\exp(-x)} \in [0, 1]\)</span>, 结合向量的内积, 来判断该向左还是向右, 如下, 第n个节点向左 以及向右的概率定义:</p>
@@ -1525,7 +1525,7 @@
     <link href="http://shomy.top/2017/05/09/alias-method-sampling/"/>
     <id>http://shomy.top/2017/05/09/alias-method-sampling/</id>
     <published>2017-05-08T16:04:32.000Z</published>
-    <updated>2017-07-31T02:42:34.562Z</updated>
+    <updated>2018-09-29T03:52:04.736Z</updated>
     
     <content type="html"><![CDATA[<blockquote>
 <p>在图的随机游走中，有一块需要随机取样， 比如当前到达v节点，那么下一次随机会到达哪个节点。这种问题其实就是离散分布的随机变量的取样问题。 查了一些资料， 发现<a href="https://en.wikipedia.org/wiki/Alias_method" target="_blank" rel="external">Alias Method</a> 是一种很高效的方式。<a id="more"></a>在初始好之后，每次取样的复杂度为<span class="math inline">\(O(1)\)</span>。 下面介绍下这种方法的使用，具体原理暂时没有深究，有兴趣转<a href="http://www.keithschwarz.com/darts-dice-coins/" target="_blank" rel="external">Darts,Dice, and coids</a>。</p>
@@ -1536,13 +1536,13 @@
 <p>论文中经常使用的是另一种很巧妙的方法: Alias Method，它在初始化之后每次随机取样的复杂度为<span class="math inline">\(O(1)\)</span>。 下面以<a href="http://www.keithschwarz.com/darts-dice-coins/" target="_blank" rel="external">Darts,Dice, and coids</a>文中例子用图示说明整个步骤，原理太繁杂，不做介绍，参考博客即可:</p>
 <p>假设概率分布为: <span class="math inline">\(\frac{1}{2}, \frac{1}{3}, \frac{1}{12}. \frac{1}{12}\)</span>。</p>
 <ol style="list-style-type: decimal">
-<li><p>初始概率分布: 类别数目<span class="math inline">\(K=4\)</span>，以颜色表示不同的类别<img src="http://7xotye.com1.z0.glb.clouddn.com/alias-method-1.png"></p></li>
-<li><p>每个类别概率乘以K=4,使得总和为4. 这样分为两类，大于1:第一列与第二列; 小于1: 第三列与第四列。<img src="http://7xotye.com1.z0.glb.clouddn.com/alias-method-2.png"></p></li>
+<li><p>初始概率分布: 类别数目<span class="math inline">\(K=4\)</span>，以颜色表示不同的类别<img src="http://cdn.htliu.cn/alias-method-1.png"></p></li>
+<li><p>每个类别概率乘以K=4,使得总和为4. 这样分为两类，大于1:第一列与第二列; 小于1: 第三列与第四列。<img src="http://cdn.htliu.cn/alias-method-2.png"></p></li>
 <li>下面通过拼凑，使得每一列的和都为1，但是每一列中，最多只能是两种类型的拼凑，就是<strong>每一列最多两种颜色存在</strong>。
 <ul>
-<li>将第一列拿出<span class="math inline">\(\frac{2}{3}\)</span>给最后一列，使其变为1，如下:(棕色表示空缺)<img src="http://7xotye.com1.z0.glb.clouddn.com/alias-method-3.png"></li>
-<li>将第一列拿出<span class="math inline">\(\frac{2}{3}\)</span>给第三列，使之变为1，如下:<img src="http://7xotye.com1.z0.glb.clouddn.com/alias-method-4.png"></li>
-<li>最后一次,第二列给第一列<span class="math inline">\(\frac{1}{3}\)</span>, 最后每一列都是1，且每一列最多两种类型，其中下面一层表示原类的概率，上面层表示另外一种类型的概率，如只有一种比如第二列，那么第二层就是NULL:<img src="http://7xotye.com1.z0.glb.clouddn.com/alias-method-5.png"></li>
+<li>将第一列拿出<span class="math inline">\(\frac{2}{3}\)</span>给最后一列，使其变为1，如下:(棕色表示空缺)<img src="http://cdn.htliu.cn/alias-method-3.png"></li>
+<li>将第一列拿出<span class="math inline">\(\frac{2}{3}\)</span>给第三列，使之变为1，如下:<img src="http://cdn.htliu.cn/alias-method-4.png"></li>
+<li>最后一次,第二列给第一列<span class="math inline">\(\frac{1}{3}\)</span>, 最后每一列都是1，且每一列最多两种类型，其中下面一层表示原类的概率，上面层表示另外一种类型的概率，如只有一种比如第二列，那么第二层就是NULL:<img src="http://cdn.htliu.cn/alias-method-5.png"></li>
 </ul></li>
 <li><p>写出两个数组:</p></li>
 </ol>
@@ -1550,7 +1550,7 @@
 <li><strong>Probability table</strong> <span class="math inline">\(Prob\)</span>: 落在原类型的概率，每一列第一层的概率，即:<span class="math inline">\([\frac{2}{3}, 1, \frac{1}{3}, \frac{1}{3}]\)</span></li>
 <li><strong>Alias table</strong> <span class="math inline">\(Alias\)</span> : 每一列第二层的类型(颜色)，这里用下标表示: <span class="math inline">\([2, null, 1, ,1]\)</span></li>
 </ul>
-<p>用图表示如下:<img src="http://7xotye.com1.z0.glb.clouddn.com/alias-method-6.png"></p>
+<p>用图表示如下:<img src="http://cdn.htliu.cn/alias-method-6.png"></p>
 <p>到此为止，得到<span class="math inline">\(Prob, Alias\)</span> 表示初始化完成。</p>
 <ol start="5" style="list-style-type: decimal">
 <li>采样过程: 随机取某一列k(即[1,4]的随机整数)，再随机产生一个[0-1]的小数c，如果<span class="math inline">\(Prob[k]\)</span> 大于 c，那么采样结果就是k，反之则为<span class="math inline">\(Alias[k]\)</span>。</li>
@@ -1583,37 +1583,37 @@
     <link href="http://shomy.top/2017/03/16/adaptive-boosting/"/>
     <id>http://shomy.top/2017/03/16/adaptive-boosting/</id>
     <published>2017-03-16T12:55:55.000Z</published>
-    <updated>2017-07-31T02:42:34.562Z</updated>
+    <updated>2018-09-29T03:52:04.736Z</updated>
     
     <content type="html"><![CDATA[<p>继上一节的Aggregation和Bagging，这一节对那一堆的g函数的产生做更深的探究，对训练数据引入权重的机制(Weight-Based)，加大错误数据的权重，缩小正确数据的权重，从而得到更加 Powerful的算法-AdaBoost</p>
 <a id="more"></a>
 <h2 id="从bagging引入权重">从Bagging引入权重</h2>
 <p>回想上节的Bagging，通过Bootstrap来生成多份的数据<span class="math inline">\(D_t\)</span>，这里面可能会有重复，例如:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/adaboost-1.png">
+<img src="http://cdn.htliu.cn/adaboost-1.png">
 
 </div>
 <p>以分类为例，计算0/1误差: <span class="math inline">\(E_{in}={1\over4}\sum||y \neq h(x)||\)</span>。现在引入新的变量: <span class="math inline">\(u_n\)</span>表示<span class="math inline">\(\mathcal D\)</span>中的第n个数据在采样得到的<span class="math inline">\(\tilde{\mathcal D_t}\)</span>中的个数，对于上面的例子，则有：<span class="math inline">\(u_1=2, u_2=1, u_3=0,u_4=1\)</span>, 那么误差可以换一种方式写:<span class="math inline">\(E_{in}={1\over4}\sum u_n||y \neq h(x)||\)</span>。这样就把<span class="math inline">\(u_n\)</span>引入了错误函数中，可以表示某个数据的权重，这种思想在数据挖掘中很常见，在分类的时候，对于分错的数据，我们需要特别关注，因此把错误数据的重要性放大，或者说人为多复制几份错误数据放进去，这样再迭代的时候，错误数据就会变少了。</p>
 <p>我们可以将权重引入一些之前的模型中，比如SVM：</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/adaboost-2.png">
+<img src="http://cdn.htliu.cn/adaboost-2.png">
 
 </div>
 <p>未加权重之前，每个错误的惩罚系数为<span class="math inline">\(C\)</span>，现在加了权重可以理解为错误惩罚变为了<span class="math inline">\(Cu_n\)</span>, 同时也体现在<span class="math inline">\(\alpha_n\)</span>的上限中。 在比如Logistic Regression中，同样可以引入权重:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/adaboost-3.png">
+<img src="http://cdn.htliu.cn/adaboost-3.png">
 
 </div>
 <p>这里可以理解为，在使用随机梯度下降优化的时候，同bagging，<span class="math inline">\(u_n\)</span>代表取出的数据的份数。</p>
 <h2 id="更新权重">更新权重</h2>
 <p>再次回到模型融合，在前一章的aggregation中，我们提到了如果<span class="math inline">\(g_1, g_2,...,g_T\)</span>中效果差距越明显，那么通过融合可以取得更好的结果，现在考察怎么样才可以让<span class="math inline">\(g\)</span>与<span class="math inline">\(g\)</span>之间区分度更明显，考虑<span class="math inline">\(g_t\)</span>与<span class="math inline">\(g_{t+1}\)</span>:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/adaboost-4.png">
+<img src="http://cdn.htliu.cn/adaboost-4.png">
 
 </div>
 <p><span class="math inline">\(g_t\)</span>的是通过权重系数为<span class="math inline">\(u^{(t)}\)</span>中在假设空间中误差最下的h来得到的，<span class="math inline">\(g_{t+1}\)</span>则是<span class="math inline">\(u^{(t+1)}\)</span>, 如果<span class="math inline">\(g_t\)</span>在权重为<span class="math inline">\(u^{(t+1)}\)</span>的条件下，<strong>表现不好</strong>的话，那么在<span class="math inline">\(t+1\)</span>的时候，我们就不会选择出<span class="math inline">\(g_t\)</span>或者与<span class="math inline">\(g_t\)</span>很近似的h了，而是在<span class="math inline">\(u^{(t+1)}\)</span>的条件下误差最小的<span class="math inline">\(g_{t+1}\)</span>，这样就会使得<span class="math inline">\(g_t\)</span>与<span class="math inline">\(g_{t+1}\)</span>更加diverse。 那么如何来衡量表现不好呢？ 很简单的思路，在二分类问题中，表现不好那就是跟随机瞎猜一样，正确率50%，写成表达式便是:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/adaboost-5.png">
+<img src="http://cdn.htliu.cn/adaboost-5.png">
 
 </div>
 <p>再剖析这个式子，因为可以将<span class="math inline">\(u_n\)</span>理解为数据有多少份。在<span class="math inline">\(g_t\)</span>中，即分子就是分类错误的数据个数，分母就是所有数据的个数了。因此我们需要的是，在<span class="math inline">\(u^{(t+1)}\)</span>的条件下，<strong>正确的份数==错误的份数</strong>，那<span class="math inline">\(u^{(t+1)}\)</span>应该与<span class="math inline">\(u^{(t)}\)</span>有什么关系呢？ 举个例子，假设在<span class="math inline">\(u^{(t)}\)</span>下, 分类错误1126份，正确6211份，那么在<span class="math inline">\(u^{(t+1)}\)</span>下，二者应该相等，那应该怎么办呢？看下面的几步:</p>
@@ -1645,14 +1645,14 @@
 <p><span class="math display">\[u^{(1)} = [ {1\over N}, {1 \over N},..., {1 \over N}]\]</span></p>
 <p>这样AdaBoost算法就完整了，总结一下流程如下:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/adaboost-6.png">
+<img src="http://cdn.htliu.cn/adaboost-6.png">
 
 </div>
 <p>这个算法也叫<strong>Linear Aggregation On the Fly</strong>，当然也是属于Adaptive Boosting，叫boosting的原因是因为我们只需要开始有一个很弱的演算法<span class="math inline">\(\mathcal A\)</span>，然后通过一点点增加错误数据的权重，降低正确数据的权重，最后得到一个效果很好的分类器，因此一般也用三个臭皮匠赛过诸葛亮来形容Adaboosting。</p>
 <h2 id="vc-维保证">VC 维保证</h2>
 <p>这里简单介绍AdaBoost算法的理论保证。有数学证明可以得到Adaboost的VC Bound：</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/adaboost-7.png">
+<img src="http://cdn.htliu.cn/adaboost-7.png">
 
 </div>
 <p>因为算法一共需要T个g，因此在第二项模型复杂度中多了<span class="math inline">\(TlogT\)</span>这一项，其余不变。有实验证明如果每次的<span class="math inline">\(\epsilon_t &lt; 0.5\)</span>的话，也就是说不是乱猜的话， 只需要经过<span class="math inline">\(T= O(logN)\)</span>次迭代就可以收敛到<span class="math inline">\(E_{in} = 0\)</span>。</p>
@@ -1680,7 +1680,7 @@
     <link href="http://shomy.top/2017/03/15/blending-bagging/"/>
     <id>http://shomy.top/2017/03/15/blending-bagging/</id>
     <published>2017-03-15T04:56:38.000Z</published>
-    <updated>2017-07-31T02:42:34.562Z</updated>
+    <updated>2018-09-29T03:52:04.736Z</updated>
     
     <content type="html"><![CDATA[<p>前面的课程着重介绍某单一模型，比如逻辑回归，SVM等，从这一节开始以及接下来的3,4节的课程都是在介绍多个模型之间的融合得到一个新的模型的问题。</p>
 <h2 id="为什么要进行模型融合">为什么要进行模型融合</h2>
@@ -1695,7 +1695,7 @@
 <p>除了上面的四种融合之外，还有很多其它的没有列举出来。其中第一种就是前面基石课程中的模型选择的做法，此外这里的<span class="math inline">\(g_{t}^{-}(\mathbf x)\)</span>是指在减去了验证数据集之后的数据作为训练数据得到的模型。</p>
 <p>换句话说，有几个很weak的假设空间，通过融合等手段，得到一个更加powerful的假设空间，从而得到效果更好的模型，如下:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/blending-1.png">
+<img src="http://cdn.htliu.cn/blending-1.png">
 
 </div>
 <p>比如我们有一些只能划分水平与竖直方向的分界线的假设空间，如上图中的灰色的线，分类效果肯定很差，但是如果将这些弱的分类器组合起来，就可以得到一个不错的边界，如上图的黑色的线。因此看起来如果对多个模型进行一个合适的融合(aggregaton)，或许就可以得到效果更好的模型。</p>
@@ -1708,7 +1708,7 @@
 <p>预期<span class="math inline">\(g_1,g_2,\cdots,g_T\)</span>的效果应该参差不齐，比如一些<span class="math inline">\(g(\mathbf x)&lt;f(\mathbf x)\)</span>，还有一些<span class="math inline">\(g(\mathbf x) &gt; f(\mathbf x)\)</span>，这里的<span class="math inline">\(f(\mathbf x)\)</span>是理想的未知的函数，这样通过融合平均下来得到的结果会更加准确。反过来，如果每个<span class="math inline">\(g\)</span>的结果都差不多，那就没有必要做融合了。下面来分析融合前后的误差比较。</p>
 <p>比较<span class="math inline">\(g_t\)</span>与<span class="math inline">\(f\)</span>的均方误差与融合之后的<span class="math inline">\(G\)</span>与<span class="math inline">\(f\)</span>的均方误差：</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/blending-2.png">
+<img src="http://cdn.htliu.cn/blending-2.png">
 
 </div>
 <p>关于上述式子的展开有几个细节需要注意:</p>
@@ -1721,12 +1721,12 @@
 <p>可以看出<span class="math inline">\(g_t\)</span>的平均误差比融合之后的<span class="math inline">\(G\)</span>要大，也就是说融合模型效果应该会更好。</p>
 <p>基于上述的证明，现在考虑一个假想的极限情况，假设我们每次从数据分布中拿出N个数据<span class="math inline">\(\mathcal{D}_t\)</span>，然后通过演算法<span class="math inline">\(\mathcal {A(D_t)}\)</span>得到<span class="math inline">\(g_t\)</span>,(因为每次的数据<span class="math inline">\(D_t\)</span>都不一样，因此每个<span class="math inline">\(g\)</span>的差别也就会变大，这也正是我们所期望的，得到不同给的模型)。如果数量T趋向于无穷大，我们就可以得到一个理想的<span class="math inline">\(\overline{g}\)</span>，它可以被认为在所有的数据得到的模型，可以体现出演算法<span class="math inline">\(\mathcal A\)</span>的在所有的<span class="math inline">\(\mathcal D\)</span>中的表现了</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/blending-3.png">
+<img src="http://cdn.htliu.cn/blending-3.png">
 
 </div>
 <p>应用上面的结论，有:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/blending-4.png">
+<img src="http://cdn.htliu.cn/blending-4.png">
 
 </div>
 <p>其中<span class="math inline">\(\overline{g}\)</span>可以代表一堆<span class="math inline">\(g_t\)</span>的达成的共识(consensus)。式子的第一部分称为我们的演算法<span class="math inline">\(\mathcal A\)</span>的在不同的数据集上<span class="math inline">\(D_1,...D_T\)</span>的平均表现，右边式子<span class="math inline">\(E_{out}(\overline g)\)</span>的第二部分就是共识的误差，一般称为 <strong>bias</strong>，描述的是共识与理想函数f的差距；第一部分<span class="math inline">\(avg\)</span>则描述的是一种方差，<span class="math inline">\(g_t\)</span>与<span class="math inline">\(\overline g\)</span>的平均差别，一般叫做<strong>variance</strong>， 因此衡量一个演算法的表现，就是bias+varience。 那么我们的Uniform Blending其实就是减少varience的过程。</p>
@@ -1734,17 +1734,17 @@
 <h2 id="linear-blending线性融合">Linear Blending(线性融合)</h2>
 <p>上面的均匀融合每个g的作用相同，最后的模型可能会变得中庸一些，稍加改变，如果每个g都一个不同的投票权重，效果应该就会更好，这就是线性融合(Linear Blending):</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/blending-5.png">
+<img src="http://cdn.htliu.cn/blending-5.png">
 
 </div>
 <p>假设我们已经得到了T个<span class="math inline">\(g_t\)</span>，那么应该如何确定<span class="math inline">\(\alpha_t\)</span>呢，思路就是<span class="math inline">\(\min E_{in}\)</span>，这个式子之前其实遇到过，回想在Linear Regression+Transformation的情况，使用均方误差:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/blending-6.png">
+<img src="http://cdn.htliu.cn/blending-6.png">
 
 </div>
 <p>再看看Linear Blending的做回归时候的目标函数:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/blending-7.png">
+<img src="http://cdn.htliu.cn/blending-7.png">
 
 </div>
 <p>二者其实是很类似的，我们也可以将<span class="math inline">\(g_t(\mathbf x)\)</span>作为一种feature transform，这样我们将原始数据转换为: <span class="math inline">\((\mathbf z_n, y_n), \mathbf z_n=(g_1(\mathbf x_n),...,\mathbf g_T(\mathbf x_n))\)</span>，从这个角度来看与Linear Regression就完全一样了，这时候就可以直接用线性回归的方式来求解<span class="math inline">\(\alpha\)</span></p>
@@ -1794,7 +1794,7 @@
     <link href="http://shomy.top/2017/03/11/tensorflow-basic-api/"/>
     <id>http://shomy.top/2017/03/11/tensorflow-basic-api/</id>
     <published>2017-03-11T11:53:09.000Z</published>
-    <updated>2017-08-17T13:19:36.158Z</updated>
+    <updated>2018-09-29T03:52:04.764Z</updated>
     
     <content type="html"><![CDATA[<p>越来越感觉学习python一个第三方库就跟学一门新语言差不多，庞大的TensorFlow更是如此。这篇博客会持续记录关于tensorflow的一些api的用法。</p>
 <a id="more"></a>
@@ -1862,7 +1862,7 @@
     <link href="http://shomy.top/2017/03/09/support-vector-regression/"/>
     <id>http://shomy.top/2017/03/09/support-vector-regression/</id>
     <published>2017-03-09T04:08:28.000Z</published>
-    <updated>2017-07-31T02:42:34.562Z</updated>
+    <updated>2018-09-29T03:52:04.764Z</updated>
     
     <content type="html"><![CDATA[<p>这一节是核模型的最后一部分了，将Kernel引入到一般的回归模型中: 核岭回归(Kernel Ridge Regression)以及支持向量回归(Support Vector Regression)，此外文末对这一占了整个课程40%的大块内容做了简单总结。</p>
 <a id="more"></a>
@@ -1881,7 +1881,7 @@
 <p><span class="math display">\[g(\mathbf x) = \sum\limits_{n=1}^{N}\beta_nK(\mathbf x_n, \mathbf x)\]</span></p>
 <p>通过引入核，可以解决非线性的回归预测问题了。下面对比带核与否的Ridge Regression的一些区别:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/svr-1.png">
+<img src="http://cdn.htliu.cn/svr-1.png">
 
 </div>
 <p>两种模型的优缺点与适用场合也就很明显了，只要数据量没有远大于数据维度的话，就可以用kernel ridge regression, 不过还是有一个原则: Linear First。</p>
@@ -1891,7 +1891,7 @@
 <p><span class="math display">\[err(y,s)=\max(0, |s-y|-\epsilon), \quad s=\mathbf w^Tz_n +b, \ \epsilon &gt; 0\]</span></p>
 <p>也就是说，同Soft-Margin SVM分类问题容许偏差的存在，如果预测值与实际值的差距小于<span class="math inline">\(\epsilon\)</span>的时候，就认为err=0，tube可以理解为预测误差在允许范围内，如下图对比tube error与 square error：</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/svr-2.png">
+<img src="http://cdn.htliu.cn/svr-2.png">
 
 </div>
 <p>仿照SVM，加上<span class="math inline">\(L_2\)</span>正则项的Tube Regression的目标函数定义为:</p>
@@ -1914,7 +1914,7 @@
 <p><span class="math display">\[\begin{align}\min\limits_{\mathbf w}  \mathcal{L}(b, \mathbf w, \xi_{\vee}, \xi^{\wedge}) &amp;\Leftrightarrow \min \quad {1\over 2}\mathbf w^T\mathbf w + \sum(\alpha_n^{\vee}-\alpha_n^{\wedge})\mathbf w^T\mathbf z_n +\sum(\alpha_n^{\wedge}(y_n-\epsilon) + \alpha_n^{\vee}(-\epsilon-y_n) ) \\ &amp;\Leftrightarrow \min \quad  {1\over 2}\mathbf w^T\mathbf w -\mathbf w^T\mathbf w +\sum(\alpha_n^{\wedge}(y_n-\epsilon) + \alpha_n^{\vee}(-\epsilon-y_n) ) \\ &amp;\Leftrightarrow -{1 \over 2}\sum\limits_{n=1}^N\sum\limits_{m=1}^N(\alpha_n^{\wedge}- \alpha_n^{\vee}) (\alpha_m^{\wedge}- \alpha_m^{\vee})K(\mathbf x_n, \mathbf x_m)\\ &amp; \quad \quad  +\sum(\alpha_n^{\wedge}(y_n-\epsilon) + \alpha_n^{\vee}(-\epsilon-y_n) ) \end{align}\]</span></p>
 <p>上面的过程我们已经引入了核函数代替<span class="math inline">\(\mathbf {z_nz_m}\)</span>，至此最小化过程完成，开始考虑最外面<span class="math inline">\(\max\)</span>部分，取相反数，结合约束来求最小值，最后的问题如下:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/svr-3.png">
+<img src="http://cdn.htliu.cn/svr-3.png">
 
 </div>
 <p>上式就是一个标准的二次规划问题，一共有<span class="math inline">\(2N\)</span>个变量，按照格式写出QP Solver的Q,p,A,c，即可得到最优解<span class="math inline">\(\alpha_n^{\vee}, \alpha_n^{\wedge}\)</span>。</p>
@@ -1929,7 +1929,7 @@
 <h2 id="核模型kernel-model总结">核模型(Kernel Model)总结</h2>
 <p>到此为止，线性模型/核模型这一大块的内容基本完结了，占了技法课程的40%。回顾一下，整理一下，有如下约10个模型或者算法那:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/svr-4.png">
+<img src="http://cdn.htliu.cn/svr-4.png">
 
 </div>
 <p>在实际中我们一般使用较少的有 PLA, Linear SVR,因为效果不好，限制很大。而至于Kernel Ridge Regression(核岭回归), Kernel Logistic Regression(核逻辑回归)也使用较少，因为其权重矩阵是稠密的(dense)，计算量较大。相比核岭回归，在实际中更加倾向使用SVR; 相比核逻辑回归，更倾向于使用概率SVM。常用的一般有SVM, SVR, 线性岭回归，L2正则化的逻辑回归等。</p>
@@ -1955,7 +1955,7 @@
     <link href="http://shomy.top/2017/03/07/kernel-lr/"/>
     <id>http://shomy.top/2017/03/07/kernel-lr/</id>
     <published>2017-03-07T14:29:33.000Z</published>
-    <updated>2017-07-31T02:42:34.562Z</updated>
+    <updated>2018-09-29T03:52:04.756Z</updated>
     
     <content type="html"><![CDATA[<h1 id="kernel-logistic-regression">Kernel Logistic Regression</h1>
 <blockquote>
@@ -1971,7 +1971,7 @@
 <p><span class="math display">\[\min\limits_{b,\mathbf w}\left({\lambda\over N}\mathbf w^T\mathbf w + {1\over N}\sum\mbox{err}\right)\]</span></p>
 <p>在<span class="math inline">\(L_2\)</span>中，通过最小化<span class="math inline">\(E_{in}\)</span>的同时控制<span class="math inline">\(\mathbf{w}\)</span>的大小，防止模型过度复杂。从正则化的角度来看的话，Soft-Margin 的SVM其实就属于一种正则化模型，如下的对比:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/klr-1.png">
+<img src="http://cdn.htliu.cn/klr-1.png">
 
 </div>
 <p>其中SVM中的<span class="math inline">\(C\)</span>与<span class="math inline">\(L_2\)</span>中的<span class="math inline">\(\lambda\)</span>对应，<span class="math inline">\(C\)</span>越大，表示注重<span class="math inline">\(E_{in}\)</span>，那么<span class="math inline">\(\lambda\)</span>就越小，正则化的效果相对就弱。</p>
@@ -1981,7 +1981,7 @@
 <p><span class="math display">\[\begin{align} PLA: \quad &amp; err_{0/1}(s, y) = [[ys \leq 0]] \\ LR: \quad &amp; err_{SCE}(s,y) = \log_{2}(1+\exp(-ys)) \\ SVM: \quad &amp; \widehat{err}_{SVM}(y,s) = \max(1-ys,0)\end{align}\]</span></p>
 <p>然后把三者的图像绘出来，如下:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/klr-2.png">
+<img src="http://cdn.htliu.cn/klr-2.png">
 
 </div>
 <p>我们可以看出来SVM与LR的误差函数很类似，都表示0/1误差的上限，我们知道误差函数对于一个模型来说是至关重要的，那么从这个角度看的话，再结合第一部分Soft-Margin SVM与<span class="math inline">\(L_2\)</span>的正则项的形式很相似，那我们可以在一定程度上认为:Soft margin SVM $ L_2 $ Regulared LR。 不过二者各有优点，比如SVM可以通过Kernel Trick 分类非线性的数据，而LR通过最大似然的方式则可以得到属于某类的概率值。</p>
@@ -1995,7 +1995,7 @@
 <p>首先使用Kernel SVM得到<span class="math inline">\((\mathbf w_{SVM}, b_{SVM})\)</span>, 对数据做变换，如果令<span class="math inline">\(z_n=\mathbf w^T_{SVM}\phi(\mathbf x)+b_{SVM}\)</span>, 那么后面就是一个很简单的LR模型:<span class="math inline">\(g(x)=\theta(A\cdot z_n + B)\)</span>这样来看，第一个阶段其实就属于一种基于SVM的特征转换，或者说某种映射，将数据映射到了<span class="math inline">\(z\)</span>-space,，得到新的数据:<span class="math inline">\(\{ z_n, y_n\}\)</span>。然后在新数据上跑一个LR模型，得到最终的结果，这里需要注意的是，得到的<span class="math inline">\(z_n\)</span>是一个一维的实数，这样大大减少了LR的计算复杂度。LR的两个参数<span class="math inline">\(A,B\)</span>的作用则是fine-tune(微调)，平移或者放缩。一般情况下，如果SVM的效果好的话，<span class="math inline">\(A&gt;0, B \approx 0\)</span>。</p>
 <p>这样一来，新的模型就可以结合了SVM与LR二者的优势，这种模型最早是由Platt提出的，因此也叫作<strong>Platt’s Model of Probabilisitc SVM</strong>(概率模型)，具体步骤总结如下:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/klr-3.png">
+<img src="http://cdn.htliu.cn/klr-3.png">
 
 </div>
 <p>如果把Kernel体现到模型的话，直接展开即可，最后的模型就是:</p>
@@ -2026,7 +2026,7 @@
 <p><span class="math display">\[\min_{\mathbf w} \quad {\lambda\over N}\mathbf w^T\mathbf w+{1\over N}\sum_{n=1}^N\log\left(1+\exp\left(-y_n\mathbf w^T\mathbf z_n\right)\right)\]</span></p>
 <p>很显然，LR的最优解: <span class="math inline">\(\mathbf w_{*} = \sum \beta_n\mathbf z_n = \beta^T\mathbf Z\)</span>，既然这样，那么我们就直接不再求<span class="math inline">\(\mathbf w\)</span>,直接求解<span class="math inline">\(\beta\)</span>，然后加入Kernel Function，这样目标函数如下:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/klr-4.png">
+<img src="http://cdn.htliu.cn/klr-4.png">
 
 </div>
 <p>这是一个无约束的优化问题，可以使用梯度下降等方式来来得到最优解。</p>
@@ -2062,7 +2062,7 @@
     <link href="http://shomy.top/2017/02/26/rbf-network/"/>
     <id>http://shomy.top/2017/02/26/rbf-network/</id>
     <published>2017-02-26T14:18:37.000Z</published>
-    <updated>2017-07-31T02:42:34.562Z</updated>
+    <updated>2018-09-29T03:52:04.760Z</updated>
     
     <content type="html"><![CDATA[<blockquote>
 <p>2017.3.3更新: TensorFlow版本KMeans与RBFNet</p>
@@ -2082,7 +2082,7 @@
 <p>当年径向基函数的诞生主要是为了解决多变量插值的问题。可以看下面的图。具体的话是先在每个样本上面放一个基函数，图中每个蓝色的点是一个样本，然后中间那个图中绿色虚线对应的，就表示的是每个训练样本对应一个高斯函数（高斯函数中心就是样本点）。然后假设真实的拟合这些训练数据的曲线是蓝色的那根（最右边的图），如果我们有一个新的数据x1，我们想知道它对应的f(x1)是多少，也就是a点的纵坐标是多少。那么由图可以看到，a点的纵坐标等于b点的纵坐标加上c点的纵坐标。而b的纵坐标是第一个样本点的高斯函数的值乘以一个大点权值得到的，c的纵坐标是第二个样本点的高斯函数的值乘以另一个小点的权值得到。而其他样本点的权值全是0，因为我们要插值的点x1在第一和第二个样本点之间，远离其他的样本点，那么插值影响最大的就是离得近的点，离的远的就没什么贡献了。所以x1点的函数值由附近的b和c两个点就可以确定了。拓展到任意的新的x，这些红色的高斯函数乘以一个权值后再在对应的x地方加起来，就可以完美的拟合真实的函数曲线了。</p>
 </blockquote>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/rbf-1.png">
+<img src="http://cdn.htliu.cn/rbf-1.png">
 
 </div>
 <p>一句话总结就是，RBF(径向基函数)根据某种距离来描述点与某个center点的的相似度。</p>
@@ -2092,7 +2092,7 @@
 <p>其中<span class="math inline">\(\mu_m​\)</span>是第<span class="math inline">\(m​\)</span>个center，就是上图中的红色图像的峰值对应的<span class="math inline">\(x​\)</span>, <span class="math inline">\(\beta_m​\)</span>则是对应的权重，最外层的<span class="math inline">\(Output()​\)</span> 则是根据目的选择不同的函数，比如想分类的话，那就可以使用一个softmax或者sign等函数，如果打算做回归，或者做函数逼近，这时候就可以不需要用Output函数了，RBF Network可以逼近任意连续的函数。</p>
 <p>RBF Network与普通神经网络有什么联系区别呢？如下:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/rbf-2.png">
+<img src="http://cdn.htliu.cn/rbf-2.png">
 
 </div>
 <p>首先网络结构很类似，都是输入层, 隐藏层，输出层构成，此外最后一层的输出层基本类似类似，均是对隐层的输出线性组合(权重控制)然后得到求和的结果。</p>
@@ -2132,7 +2132,7 @@
 <p>​ <span class="math display">\[\mathbf{x}_1,\mathbf{x}_2 \in S_m \Leftrightarrow \mu_m \approx \mathbf{x_1} \approx \mathbf{x_2}\]</span></p>
 <p>也就是在同一簇中的点，都应该是最相似的。这样我们的问题成为找到这样的簇，以及簇的中心，一个很典型的聚类(Cluster)问题，同时也是无监督的，利用相似度，很容易写出损失函数:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/rbf-3.png">
+<img src="http://cdn.htliu.cn/rbf-3.png">
 
 </div>
 <p>其中 <span class="math inline">\(S_1,\cdots,S_m\)</span>是训练数据集合<span class="math inline">\(\{\mathbf{x}_n \}\)</span>的的一个划分。</p>
@@ -2146,7 +2146,7 @@
 <p>也就是说, <span class="math inline">\(S_m\)</span>的中心等于簇内所有点的平均值。</p>
 <p>交替更新完一轮<span class="math inline">\(S,\mu\)</span>之后，重复这个过程直到收敛，整个聚类的算法就是著名的<strong>K-Means</strong>，下面给出基本流程:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/rbf-4.png">
+<img src="http://cdn.htliu.cn/rbf-4.png">
 
 </div>
 <p>注:</p>
@@ -2159,7 +2159,7 @@
 <h2 id="rbf-net-with-k-means">RBF Net With K-Means</h2>
 <p>有了K-Means来聚类，那我们就可以用确定RBFNet的中心了，下面重新给出使用K-Means的RBF Net用来做预测回归的流程:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/rbf-5.png">
+<img src="http://cdn.htliu.cn/rbf-5.png">
 
 </div>
 <p>这个过程与上面唯一不同的地方就是，开始先使用K-Means得到了中心，然后再计算特征转换的<span class="math inline">\(Z\)</span>矩阵，其余步骤完全相同。</p>
@@ -2249,27 +2249,27 @@
     <link href="http://shomy.top/2017/02/20/svm04-soft-margin/"/>
     <id>http://shomy.top/2017/02/20/svm04-soft-margin/</id>
     <published>2017-02-20T08:30:32.000Z</published>
-    <updated>2017-07-31T02:42:34.566Z</updated>
+    <updated>2018-09-29T03:52:04.764Z</updated>
     
     <content type="html"><![CDATA[<p>上节介绍的Kernel SVM的结尾，提到了overfit的问题，那是因为SVM要找到的分类面是必须把所有的训练数据分开，即使有一些噪音数据，或者说是错误标注的数据，也要“坚持”分开，这可能就会形成很复杂的边界，很容易形成overfit，如下:</p>
 <a id="more"></a>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/svm04-1.png">
+<img src="http://cdn.htliu.cn/svm04-1.png">
 
 </div>
 <p>我们希望的是左边的分类面，而非右边的，虽然右边的<span class="math inline">\(E_{in} = 0\)</span>，也就是说希望对于一些错误的数据忽略掉，前面介绍PLA的变种Pocket的用的就是这种方式:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/svm04-2.png">
+<img src="http://cdn.htliu.cn/svm04-2.png">
 
 </div>
 <p>Pocket找的是分类错误点尽可能少的分类面，不一定必须完全分开，容许错误的发生。而我们之前的SVM均是要求所有的数据都必须分类正确，如果我们将Pocket与SVM结合，即允许发生错误，如下:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/svm04-3.png">
+<img src="http://cdn.htliu.cn/svm04-3.png">
 
 </div>
 <p>上式约束条件中，对于分类正确的点，仍然需要满足<span class="math inline">\(\geq 1\)</span>的条件，对于当前分类错误的点不加任何限制。所以目标函数中除了原先的<code>margin</code>，还必须加入了分类错误的个数，对整体做最小化。系数<span class="math inline">\(C\)</span>的作用则是一种对<code>margin</code>和犯错个数的一个折中。<span class="math inline">\(C\)</span>越大表示犯错误越少越好，犯错误个数重要性大于<code>margin</code>，如果太大了， 就容易过拟合了，反之<span class="math inline">\(C\)</span>越小表示希望<code>magin</code> 越宽越好，也就是说<span class="math inline">\(\mathbf{w}\)</span>越小越好，就是说对错误的惩罚很小，这样就会导致分类效果变差。 用<span class="math inline">\(C\)</span>表示更重视<span class="math inline">\(margin\)</span>还是重视犯错误的多少, 如下图:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/svm04-8.png">
+<img src="http://cdn.htliu.cn/svm04-8.png">
 
 </div>
 <p>对于新的优化问题。然而由于存在bool的运算<span class="math inline">\(\neq\)</span>，也就是说该问题是离散的，无法用二次规划QP来求解。此外，还有一个缺点，那就是对所有的错误都是一视同仁的，无论是距离边界近还是远，只要分类错误，都计算在内，也就是说无法区分大错小错。</p>
@@ -2277,7 +2277,7 @@
 <p><span class="math display">\[\begin{align} \min\limits_{b,\mathbf{w},\xi} &amp; \quad \frac{1}{2}\mathbf{w}^T\mathbf{w}+C \cdot \sum\limits_{n=1}^N \xi_n \\ s.t. &amp; \quad y_n(\mathbf{w}^T{\mathbf{z}}_n+b) \geq 1 - \xi_n, for \ all \ n; \\ &amp; \quad \xi_n \geq 0, for \ all \ n\end{align}\]</span></p>
 <p>对于满足margin条件的点其<span class="math inline">\(\xi =0\)</span>, 不满足margin条件的其<span class="math inline">\(\xi &gt; 0\)</span>; 如下图:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/svm04-4.png">
+<img src="http://cdn.htliu.cn/svm04-4.png">
 
 </div>
 <p>图中有除了A,B两点之外的点均满足条件，<span class="math inline">\(\xi=0\)</span>; 而A点属于没有不满足margin条件的，B点属于分类错误，因此<span class="math inline">\(\xi_{A} &gt;0, \xi_B&gt;0\)</span>。</p>
@@ -2296,7 +2296,7 @@
 <p>当然还有一些中间条件: <span class="math inline">\(\mathbf{w} = \sum \alpha_ny_n\mathbf{z}_n, \beta_n=C-\alpha_n\)</span>；</p>
 <p>到这里我们的问题转为了有<span class="math inline">\(N\)</span>个变量，<span class="math inline">\(2N+1\)</span>个约束条件的二次规划问题，表示出<span class="math inline">\(Q,p,A,c\)</span>然后使用某个QP Solver即可得到最优的<span class="math inline">\(\alpha\)</span>:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/svm04-5.png">
+<img src="http://cdn.htliu.cn/svm04-5.png">
 
 </div>
 <ul>
@@ -2312,7 +2312,7 @@
 </ul>
 <p>到此为止，我们得到了对偶问题的最优的<span class="math inline">\(\alpha\)</span>, 再结合上节的Kernel Trick, 我们得到了 <strong>Kernel Soft-Margin SVM</strong>,基本流程如下:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/svm04-6.png">
+<img src="http://cdn.htliu.cn/svm04-6.png">
 
 </div>
 <p>这里有一点不一样的地方是对<span class="math inline">\(b\)</span>的求解，回想之前是利用转化为拉格朗日对偶问题(min(max) <span class="math inline">\(\Leftrightarrow\)</span> max(min))时候，利用互补条件(complementary slackness)，参考<a href="http://shomy.top/2017/02/17/svm-02-dual/#模型求解">Dual SVM</a>, 但是Soft-Margin有两个条件，即:</p>
@@ -2322,7 +2322,7 @@
 <p>到这里基本完成了<strong>Soft-Margin SVM</strong>的算法，集对偶，核，Soft-Margin于一身，可以解决非线性问题，松弛变量允许噪音数据等，在实际分类问题中，应用很广泛。 不过需要注意的是这种SVM也有可能overfit的，因此需要仔细调整参数<span class="math inline">\(C\)</span>，以及Kernel Function的参数，一般使用模型验证(Validation)手段比如交叉验证去选择最好的参数。</p>
 <p>最后再提一下Soft-Margin 中的<span class="math inline">\(\alpha\)</span>的物理意义，看下图:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/svm04-9.png">
+<img src="http://cdn.htliu.cn/svm04-9.png">
 
 </div>
 <p>根据两个互补条件，可以得到三类点点:</p>
@@ -2353,7 +2353,7 @@
     <link href="http://shomy.top/2017/02/19/svm03-kernel-trick/"/>
     <id>http://shomy.top/2017/02/19/svm03-kernel-trick/</id>
     <published>2017-02-19T05:28:36.000Z</published>
-    <updated>2017-07-31T02:42:34.566Z</updated>
+    <updated>2018-09-29T03:52:04.764Z</updated>
     
     <content type="html"><![CDATA[<p>接着上一节的Dual SVM，我们解决了非线性转换维度变高导致求解困难的问题，但是仍然有问题，那就是在求Q矩阵的时候，由于涉及到了高维的内积,计算量仍然很大，这一节引入核机制(Kernel Trick)来高效的求解这一过程，完全不再依赖高维空间。</p>
 <a id="more"></a>
@@ -2377,25 +2377,25 @@
 <p>这样也间接完成了我们的目的。这样利用Kernel Function，我们就避开了在高维空间的计算，甚至不需要知道用的什么映射，就直接在原始低维数据进行等价计算。</p>
 <p>总结一下核机制SVM的一般流程：</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/svm03-1.png">
+<img src="http://cdn.htliu.cn/svm03-1.png">
 
 </div>
 <p>再来看看每一步的复杂度，如下，第一步的<span class="math inline">\(O(N^2)\)</span>是因为Q矩阵的规模是<span class="math inline">\(N*N\)</span>的。</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/svm03-2.png">
+<img src="http://cdn.htliu.cn/svm03-2.png">
 
 </div>
 <p>上面举的例子是二阶的核函数，下面介绍几个常用的核函数。</p>
 <h2 id="多项式核">多项式核</h2>
 <p>我们将<span class="math inline">\(K_{\phi_2} = 1 + \mathbf{x}\mathbf{x}^{&#39;} + (\mathbf{x}\mathbf{x}^{&#39;})^2\)</span> 加一些系数，得到更加简单更加常用的<span class="math inline">\(K_2(\mathbf{x},\mathbf{x}^{&#39;})=(1+\gamma\mathbf{x}\mathbf{x}^{&#39;})^2\)</span>，如下:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/svm03-3.png">
+<img src="http://cdn.htliu.cn/svm03-3.png">
 
 </div>
 <p>需要注意的是，<span class="math inline">\(K_2,K_{\phi_2}\)</span>这两种核函数的能力本质上是相同的，也就是说解决同一类问题结果类似，只不过最后求出的边界不同。</p>
 <p>此外，多项式核可以推向更一般的情况，如下:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/svm03-4.png">
+<img src="http://cdn.htliu.cn/svm03-4.png">
 
 </div>
 <p>其中<span class="math inline">\(\zeta,\gamma\)</span>是超参数，<span class="math inline">\(Q\)</span>是阶数。</p>
@@ -2407,7 +2407,7 @@
 <p><span class="math display">\[K(\mathbf{x},\mathbf{x}^{&#39;}) = exp(-\gamma\Arrowvert \mathbf{x}-\mathbf{x}^{&#39;}\Arrowvert^2), \quad \gamma &gt;0\]</span></p>
 <p>RBF核实现的是无限维的转换，证明思路就是将高斯核函数可以表示为无穷项的和，并且需要是两个向量内积的形式。下面以一维为例，即<span class="math inline">\(\mathbf{x}=(x_1)\)</span>，基于泰勒展开来证明：</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/svm03-5.png">
+<img src="http://cdn.htliu.cn/svm03-5.png">
 
 </div>
 <p>高斯核<span class="math inline">\(K(\mathbf{x},\mathbf{x}^{&#39;}) = exp(-\gamma\Arrowvert \mathbf{x}-\mathbf{x}^{&#39;}\Arrowvert^2), \quad \gamma &gt;0\)</span> 只有一个参数<span class="math inline">\(\gamma\)</span>，在实际应用中，<span class="math inline">\(\gamma\)</span>一般不应该太大，否则很容易过拟合，还有一点高斯核完成的是到无穷维的转换，因此它的描述能力很强，可以作出很复杂的边界，但是由于是无穷维的转换，这个转换过程类似黑盒子，也就是说<span class="math inline">\(\mathbf{w}\)</span>也是无穷维的，我们无法计算出它，因此也就缺乏了物理意义。</p>
@@ -2415,7 +2415,7 @@
 <p>下面对线性核，多项式核，高斯核(RBF)做个对比。</p>
 <p><strong>线性核(Linear Kernel)</strong> <span class="math inline">\(K(\mathbf{x}, \mathbf{x}^{&#39;}) = \mathbf{x}\mathbf{x}^{&#39;}\)</span>:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/svm03-6.png">
+<img src="http://cdn.htliu.cn/svm03-6.png">
 
 </div>
 <ul>
@@ -2425,7 +2425,7 @@
 <p>主要用于线性可分的情形，速度快，优先考虑。</p>
 <p><strong>多项式核(Ploy Kernel)</strong></p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/svm03-7.png">
+<img src="http://cdn.htliu.cn/svm03-7.png">
 
 </div>
 <ul>
@@ -2435,7 +2435,7 @@
 <p>一般使用的比较小的Q。 不过使用较少，因为速度不如Linear，能力不如RBF</p>
 <p><strong>高斯核(RBF Kernel)</strong></p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/svm03-8.png">
+<img src="http://cdn.htliu.cn/svm03-8.png">
 
 </div>
 <ul>
@@ -2455,14 +2455,14 @@
 <p>那么除了上述的Linear Kernel，Poly Kernel，RBF Kernel 之外，还有其它的核函数吗？</p>
 <p>我们已经知道核函数是为了简化内积运算的trick，只知道<span class="math inline">\(K(\mathbf{x}, \mathbf{x}^{&#39;}) = \phi(\mathbf{x})\phi(\mathbf{x}^{&#39;})\)</span>，此外我们知道向量内积就是描述向量的相似度，(比如向量垂直,内积为0; 相反，内积为负数)，那么我们能否从某个相似性出发，随意指定某个函数来作为相似度的描述？Not Really。<strong>Mercer Condition</strong>是用来判断一个函数能否作为核函数的条件。我们将数据写成核矩阵<span class="math inline">\(K\)</span>的形式:<span class="math inline">\(K_{i,j} = K(\mathbf{x}_i, \mathbf{x}_j)\)</span>，整个矩阵如下:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/svm03-9.png">
+<img src="http://cdn.htliu.cn/svm03-9.png">
 
 </div>
 <p>很显然，K应该满足<strong>对称性，半正定</strong>的性质，事实上，<strong>对称，半正定</strong>也是K可以作为核矩阵的充要条件(证明略过)，虽然可以指定某个函数作为核函数，但是在实际中，Linear Kernel和RBF Kernel已经足够用了。</p>
 <h2 id="后续">后续</h2>
 <p>这一节主要介绍了 Kernel Trick SVM，首先引入核的概念，用来简化内积运算，再到几种常见核函数的优缺点的比较，最后稍微提了Mercer’s Condition指出了作为核函数的充要条件。 到这里似乎SVM的分类问题貌似解决了，但是正如前面提到的，一直存在一个OverFitting的问题，比如说如果存在某些错误噪音数据，那么就算转到高维空间仍然存在线性不可分的情况，此时，就会产生很复杂的分类边界，造成OverFitting，但是我们更希望，忽略个别的错误数据，如下图:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/svm04-1.png">
+<img src="http://cdn.htliu.cn/svm04-1.png">
 
 </div>
 <p>这个问题就是下一节要解决的问题: Soft-Margin。</p>
@@ -2490,7 +2490,7 @@
     <link href="http://shomy.top/2017/02/17/svm-02-dual/"/>
     <id>http://shomy.top/2017/02/17/svm-02-dual/</id>
     <published>2017-02-17T08:31:05.000Z</published>
-    <updated>2017-07-31T02:42:34.566Z</updated>
+    <updated>2018-09-29T03:52:04.764Z</updated>
     
     <content type="html"><![CDATA[<blockquote>
 <p>对偶SVM主要解决在非线性转换之后维度变高二次规划问题求解困难的问题。</p>
@@ -2503,7 +2503,7 @@
 <h2 id="对偶的引入">对偶的引入</h2>
 <p>我们的目标是<strong>将原始的非线性问题，转化为另外一个对等问题，使得新的对等问题的规模或者说复杂度(主要指二次规划问题的规模，比如变量数目，约束条件数目等)仅仅与原始数据的规模(样本量)有关，与转换的高维空间无关</strong>，如下:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/svm02-1.png">
+<img src="http://cdn.htliu.cn/svm02-1.png">
 
 </div>
 <h3 id="拉格朗日函数">拉格朗日函数</h3>
@@ -2560,7 +2560,7 @@
 <p>相当与将条件再提出来，就转化为QP问题求解！并且上式中<span class="math inline">\(N\)</span>个变量<span class="math inline">\(\alpha_1...\alpha_N\)</span>，以及<span class="math inline">\(N+1\)</span>个约束条件，这样就看着摆脱了高维，求解相对容易，这便得到就是<strong>标准SVM对偶问题</strong>。</p>
 <p>下面便是根据QP问题的格式，写出对应的<span class="math inline">\(Q,p,A,c\)</span>：</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/svm02-3.png">
+<img src="http://cdn.htliu.cn/svm02-3.png">
 
 </div>
 <p>这里需要说明一下:</p>
@@ -2592,7 +2592,7 @@
 <h3 id="数据表示模型">数据表示模型</h3>
 <p>在开始介绍SVM的时候，就是以PLA为基础的，下面看看二者:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/svm02-4.png">
+<img src="http://cdn.htliu.cn/svm02-4.png">
 
 </div>
 <p>首先在Dual SVM中，<span class="math inline">\(\mathbf{w}\)</span>是以<span class="math inline">\(y_n\mathbf{z}_n\)</span>的线性组合求解的，其中参数为<span class="math inline">\(\alpha_n\)</span>; 在PLA中 同样，每个分类错误的点，都会加上<span class="math inline">\(y_n\mathbf{z}_n\)</span>，因此实质上<span class="math inline">\(\mathbf{w}\)</span>同样线性组合求解得到。</p>
@@ -2601,7 +2601,7 @@
 <h2 id="后续">后续</h2>
 <p>这一节主要讲的是 <strong>标准对偶SVM</strong>，旨在解决高维空间下，二次规划问题求解困难的问题，下面对比Linear SVM与Dual SVM:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/svm02-5.png">
+<img src="http://cdn.htliu.cn/svm02-5.png">
 
 </div>
 <p>看起来我们的对偶问题的规模成功做到了只与数据样本量<span class="math inline">\(N\)</span>有关，与高维空间的维度<span class="math inline">\(\tilde{d}\)</span>无关，其实不然，实际内部的计算量还是很大的:</p>

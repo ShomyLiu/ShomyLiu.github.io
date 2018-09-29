@@ -13,16 +13,16 @@
 <meta property="og:site_name" content="天空的城">
 <meta property="og:description" content="2017.3.3更新: TensorFlow版本KMeans与RBFNet   2017.2.28更新：Python实现RBFNet   这一节利用上节SVM中的高斯核(RBF Kernel)来介绍一个新的模型，RBF Network，属于神经网络(Neural Network)的一种，可以以任意精度来逼近任意的连续函数。">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/rbf-1.png">
-<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/rbf-2.png">
-<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/rbf-3.png">
-<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/rbf-4.png">
-<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/rbf-5.png">
-<meta property="og:updated_time" content="2017-07-31T02:42:34.562Z">
+<meta property="og:image" content="http://cdn.htliu.cn/rbf-1.png">
+<meta property="og:image" content="http://cdn.htliu.cn/rbf-2.png">
+<meta property="og:image" content="http://cdn.htliu.cn/rbf-3.png">
+<meta property="og:image" content="http://cdn.htliu.cn/rbf-4.png">
+<meta property="og:image" content="http://cdn.htliu.cn/rbf-5.png">
+<meta property="og:updated_time" content="2018-09-29T03:52:04.760Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="机器学习技法笔记(6)-RBF Network(径向基函数网络)">
 <meta name="twitter:description" content="2017.3.3更新: TensorFlow版本KMeans与RBFNet   2017.2.28更新：Python实现RBFNet   这一节利用上节SVM中的高斯核(RBF Kernel)来介绍一个新的模型，RBF Network，属于神经网络(Neural Network)的一种，可以以任意精度来逼近任意的连续函数。">
-<meta name="twitter:image" content="http://7xotye.com1.z0.glb.clouddn.com/rbf-1.png">
+<meta name="twitter:image" content="http://cdn.htliu.cn/rbf-1.png">
   
   
     <link rel="icon" href="/image/favicon.ico">
@@ -162,7 +162,7 @@ ga('send', 'pageview');
 <p>当年径向基函数的诞生主要是为了解决多变量插值的问题。可以看下面的图。具体的话是先在每个样本上面放一个基函数，图中每个蓝色的点是一个样本，然后中间那个图中绿色虚线对应的，就表示的是每个训练样本对应一个高斯函数（高斯函数中心就是样本点）。然后假设真实的拟合这些训练数据的曲线是蓝色的那根（最右边的图），如果我们有一个新的数据x1，我们想知道它对应的f(x1)是多少，也就是a点的纵坐标是多少。那么由图可以看到，a点的纵坐标等于b点的纵坐标加上c点的纵坐标。而b的纵坐标是第一个样本点的高斯函数的值乘以一个大点权值得到的，c的纵坐标是第二个样本点的高斯函数的值乘以另一个小点的权值得到。而其他样本点的权值全是0，因为我们要插值的点x1在第一和第二个样本点之间，远离其他的样本点，那么插值影响最大的就是离得近的点，离的远的就没什么贡献了。所以x1点的函数值由附近的b和c两个点就可以确定了。拓展到任意的新的x，这些红色的高斯函数乘以一个权值后再在对应的x地方加起来，就可以完美的拟合真实的函数曲线了。</p>
 </blockquote>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/rbf-1.png">
+<img src="http://cdn.htliu.cn/rbf-1.png">
 
 </div>
 <p>一句话总结就是，RBF(径向基函数)根据某种距离来描述点与某个center点的的相似度。</p>
@@ -172,7 +172,7 @@ ga('send', 'pageview');
 <p>其中<span class="math inline">\(\mu_m​\)</span>是第<span class="math inline">\(m​\)</span>个center，就是上图中的红色图像的峰值对应的<span class="math inline">\(x​\)</span>, <span class="math inline">\(\beta_m​\)</span>则是对应的权重，最外层的<span class="math inline">\(Output()​\)</span> 则是根据目的选择不同的函数，比如想分类的话，那就可以使用一个softmax或者sign等函数，如果打算做回归，或者做函数逼近，这时候就可以不需要用Output函数了，RBF Network可以逼近任意连续的函数。</p>
 <p>RBF Network与普通神经网络有什么联系区别呢？如下:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/rbf-2.png">
+<img src="http://cdn.htliu.cn/rbf-2.png">
 
 </div>
 <p>首先网络结构很类似，都是输入层, 隐藏层，输出层构成，此外最后一层的输出层基本类似类似，均是对隐层的输出线性组合(权重控制)然后得到求和的结果。</p>
@@ -212,7 +212,7 @@ ga('send', 'pageview');
 <p>​ <span class="math display">\[\mathbf{x}_1,\mathbf{x}_2 \in S_m \Leftrightarrow \mu_m \approx \mathbf{x_1} \approx \mathbf{x_2}\]</span></p>
 <p>也就是在同一簇中的点，都应该是最相似的。这样我们的问题成为找到这样的簇，以及簇的中心，一个很典型的聚类(Cluster)问题，同时也是无监督的，利用相似度，很容易写出损失函数:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/rbf-3.png">
+<img src="http://cdn.htliu.cn/rbf-3.png">
 
 </div>
 <p>其中 <span class="math inline">\(S_1,\cdots,S_m\)</span>是训练数据集合<span class="math inline">\(\{\mathbf{x}_n \}\)</span>的的一个划分。</p>
@@ -226,7 +226,7 @@ ga('send', 'pageview');
 <p>也就是说, <span class="math inline">\(S_m\)</span>的中心等于簇内所有点的平均值。</p>
 <p>交替更新完一轮<span class="math inline">\(S,\mu\)</span>之后，重复这个过程直到收敛，整个聚类的算法就是著名的<strong>K-Means</strong>，下面给出基本流程:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/rbf-4.png">
+<img src="http://cdn.htliu.cn/rbf-4.png">
 
 </div>
 <p>注:</p>
@@ -239,7 +239,7 @@ ga('send', 'pageview');
 <h2 id="rbf-net-with-k-means">RBF Net With K-Means</h2>
 <p>有了K-Means来聚类，那我们就可以用确定RBFNet的中心了，下面重新给出使用K-Means的RBF Net用来做预测回归的流程:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/rbf-5.png">
+<img src="http://cdn.htliu.cn/rbf-5.png">
 
 </div>
 <p>这个过程与上面唯一不同的地方就是，开始先使用K-Means得到了中心，然后再计算特征转换的<span class="math inline">\(Z\)</span>矩阵，其余步骤完全相同。</p>
@@ -316,7 +316,7 @@ ga('send', 'pageview');
 发布时间: 2017-02-26, 22:18:37<br/>
 <p>
 <p>
-最后更新: 2017-07-31, 10:42:34<br/>
+最后更新: 2018-09-29, 11:52:04<br/>
 <p>
 本文链接: <a href="/2017/02/26/rbf-network/" target="_blank">http://shomy.top/2017/02/26/rbf-network/</a>
 </p>

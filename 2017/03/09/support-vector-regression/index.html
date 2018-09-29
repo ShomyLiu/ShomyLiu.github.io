@@ -13,15 +13,15 @@
 <meta property="og:site_name" content="天空的城">
 <meta property="og:description" content="这一节是核模型的最后一部分了，将Kernel引入到一般的回归模型中: 核岭回归(Kernel Ridge Regression)以及支持向量回归(Support Vector Regression)，此外文末对这一占了整个课程40%的大块内容做了简单总结。">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/svr-1.png">
-<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/svr-2.png">
-<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/svr-3.png">
-<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/svr-4.png">
-<meta property="og:updated_time" content="2017-07-31T02:42:34.562Z">
+<meta property="og:image" content="http://cdn.htliu.cn/svr-1.png">
+<meta property="og:image" content="http://cdn.htliu.cn/svr-2.png">
+<meta property="og:image" content="http://cdn.htliu.cn/svr-3.png">
+<meta property="og:image" content="http://cdn.htliu.cn/svr-4.png">
+<meta property="og:updated_time" content="2018-09-29T03:52:04.764Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="机器学习技法笔记(8)-SVR(支持向量回归)">
 <meta name="twitter:description" content="这一节是核模型的最后一部分了，将Kernel引入到一般的回归模型中: 核岭回归(Kernel Ridge Regression)以及支持向量回归(Support Vector Regression)，此外文末对这一占了整个课程40%的大块内容做了简单总结。">
-<meta name="twitter:image" content="http://7xotye.com1.z0.glb.clouddn.com/svr-1.png">
+<meta name="twitter:image" content="http://cdn.htliu.cn/svr-1.png">
   
   
     <link rel="icon" href="/image/favicon.ico">
@@ -160,7 +160,7 @@ ga('send', 'pageview');
 <p><span class="math display">\[g(\mathbf x) = \sum\limits_{n=1}^{N}\beta_nK(\mathbf x_n, \mathbf x)\]</span></p>
 <p>通过引入核，可以解决非线性的回归预测问题了。下面对比带核与否的Ridge Regression的一些区别:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/svr-1.png">
+<img src="http://cdn.htliu.cn/svr-1.png">
 
 </div>
 <p>两种模型的优缺点与适用场合也就很明显了，只要数据量没有远大于数据维度的话，就可以用kernel ridge regression, 不过还是有一个原则: Linear First。</p>
@@ -170,7 +170,7 @@ ga('send', 'pageview');
 <p><span class="math display">\[err(y,s)=\max(0, |s-y|-\epsilon), \quad s=\mathbf w^Tz_n +b, \ \epsilon &gt; 0\]</span></p>
 <p>也就是说，同Soft-Margin SVM分类问题容许偏差的存在，如果预测值与实际值的差距小于<span class="math inline">\(\epsilon\)</span>的时候，就认为err=0，tube可以理解为预测误差在允许范围内，如下图对比tube error与 square error：</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/svr-2.png">
+<img src="http://cdn.htliu.cn/svr-2.png">
 
 </div>
 <p>仿照SVM，加上<span class="math inline">\(L_2\)</span>正则项的Tube Regression的目标函数定义为:</p>
@@ -193,7 +193,7 @@ ga('send', 'pageview');
 <p><span class="math display">\[\begin{align}\min\limits_{\mathbf w}  \mathcal{L}(b, \mathbf w, \xi_{\vee}, \xi^{\wedge}) &amp;\Leftrightarrow \min \quad {1\over 2}\mathbf w^T\mathbf w + \sum(\alpha_n^{\vee}-\alpha_n^{\wedge})\mathbf w^T\mathbf z_n +\sum(\alpha_n^{\wedge}(y_n-\epsilon) + \alpha_n^{\vee}(-\epsilon-y_n) ) \\ &amp;\Leftrightarrow \min \quad  {1\over 2}\mathbf w^T\mathbf w -\mathbf w^T\mathbf w +\sum(\alpha_n^{\wedge}(y_n-\epsilon) + \alpha_n^{\vee}(-\epsilon-y_n) ) \\ &amp;\Leftrightarrow -{1 \over 2}\sum\limits_{n=1}^N\sum\limits_{m=1}^N(\alpha_n^{\wedge}- \alpha_n^{\vee}) (\alpha_m^{\wedge}- \alpha_m^{\vee})K(\mathbf x_n, \mathbf x_m)\\ &amp; \quad \quad  +\sum(\alpha_n^{\wedge}(y_n-\epsilon) + \alpha_n^{\vee}(-\epsilon-y_n) ) \end{align}\]</span></p>
 <p>上面的过程我们已经引入了核函数代替<span class="math inline">\(\mathbf {z_nz_m}\)</span>，至此最小化过程完成，开始考虑最外面<span class="math inline">\(\max\)</span>部分，取相反数，结合约束来求最小值，最后的问题如下:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/svr-3.png">
+<img src="http://cdn.htliu.cn/svr-3.png">
 
 </div>
 <p>上式就是一个标准的二次规划问题，一共有<span class="math inline">\(2N\)</span>个变量，按照格式写出QP Solver的Q,p,A,c，即可得到最优解<span class="math inline">\(\alpha_n^{\vee}, \alpha_n^{\wedge}\)</span>。</p>
@@ -208,7 +208,7 @@ ga('send', 'pageview');
 <h2 id="核模型kernel-model总结">核模型(Kernel Model)总结</h2>
 <p>到此为止，线性模型/核模型这一大块的内容基本完结了，占了技法课程的40%。回顾一下，整理一下，有如下约10个模型或者算法那:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/svr-4.png">
+<img src="http://cdn.htliu.cn/svr-4.png">
 
 </div>
 <p>在实际中我们一般使用较少的有 PLA, Linear SVR,因为效果不好，限制很大。而至于Kernel Ridge Regression(核岭回归), Kernel Logistic Regression(核逻辑回归)也使用较少，因为其权重矩阵是稠密的(dense)，计算量较大。相比核岭回归，在实际中更加倾向使用SVR; 相比核逻辑回归，更倾向于使用概率SVM。常用的一般有SVM, SVR, 线性岭回归，L2正则化的逻辑回归等。</p>
@@ -229,7 +229,7 @@ ga('send', 'pageview');
 发布时间: 2017-03-09, 12:08:28<br/>
 <p>
 <p>
-最后更新: 2017-07-31, 10:42:34<br/>
+最后更新: 2018-09-29, 11:52:04<br/>
 <p>
 本文链接: <a href="/2017/03/09/support-vector-regression/" target="_blank">http://shomy.top/2017/03/09/support-vector-regression/</a>
 </p>

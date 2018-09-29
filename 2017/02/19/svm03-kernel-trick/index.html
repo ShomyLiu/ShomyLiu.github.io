@@ -13,21 +13,21 @@
 <meta property="og:site_name" content="天空的城">
 <meta property="og:description" content="接着上一节的Dual SVM，我们解决了非线性转换维度变高导致求解困难的问题，但是仍然有问题，那就是在求Q矩阵的时候，由于涉及到了高维的内积,计算量仍然很大，这一节引入核机制(Kernel Trick)来高效的求解这一过程，完全不再依赖高维空间。">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/svm03-1.png">
-<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/svm03-2.png">
-<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/svm03-3.png">
-<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/svm03-4.png">
-<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/svm03-5.png">
-<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/svm03-6.png">
-<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/svm03-7.png">
-<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/svm03-8.png">
-<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/svm03-9.png">
-<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/svm04-1.png">
-<meta property="og:updated_time" content="2017-07-31T02:42:34.566Z">
+<meta property="og:image" content="http://cdn.htliu.cn/svm03-1.png">
+<meta property="og:image" content="http://cdn.htliu.cn/svm03-2.png">
+<meta property="og:image" content="http://cdn.htliu.cn/svm03-3.png">
+<meta property="og:image" content="http://cdn.htliu.cn/svm03-4.png">
+<meta property="og:image" content="http://cdn.htliu.cn/svm03-5.png">
+<meta property="og:image" content="http://cdn.htliu.cn/svm03-6.png">
+<meta property="og:image" content="http://cdn.htliu.cn/svm03-7.png">
+<meta property="og:image" content="http://cdn.htliu.cn/svm03-8.png">
+<meta property="og:image" content="http://cdn.htliu.cn/svm03-9.png">
+<meta property="og:image" content="http://cdn.htliu.cn/svm04-1.png">
+<meta property="og:updated_time" content="2018-09-29T03:52:04.764Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="机器学习技法笔记(4)-Kernel SVM">
 <meta name="twitter:description" content="接着上一节的Dual SVM，我们解决了非线性转换维度变高导致求解困难的问题，但是仍然有问题，那就是在求Q矩阵的时候，由于涉及到了高维的内积,计算量仍然很大，这一节引入核机制(Kernel Trick)来高效的求解这一过程，完全不再依赖高维空间。">
-<meta name="twitter:image" content="http://7xotye.com1.z0.glb.clouddn.com/svm03-1.png">
+<meta name="twitter:image" content="http://cdn.htliu.cn/svm03-1.png">
   
   
     <link rel="icon" href="/image/favicon.ico">
@@ -171,25 +171,25 @@ ga('send', 'pageview');
 <p>这样也间接完成了我们的目的。这样利用Kernel Function，我们就避开了在高维空间的计算，甚至不需要知道用的什么映射，就直接在原始低维数据进行等价计算。</p>
 <p>总结一下核机制SVM的一般流程：</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/svm03-1.png">
+<img src="http://cdn.htliu.cn/svm03-1.png">
 
 </div>
 <p>再来看看每一步的复杂度，如下，第一步的<span class="math inline">\(O(N^2)\)</span>是因为Q矩阵的规模是<span class="math inline">\(N*N\)</span>的。</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/svm03-2.png">
+<img src="http://cdn.htliu.cn/svm03-2.png">
 
 </div>
 <p>上面举的例子是二阶的核函数，下面介绍几个常用的核函数。</p>
 <h2 id="多项式核">多项式核</h2>
 <p>我们将<span class="math inline">\(K_{\phi_2} = 1 + \mathbf{x}\mathbf{x}^{&#39;} + (\mathbf{x}\mathbf{x}^{&#39;})^2\)</span> 加一些系数，得到更加简单更加常用的<span class="math inline">\(K_2(\mathbf{x},\mathbf{x}^{&#39;})=(1+\gamma\mathbf{x}\mathbf{x}^{&#39;})^2\)</span>，如下:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/svm03-3.png">
+<img src="http://cdn.htliu.cn/svm03-3.png">
 
 </div>
 <p>需要注意的是，<span class="math inline">\(K_2,K_{\phi_2}\)</span>这两种核函数的能力本质上是相同的，也就是说解决同一类问题结果类似，只不过最后求出的边界不同。</p>
 <p>此外，多项式核可以推向更一般的情况，如下:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/svm03-4.png">
+<img src="http://cdn.htliu.cn/svm03-4.png">
 
 </div>
 <p>其中<span class="math inline">\(\zeta,\gamma\)</span>是超参数，<span class="math inline">\(Q\)</span>是阶数。</p>
@@ -201,7 +201,7 @@ ga('send', 'pageview');
 <p><span class="math display">\[K(\mathbf{x},\mathbf{x}^{&#39;}) = exp(-\gamma\Arrowvert \mathbf{x}-\mathbf{x}^{&#39;}\Arrowvert^2), \quad \gamma &gt;0\]</span></p>
 <p>RBF核实现的是无限维的转换，证明思路就是将高斯核函数可以表示为无穷项的和，并且需要是两个向量内积的形式。下面以一维为例，即<span class="math inline">\(\mathbf{x}=(x_1)\)</span>，基于泰勒展开来证明：</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/svm03-5.png">
+<img src="http://cdn.htliu.cn/svm03-5.png">
 
 </div>
 <p>高斯核<span class="math inline">\(K(\mathbf{x},\mathbf{x}^{&#39;}) = exp(-\gamma\Arrowvert \mathbf{x}-\mathbf{x}^{&#39;}\Arrowvert^2), \quad \gamma &gt;0\)</span> 只有一个参数<span class="math inline">\(\gamma\)</span>，在实际应用中，<span class="math inline">\(\gamma\)</span>一般不应该太大，否则很容易过拟合，还有一点高斯核完成的是到无穷维的转换，因此它的描述能力很强，可以作出很复杂的边界，但是由于是无穷维的转换，这个转换过程类似黑盒子，也就是说<span class="math inline">\(\mathbf{w}\)</span>也是无穷维的，我们无法计算出它，因此也就缺乏了物理意义。</p>
@@ -209,7 +209,7 @@ ga('send', 'pageview');
 <p>下面对线性核，多项式核，高斯核(RBF)做个对比。</p>
 <p><strong>线性核(Linear Kernel)</strong> <span class="math inline">\(K(\mathbf{x}, \mathbf{x}^{&#39;}) = \mathbf{x}\mathbf{x}^{&#39;}\)</span>:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/svm03-6.png">
+<img src="http://cdn.htliu.cn/svm03-6.png">
 
 </div>
 <ul>
@@ -219,7 +219,7 @@ ga('send', 'pageview');
 <p>主要用于线性可分的情形，速度快，优先考虑。</p>
 <p><strong>多项式核(Ploy Kernel)</strong></p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/svm03-7.png">
+<img src="http://cdn.htliu.cn/svm03-7.png">
 
 </div>
 <ul>
@@ -229,7 +229,7 @@ ga('send', 'pageview');
 <p>一般使用的比较小的Q。 不过使用较少，因为速度不如Linear，能力不如RBF</p>
 <p><strong>高斯核(RBF Kernel)</strong></p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/svm03-8.png">
+<img src="http://cdn.htliu.cn/svm03-8.png">
 
 </div>
 <ul>
@@ -249,14 +249,14 @@ ga('send', 'pageview');
 <p>那么除了上述的Linear Kernel，Poly Kernel，RBF Kernel 之外，还有其它的核函数吗？</p>
 <p>我们已经知道核函数是为了简化内积运算的trick，只知道<span class="math inline">\(K(\mathbf{x}, \mathbf{x}^{&#39;}) = \phi(\mathbf{x})\phi(\mathbf{x}^{&#39;})\)</span>，此外我们知道向量内积就是描述向量的相似度，(比如向量垂直,内积为0; 相反，内积为负数)，那么我们能否从某个相似性出发，随意指定某个函数来作为相似度的描述？Not Really。<strong>Mercer Condition</strong>是用来判断一个函数能否作为核函数的条件。我们将数据写成核矩阵<span class="math inline">\(K\)</span>的形式:<span class="math inline">\(K_{i,j} = K(\mathbf{x}_i, \mathbf{x}_j)\)</span>，整个矩阵如下:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/svm03-9.png">
+<img src="http://cdn.htliu.cn/svm03-9.png">
 
 </div>
 <p>很显然，K应该满足<strong>对称性，半正定</strong>的性质，事实上，<strong>对称，半正定</strong>也是K可以作为核矩阵的充要条件(证明略过)，虽然可以指定某个函数作为核函数，但是在实际中，Linear Kernel和RBF Kernel已经足够用了。</p>
 <h2 id="后续">后续</h2>
 <p>这一节主要介绍了 Kernel Trick SVM，首先引入核的概念，用来简化内积运算，再到几种常见核函数的优缺点的比较，最后稍微提了Mercer’s Condition指出了作为核函数的充要条件。 到这里似乎SVM的分类问题貌似解决了，但是正如前面提到的，一直存在一个OverFitting的问题，比如说如果存在某些错误噪音数据，那么就算转到高维空间仍然存在线性不可分的情况，此时，就会产生很复杂的分类边界，造成OverFitting，但是我们更希望，忽略个别的错误数据，如下图:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/svm04-1.png">
+<img src="http://cdn.htliu.cn/svm04-1.png">
 
 </div>
 <p>这个问题就是下一节要解决的问题: Soft-Margin。</p>
@@ -277,7 +277,7 @@ ga('send', 'pageview');
 发布时间: 2017-02-19, 13:28:36<br/>
 <p>
 <p>
-最后更新: 2017-07-31, 10:42:34<br/>
+最后更新: 2018-09-29, 11:52:04<br/>
 <p>
 本文链接: <a href="/2017/02/19/svm03-kernel-trick/" target="_blank">http://shomy.top/2017/02/19/svm03-kernel-trick/</a>
 </p>

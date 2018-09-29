@@ -13,19 +13,19 @@
 <meta property="og:site_name" content="天空的城">
 <meta property="og:description" content="上节介绍的Kernel SVM的结尾，提到了overfit的问题，那是因为SVM要找到的分类面是必须把所有的训练数据分开，即使有一些噪音数据，或者说是错误标注的数据，也要“坚持”分开，这可能就会形成很复杂的边界，很容易形成overfit，如下:">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/svm04-1.png">
-<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/svm04-2.png">
-<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/svm04-3.png">
-<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/svm04-8.png">
-<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/svm04-4.png">
-<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/svm04-5.png">
-<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/svm04-6.png">
-<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/svm04-9.png">
-<meta property="og:updated_time" content="2017-07-31T02:42:34.566Z">
+<meta property="og:image" content="http://cdn.htliu.cn/svm04-1.png">
+<meta property="og:image" content="http://cdn.htliu.cn/svm04-2.png">
+<meta property="og:image" content="http://cdn.htliu.cn/svm04-3.png">
+<meta property="og:image" content="http://cdn.htliu.cn/svm04-8.png">
+<meta property="og:image" content="http://cdn.htliu.cn/svm04-4.png">
+<meta property="og:image" content="http://cdn.htliu.cn/svm04-5.png">
+<meta property="og:image" content="http://cdn.htliu.cn/svm04-6.png">
+<meta property="og:image" content="http://cdn.htliu.cn/svm04-9.png">
+<meta property="og:updated_time" content="2018-09-29T03:52:04.764Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="机器学习技法笔记(5)-Soft Margin SVM">
 <meta name="twitter:description" content="上节介绍的Kernel SVM的结尾，提到了overfit的问题，那是因为SVM要找到的分类面是必须把所有的训练数据分开，即使有一些噪音数据，或者说是错误标注的数据，也要“坚持”分开，这可能就会形成很复杂的边界，很容易形成overfit，如下:">
-<meta name="twitter:image" content="http://7xotye.com1.z0.glb.clouddn.com/svm04-1.png">
+<meta name="twitter:image" content="http://cdn.htliu.cn/svm04-1.png">
   
   
     <link rel="icon" href="/image/favicon.ico">
@@ -145,22 +145,22 @@ ga('send', 'pageview');
         <p>上节介绍的Kernel SVM的结尾，提到了overfit的问题，那是因为SVM要找到的分类面是必须把所有的训练数据分开，即使有一些噪音数据，或者说是错误标注的数据，也要“坚持”分开，这可能就会形成很复杂的边界，很容易形成overfit，如下:</p>
 <a id="more"></a>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/svm04-1.png">
+<img src="http://cdn.htliu.cn/svm04-1.png">
 
 </div>
 <p>我们希望的是左边的分类面，而非右边的，虽然右边的<span class="math inline">\(E_{in} = 0\)</span>，也就是说希望对于一些错误的数据忽略掉，前面介绍PLA的变种Pocket的用的就是这种方式:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/svm04-2.png">
+<img src="http://cdn.htliu.cn/svm04-2.png">
 
 </div>
 <p>Pocket找的是分类错误点尽可能少的分类面，不一定必须完全分开，容许错误的发生。而我们之前的SVM均是要求所有的数据都必须分类正确，如果我们将Pocket与SVM结合，即允许发生错误，如下:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/svm04-3.png">
+<img src="http://cdn.htliu.cn/svm04-3.png">
 
 </div>
 <p>上式约束条件中，对于分类正确的点，仍然需要满足<span class="math inline">\(\geq 1\)</span>的条件，对于当前分类错误的点不加任何限制。所以目标函数中除了原先的<code>margin</code>，还必须加入了分类错误的个数，对整体做最小化。系数<span class="math inline">\(C\)</span>的作用则是一种对<code>margin</code>和犯错个数的一个折中。<span class="math inline">\(C\)</span>越大表示犯错误越少越好，犯错误个数重要性大于<code>margin</code>，如果太大了， 就容易过拟合了，反之<span class="math inline">\(C\)</span>越小表示希望<code>magin</code> 越宽越好，也就是说<span class="math inline">\(\mathbf{w}\)</span>越小越好，就是说对错误的惩罚很小，这样就会导致分类效果变差。 用<span class="math inline">\(C\)</span>表示更重视<span class="math inline">\(margin\)</span>还是重视犯错误的多少, 如下图:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/svm04-8.png">
+<img src="http://cdn.htliu.cn/svm04-8.png">
 
 </div>
 <p>对于新的优化问题。然而由于存在bool的运算<span class="math inline">\(\neq\)</span>，也就是说该问题是离散的，无法用二次规划QP来求解。此外，还有一个缺点，那就是对所有的错误都是一视同仁的，无论是距离边界近还是远，只要分类错误，都计算在内，也就是说无法区分大错小错。</p>
@@ -168,7 +168,7 @@ ga('send', 'pageview');
 <p><span class="math display">\[\begin{align} \min\limits_{b,\mathbf{w},\xi} &amp; \quad \frac{1}{2}\mathbf{w}^T\mathbf{w}+C \cdot \sum\limits_{n=1}^N \xi_n \\ s.t. &amp; \quad y_n(\mathbf{w}^T{\mathbf{z}}_n+b) \geq 1 - \xi_n, for \ all \ n; \\ &amp; \quad \xi_n \geq 0, for \ all \ n\end{align}\]</span></p>
 <p>对于满足margin条件的点其<span class="math inline">\(\xi =0\)</span>, 不满足margin条件的其<span class="math inline">\(\xi &gt; 0\)</span>; 如下图:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/svm04-4.png">
+<img src="http://cdn.htliu.cn/svm04-4.png">
 
 </div>
 <p>图中有除了A,B两点之外的点均满足条件，<span class="math inline">\(\xi=0\)</span>; 而A点属于没有不满足margin条件的，B点属于分类错误，因此<span class="math inline">\(\xi_{A} &gt;0, \xi_B&gt;0\)</span>。</p>
@@ -187,7 +187,7 @@ ga('send', 'pageview');
 <p>当然还有一些中间条件: <span class="math inline">\(\mathbf{w} = \sum \alpha_ny_n\mathbf{z}_n, \beta_n=C-\alpha_n\)</span>；</p>
 <p>到这里我们的问题转为了有<span class="math inline">\(N\)</span>个变量，<span class="math inline">\(2N+1\)</span>个约束条件的二次规划问题，表示出<span class="math inline">\(Q,p,A,c\)</span>然后使用某个QP Solver即可得到最优的<span class="math inline">\(\alpha\)</span>:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/svm04-5.png">
+<img src="http://cdn.htliu.cn/svm04-5.png">
 
 </div>
 <ul>
@@ -203,7 +203,7 @@ ga('send', 'pageview');
 </ul>
 <p>到此为止，我们得到了对偶问题的最优的<span class="math inline">\(\alpha\)</span>, 再结合上节的Kernel Trick, 我们得到了 <strong>Kernel Soft-Margin SVM</strong>,基本流程如下:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/svm04-6.png">
+<img src="http://cdn.htliu.cn/svm04-6.png">
 
 </div>
 <p>这里有一点不一样的地方是对<span class="math inline">\(b\)</span>的求解，回想之前是利用转化为拉格朗日对偶问题(min(max) <span class="math inline">\(\Leftrightarrow\)</span> max(min))时候，利用互补条件(complementary slackness)，参考<a href="http://shomy.top/2017/02/17/svm-02-dual/#模型求解">Dual SVM</a>, 但是Soft-Margin有两个条件，即:</p>
@@ -213,7 +213,7 @@ ga('send', 'pageview');
 <p>到这里基本完成了<strong>Soft-Margin SVM</strong>的算法，集对偶，核，Soft-Margin于一身，可以解决非线性问题，松弛变量允许噪音数据等，在实际分类问题中，应用很广泛。 不过需要注意的是这种SVM也有可能overfit的，因此需要仔细调整参数<span class="math inline">\(C\)</span>，以及Kernel Function的参数，一般使用模型验证(Validation)手段比如交叉验证去选择最好的参数。</p>
 <p>最后再提一下Soft-Margin 中的<span class="math inline">\(\alpha\)</span>的物理意义，看下图:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/svm04-9.png">
+<img src="http://cdn.htliu.cn/svm04-9.png">
 
 </div>
 <p>根据两个互补条件，可以得到三类点点:</p>
@@ -239,7 +239,7 @@ ga('send', 'pageview');
 发布时间: 2017-02-20, 16:30:32<br/>
 <p>
 <p>
-最后更新: 2017-07-31, 10:42:34<br/>
+最后更新: 2018-09-29, 11:52:04<br/>
 <p>
 本文链接: <a href="/2017/02/20/svm04-soft-margin/" target="_blank">http://shomy.top/2017/02/20/svm04-soft-margin/</a>
 </p>

@@ -13,18 +13,18 @@
 <meta property="og:site_name" content="天空的城">
 <meta property="og:description" content="继上一节的Aggregation和Bagging，这一节对那一堆的g函数的产生做更深的探究，对训练数据引入权重的机制(Weight-Based)，加大错误数据的权重，缩小正确数据的权重，从而得到更加 Powerful的算法-AdaBoost">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/adaboost-1.png">
-<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/adaboost-2.png">
-<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/adaboost-3.png">
-<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/adaboost-4.png">
-<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/adaboost-5.png">
-<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/adaboost-6.png">
-<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/adaboost-7.png">
-<meta property="og:updated_time" content="2017-07-31T02:42:34.562Z">
+<meta property="og:image" content="http://cdn.htliu.cn/adaboost-1.png">
+<meta property="og:image" content="http://cdn.htliu.cn/adaboost-2.png">
+<meta property="og:image" content="http://cdn.htliu.cn/adaboost-3.png">
+<meta property="og:image" content="http://cdn.htliu.cn/adaboost-4.png">
+<meta property="og:image" content="http://cdn.htliu.cn/adaboost-5.png">
+<meta property="og:image" content="http://cdn.htliu.cn/adaboost-6.png">
+<meta property="og:image" content="http://cdn.htliu.cn/adaboost-7.png">
+<meta property="og:updated_time" content="2018-09-29T03:52:04.736Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="机器学习技法笔记(10)-AdaBoost(提升算法)">
 <meta name="twitter:description" content="继上一节的Aggregation和Bagging，这一节对那一堆的g函数的产生做更深的探究，对训练数据引入权重的机制(Weight-Based)，加大错误数据的权重，缩小正确数据的权重，从而得到更加 Powerful的算法-AdaBoost">
-<meta name="twitter:image" content="http://7xotye.com1.z0.glb.clouddn.com/adaboost-1.png">
+<meta name="twitter:image" content="http://cdn.htliu.cn/adaboost-1.png">
   
   
     <link rel="icon" href="/image/favicon.ico">
@@ -151,30 +151,30 @@ ga('send', 'pageview');
 <h2 id="从bagging引入权重">从Bagging引入权重</h2>
 <p>回想上节的Bagging，通过Bootstrap来生成多份的数据<span class="math inline">\(D_t\)</span>，这里面可能会有重复，例如:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/adaboost-1.png">
+<img src="http://cdn.htliu.cn/adaboost-1.png">
 
 </div>
 <p>以分类为例，计算0/1误差: <span class="math inline">\(E_{in}={1\over4}\sum||y \neq h(x)||\)</span>。现在引入新的变量: <span class="math inline">\(u_n\)</span>表示<span class="math inline">\(\mathcal D\)</span>中的第n个数据在采样得到的<span class="math inline">\(\tilde{\mathcal D_t}\)</span>中的个数，对于上面的例子，则有：<span class="math inline">\(u_1=2, u_2=1, u_3=0,u_4=1\)</span>, 那么误差可以换一种方式写:<span class="math inline">\(E_{in}={1\over4}\sum u_n||y \neq h(x)||\)</span>。这样就把<span class="math inline">\(u_n\)</span>引入了错误函数中，可以表示某个数据的权重，这种思想在数据挖掘中很常见，在分类的时候，对于分错的数据，我们需要特别关注，因此把错误数据的重要性放大，或者说人为多复制几份错误数据放进去，这样再迭代的时候，错误数据就会变少了。</p>
 <p>我们可以将权重引入一些之前的模型中，比如SVM：</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/adaboost-2.png">
+<img src="http://cdn.htliu.cn/adaboost-2.png">
 
 </div>
 <p>未加权重之前，每个错误的惩罚系数为<span class="math inline">\(C\)</span>，现在加了权重可以理解为错误惩罚变为了<span class="math inline">\(Cu_n\)</span>, 同时也体现在<span class="math inline">\(\alpha_n\)</span>的上限中。 在比如Logistic Regression中，同样可以引入权重:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/adaboost-3.png">
+<img src="http://cdn.htliu.cn/adaboost-3.png">
 
 </div>
 <p>这里可以理解为，在使用随机梯度下降优化的时候，同bagging，<span class="math inline">\(u_n\)</span>代表取出的数据的份数。</p>
 <h2 id="更新权重">更新权重</h2>
 <p>再次回到模型融合，在前一章的aggregation中，我们提到了如果<span class="math inline">\(g_1, g_2,...,g_T\)</span>中效果差距越明显，那么通过融合可以取得更好的结果，现在考察怎么样才可以让<span class="math inline">\(g\)</span>与<span class="math inline">\(g\)</span>之间区分度更明显，考虑<span class="math inline">\(g_t\)</span>与<span class="math inline">\(g_{t+1}\)</span>:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/adaboost-4.png">
+<img src="http://cdn.htliu.cn/adaboost-4.png">
 
 </div>
 <p><span class="math inline">\(g_t\)</span>的是通过权重系数为<span class="math inline">\(u^{(t)}\)</span>中在假设空间中误差最下的h来得到的，<span class="math inline">\(g_{t+1}\)</span>则是<span class="math inline">\(u^{(t+1)}\)</span>, 如果<span class="math inline">\(g_t\)</span>在权重为<span class="math inline">\(u^{(t+1)}\)</span>的条件下，<strong>表现不好</strong>的话，那么在<span class="math inline">\(t+1\)</span>的时候，我们就不会选择出<span class="math inline">\(g_t\)</span>或者与<span class="math inline">\(g_t\)</span>很近似的h了，而是在<span class="math inline">\(u^{(t+1)}\)</span>的条件下误差最小的<span class="math inline">\(g_{t+1}\)</span>，这样就会使得<span class="math inline">\(g_t\)</span>与<span class="math inline">\(g_{t+1}\)</span>更加diverse。 那么如何来衡量表现不好呢？ 很简单的思路，在二分类问题中，表现不好那就是跟随机瞎猜一样，正确率50%，写成表达式便是:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/adaboost-5.png">
+<img src="http://cdn.htliu.cn/adaboost-5.png">
 
 </div>
 <p>再剖析这个式子，因为可以将<span class="math inline">\(u_n\)</span>理解为数据有多少份。在<span class="math inline">\(g_t\)</span>中，即分子就是分类错误的数据个数，分母就是所有数据的个数了。因此我们需要的是，在<span class="math inline">\(u^{(t+1)}\)</span>的条件下，<strong>正确的份数==错误的份数</strong>，那<span class="math inline">\(u^{(t+1)}\)</span>应该与<span class="math inline">\(u^{(t)}\)</span>有什么关系呢？ 举个例子，假设在<span class="math inline">\(u^{(t)}\)</span>下, 分类错误1126份，正确6211份，那么在<span class="math inline">\(u^{(t+1)}\)</span>下，二者应该相等，那应该怎么办呢？看下面的几步:</p>
@@ -206,14 +206,14 @@ ga('send', 'pageview');
 <p><span class="math display">\[u^{(1)} = [ {1\over N}, {1 \over N},..., {1 \over N}]\]</span></p>
 <p>这样AdaBoost算法就完整了，总结一下流程如下:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/adaboost-6.png">
+<img src="http://cdn.htliu.cn/adaboost-6.png">
 
 </div>
 <p>这个算法也叫<strong>Linear Aggregation On the Fly</strong>，当然也是属于Adaptive Boosting，叫boosting的原因是因为我们只需要开始有一个很弱的演算法<span class="math inline">\(\mathcal A\)</span>，然后通过一点点增加错误数据的权重，降低正确数据的权重，最后得到一个效果很好的分类器，因此一般也用三个臭皮匠赛过诸葛亮来形容Adaboosting。</p>
 <h2 id="vc-维保证">VC 维保证</h2>
 <p>这里简单介绍AdaBoost算法的理论保证。有数学证明可以得到Adaboost的VC Bound：</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/adaboost-7.png">
+<img src="http://cdn.htliu.cn/adaboost-7.png">
 
 </div>
 <p>因为算法一共需要T个g，因此在第二项模型复杂度中多了<span class="math inline">\(TlogT\)</span>这一项，其余不变。有实验证明如果每次的<span class="math inline">\(\epsilon_t &lt; 0.5\)</span>的话，也就是说不是乱猜的话， 只需要经过<span class="math inline">\(T= O(logN)\)</span>次迭代就可以收敛到<span class="math inline">\(E_{in} = 0\)</span>。</p>
@@ -236,7 +236,7 @@ ga('send', 'pageview');
 发布时间: 2017-03-16, 20:55:55<br/>
 <p>
 <p>
-最后更新: 2017-07-31, 10:42:34<br/>
+最后更新: 2018-09-29, 11:52:04<br/>
 <p>
 本文链接: <a href="/2017/03/16/adaptive-boosting/" target="_blank">http://shomy.top/2017/03/16/adaptive-boosting/</a>
 </p>

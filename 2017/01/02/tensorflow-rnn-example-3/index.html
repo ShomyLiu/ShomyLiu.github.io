@@ -13,13 +13,13 @@
 <meta property="og:site_name" content="天空的城">
 <meta property="og:description" content="接着练习TensorFlow, 这一节开始实现RNNs(循环神经网络), 同样使用mnist数据集，测试正确率也基本可以到99%。 同CNNs, RNNs的结构以及训练方式这里不加赘述，重心放在实现上。  提到循环神经网络(Recurrent Neural Networks)，下面这张图就不得不说:">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/rnns.jpg">
-<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/rnn2.png">
-<meta property="og:updated_time" content="2017-07-31T02:42:34.566Z">
+<meta property="og:image" content="http://cdn.htliu.cn/rnns.jpg">
+<meta property="og:image" content="http://cdn.htliu.cn/rnn2.png">
+<meta property="og:updated_time" content="2018-09-29T03:52:04.768Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="TensorFlow练习3-RNNs实现分类">
 <meta name="twitter:description" content="接着练习TensorFlow, 这一节开始实现RNNs(循环神经网络), 同样使用mnist数据集，测试正确率也基本可以到99%。 同CNNs, RNNs的结构以及训练方式这里不加赘述，重心放在实现上。  提到循环神经网络(Recurrent Neural Networks)，下面这张图就不得不说:">
-<meta name="twitter:image" content="http://7xotye.com1.z0.glb.clouddn.com/rnns.jpg">
+<meta name="twitter:image" content="http://cdn.htliu.cn/rnns.jpg">
   
   
     <link rel="icon" href="/image/favicon.ico">
@@ -139,11 +139,11 @@ ga('send', 'pageview');
         <blockquote>
 <p>接着练习TensorFlow, 这一节开始实现RNNs(循环神经网络), 同样使用mnist数据集，测试正确率也基本可以到99%。 同CNNs, RNNs的结构以及训练方式这里不加赘述，重心放在实现上。</p>
 </blockquote>
-<p>提到循环神经网络(Recurrent Neural Networks)，下面这张图就不得不说: <a id="more"></a> <img src="http://7xotye.com1.z0.glb.clouddn.com/rnns.jpg"></p>
+<p>提到循环神经网络(Recurrent Neural Networks)，下面这张图就不得不说: <a id="more"></a> <img src="http://cdn.htliu.cn/rnns.jpg"></p>
 <p>RNNs 主要处理时序数据，比如一句话，词与词之间都是有顺序的，因此经常用在NLP领域，比如机器翻译，情感分析等。 一般的RNNs有多个FNN横向连接而成，其中中间有个rnn-cell, 存储的是前面序列的隐含状态s。 分解开来的话， 就相当于三层，第一层是输入x到rnn-cell的连接，第二层是rnn-cell,得到的是隐藏状态s，第三层是rnn-cell到输出o的连接层。下面开始一步一步实现。</p>
 <p>第一步我们需要想办法把mnist的数据定义为时序数据，开始数据是 28X28的，因此我们可以按行来看，第一行是第一个时间点，下一行是第二个时间点的 数据，对应到上图就是: 第一行的数据是<span class="math inline">\(x_0\)</span>，第二行的数据为<span class="math inline">\(x_1\)</span>，依次类推。 另外，这一节我们主要用RNNs做分类，因此只关心最后一个时间点的输出即可。因此我们实现的结构其实是下图这样的: 下一节会讨论回归问题，就是考虑所有输出:</p>
 <div class="figure">
-<img src="http://7xotye.com1.z0.glb.clouddn.com/rnn2.png">
+<img src="http://cdn.htliu.cn/rnn2.png">
 
 </div>
 <p>首先定义一些后面使用的参数:</p>
@@ -181,7 +181,7 @@ ga('send', 'pageview');
 发布时间: 2017-01-02, 11:37:14<br/>
 <p>
 <p>
-最后更新: 2017-07-31, 10:42:34<br/>
+最后更新: 2018-09-29, 11:52:04<br/>
 <p>
 本文链接: <a href="/2017/01/02/tensorflow-rnn-example-3/" target="_blank">http://shomy.top/2017/01/02/tensorflow-rnn-example-3/</a>
 </p>

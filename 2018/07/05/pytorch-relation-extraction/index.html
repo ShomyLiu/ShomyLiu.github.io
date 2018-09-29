@@ -13,13 +13,13 @@
 <meta property="og:site_name" content="天空的城">
 <meta property="og:description" content="接前面笔记:关系抽取总结中最后说的，在关系抽取基于Distant Supervision的NYT+Freebase的数据集有两个版本，目前大部分文章都是在这两份数据集上做的。通过纵向实验发现，同一个模型在不同版本数据集上的表现有不少差异，这篇笔记是基于自己使用Pytorch复现的PCNN(Zeng 2015)与PCNN+ATT(Lin 2016)的实验结果来简单对比。  代码地址: pytorc">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/blog/pytorch-relation-extraction/large.png">
-<meta property="og:image" content="http://7xotye.com1.z0.glb.clouddn.com/blog/pytorch-relation-extraction/small.png">
-<meta property="og:updated_time" content="2018-07-05T12:52:49.512Z">
+<meta property="og:image" content="http://cdn.htliu.cn/blog/pytorch-relation-extraction/large.png">
+<meta property="og:image" content="http://cdn.htliu.cn/blog/pytorch-relation-extraction/small.png">
+<meta property="og:updated_time" content="2018-09-29T03:52:04.760Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="pytorch关系抽取实验">
 <meta name="twitter:description" content="接前面笔记:关系抽取总结中最后说的，在关系抽取基于Distant Supervision的NYT+Freebase的数据集有两个版本，目前大部分文章都是在这两份数据集上做的。通过纵向实验发现，同一个模型在不同版本数据集上的表现有不少差异，这篇笔记是基于自己使用Pytorch复现的PCNN(Zeng 2015)与PCNN+ATT(Lin 2016)的实验结果来简单对比。  代码地址: pytorc">
-<meta name="twitter:image" content="http://7xotye.com1.z0.glb.clouddn.com/blog/pytorch-relation-extraction/large.png">
+<meta name="twitter:image" content="http://cdn.htliu.cn/blog/pytorch-relation-extraction/large.png">
   
   
     <link rel="icon" href="/image/favicon.ico">
@@ -176,7 +176,7 @@ ga('send', 'pageview');
 <p>总体来说：这两种方法很类似，因为在绘制PR曲线的时候，最后有一个截断，本质相同。</p>
 <h2 id="实验结果">实验结果</h2>
 <h3 id="large数据集">LARGE数据集</h3>
-<p>直接上跑的结果， PR曲线: <img src="http://7xotye.com1.z0.glb.clouddn.com/blog/pytorch-relation-extraction/large.png"></p>
+<p>直接上跑的结果， PR曲线: <img src="http://cdn.htliu.cn/blog/pytorch-relation-extraction/large.png"></p>
 <p>其中:</p>
 <ul>
 <li>PCNN+ATT: Lin2016 论文中给出的结果，直接拿来用</li>
@@ -190,7 +190,7 @@ ga('send', 'pageview');
 <li>PCNN+ONE+My 与 PCNN+ATT+MY 并没有想象中的差距那么多， 这个也很有意思，说明Attention 没有起到很大的作用？</li>
 </ul>
 <h3 id="small数据集">SMALL数据集</h3>
-<p>PR曲线的结果: <img src="http://7xotye.com1.z0.glb.clouddn.com/blog/pytorch-relation-extraction/small.png"></p>
+<p>PR曲线的结果: <img src="http://cdn.htliu.cn/blog/pytorch-relation-extraction/small.png"></p>
 <p>结果:</p>
 <ul>
 <li>测了很多参数，自己实现的PCNN+ONE <strong>在recall比较小的时候，达不到Zeng2015使用Theano实现的模型效果</strong>， 原因还会继续查找。在recall相对较大的时候，基本可以达到Zeng2015的效果。</li>
@@ -224,7 +224,7 @@ ga('send', 'pageview');
 发布时间: 2018-07-05, 00:02:54<br/>
 <p>
 <p>
-最后更新: 2018-07-05, 20:52:49<br/>
+最后更新: 2018-09-29, 11:52:04<br/>
 <p>
 本文链接: <a href="/2018/07/05/pytorch-relation-extraction/" target="_blank">http://shomy.top/2018/07/05/pytorch-relation-extraction/</a>
 </p>
