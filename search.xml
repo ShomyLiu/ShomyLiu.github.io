@@ -7,6 +7,7 @@
       <url>/2018/10/14/ubuntu-proxy/</url>
       <content type="html"><![CDATA[<p>使用Tinyproxy 在一台可以连接公网的机器上搭建了代理，这样可以让内网机器可以连接通过连接该代理，访问外网资源。 不过很多常用的应用或者命令的代理方式不一致。因此总结一下:</p>
 <h2 id="环境变量设置">环境变量设置</h2>
+<a id="more"></a>
 <p>可以直接在命令行: <code>export http_proxy=http://ip:port</code>. 或者在<code>.bashrc</code>里面加入这一行可以一直生效。 这个可能对于某些命令有效。对于sudo操作，需要在sudo之后加<code>-E</code></p>
 <h2 id="apt系列">APT系列</h2>
 <p>包含<code>apt update/intall/upgrade</code>等， 一般使用选项设置代理,如:</p>

@@ -5,18 +5,18 @@
   
   <title>Ubuntu常用代理设置方法 | 天空的城</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="使用Tinyproxy 在一台可以连接公网的机器上搭建了代理，这样可以让内网机器可以连接通过连接该代理，访问外网资源。 不过很多常用的应用或者命令的代理方式不一致。因此总结一下: 环境变量设置 可以直接在命令行: export http_proxy=http://ip:port. 或者在.bashrc里面加入这一行可以一直生效。 这个可能对于某些命令有效。对于sudo操作，需要在sudo之后加-E">
+  <meta name="description" content="使用Tinyproxy 在一台可以连接公网的机器上搭建了代理，这样可以让内网机器可以连接通过连接该代理，访问外网资源。 不过很多常用的应用或者命令的代理方式不一致。因此总结一下: 环境变量设置">
 <meta name="keywords" content="Ubuntu">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Ubuntu常用代理设置方法">
 <meta property="og:url" content="http://shomy.top/2018/10/14/ubuntu-proxy/index.html">
 <meta property="og:site_name" content="天空的城">
-<meta property="og:description" content="使用Tinyproxy 在一台可以连接公网的机器上搭建了代理，这样可以让内网机器可以连接通过连接该代理，访问外网资源。 不过很多常用的应用或者命令的代理方式不一致。因此总结一下: 环境变量设置 可以直接在命令行: export http_proxy=http://ip:port. 或者在.bashrc里面加入这一行可以一直生效。 这个可能对于某些命令有效。对于sudo操作，需要在sudo之后加-E">
+<meta property="og:description" content="使用Tinyproxy 在一台可以连接公网的机器上搭建了代理，这样可以让内网机器可以连接通过连接该代理，访问外网资源。 不过很多常用的应用或者命令的代理方式不一致。因此总结一下: 环境变量设置">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2018-10-14T10:15:38.714Z">
+<meta property="og:updated_time" content="2018-10-14T10:23:55.725Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Ubuntu常用代理设置方法">
-<meta name="twitter:description" content="使用Tinyproxy 在一台可以连接公网的机器上搭建了代理，这样可以让内网机器可以连接通过连接该代理，访问外网资源。 不过很多常用的应用或者命令的代理方式不一致。因此总结一下: 环境变量设置 可以直接在命令行: export http_proxy=http://ip:port. 或者在.bashrc里面加入这一行可以一直生效。 这个可能对于某些命令有效。对于sudo操作，需要在sudo之后加-E">
+<meta name="twitter:description" content="使用Tinyproxy 在一台可以连接公网的机器上搭建了代理，这样可以让内网机器可以连接通过连接该代理，访问外网资源。 不过很多常用的应用或者命令的代理方式不一致。因此总结一下: 环境变量设置">
   
   
     <link rel="icon" href="/image/favicon.ico">
@@ -140,6 +140,7 @@ ga('send', 'pageview');
         
         <p>使用Tinyproxy 在一台可以连接公网的机器上搭建了代理，这样可以让内网机器可以连接通过连接该代理，访问外网资源。 不过很多常用的应用或者命令的代理方式不一致。因此总结一下:</p>
 <h2 id="环境变量设置">环境变量设置</h2>
+<a id="more"></a>
 <p>可以直接在命令行: <code>export http_proxy=http://ip:port</code>. 或者在<code>.bashrc</code>里面加入这一行可以一直生效。 这个可能对于某些命令有效。对于sudo操作，需要在sudo之后加<code>-E</code></p>
 <h2 id="apt系列">APT系列</h2>
 <p>包含<code>apt update/intall/upgrade</code>等， 一般使用选项设置代理,如:</p>
@@ -183,7 +184,7 @@ ga('send', 'pageview');
 发布时间: 2018-10-14, 18:12:47<br/>
 <p>
 <p>
-最后更新: 2018-10-14, 18:15:38<br/>
+最后更新: 2018-10-14, 18:23:55<br/>
 <p>
 本文链接: <a href="/2018/10/14/ubuntu-proxy/" target="_blank">http://shomy.top/2018/10/14/ubuntu-proxy/</a>
 </p>
