@@ -4,7 +4,7 @@
   <url>
     <loc>http://shomy.top/2018/06/08/neo4j-start/</loc>
     
-    <lastmod>2018-10-28T07:25:20.043Z</lastmod>
+    <lastmod>2018-10-28T09:01:33.601Z</lastmod>
     
   </url>
   
@@ -37,13 +37,6 @@
   </url>
   
   <url>
-    <loc>http://shomy.top/2015/12/14/ubuntu-32bit-clang-3-7-x/</loc>
-    
-    <lastmod>2018-09-29T03:52:04.768Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>http://shomy.top/2016/05/05/trans-8-powerful-awk-built-in-variables/</loc>
     
     <lastmod>2018-09-29T03:52:04.768Z</lastmod>
@@ -52,6 +45,13 @@
   
   <url>
     <loc>http://shomy.top/2016/07/09/twilio-flask-slack/</loc>
+    
+    <lastmod>2018-09-29T03:52:04.768Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://shomy.top/2015/12/14/ubuntu-32bit-clang-3-7-x/</loc>
     
     <lastmod>2018-09-29T03:52:04.768Z</lastmod>
     
@@ -79,20 +79,6 @@
   </url>
   
   <url>
-    <loc>http://shomy.top/2017/01/01/tensorflow-cnn-example-2/</loc>
-    
-    <lastmod>2018-09-29T03:52:04.764Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://shomy.top/2017/02/20/svm04-soft-margin/</loc>
-    
-    <lastmod>2018-09-29T03:52:04.764Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>http://shomy.top/2017/03/11/tensorflow-basic-api/</loc>
     
     <lastmod>2018-09-29T03:52:04.764Z</lastmod>
@@ -101,6 +87,20 @@
   
   <url>
     <loc>http://shomy.top/2017/02/19/svm03-kernel-trick/</loc>
+    
+    <lastmod>2018-09-29T03:52:04.764Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://shomy.top/2017/01/01/tensorflow-cnn-example-2/</loc>
+    
+    <lastmod>2018-09-29T03:52:04.764Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://shomy.top/2017/02/20/svm04-soft-margin/</loc>
     
     <lastmod>2018-09-29T03:52:04.764Z</lastmod>
     
@@ -124,6 +124,13 @@
     <loc>http://shomy.top/2017/02/16/svm-01/</loc>
     
     <lastmod>2018-09-29T03:52:04.764Z</lastmod>
+    
+  </url>
+  
+  <url>
+    <loc>http://shomy.top/2017/02/26/rbf-network/</loc>
+    
+    <lastmod>2018-09-29T03:52:04.760Z</lastmod>
     
   </url>
   
@@ -163,14 +170,7 @@
   </url>
   
   <url>
-    <loc>http://shomy.top/2017/02/26/rbf-network/</loc>
-    
-    <lastmod>2018-09-29T03:52:04.760Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://shomy.top/2018/06/26/neo4j-aminer-import/</loc>
+    <loc>http://shomy.top/2017/03/07/kernel-lr/</loc>
     
     <lastmod>2018-09-29T03:52:04.756Z</lastmod>
     
@@ -198,6 +198,13 @@
   </url>
   
   <url>
+    <loc>http://shomy.top/2016/11/12/focus-linear-regression/</loc>
+    
+    <lastmod>2018-09-29T03:52:04.756Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://shomy.top/2016/11/16/logistic-regression-1/</loc>
     
     <lastmod>2018-09-29T03:52:04.756Z</lastmod>
@@ -205,14 +212,14 @@
   </url>
   
   <url>
-    <loc>http://shomy.top/2017/07/29/Hexo-admin-for-blogs/</loc>
+    <loc>http://shomy.top/2016/04/14/git-server-hook/</loc>
     
     <lastmod>2018-09-29T03:52:04.756Z</lastmod>
     
   </url>
   
   <url>
-    <loc>http://shomy.top/2016/11/12/focus-linear-regression/</loc>
+    <loc>http://shomy.top/2018/06/26/neo4j-aminer-import/</loc>
     
     <lastmod>2018-09-29T03:52:04.756Z</lastmod>
     
@@ -234,13 +241,6 @@
   
   <url>
     <loc>http://shomy.top/2016/02/28/python-default-para/</loc>
-    
-    <lastmod>2018-09-29T03:52:04.756Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://shomy.top/2016/04/14/git-server-hook/</loc>
     
     <lastmod>2018-09-29T03:52:04.756Z</lastmod>
     
@@ -275,14 +275,14 @@
   </url>
   
   <url>
-    <loc>http://shomy.top/2017/01/27/hexo-migrate-solution/</loc>
+    <loc>http://shomy.top/2017/07/29/Hexo-admin-for-blogs/</loc>
     
     <lastmod>2018-09-29T03:52:04.756Z</lastmod>
     
   </url>
   
   <url>
-    <loc>http://shomy.top/2017/03/07/kernel-lr/</loc>
+    <loc>http://shomy.top/2017/01/27/hexo-migrate-solution/</loc>
     
     <lastmod>2018-09-29T03:52:04.756Z</lastmod>
     
@@ -352,6 +352,13 @@
   </url>
   
   <url>
+    <loc>http://shomy.top/2017/03/15/blending-bagging/</loc>
+    
+    <lastmod>2018-09-29T03:52:04.736Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://shomy.top/2017/09/29/codings-webhook/</loc>
     
     <lastmod>2018-09-29T03:52:04.736Z</lastmod>
@@ -380,13 +387,6 @@
   </url>
   
   <url>
-    <loc>http://shomy.top/2017/03/15/blending-bagging/</loc>
-    
-    <lastmod>2018-09-29T03:52:04.736Z</lastmod>
-    
-  </url>
-  
-  <url>
     <loc>http://shomy.top/2017/03/16/adaptive-boosting/</loc>
     
     <lastmod>2018-09-29T03:52:04.736Z</lastmod>
@@ -408,14 +408,14 @@
   </url>
   
   <url>
-    <loc>http://shomy.top/about/index.html</loc>
+    <loc>http://shomy.top/tags/index.html</loc>
     
     <lastmod>2017-07-31T02:42:34.566Z</lastmod>
     
   </url>
   
   <url>
-    <loc>http://shomy.top/tags/index.html</loc>
+    <loc>http://shomy.top/about/index.html</loc>
     
     <lastmod>2017-07-31T02:42:34.566Z</lastmod>
     
