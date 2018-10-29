@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://shomy.top/"/>
-  <updated>2018-10-14T10:23:55.725Z</updated>
+  <updated>2018-10-29T15:17:24.098Z</updated>
   <id>http://shomy.top/</id>
   
   <author>
@@ -14,6 +14,62 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>docker搭建neo4j与elasticsearch数据同步</title>
+    <link href="http://shomy.top/2018/10/29/docker-neo4j-es/"/>
+    <id>http://shomy.top/2018/10/29/docker-neo4j-es/</id>
+    <published>2018-10-29T15:13:28.000Z</published>
+    <updated>2018-10-29T15:17:24.098Z</updated>
+    
+    <content type="html"><![CDATA[<h2 id="需求">需求</h2>
+<p>现在有图数据，包含节点和边，节点或者关系都有大段的文本属性，并且需要对全文文本进行检索，因此计划使用Neo4j 进行关系存储以及图算法的应用，使用Elastic Search 进行全文搜索，因此需要Neo4j的数据与Elastic Search进行自动同步，从而实现节点/关系搜索使用Neo4j, 全文搜索使用Elastic Search, 各发挥自己的长处。</p>
+<h2 id="方案">方案</h2>
+<p>正巧的Neo4j官方提供了一个插件<a href="https://github.com/neo4j-contrib/neo4j-elasticsearch" target="_blank" rel="external">neo-elasticsearch</a>, 可以直接Neo4j的数据实时同步到ElasticSearch中。 不过由于官网文档的说明比较简单，以及本人对docker的熟练度有限，在使用docker搭建的过程中，遇到了很大的坑,记录于此。</p>
+<a id="more"></a>
+<p>环境如下:</p>
+<ul>
+<li>Ubuntu 16.04LST</li>
+<li>Docker 18.06.0-ce</li>
+<li>Neo4j:3.4</li>
+<li>ElasticSearch:6.4.2</li>
+</ul>
+<h3 id="安装neo4j">安装Neo4j</h3>
+<p>首先就是使用Docker安装Neo4j遇到的大坑。(官网文档](https://neo4j.com/docs/operations-manual/current/installation/docker/)有误，安装之后启动失败; ### 安装ElasticSearch ES的安装比较简单，直接按照<a href="https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html" target="_blank" rel="external">官网说明</a> 即可（2018.10当前版本号6.4.2）。 <figure class="highlight stylus"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">docker run -<span class="selector-tag">p</span> <span class="number">9200</span>:<span class="number">9200</span> -<span class="selector-tag">p</span> <span class="number">9300</span>:<span class="number">9300</span> --name es  \</div><div class="line">-d -e <span class="string">"discovery.type=single-node"</span> docker<span class="selector-class">.elastic</span><span class="selector-class">.co</span>/elasticsearch/elasticsearch:<span class="number">6.4</span>.<span class="number">2</span></div></pre></td></tr></table></figure></p>
+<p>这样我们新建了一个名称为<code>es</code>，web端口为9200，在后台运行的的elastic search容器，可以访问<code>http://ip:9200</code>查看</p>
+<h3 id="安装neo4j及neo-elasticsearch插件">安装Neo4j及neo-elasticsearch插件</h3>
+<p>前面一篇博客<a href="http://shomy.top/2018/06/08/neo4j-start/">Neo4j初探</a> 已经提到了使用Docker安装Neo4j的启动失败的大坑，这里就不再赘述。因为在后续安装插件的时候，需要修改配置文件和拷贝插件，所以在新建neo4j容器的时候暴露出来conf和plugins目录，具体的命令如下: <figure class="highlight crystal"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">docker run -p <span class="number">7474</span>:<span class="number">7474</span> -p <span class="number">7687</span>:<span class="number">7687</span> -v $HOME/neo4j/<span class="symbol">data:</span>/data   \ </div><div class="line">-v $HOME/neo4j/<span class="symbol">conf:</span>/var/<span class="class"><span class="keyword">lib</span>/<span class="title">neo4j</span>/<span class="title">conf</span>  \</span></div><div class="line">-v $HOME/neo4j/<span class="symbol">plugins:</span>/var/<span class="class"><span class="keyword">lib</span>/<span class="title">neo4j</span>/<span class="title">plugins</span> \</span></div><div class="line">--name neo4j  --link <span class="symbol">es:</span>es -d  <span class="symbol">neo4j:</span><span class="number">3.4</span></div></pre></td></tr></table></figure></p>
+<p>其中 <code>--link=es:es</code> 表示neo4j这个容器依赖于es容器，可以使用<code>docker ps</code> 以及<code>docker logs -f -t neo4j</code> 查看运行状态和日志。 下面开始安装插件: - 下载插件jar包: https://github.com/neo4j-contrib/neo4j-elasticsearch/releases 然后将jar包拷到<code>plugins</code> 目录里面 - 修改配置文件（假设在Neo4j中有两类节点Person与Place）: <figure class="highlight groovy"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">elasticsearch.host_name=<span class="string">http:</span><span class="comment">//es:9200</span></div><div class="line">elasticsearch.index_spec=<span class="string">people:</span>Person(first_name,last_name), <span class="string">places:</span>Place(name)</div></pre></td></tr></table></figure></p>
+<ul>
+<li>重启neo4j即可 <code>docker restart neo4j</code>，可以通过日志来验证是否载入了 <code>docker exec neo4j cat /var/lib/neo4j/logs/debug.log | grep elastic</code> <figure class="highlight stylus"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line">    <span class="number">396</span>:<span class="number">2018</span>-<span class="number">10</span>-<span class="number">29</span> <span class="number">11</span>:<span class="number">58</span>:<span class="number">13.988</span>+<span class="number">0000</span> INFO [o<span class="selector-class">.n</span><span class="selector-class">.k</span><span class="selector-class">.i</span><span class="selector-class">.DiagnosticsManager</span>] elasticsearch.index_spec=people:Person(first_name,last_name),                places:Place(name)</div><div class="line"><span class="number">403</span>:<span class="number">2018</span>-<span class="number">10</span>-<span class="number">29</span> <span class="number">11</span>:<span class="number">58</span>:<span class="number">13.989</span>+<span class="number">0000</span> INFO [o<span class="selector-class">.n</span><span class="selector-class">.k</span><span class="selector-class">.i</span><span class="selector-class">.DiagnosticsManager</span>] elasticsearch.host_name=http:<span class="comment">//es:9200</span></div><div class="line"><span class="number">530</span>:<span class="number">2018</span>-<span class="number">10</span>-<span class="number">29</span> <span class="number">11</span>:<span class="number">58</span>:<span class="number">14.023</span>+<span class="number">0000</span> INFO [o<span class="selector-class">.n</span><span class="selector-class">.k</span><span class="selector-class">.i</span><span class="selector-class">.DiagnosticsManager</span>] [classpath + loader.<span class="number">0</span>] file:/var/lib/neo4j/plugins/neo4j-elasticsearch-<span class="number">3.4</span>.<span class="number">5</span>.jar</div></pre></td></tr></table></figure></li>
+</ul>
+<p>这里面有一点很关键的是host_name, 因为官方的文档是直接在主机搭建因此直接是<code>localhost</code>， 但是在docker中两个容器是独立的ip，独立的服务，这里需要讲host_name改成上面创建elastic search容器的名称即<code>es</code>， 这是因为在docker中，如果使用了<code>--link</code>的话，docker会给当前容器内部写入一个连接容器的名字的环境变量。通过<code>docker inspect</code>查看两个容器的ip地址，假设neo4j的ip为<code>172.17.0.3</code>, es的ip为<code>172.17.0.2</code>，这样docker会给neo4j注册一个名称为es，指向es容器的环境变量，因此需要这样填写：<code>elasticsearch.host_name=http://es:9200</code>。</p>
+<p>此外，<code>elasticsearch.index_spec=people:Person(first_name,last_name), places:Place(name)</code> 这条命令表示将neo4j中的Person节点存为es的people索引，Place节点存为places索引。</p>
+<h2 id="测试">测试</h2>
+<p>首先使用neo4j新建节点： <figure class="highlight css"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="selector-tag">CREATE</span> (<span class="selector-tag">n</span><span class="selector-pseudo">:Person</span> &#123; <span class="attribute">first_name </span>: <span class="string">"A"</span>, last_name: <span class="string">"Han"</span> &#125;) <span class="selector-tag">RETURN</span> <span class="selector-tag">n</span>;</div></pre></td></tr></table></figure></p>
+<p>执行了之后，查看es中是否存在新插入的节点: http://ip:9200/people/_search?pretty=<br>
+当然修改，删除等操作都可以来实时同步到es。比较方便</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;h2 id=&quot;需求&quot;&gt;需求&lt;/h2&gt;
+&lt;p&gt;现在有图数据，包含节点和边，节点或者关系都有大段的文本属性，并且需要对全文文本进行检索，因此计划使用Neo4j 进行关系存储以及图算法的应用，使用Elastic Search 进行全文搜索，因此需要Neo4j的数据与Elastic Search进行自动同步，从而实现节点/关系搜索使用Neo4j, 全文搜索使用Elastic Search, 各发挥自己的长处。&lt;/p&gt;
+&lt;h2 id=&quot;方案&quot;&gt;方案&lt;/h2&gt;
+&lt;p&gt;正巧的Neo4j官方提供了一个插件&lt;a href=&quot;https://github.com/neo4j-contrib/neo4j-elasticsearch&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;neo-elasticsearch&lt;/a&gt;, 可以直接Neo4j的数据实时同步到ElasticSearch中。 不过由于官网文档的说明比较简单，以及本人对docker的熟练度有限，在使用docker搭建的过程中，遇到了很大的坑,记录于此。&lt;/p&gt;
+    
+    </summary>
+    
+      <category term="工具使用" scheme="http://shomy.top/categories/%E5%B7%A5%E5%85%B7%E4%BD%BF%E7%94%A8/"/>
+    
+    
+      <category term="neo4j" scheme="http://shomy.top/tags/neo4j/"/>
+    
+      <category term="docker" scheme="http://shomy.top/tags/docker/"/>
+    
+      <category term="elasticsearch" scheme="http://shomy.top/tags/elasticsearch/"/>
+    
+  </entry>
   
   <entry>
     <title>Ubuntu常用代理设置方法</title>
@@ -221,7 +277,7 @@
     <link href="http://shomy.top/2018/06/08/neo4j-start/"/>
     <id>http://shomy.top/2018/06/08/neo4j-start/</id>
     <published>2018-06-08T12:52:49.000Z</published>
-    <updated>2018-10-28T09:01:33.601Z</updated>
+    <updated>2018-10-29T15:16:04.196Z</updated>
     
     <content type="html"><![CDATA[<blockquote>
 <p>2018.10.28 更新: docker 安装Neo4j的坑</p>
@@ -230,7 +286,7 @@
 <figure class="highlight routeros"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">docker <span class="builtin-name">run</span> \</div><div class="line">    <span class="attribute">--publish</span>=7474:7474 <span class="attribute">--publish</span>=7687:7687 \</div><div class="line">    <span class="attribute">--volume</span>=<span class="variable">$HOME</span>/neo4j/data:/data \</div><div class="line">    <span class="attribute">--volume</span>=<span class="variable">$HOME</span>/neo4j/logs:/logs \</div><div class="line">    neo4j:3.4</div></pre></td></tr></table></figure>
 <p>错误信息大概是:</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">Active database: graph.db</div><div class="line">2018-04-03 21:52:03.380+0000 ERROR Failed to <span class="keyword">start</span> Neo4j: <span class="keyword">Starting</span> Neo4j <span class="keyword">failed</span>: Component <span class="string">'org.neo4j.server.database.LifecycleManagingDatabase@2fd66ad3'</span> was successfully <span class="keyword">initialized</span>, but <span class="keyword">failed</span> <span class="keyword">to</span> start. Please see the attached cause <span class="keyword">exception</span> <span class="string">"/logs/debug.log (Permission denied)"</span>. <span class="keyword">Starting</span> Neo4j <span class="keyword">failed</span>: Component <span class="string">'org.neo4j.server.database.LifecycleManagingDatabase@2fd66ad3'</span> was successfully <span class="keyword">initialized</span>, but <span class="keyword">failed</span> <span class="keyword">to</span> start. Please see the attached cause <span class="keyword">exception</span> <span class="string">"/logs/debug.log (Permission denied)"</span>.</div><div class="line">org.neo4j.server.ServerStartupException: <span class="keyword">Starting</span> Neo4j <span class="keyword">failed</span>: Component <span class="string">'org.neo4j.server.database.LifecycleManagingDatabase@2fd66ad3'</span> was successfully <span class="keyword">initialized</span>, but <span class="keyword">failed</span> <span class="keyword">to</span> start. Please see the attached cause <span class="keyword">exception</span> <span class="string">"/logs/debug.log (Permission denied)"</span>.</div><div class="line">Caused <span class="keyword">by</span>: org.neo4j.kernel.lifecycle.LifecycleException: Component <span class="string">'org.neo4j.server.database.LifecycleManagingDatabase@2fd66ad3'</span> was successfully <span class="keyword">initialized</span>, but <span class="keyword">failed</span> <span class="keyword">to</span> start. Please see the attached cause <span class="keyword">exception</span> <span class="string">"/logs/debug.log (Permission denied)"</span>.</div><div class="line">        ... <span class="number">3</span> more</div><div class="line">Caused <span class="keyword">by</span>: java.lang.RuntimeException: java.io.FileNotFoundException: /<span class="keyword">logs</span>/debug.log (Permission denied)</div><div class="line">        ... <span class="number">5</span> more</div><div class="line">Caused <span class="keyword">by</span>: java.io.FileNotFoundException: /<span class="keyword">logs</span>/debug.log (Permission denied)</div><div class="line">        ... <span class="number">12</span> more</div><div class="line"><span class="number">2018</span><span class="number">-04</span><span class="number">-03</span> <span class="number">21</span>:<span class="number">52</span>:<span class="number">03.400</span>+<span class="number">0000</span> INFO  Neo4j <span class="keyword">Server</span> <span class="keyword">shutdown</span> initiated <span class="keyword">by</span> request</div></pre></td></tr></table></figure>
-<p>原始是因为在neo4j中的<code>logs</code>和<code>conf</code> 在最近的几个版本中，不能再指向<code>/</code>, 因此不能手动<code>--volumns</code>，去掉那一行即可: <figure class="highlight routeros"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">docker <span class="builtin-name">run</span> \</div><div class="line">    <span class="attribute">--publish</span>=7474:7474 <span class="attribute">--publish</span>=7687:7687 \</div><div class="line">    <span class="attribute">--volume</span>=<span class="variable">$HOME</span>/neo4j/data:/data \</div><div class="line">    neo4j:3.4</div></pre></td></tr></table></figure></p>
+<p>原始是因为在neo4j中的<code>logs</code> 在最近的几个版本中，不能再指向<code>/</code>, 因此不能手动<code>--volumns</code>，去掉那一行即可: <figure class="highlight routeros"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">docker <span class="builtin-name">run</span> \</div><div class="line">    <span class="attribute">--publish</span>=7474:7474 <span class="attribute">--publish</span>=7687:7687 \</div><div class="line">    <span class="attribute">--volume</span>=<span class="variable">$HOME</span>/neo4j/data:/data \</div><div class="line">    neo4j:3.4</div></pre></td></tr></table></figure></p>
 <p>参考: https://github.com/neo4j/docker-neo4j/issues/131</p>
 <p>此外，如果修改了主机的端口，比如<code>-p 7574:7474 -p 7787:7687</code> 在主机登录的时候，需要修改一下web界面上的host那一项(bolt://ip:7787)，不然登录失败。</p>
 <p>近期需要处理图数据，考察后打算使用<a href="https://neo4j.com/" target="_blank" rel="external">neo4j</a>, 相比其他一些图数据库，neo4j开源，跨平台，接口友好，文档齐全，完整支持ACID。 首先放一张网上的图片，关系型数据库与图数据库存储网络数据的差异:</p>
@@ -341,7 +397,7 @@
 &lt;figure class=&quot;highlight routeros&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;2&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;3&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;4&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;5&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;docker &lt;span class=&quot;builtin-name&quot;&gt;run&lt;/span&gt; \&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;attribute&quot;&gt;--publish&lt;/span&gt;=7474:7474 &lt;span class=&quot;attribute&quot;&gt;--publish&lt;/span&gt;=7687:7687 \&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;attribute&quot;&gt;--volume&lt;/span&gt;=&lt;span class=&quot;variable&quot;&gt;$HOME&lt;/span&gt;/neo4j/data:/data \&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;attribute&quot;&gt;--volume&lt;/span&gt;=&lt;span class=&quot;variable&quot;&gt;$HOME&lt;/span&gt;/neo4j/logs:/logs \&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    neo4j:3.4&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
 &lt;p&gt;错误信息大概是:&lt;/p&gt;
 &lt;figure class=&quot;highlight sql&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;2&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;3&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;4&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;5&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;6&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;7&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;8&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;9&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;10&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;Active database: graph.db&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;2018-04-03 21:52:03.380+0000 ERROR Failed to &lt;span class=&quot;keyword&quot;&gt;start&lt;/span&gt; Neo4j: &lt;span class=&quot;keyword&quot;&gt;Starting&lt;/span&gt; Neo4j &lt;span class=&quot;keyword&quot;&gt;failed&lt;/span&gt;: Component &lt;span class=&quot;string&quot;&gt;&#39;org.neo4j.server.database.LifecycleManagingDatabase@2fd66ad3&#39;&lt;/span&gt; was successfully &lt;span class=&quot;keyword&quot;&gt;initialized&lt;/span&gt;, but &lt;span class=&quot;keyword&quot;&gt;failed&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;to&lt;/span&gt; start. Please see the attached cause &lt;span class=&quot;keyword&quot;&gt;exception&lt;/span&gt; &lt;span class=&quot;string&quot;&gt;&quot;/logs/debug.log (Permission denied)&quot;&lt;/span&gt;. &lt;span class=&quot;keyword&quot;&gt;Starting&lt;/span&gt; Neo4j &lt;span class=&quot;keyword&quot;&gt;failed&lt;/span&gt;: Component &lt;span class=&quot;string&quot;&gt;&#39;org.neo4j.server.database.LifecycleManagingDatabase@2fd66ad3&#39;&lt;/span&gt; was successfully &lt;span class=&quot;keyword&quot;&gt;initialized&lt;/span&gt;, but &lt;span class=&quot;keyword&quot;&gt;failed&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;to&lt;/span&gt; start. Please see the attached cause &lt;span class=&quot;keyword&quot;&gt;exception&lt;/span&gt; &lt;span class=&quot;string&quot;&gt;&quot;/logs/debug.log (Permission denied)&quot;&lt;/span&gt;.&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;org.neo4j.server.ServerStartupException: &lt;span class=&quot;keyword&quot;&gt;Starting&lt;/span&gt; Neo4j &lt;span class=&quot;keyword&quot;&gt;failed&lt;/span&gt;: Component &lt;span class=&quot;string&quot;&gt;&#39;org.neo4j.server.database.LifecycleManagingDatabase@2fd66ad3&#39;&lt;/span&gt; was successfully &lt;span class=&quot;keyword&quot;&gt;initialized&lt;/span&gt;, but &lt;span class=&quot;keyword&quot;&gt;failed&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;to&lt;/span&gt; start. Please see the attached cause &lt;span class=&quot;keyword&quot;&gt;exception&lt;/span&gt; &lt;span class=&quot;string&quot;&gt;&quot;/logs/debug.log (Permission denied)&quot;&lt;/span&gt;.&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;Caused &lt;span class=&quot;keyword&quot;&gt;by&lt;/span&gt;: org.neo4j.kernel.lifecycle.LifecycleException: Component &lt;span class=&quot;string&quot;&gt;&#39;org.neo4j.server.database.LifecycleManagingDatabase@2fd66ad3&#39;&lt;/span&gt; was successfully &lt;span class=&quot;keyword&quot;&gt;initialized&lt;/span&gt;, but &lt;span class=&quot;keyword&quot;&gt;failed&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;to&lt;/span&gt; start. Please see the attached cause &lt;span class=&quot;keyword&quot;&gt;exception&lt;/span&gt; &lt;span class=&quot;string&quot;&gt;&quot;/logs/debug.log (Permission denied)&quot;&lt;/span&gt;.&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;        ... &lt;span class=&quot;number&quot;&gt;3&lt;/span&gt; more&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;Caused &lt;span class=&quot;keyword&quot;&gt;by&lt;/span&gt;: java.lang.RuntimeException: java.io.FileNotFoundException: /&lt;span class=&quot;keyword&quot;&gt;logs&lt;/span&gt;/debug.log (Permission denied)&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;        ... &lt;span class=&quot;number&quot;&gt;5&lt;/span&gt; more&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;Caused &lt;span class=&quot;keyword&quot;&gt;by&lt;/span&gt;: java.io.FileNotFoundException: /&lt;span class=&quot;keyword&quot;&gt;logs&lt;/span&gt;/debug.log (Permission denied)&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;        ... &lt;span class=&quot;number&quot;&gt;12&lt;/span&gt; more&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;&lt;span class=&quot;number&quot;&gt;2018&lt;/span&gt;&lt;span class=&quot;number&quot;&gt;-04&lt;/span&gt;&lt;span class=&quot;number&quot;&gt;-03&lt;/span&gt; &lt;span class=&quot;number&quot;&gt;21&lt;/span&gt;:&lt;span class=&quot;number&quot;&gt;52&lt;/span&gt;:&lt;span class=&quot;number&quot;&gt;03.400&lt;/span&gt;+&lt;span class=&quot;number&quot;&gt;0000&lt;/span&gt; INFO  Neo4j &lt;span class=&quot;keyword&quot;&gt;Server&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;shutdown&lt;/span&gt; initiated &lt;span class=&quot;keyword&quot;&gt;by&lt;/span&gt; request&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
-&lt;p&gt;原始是因为在neo4j中的&lt;code&gt;logs&lt;/code&gt;和&lt;code&gt;conf&lt;/code&gt; 在最近的几个版本中，不能再指向&lt;code&gt;/&lt;/code&gt;, 因此不能手动&lt;code&gt;--volumns&lt;/code&gt;，去掉那一行即可: &lt;figure class=&quot;highlight routeros&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;2&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;3&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;4&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;docker &lt;span class=&quot;builtin-name&quot;&gt;run&lt;/span&gt; \&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;attribute&quot;&gt;--publish&lt;/span&gt;=7474:7474 &lt;span class=&quot;attribute&quot;&gt;--publish&lt;/span&gt;=7687:7687 \&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;attribute&quot;&gt;--volume&lt;/span&gt;=&lt;span class=&quot;variable&quot;&gt;$HOME&lt;/span&gt;/neo4j/data:/data \&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    neo4j:3.4&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
+&lt;p&gt;原始是因为在neo4j中的&lt;code&gt;logs&lt;/code&gt; 在最近的几个版本中，不能再指向&lt;code&gt;/&lt;/code&gt;, 因此不能手动&lt;code&gt;--volumns&lt;/code&gt;，去掉那一行即可: &lt;figure class=&quot;highlight routeros&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;1&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;2&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;3&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;4&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;div class=&quot;line&quot;&gt;docker &lt;span class=&quot;builtin-name&quot;&gt;run&lt;/span&gt; \&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;attribute&quot;&gt;--publish&lt;/span&gt;=7474:7474 &lt;span class=&quot;attribute&quot;&gt;--publish&lt;/span&gt;=7687:7687 \&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    &lt;span class=&quot;attribute&quot;&gt;--volume&lt;/span&gt;=&lt;span class=&quot;variable&quot;&gt;$HOME&lt;/span&gt;/neo4j/data:/data \&lt;/div&gt;&lt;div class=&quot;line&quot;&gt;    neo4j:3.4&lt;/div&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/p&gt;
 &lt;p&gt;参考: https://github.com/neo4j/docker-neo4j/issues/131&lt;/p&gt;
 &lt;p&gt;此外，如果修改了主机的端口，比如&lt;code&gt;-p 7574:7474 -p 7787:7687&lt;/code&gt; 在主机登录的时候，需要修改一下web界面上的host那一项(bolt://ip:7787)，不然登录失败。&lt;/p&gt;
 &lt;p&gt;近期需要处理图数据，考察后打算使用&lt;a href=&quot;https://neo4j.com/&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;neo4j&lt;/a&gt;, 相比其他一些图数据库，neo4j开源，跨平台，接口友好，文档齐全，完整支持ACID。 首先放一张网上的图片，关系型数据库与图数据库存储网络数据的差异:&lt;/p&gt;
@@ -2417,143 +2473,6 @@
     
     
       <category term="machine learning" scheme="http://shomy.top/tags/machine-learning/"/>
-    
-      <category term="svm" scheme="http://shomy.top/tags/svm/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>机器学习技法笔记(4)-Kernel SVM</title>
-    <link href="http://shomy.top/2017/02/19/svm03-kernel-trick/"/>
-    <id>http://shomy.top/2017/02/19/svm03-kernel-trick/</id>
-    <published>2017-02-19T05:28:36.000Z</published>
-    <updated>2018-09-29T03:52:04.764Z</updated>
-    
-    <content type="html"><![CDATA[<p>接着上一节的Dual SVM，我们解决了非线性转换维度变高导致求解困难的问题，但是仍然有问题，那就是在求Q矩阵的时候，由于涉及到了高维的内积,计算量仍然很大，这一节引入核机制(Kernel Trick)来高效的求解这一过程，完全不再依赖高维空间。</p>
-<a id="more"></a>
-<h2 id="核的引入">核的引入</h2>
-<p>由上一节可以知道，计算量集中在Q矩阵中元素的计算:</p>
-<p><span class="math display">\[\begin{align}q_{n,m} &amp;= y_ny_m\mathbf{z}_n^T\mathbf{z}_m \\ &amp;=y_ny_m\phi(\mathbf{x}_n)^T\phi(\mathbf{x}_m)\end{align}\]</span></p>
-<p>这里分为两步，首先是空间转换，然后在高维空间中进行内积运算，这个计算量会很大的，尤其是后面还会有无穷维的转换，那么这一步根本无法完成。 如果我们将这两步合成一步的话， 就会降低计算量。下面以二阶多项式转换为例介绍: 假设原始数据有d维: <span class="math inline">\(\mathbf{x}=(x_1...x_d)\)</span>,</p>
-<p><span class="math display">\[\phi_2(\mathbf{x}) =(1, x_1,x_2...,x_d, x_1^2,x_1x_2,...,x_1x_d,...,x_2x_1,x_2^2,...,x_d^2)\]</span></p>
-<p>那么对两个数据<span class="math inline">\(\mathbf{x}, \mathbf{x}^{&#39;}\)</span>计算内积如下:</p>
-<p><span class="math display">\[\begin{align}\phi_2(\mathbf{x})\phi_2(\mathbf{x}^{&#39;}) &amp;= 1 + \sum\limits_{i=1}^{d}x_ix_{i}^{&#39;} + \sum\limits_{i=1}^{d}\sum\limits_{j=1}^{d}x_ix_jx_i^{&#39;}x_j^{&#39;} \\ &amp;= 1 + \sum\limits_{i=1}^{d}x_ix_{i}^{&#39;} + \sum\limits_{i=1}^{d}x_ix_i^{&#39;}\sum\limits_{j=1}^{d}x_jx_j^{&#39;} \\ &amp;=1 + \mathbf{x}\mathbf{x}^{&#39;} + (\mathbf{x}\mathbf{x}^{&#39;})^2 \end{align}\]</span></p>
-<p>可以发现，我们将转换与计算内积的过程转为了一步完成，就是上式，而且计算仅仅在原始维度上进行，复杂度从<span class="math inline">\(O(\tilde{d})\)</span>降到了<span class="math inline">\(O(d)\)</span>，完全去除了对<span class="math inline">\(\tilde{d}\)</span>的依赖。</p>
-<p>我们称<span class="math inline">\(K_{\phi}(\mathbf{x},\mathbf{x}^{&#39;}) = \phi_2(\mathbf{x})\phi_2(\mathbf{x}^{&#39;})\)</span>为核函数(Kernel Function)。比如<span class="math inline">\(K_{\phi_2} = 1 + \mathbf{x}\mathbf{x}^{&#39;} + (\mathbf{x}\mathbf{x}^{&#39;})^2\)</span> 。<strong>核函数主要作用就会使得内积计算都在原始维度上，与高维空间无关，属于一种内积的运算简化技巧(Kernel Trick)。</strong></p>
-<p>有了核函数，我们便可以将Q矩阵改写如下:</p>
-<p><span class="math display">\[q_{n,m} = y_ny_mK(x_n,x_m)\]</span></p>
-<p>其余变量不变，求解新的二次规划问题，得到拉格朗日乘子<span class="math inline">\(\alpha\)</span>，由于我们跳过了转换过程，所以无法计算单独的<span class="math inline">\(\mathbf{z}\)</span>，因此利用<span class="math inline">\(\alpha\)</span>求<span class="math inline">\(\mathbf{w},b\)</span>的方法也得做一定修改。</p>
-<p>先看<span class="math inline">\(b\)</span>,利用某个SV即<span class="math inline">\(\alpha_s &gt;0\)</span>来求:</p>
-<p><span class="math display">\[\begin{align}b &amp;= y_s - \mathbf{w}^T\mathbf{z}_s \\&amp;=y_s - \sum\limits_{n=1}^{N}\alpha_ny_n\mathbf{z}_n\mathbf{z}_s \\&amp;=y_s - \sum\limits_{n=1}^{N}\alpha_ny_nK(\mathbf{x}_n, \mathbf{x}_s) \end{align}\]</span></p>
-<p>这样就得到了<span class="math inline">\(b\)</span>的表达式。</p>
-<p>再看<span class="math inline">\(\mathbf{w} = \sum\alpha_ny_n\mathbf{z}_n\)</span>,貌似无法求解，因为这里面的<span class="math inline">\(\mathbf{z}_n\)</span>没有办法求解。但是从另一个角度想，我们计算<span class="math inline">\(\mathbf{w}\)</span>的目的就是为了计算<span class="math inline">\(\mathbf{w}^T\mathbf{z}\)</span>，那么我们整体计算看看得到什么:</p>
-<p><span class="math display">\[\mathbf{w}^T\mathbf{z} = \sum\limits_{n=1}^{N}\alpha_ny_n\mathbf{z}_n\mathbf{z} = \sum\limits_{n=1}^{N}\alpha_ny_nK(\mathbf{x}_n\mathbf{x} \]</span></p>
-<p>这样也间接完成了我们的目的。这样利用Kernel Function，我们就避开了在高维空间的计算，甚至不需要知道用的什么映射，就直接在原始低维数据进行等价计算。</p>
-<p>总结一下核机制SVM的一般流程：</p>
-<div class="figure">
-<img src="http://cdn.htliu.cn/svm03-1.png">
-
-</div>
-<p>再来看看每一步的复杂度，如下，第一步的<span class="math inline">\(O(N^2)\)</span>是因为Q矩阵的规模是<span class="math inline">\(N*N\)</span>的。</p>
-<div class="figure">
-<img src="http://cdn.htliu.cn/svm03-2.png">
-
-</div>
-<p>上面举的例子是二阶的核函数，下面介绍几个常用的核函数。</p>
-<h2 id="多项式核">多项式核</h2>
-<p>我们将<span class="math inline">\(K_{\phi_2} = 1 + \mathbf{x}\mathbf{x}^{&#39;} + (\mathbf{x}\mathbf{x}^{&#39;})^2\)</span> 加一些系数，得到更加简单更加常用的<span class="math inline">\(K_2(\mathbf{x},\mathbf{x}^{&#39;})=(1+\gamma\mathbf{x}\mathbf{x}^{&#39;})^2\)</span>，如下:</p>
-<div class="figure">
-<img src="http://cdn.htliu.cn/svm03-3.png">
-
-</div>
-<p>需要注意的是，<span class="math inline">\(K_2,K_{\phi_2}\)</span>这两种核函数的能力本质上是相同的，也就是说解决同一类问题结果类似，只不过最后求出的边界不同。</p>
-<p>此外，多项式核可以推向更一般的情况，如下:</p>
-<div class="figure">
-<img src="http://cdn.htliu.cn/svm03-4.png">
-
-</div>
-<p>其中<span class="math inline">\(\zeta,\gamma\)</span>是超参数，<span class="math inline">\(Q\)</span>是阶数。</p>
-<p>这里面有一个特殊的: 线性核(Linear Kernel)，计算简单高效:</p>
-<p><span class="math display">\[K_1(\mathbf{x},\mathbf{x}^{&#39;}) = (0 + 1 *\mathbf{x}\mathbf{x}^{&#39;})^1 = \mathbf{x}\mathbf{x}^{&#39;}, \quad \zeta=0, \gamma=1, Q=1\]</span></p>
-<p>在实际应用中，还是需要遵循<strong>Linear First</strong>的原则，首先尝试<strong>Linear Kernel</strong>，高阶的核函数虽然能力强，但是相对容易造成OverfFitting。</p>
-<h2 id="高斯核">高斯核</h2>
-<p>除了多项式核函数，另外常用的核函数还有高斯核函数，也叫做径向基函数(Radial Basis Function, RBF):</p>
-<p><span class="math display">\[K(\mathbf{x},\mathbf{x}^{&#39;}) = exp(-\gamma\Arrowvert \mathbf{x}-\mathbf{x}^{&#39;}\Arrowvert^2), \quad \gamma &gt;0\]</span></p>
-<p>RBF核实现的是无限维的转换，证明思路就是将高斯核函数可以表示为无穷项的和，并且需要是两个向量内积的形式。下面以一维为例，即<span class="math inline">\(\mathbf{x}=(x_1)\)</span>，基于泰勒展开来证明：</p>
-<div class="figure">
-<img src="http://cdn.htliu.cn/svm03-5.png">
-
-</div>
-<p>高斯核<span class="math inline">\(K(\mathbf{x},\mathbf{x}^{&#39;}) = exp(-\gamma\Arrowvert \mathbf{x}-\mathbf{x}^{&#39;}\Arrowvert^2), \quad \gamma &gt;0\)</span> 只有一个参数<span class="math inline">\(\gamma\)</span>，在实际应用中，<span class="math inline">\(\gamma\)</span>一般不应该太大，否则很容易过拟合，还有一点高斯核完成的是到无穷维的转换，因此它的描述能力很强，可以作出很复杂的边界，但是由于是无穷维的转换，这个转换过程类似黑盒子，也就是说<span class="math inline">\(\mathbf{w}\)</span>也是无穷维的，我们无法计算出它，因此也就缺乏了物理意义。</p>
-<h2 id="核比较">核比较</h2>
-<p>下面对线性核，多项式核，高斯核(RBF)做个对比。</p>
-<p><strong>线性核(Linear Kernel)</strong> <span class="math inline">\(K(\mathbf{x}, \mathbf{x}^{&#39;}) = \mathbf{x}\mathbf{x}^{&#39;}\)</span>:</p>
-<div class="figure">
-<img src="http://cdn.htliu.cn/svm03-6.png">
-
-</div>
-<ul>
-<li>优点: 泛化性能好，计算快速，应该优先考虑，解释性强，因为各个特征的重要性就直接体现在权重内。</li>
-<li>缺点: 模型太简单，限制较大，比如线性不可分的数据</li>
-</ul>
-<p>主要用于线性可分的情形，速度快，优先考虑。</p>
-<p><strong>多项式核(Ploy Kernel)</strong></p>
-<div class="figure">
-<img src="http://cdn.htliu.cn/svm03-7.png">
-
-</div>
-<ul>
-<li>优点: 比线性核更加Powerful， 可以解决线性不可分的数据。</li>
-<li>缺点: 超参数多(<span class="math inline">\(\zeta, \gamma, Q\)</span>)，不易选择; 另外 Q如果比较大的时候，矩阵的数值范围过大或者过小，不易计算，此外需要注意过拟合</li>
-</ul>
-<p>一般使用的比较小的Q。 不过使用较少，因为速度不如Linear，能力不如RBF</p>
-<p><strong>高斯核(RBF Kernel)</strong></p>
-<div class="figure">
-<img src="http://cdn.htliu.cn/svm03-8.png">
-
-</div>
-<ul>
-<li>优点: 分类更加Powful，可以得到很复杂的边界，; 只有一参数<span class="math inline">\(\gamma\)</span>，模型选择更加简单。</li>
-<li>缺点: 解释性差，因为无法计算无限维的<span class="math inline">\(w\)</span>,无法知道各个特征的权重; 过拟合更加严重，需要严格控制<span class="math inline">\(\gamma\)</span>。</li>
-</ul>
-<p>与Linear Kernel 一样，很常用，用于线性不可分的情形，参数多，因为计算量多，相对耗时较多。</p>
-<p><strong>总结</strong></p>
-<p>一般情况，使用线性核或者高斯核，RBF更加通用，参数好的话，基本会比Linear好，但是耗时多。</p>
-<p>吴恩达NG教程中提到的以下经验:</p>
-<ul>
-<li>如果Features数量大，与样本数量持平或者大于，这时候一般用Linear Kernal</li>
-<li>如果Features较少，采用RBF Kernel</li>
-<li>如果样本量过大的话，使用带Kernel的SVM优势就不大了。</li>
-</ul>
-<p>最好的方式是根据具体数据来尝试哪种效果最好。</p>
-<p>那么除了上述的Linear Kernel，Poly Kernel，RBF Kernel 之外，还有其它的核函数吗？</p>
-<p>我们已经知道核函数是为了简化内积运算的trick，只知道<span class="math inline">\(K(\mathbf{x}, \mathbf{x}^{&#39;}) = \phi(\mathbf{x})\phi(\mathbf{x}^{&#39;})\)</span>，此外我们知道向量内积就是描述向量的相似度，(比如向量垂直,内积为0; 相反，内积为负数)，那么我们能否从某个相似性出发，随意指定某个函数来作为相似度的描述？Not Really。<strong>Mercer Condition</strong>是用来判断一个函数能否作为核函数的条件。我们将数据写成核矩阵<span class="math inline">\(K\)</span>的形式:<span class="math inline">\(K_{i,j} = K(\mathbf{x}_i, \mathbf{x}_j)\)</span>，整个矩阵如下:</p>
-<div class="figure">
-<img src="http://cdn.htliu.cn/svm03-9.png">
-
-</div>
-<p>很显然，K应该满足<strong>对称性，半正定</strong>的性质，事实上，<strong>对称，半正定</strong>也是K可以作为核矩阵的充要条件(证明略过)，虽然可以指定某个函数作为核函数，但是在实际中，Linear Kernel和RBF Kernel已经足够用了。</p>
-<h2 id="后续">后续</h2>
-<p>这一节主要介绍了 Kernel Trick SVM，首先引入核的概念，用来简化内积运算，再到几种常见核函数的优缺点的比较，最后稍微提了Mercer’s Condition指出了作为核函数的充要条件。 到这里似乎SVM的分类问题貌似解决了，但是正如前面提到的，一直存在一个OverFitting的问题，比如说如果存在某些错误噪音数据，那么就算转到高维空间仍然存在线性不可分的情况，此时，就会产生很复杂的分类边界，造成OverFitting，但是我们更希望，忽略个别的错误数据，如下图:</p>
-<div class="figure">
-<img src="http://cdn.htliu.cn/svm04-1.png">
-
-</div>
-<p>这个问题就是下一节要解决的问题: Soft-Margin。</p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;接着上一节的Dual SVM，我们解决了非线性转换维度变高导致求解困难的问题，但是仍然有问题，那就是在求Q矩阵的时候，由于涉及到了高维的内积,计算量仍然很大，这一节引入核机制(Kernel Trick)来高效的求解这一过程，完全不再依赖高维空间。&lt;/p&gt;
-    
-    </summary>
-    
-      <category term="读书笔记" scheme="http://shomy.top/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/"/>
-    
-    
-      <category term="machine learning" scheme="http://shomy.top/tags/machine-learning/"/>
-    
-      <category term="kernel" scheme="http://shomy.top/tags/kernel/"/>
     
       <category term="svm" scheme="http://shomy.top/tags/svm/"/>
     

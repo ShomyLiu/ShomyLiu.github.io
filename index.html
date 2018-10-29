@@ -90,6 +90,82 @@ ga('send', 'pageview');
       <div class="outer">
         <section id="main">
   
+    <article id="post-docker-neo4j-es" class="article article-type-post" itemscope itemprop="blogPost">
+  
+  <div class="article-meta">
+    <a href="/2018/10/29/docker-neo4j-es/" class="article-date">
+  <time datetime="2018-10-29T15:13:28.000Z" itemprop="datePublished">2018-10-29</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/工具使用/">工具使用</a>
+  </div>
+
+    
+        <div class="counter-tag counter">
+    <!-- 别忘记这个类名... post-title-link -->
+    <span id="/2018/10/29/docker-neo4j-es/" class="leancloud_visitors article-hits post-title-link"
+           data-flag-title="docker搭建neo4j与elasticsearch数据同步">
+        次阅读
+    </span>
+
+  </div>
+
+    
+  </div>
+  
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/10/29/docker-neo4j-es/">docker搭建neo4j与elasticsearch数据同步</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="需求">需求</h2>
+<p>现在有图数据，包含节点和边，节点或者关系都有大段的文本属性，并且需要对全文文本进行检索，因此计划使用Neo4j 进行关系存储以及图算法的应用，使用Elastic Search 进行全文搜索，因此需要Neo4j的数据与Elastic Search进行自动同步，从而实现节点/关系搜索使用Neo4j, 全文搜索使用Elastic Search, 各发挥自己的长处。</p>
+<h2 id="方案">方案</h2>
+<p>正巧的Neo4j官方提供了一个插件<a href="https://github.com/neo4j-contrib/neo4j-elasticsearch" target="_blank" rel="external">neo-elasticsearch</a>, 可以直接Neo4j的数据实时同步到ElasticSearch中。 不过由于官网文档的说明比较简单，以及本人对docker的熟练度有限，在使用docker搭建的过程中，遇到了很大的坑,记录于此。</p>
+        
+          <p class="article-more-link">
+            <a href="/2018/10/29/docker-neo4j-es/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+
+
+    
+
+    
+
+    <footer class="article-footer">
+      
+        <a href="http://shomy.top/2018/10/29/docker-neo4j-es/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/docker/">docker</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/elasticsearch/">elasticsearch</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/neo4j/">neo4j</a></li></ul>
+
+    </footer>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+
+  
     <article id="post-ubuntu-proxy" class="article article-type-post" itemscope itemprop="blogPost">
   
   <div class="article-meta">
@@ -359,7 +435,7 @@ ga('send', 'pageview');
 <figure class="highlight routeros"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">docker <span class="builtin-name">run</span> \</div><div class="line">    <span class="attribute">--publish</span>=7474:7474 <span class="attribute">--publish</span>=7687:7687 \</div><div class="line">    <span class="attribute">--volume</span>=<span class="variable">$HOME</span>/neo4j/data:/data \</div><div class="line">    <span class="attribute">--volume</span>=<span class="variable">$HOME</span>/neo4j/logs:/logs \</div><div class="line">    neo4j:3.4</div></pre></td></tr></table></figure>
 <p>错误信息大概是:</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">Active database: graph.db</div><div class="line">2018-04-03 21:52:03.380+0000 ERROR Failed to <span class="keyword">start</span> Neo4j: <span class="keyword">Starting</span> Neo4j <span class="keyword">failed</span>: Component <span class="string">'org.neo4j.server.database.LifecycleManagingDatabase@2fd66ad3'</span> was successfully <span class="keyword">initialized</span>, but <span class="keyword">failed</span> <span class="keyword">to</span> start. Please see the attached cause <span class="keyword">exception</span> <span class="string">"/logs/debug.log (Permission denied)"</span>. <span class="keyword">Starting</span> Neo4j <span class="keyword">failed</span>: Component <span class="string">'org.neo4j.server.database.LifecycleManagingDatabase@2fd66ad3'</span> was successfully <span class="keyword">initialized</span>, but <span class="keyword">failed</span> <span class="keyword">to</span> start. Please see the attached cause <span class="keyword">exception</span> <span class="string">"/logs/debug.log (Permission denied)"</span>.</div><div class="line">org.neo4j.server.ServerStartupException: <span class="keyword">Starting</span> Neo4j <span class="keyword">failed</span>: Component <span class="string">'org.neo4j.server.database.LifecycleManagingDatabase@2fd66ad3'</span> was successfully <span class="keyword">initialized</span>, but <span class="keyword">failed</span> <span class="keyword">to</span> start. Please see the attached cause <span class="keyword">exception</span> <span class="string">"/logs/debug.log (Permission denied)"</span>.</div><div class="line">Caused <span class="keyword">by</span>: org.neo4j.kernel.lifecycle.LifecycleException: Component <span class="string">'org.neo4j.server.database.LifecycleManagingDatabase@2fd66ad3'</span> was successfully <span class="keyword">initialized</span>, but <span class="keyword">failed</span> <span class="keyword">to</span> start. Please see the attached cause <span class="keyword">exception</span> <span class="string">"/logs/debug.log (Permission denied)"</span>.</div><div class="line">        ... <span class="number">3</span> more</div><div class="line">Caused <span class="keyword">by</span>: java.lang.RuntimeException: java.io.FileNotFoundException: /<span class="keyword">logs</span>/debug.log (Permission denied)</div><div class="line">        ... <span class="number">5</span> more</div><div class="line">Caused <span class="keyword">by</span>: java.io.FileNotFoundException: /<span class="keyword">logs</span>/debug.log (Permission denied)</div><div class="line">        ... <span class="number">12</span> more</div><div class="line"><span class="number">2018</span><span class="number">-04</span><span class="number">-03</span> <span class="number">21</span>:<span class="number">52</span>:<span class="number">03.400</span>+<span class="number">0000</span> INFO  Neo4j <span class="keyword">Server</span> <span class="keyword">shutdown</span> initiated <span class="keyword">by</span> request</div></pre></td></tr></table></figure>
-<p>原始是因为在neo4j中的<code>logs</code>和<code>conf</code> 在最近的几个版本中，不能再指向<code>/</code>, 因此不能手动<code>--volumns</code>，去掉那一行即可: <figure class="highlight routeros"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">docker <span class="builtin-name">run</span> \</div><div class="line">    <span class="attribute">--publish</span>=7474:7474 <span class="attribute">--publish</span>=7687:7687 \</div><div class="line">    <span class="attribute">--volume</span>=<span class="variable">$HOME</span>/neo4j/data:/data \</div><div class="line">    neo4j:3.4</div></pre></td></tr></table></figure></p>
+<p>原始是因为在neo4j中的<code>logs</code> 在最近的几个版本中，不能再指向<code>/</code>, 因此不能手动<code>--volumns</code>，去掉那一行即可: <figure class="highlight routeros"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">docker <span class="builtin-name">run</span> \</div><div class="line">    <span class="attribute">--publish</span>=7474:7474 <span class="attribute">--publish</span>=7687:7687 \</div><div class="line">    <span class="attribute">--volume</span>=<span class="variable">$HOME</span>/neo4j/data:/data \</div><div class="line">    neo4j:3.4</div></pre></td></tr></table></figure></p>
 <p>参考: https://github.com/neo4j/docker-neo4j/issues/131</p>
 <p>此外，如果修改了主机的端口，比如<code>-p 7574:7474 -p 7787:7687</code> 在主机登录的时候，需要修改一下web界面上的host那一项(bolt://ip:7787)，不然登录失败。</p>
 <p>近期需要处理图数据，考察后打算使用<a href="https://neo4j.com/" target="_blank" rel="external">neo4j</a>, 相比其他一些图数据库，neo4j开源，跨平台，接口友好，文档齐全，完整支持ACID。 首先放一张网上的图片，关系型数据库与图数据库存储网络数据的差异:</p>
@@ -1141,79 +1217,6 @@ ga('send', 'pageview');
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/blending-bagging/">blending bagging</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/machine-learning/">machine learning</a></li></ul>
-
-    </footer>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-
-
-  
-    <article id="post-tensorflow-basic-api" class="article article-type-post" itemscope itemprop="blogPost">
-  
-  <div class="article-meta">
-    <a href="/2017/03/11/tensorflow-basic-api/" class="article-date">
-  <time datetime="2017-03-11T11:53:09.000Z" itemprop="datePublished">2017-03-11</time>
-</a>
-    
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/工具使用/">工具使用</a>
-  </div>
-
-    
-        <div class="counter-tag counter">
-    <!-- 别忘记这个类名... post-title-link -->
-    <span id="/2017/03/11/tensorflow-basic-api/" class="leancloud_visitors article-hits post-title-link"
-           data-flag-title="TensorFlow常用API">
-        次阅读
-    </span>
-
-  </div>
-
-    
-  </div>
-  
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2017/03/11/tensorflow-basic-api/">TensorFlow常用API</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>越来越感觉学习python一个第三方库就跟学一门新语言差不多，庞大的TensorFlow更是如此。这篇博客会持续记录关于tensorflow的一些api的用法。</p>
-        
-          <p class="article-more-link">
-            <a href="/2017/03/11/tensorflow-basic-api/#more">Read More</a>
-          </p>
-        
-      
-    </div>
-
-
-    
-
-    
-
-    <footer class="article-footer">
-      
-        <a href="http://shomy.top/2017/03/11/tensorflow-basic-api/#disqus_thread" class="article-comment-link">Comments</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/TensorFlow/">TensorFlow</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/api/">api</a></li></ul>
 
     </footer>
     
