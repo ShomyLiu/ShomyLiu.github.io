@@ -354,7 +354,23 @@ ga('send', 'pageview');
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>前面一篇介绍了Neo4j一些比较基础的用法。这一篇笔记主要记录下在导入一个大数据集Aminer中MAG论文数据所遇到的一些问题。</p>
+        <blockquote>
+<p>2018.12.2更新：使用<code>neo-admin import</code> 导入全量的Aminer数据到Neo4j.</p>
+</blockquote>
+<ul>
+<li>首先用<a href="https://gist.github.com/ShomyLiu/5e2eaf33c96c30347fa2851bb345b212" target="_blank" rel="external">这个脚本</a>从原始的154个txt中提取出字段，保存为<code>neo-admin import</code>所需要的格式.<a href="https://neo4j.com/docs/operations-manual/current/tools/import/" target="_blank" rel="external">格式要求</a>,</li>
+<li><p>脚本会对每个txt文件，均产生parper,org,author, p-o,p-a, a-o六个csv文件，然后归类成如下目录: <figure class="highlight gams"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="symbol">$</span> tree   | grep -v <span class="string">'csv'</span></div><div class="line"> .</div><div class="line"> ├── nodes</div><div class="line"> │   ├── author</div><div class="line"> │   ├── org</div><div class="line"> │   └── paper</div><div class="line"> └── rels</div><div class="line">     ├── author_org</div><div class="line">     ├── cite_relation</div><div class="line">     └── paper_author</div><div class="line"> </div><div class="line"> <span class="number">8</span> directories, <span class="number">930</span> <span class="keyword">files</span></div></pre></td></tr></table></figure></p></li>
+<li><p>使用<code>neo-admin import</code>导入： <figure class="highlight jboss-cli"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line">bin/neo4j-admin import </div><div class="line"><span class="params">--ignore-duplicate-nodes=true</span> <span class="params">--ignore-extra-columns=true</span> \</div><div class="line"><span class="params">--ignore-missing-nodes=true</span> <span class="params">--high-io=true</span> \</div><div class="line"><span class="params">--nodes</span> <span class="string">/data/out/nodes/org/.</span>*<span class="string">.csv</span> \</div><div class="line"><span class="params">--nodes</span> <span class="string">/data/out/nodes/author/.</span>*<span class="string">.csv</span> \</div><div class="line"><span class="params">--nodes</span> <span class="string">/data/out/nodes/paper/.</span>*<span class="string">.csv</span> \</div><div class="line"><span class="params">--relationships</span> <span class="string">/data/out/rels/author_org/.</span>*<span class="string">.csv</span> \</div><div class="line"><span class="params">--relationships</span> <span class="string">/data/out/rels/cite_relation/.</span>*<span class="string">.csv</span> \</div><div class="line"><span class="params">--relationships</span> <span class="string">/data/out/rels/paper_author/.</span>*<span class="string">.csv</span></div></pre></td></tr></table></figure></p></li>
+</ul>
+<p>最终导入输出: <figure class="highlight dns"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">IMPORT DONE in <span class="number">1h</span> <span class="number">25m</span> <span class="number">39</span>s <span class="number">635m</span>s.</div><div class="line">Imported:</div><div class="line">  <span class="number">257487502</span> nodes</div><div class="line">  <span class="number">1054515383</span> relationships</div><div class="line">  <span class="number">1497110211</span> properties</div><div class="line">Peak memory usage: <span class="number">17</span>.<span class="number">12</span> GB</div></pre></td></tr></table></figure></p>
+<p>截图: <img src="http://cdn.htliu.cn/blog/neo4j-aminer-import/neo-aminer.png"></p>
+<p>机器配置:</p>
+<ul>
+<li>CPU:E5-2650 v4</li>
+<li>内存: 128G</li>
+</ul>
+<hr>
+<p>前面一篇介绍了Neo4j一些比较基础的用法。这一篇笔记主要记录下在导入一个大数据集Aminer中MAG论文数据所遇到的一些问题。</p>
 <h2 id="数据集介绍">数据集介绍</h2>
         
           <p class="article-more-link">
