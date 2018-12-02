@@ -5,22 +5,22 @@
   
   <title>Neo4j初探 | 天空的城</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="2018.10.28 更新: docker 安装Neo4j的坑  使用docker安装neo4j，官网文档有误，安装之后启动失败; 官网文档上错误的启动命令: 12345docker run \    --publish=7474:7474 --publish=7687:7687 \    --volume=$HOME/neo4j/data:/data \    --volume=$HOME/n">
+  <meta name="description" content="2018.10.28 更新: docker 安装Neo4j的坑  使用docker安装neo4j，官网文档有误，安装之后启动失败; 官网文档上错误的启动命令:">
 <meta name="keywords" content="neo4j,graph">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Neo4j初探">
 <meta property="og:url" content="http://shomy.top/2018/06/08/neo4j-start/index.html">
 <meta property="og:site_name" content="天空的城">
-<meta property="og:description" content="2018.10.28 更新: docker 安装Neo4j的坑  使用docker安装neo4j，官网文档有误，安装之后启动失败; 官网文档上错误的启动命令: 12345docker run \    --publish=7474:7474 --publish=7687:7687 \    --volume=$HOME/neo4j/data:/data \    --volume=$HOME/n">
+<meta property="og:description" content="2018.10.28 更新: docker 安装Neo4j的坑  使用docker安装neo4j，官网文档有误，安装之后启动失败; 官网文档上错误的启动命令:">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="http://cdn.htliu.cn/blog/neo4j-start/neo4j-1.jpg">
 <meta property="og:image" content="http://cdn.htliu.cn/blog/neo4j-start/neo4j-2.jpg">
 <meta property="og:image" content="http://cdn.htliu.cn/blog/neo4j-start/neo4j-3.jpg">
 <meta property="og:image" content="http://cdn.htliu.cn/blog/neo4j-start/neo4j-4.jpg">
-<meta property="og:updated_time" content="2018-10-29T15:16:04.196Z">
+<meta property="og:updated_time" content="2018-12-02T07:47:39.010Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Neo4j初探">
-<meta name="twitter:description" content="2018.10.28 更新: docker 安装Neo4j的坑  使用docker安装neo4j，官网文档有误，安装之后启动失败; 官网文档上错误的启动命令: 12345docker run \    --publish=7474:7474 --publish=7687:7687 \    --volume=$HOME/neo4j/data:/data \    --volume=$HOME/n">
+<meta name="twitter:description" content="2018.10.28 更新: docker 安装Neo4j的坑  使用docker安装neo4j，官网文档有误，安装之后启动失败; 官网文档上错误的启动命令:">
 <meta name="twitter:image" content="http://cdn.htliu.cn/blog/neo4j-start/neo4j-1.jpg">
   
   
@@ -146,7 +146,7 @@ ga('send', 'pageview');
         <blockquote>
 <p>2018.10.28 更新: docker 安装Neo4j的坑</p>
 </blockquote>
-<p>使用docker安装neo4j，官网文档有误，安装之后启动失败; 官网文档上错误的启动命令:</p>
+<p>使用docker安装neo4j，官网文档有误，安装之后启动失败; 官网文档上错误的启动命令: <a id="more"></a></p>
 <figure class="highlight routeros"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">docker <span class="builtin-name">run</span> \</div><div class="line">    <span class="attribute">--publish</span>=7474:7474 <span class="attribute">--publish</span>=7687:7687 \</div><div class="line">    <span class="attribute">--volume</span>=<span class="variable">$HOME</span>/neo4j/data:/data \</div><div class="line">    <span class="attribute">--volume</span>=<span class="variable">$HOME</span>/neo4j/logs:/logs \</div><div class="line">    neo4j:3.4</div></pre></td></tr></table></figure>
 <p>错误信息大概是:</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line">Active database: graph.db</div><div class="line">2018-04-03 21:52:03.380+0000 ERROR Failed to <span class="keyword">start</span> Neo4j: <span class="keyword">Starting</span> Neo4j <span class="keyword">failed</span>: Component <span class="string">'org.neo4j.server.database.LifecycleManagingDatabase@2fd66ad3'</span> was successfully <span class="keyword">initialized</span>, but <span class="keyword">failed</span> <span class="keyword">to</span> start. Please see the attached cause <span class="keyword">exception</span> <span class="string">"/logs/debug.log (Permission denied)"</span>. <span class="keyword">Starting</span> Neo4j <span class="keyword">failed</span>: Component <span class="string">'org.neo4j.server.database.LifecycleManagingDatabase@2fd66ad3'</span> was successfully <span class="keyword">initialized</span>, but <span class="keyword">failed</span> <span class="keyword">to</span> start. Please see the attached cause <span class="keyword">exception</span> <span class="string">"/logs/debug.log (Permission denied)"</span>.</div><div class="line">org.neo4j.server.ServerStartupException: <span class="keyword">Starting</span> Neo4j <span class="keyword">failed</span>: Component <span class="string">'org.neo4j.server.database.LifecycleManagingDatabase@2fd66ad3'</span> was successfully <span class="keyword">initialized</span>, but <span class="keyword">failed</span> <span class="keyword">to</span> start. Please see the attached cause <span class="keyword">exception</span> <span class="string">"/logs/debug.log (Permission denied)"</span>.</div><div class="line">Caused <span class="keyword">by</span>: org.neo4j.kernel.lifecycle.LifecycleException: Component <span class="string">'org.neo4j.server.database.LifecycleManagingDatabase@2fd66ad3'</span> was successfully <span class="keyword">initialized</span>, but <span class="keyword">failed</span> <span class="keyword">to</span> start. Please see the attached cause <span class="keyword">exception</span> <span class="string">"/logs/debug.log (Permission denied)"</span>.</div><div class="line">        ... <span class="number">3</span> more</div><div class="line">Caused <span class="keyword">by</span>: java.lang.RuntimeException: java.io.FileNotFoundException: /<span class="keyword">logs</span>/debug.log (Permission denied)</div><div class="line">        ... <span class="number">5</span> more</div><div class="line">Caused <span class="keyword">by</span>: java.io.FileNotFoundException: /<span class="keyword">logs</span>/debug.log (Permission denied)</div><div class="line">        ... <span class="number">12</span> more</div><div class="line"><span class="number">2018</span><span class="number">-04</span><span class="number">-03</span> <span class="number">21</span>:<span class="number">52</span>:<span class="number">03.400</span>+<span class="number">0000</span> INFO  Neo4j <span class="keyword">Server</span> <span class="keyword">shutdown</span> initiated <span class="keyword">by</span> request</div></pre></td></tr></table></figure>
@@ -159,7 +159,6 @@ ga('send', 'pageview');
 
 </div>
 <p>初次接触neo4j 踩了不少坑，这里记录一下。</p>
-<a id="more"></a>
 <p>关于如何安装Neo4j和使用web ui进行查询操作就不再赘述。</p>
 <h2 id="cypher基本操作">Cypher基本操作</h2>
 <p>相比关系型数据库的SQL查询语言，Neo4j的查询语言为<code>Cypher</code>，语法更加友好，更适合图数据做查询操作。首先介绍在图数据里面几个概念:</p>
@@ -267,7 +266,7 @@ ga('send', 'pageview');
 发布时间: 2018-06-08, 20:52:49<br/>
 <p>
 <p>
-最后更新: 2018-10-29, 23:16:04<br/>
+最后更新: 2018-12-02, 15:47:39<br/>
 <p>
 本文链接: <a href="/2018/06/08/neo4j-start/" target="_blank">http://shomy.top/2018/06/08/neo4j-start/</a>
 </p>

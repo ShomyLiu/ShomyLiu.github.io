@@ -5,19 +5,19 @@
   
   <title>Neo4j导入Aminer论文数据 | 天空的城</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="2018.12.2更新：使用neo-admin import 导入全量的Aminer数据到Neo4j.   首先用这个脚本从原始的154个txt中提取出字段，保存为neo-admin import所需要的格式.格式要求, 脚本会对每个txt文件，均产生parper,org,author, p-o,p-a, a-o六个csv文件，然后归类成如下目录: 123456789101112$ tree">
+  <meta name="description" content="2018.12.2更新：使用neo-admin import 导入全量的Aminer数据到Neo4j.">
 <meta name="keywords" content="neo4j,graph,aminer">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Neo4j导入Aminer论文数据">
 <meta property="og:url" content="http://shomy.top/2018/06/26/neo4j-aminer-import/index.html">
 <meta property="og:site_name" content="天空的城">
-<meta property="og:description" content="2018.12.2更新：使用neo-admin import 导入全量的Aminer数据到Neo4j.   首先用这个脚本从原始的154个txt中提取出字段，保存为neo-admin import所需要的格式.格式要求, 脚本会对每个txt文件，均产生parper,org,author, p-o,p-a, a-o六个csv文件，然后归类成如下目录: 123456789101112$ tree">
+<meta property="og:description" content="2018.12.2更新：使用neo-admin import 导入全量的Aminer数据到Neo4j.">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="http://cdn.htliu.cn/blog/neo4j-aminer-import/neo-aminer.png">
-<meta property="og:updated_time" content="2018-12-02T07:41:13.291Z">
+<meta property="og:updated_time" content="2018-12-02T07:46:29.018Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Neo4j导入Aminer论文数据">
-<meta name="twitter:description" content="2018.12.2更新：使用neo-admin import 导入全量的Aminer数据到Neo4j.   首先用这个脚本从原始的154个txt中提取出字段，保存为neo-admin import所需要的格式.格式要求, 脚本会对每个txt文件，均产生parper,org,author, p-o,p-a, a-o六个csv文件，然后归类成如下目录: 123456789101112$ tree">
+<meta name="twitter:description" content="2018.12.2更新：使用neo-admin import 导入全量的Aminer数据到Neo4j.">
 <meta name="twitter:image" content="http://cdn.htliu.cn/blog/neo4j-aminer-import/neo-aminer.png">
   
   
@@ -143,6 +143,7 @@ ga('send', 'pageview');
         <blockquote>
 <p>2018.12.2更新：使用<code>neo-admin import</code> 导入全量的Aminer数据到Neo4j.</p>
 </blockquote>
+<a id="more"></a>
 <ul>
 <li>首先用<a href="https://gist.github.com/ShomyLiu/5e2eaf33c96c30347fa2851bb345b212" target="_blank" rel="external">这个脚本</a>从原始的154个txt中提取出字段，保存为<code>neo-admin import</code>所需要的格式.<a href="https://neo4j.com/docs/operations-manual/current/tools/import/" target="_blank" rel="external">格式要求</a>,</li>
 <li><p>脚本会对每个txt文件，均产生parper,org,author, p-o,p-a, a-o六个csv文件，然后归类成如下目录: <figure class="highlight gams"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="symbol">$</span> tree   | grep -v <span class="string">'csv'</span></div><div class="line"> .</div><div class="line"> ├── nodes</div><div class="line"> │   ├── author</div><div class="line"> │   ├── org</div><div class="line"> │   └── paper</div><div class="line"> └── rels</div><div class="line">     ├── author_org</div><div class="line">     ├── cite_relation</div><div class="line">     └── paper_author</div><div class="line"> </div><div class="line"> <span class="number">8</span> directories, <span class="number">930</span> <span class="keyword">files</span></div></pre></td></tr></table></figure></p></li>
@@ -158,7 +159,6 @@ ga('send', 'pageview');
 <hr>
 <p>前面一篇介绍了Neo4j一些比较基础的用法。这一篇笔记主要记录下在导入一个大数据集Aminer中MAG论文数据所遇到的一些问题。</p>
 <h2 id="数据集介绍">数据集介绍</h2>
-<a id="more"></a>
 <p>首先关于论文数据集的描述可以在 <a href="https://www.aminer.cn/open-academic-graph" target="_blank" rel="external">Aminer_Open_Academic</a>中查看，这里简单介绍一下。 有两套数据，一个是Aminer Papers, 是清华大学整理发布的论文集，MAG Papers是微软学术发布的论文数据集。 我们这里选取了MAG的部分数据集来测试导入到Neo4j中。 MAG数据集一共有9个压缩包，其中每一个压缩包里面有20个txt文件，每个txt文件中每行代表一篇论文，用json表示，<code>mid</code> 为论文唯一id，可以作为主键使用。除了论文的基本属性比如发表时间，摘要，doi号等，需要注意的两个属性为:</p>
 <ul>
 <li>作者列表：<code>{&quot;name&quot;:  &quot;org&quot;:}</code> 给出了作者的姓名及所在机构。</li>
@@ -202,7 +202,7 @@ ga('send', 'pageview');
 发布时间: 2018-06-26, 08:49:46<br/>
 <p>
 <p>
-最后更新: 2018-12-02, 15:41:13<br/>
+最后更新: 2018-12-02, 15:46:29<br/>
 <p>
 本文链接: <a href="/2018/06/26/neo4j-aminer-import/" target="_blank">http://shomy.top/2018/06/26/neo4j-aminer-import/</a>
 </p>
