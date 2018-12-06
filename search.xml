@@ -1390,7 +1390,7 @@
 <p><span class="math display">\[P(sen=(w_1, w_2, .., w_m)) = P(w_1)P(w_2|w_1)P(w_3|w_2,w_1)...P(w_m|w_{m-1}..w_1)\]</span></p>
 <p>一般情况, 语言模型都是为了使得条件概率: <span class="math inline">\(P(w_t|w_1,w_2,..,w_{t-1})\)</span>最大化, 不过考虑到近因效应, 当前词与距离它比较近的n个词更加相关(一般n不超过5),而非前面所有的词都有关, 因此上述公式可以近似为:</p>
 <p><span class="math display">\[P(w_t|w_1,w_2,..,w_{t-1})=P(w_t|w_{t-1}, w_{t-2}...w_{t-(n+1)})\]</span></p>
-<p>上述便是经典的<code>n-gram</code>模型的近似表示方式. 下面需要介绍一下神经语言模型(NNLM), 最初由Bengio提出的A Neural Probabilistic Language Mode最为经典, word2vec便是从其中简化训练而来. Bengio通过下面的一个三层神经网络来计算<span class="math inline">\(P(w_t|w_{t_1}, w_{t_2}...w_{t_n+1})\)</span>:</p>
+<p>上述便是经典的<code>n-gram</code>模型的近似表示方式. 下面需要介绍一下神经语言模型(NNLM), 最初由Bengio提出的A Neural Probabilistic Language Mode最为经典, word2vec便是从其中简化训练而来. Bengio通过下面的一个三层神经网络来计算<span class="math inline">\(P(w_t|w_{t-1}, w_{t-2}...w_{t-n(+1)})\)</span>:</p>
 <div class="figure">
 <img src="http://cdn.htliu.cn/blog/w2v/nnlm1.png">
 

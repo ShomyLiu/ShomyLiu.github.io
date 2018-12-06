@@ -20,7 +20,7 @@
 <meta property="og:image" content="http://cdn.htliu.cn/blog/w2v/cbow-1.png">
 <meta property="og:image" content="http://cdn.htliu.cn/blog/w2v/sg-1.png">
 <meta property="og:image" content="http://cdn.htliu.cn/blog/w2v/hs-1.png">
-<meta property="og:updated_time" content="2018-12-06T13:26:39.043Z">
+<meta property="og:updated_time" content="2018-12-06T13:32:07.162Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Word2vec数学原理全家桶">
 <meta name="twitter:description" content="目前需要做Network Embedding方面的课题，而复杂网络本身就经常借鉴NLP的一些算法模型, Embedding也不例外. 因此先从Word Embedding入手。之前对Word Embedding(暂且翻译为词嵌入或者词向量)的理解就是将单词根据某种特征转为数值向量，再来做其他工作比如文本分类的工作。而word2vec则是word embedding的一种模型，也是目前使用最广的词向">
@@ -171,7 +171,7 @@ ga('send', 'pageview');
 <p><span class="math display">\[P(sen=(w_1, w_2, .., w_m)) = P(w_1)P(w_2|w_1)P(w_3|w_2,w_1)...P(w_m|w_{m-1}..w_1)\]</span></p>
 <p>一般情况, 语言模型都是为了使得条件概率: <span class="math inline">\(P(w_t|w_1,w_2,..,w_{t-1})\)</span>最大化, 不过考虑到近因效应, 当前词与距离它比较近的n个词更加相关(一般n不超过5),而非前面所有的词都有关, 因此上述公式可以近似为:</p>
 <p><span class="math display">\[P(w_t|w_1,w_2,..,w_{t-1})=P(w_t|w_{t-1}, w_{t-2}...w_{t-(n+1)})\]</span></p>
-<p>上述便是经典的<code>n-gram</code>模型的近似表示方式. 下面需要介绍一下神经语言模型(NNLM), 最初由Bengio提出的A Neural Probabilistic Language Mode最为经典, word2vec便是从其中简化训练而来. Bengio通过下面的一个三层神经网络来计算<span class="math inline">\(P(w_t|w_{t_1}, w_{t_2}...w_{t_n+1})\)</span>:</p>
+<p>上述便是经典的<code>n-gram</code>模型的近似表示方式. 下面需要介绍一下神经语言模型(NNLM), 最初由Bengio提出的A Neural Probabilistic Language Mode最为经典, word2vec便是从其中简化训练而来. Bengio通过下面的一个三层神经网络来计算<span class="math inline">\(P(w_t|w_{t-1}, w_{t-2}...w_{t-n(+1)})\)</span>:</p>
 <div class="figure">
 <img src="http://cdn.htliu.cn/blog/w2v/nnlm1.png">
 
@@ -366,7 +366,7 @@ ga('send', 'pageview');
 发布时间: 2017-07-28, 15:42:21<br/>
 <p>
 <p>
-最后更新: 2018-12-06, 21:26:39<br/>
+最后更新: 2018-12-06, 21:32:07<br/>
 <p>
 本文链接: <a href="/2017/07/28/word2vec-all/" target="_blank">http://shomy.top/2017/07/28/word2vec-all/</a>
 </p>
