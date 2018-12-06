@@ -1388,14 +1388,14 @@
 </blockquote>
 <p>简单来说,就是计算一个句子的概率, 语言模型用处很广泛,比如机器翻译中, 如何挑选一个概率尽可能大的句子也就是尽量靠谱的句子返回. 假设一个长度为<span class="math inline">\(m\)</span>的句子,包含词:<span class="math inline">\([(w_1, w_2, w_3,..,w_m)\)</span>, 那么这个句子的概率,也就是这m个词共现的概率:</p>
 <p><span class="math display">\[P(sen=(w_1, w_2, .., w_m)) = P(w_1)P(w_2|w_1)P(w_3|w_2,w_1)...P(w_m|w_{m-1}..w_1)\]</span></p>
-<p>一般情况, 语言模型都是为了使得条件概率: <span class="math inline">\(P(w_t|w_1,w_2,..,w_{t-1})\)</span>最大化, 不过考虑到近因效应, 当前词与距离它比较近的几个词更加相关,而非前面所有的词都有关, 因此上述公式可以近似为:</p>
-<p><span class="math display">\[P(w_t|w_1,w_2,..,w_{t-1})=P(w_t|w_{t_1}, w_{t_2}...w_{t_n+1})\]</span></p>
+<p>一般情况, 语言模型都是为了使得条件概率: <span class="math inline">\(P(w_t|w_1,w_2,..,w_{t-1})\)</span>最大化, 不过考虑到近因效应, 当前词与距离它比较近的n个词更加相关(一般n不超过5),而非前面所有的词都有关, 因此上述公式可以近似为:</p>
+<p><span class="math display">\[P(w_t|w_1,w_2,..,w_{t-1})=P(w_t|w_{t-1}, w_{t-2}...w_{t-(n+1)})\]</span></p>
 <p>上述便是经典的<code>n-gram</code>模型的近似表示方式. 下面需要介绍一下神经语言模型(NNLM), 最初由Bengio提出的A Neural Probabilistic Language Mode最为经典, word2vec便是从其中简化训练而来. Bengio通过下面的一个三层神经网络来计算<span class="math inline">\(P(w_t|w_{t_1}, w_{t_2}...w_{t_n+1})\)</span>:</p>
 <div class="figure">
 <img src="http://cdn.htliu.cn/blog/w2v/nnlm1.png">
 
 </div>
-<p>首先第一层输入就是前<span class="math inline">\(t-1\)</span>个词<span class="math inline">\(w_{t_n+1},...,w_{t-1}\)</span> 去预测第<span class="math inline">\(t\)</span>个词是<span class="math inline">\(w_t\)</span> 的概率. 这里面的矩阵<span class="math inline">\(C\in |V| \times d\)</span>维护着词汇表中所有词的词向量, 其中<span class="math inline">\(|V|\)</span>是词汇表中词的个数, <span class="math inline">\(d\)</span>是词向量的维度. 然后根据输入的前<span class="math inline">\(n-1\)</span>个词, 在C中找到它们对应的词向量, 然后直接串联起来成为一个维度为<span class="math inline">\((n-1)d\)</span>的向量x 作为接下来三层神经网络的输入, 后面就是普通神经网络了. 需要说明的是,因为我们那要预测概率最大的<span class="math inline">\(w_t\)</span>, 因此最后输出层的神经元应该与词汇表大小同样为<span class="math inline">\(|V|\)</span>, 这里使用使用softmax函数归一化输出层的值到[0,1], 代表可能的每个词的概率. 此外在原文中, 存在一些直连边, 也就是上图中的虚线, 从输入层直接到输出层, 是一个线性变换, Bingo在文中表示, 直连边的存在大幅降低迭代次数, 但对语言模型效果无提升, 随着计算能力的提高, 后续的工作基本都去掉了直连边.</p>
+<p>首先第一层输入就是前<span class="math inline">\(n-1\)</span>个词<span class="math inline">\(w_{t-(n+1)},...,w_{t-1}\)</span> 去预测第<span class="math inline">\(t\)</span>个词是<span class="math inline">\(w_t\)</span> 的概率. 这里面的矩阵<span class="math inline">\(C\in |V| \times d\)</span>维护着词汇表中所有词的词向量, 其中<span class="math inline">\(|V|\)</span>是词汇表中词的个数, <span class="math inline">\(d\)</span>是词向量的维度. 然后根据输入的前<span class="math inline">\(n-1\)</span>个词, 在C中找到它们对应的词向量, 然后直接串联起来成为一个维度为<span class="math inline">\((n-1)d\)</span>的向量x 作为接下来三层神经网络的输入, 后面就是普通神经网络了. 需要说明的是,因为我们那要预测概率最大的<span class="math inline">\(w_t\)</span>, 因此最后输出层的神经元应该与词汇表大小同样为<span class="math inline">\(|V|\)</span>, 这里使用使用softmax函数归一化输出层的值到[0,1], 代表可能的每个词的概率. 此外在原文中, 存在一些直连边, 也就是上图中的虚线, 从输入层直接到输出层, 是一个线性变换, Bingo在文中表示, 直连边的存在大幅降低迭代次数, 但对语言模型效果无提升, 随着计算能力的提高, 后续的工作基本都去掉了直连边.</p>
 <p>神经语言模型构建完成之后,就是训练参数了. 这里的参数包括词向量矩阵<span class="math inline">\(C\)</span>, 以及三层神经网络的权重, 偏置等参数. 训练数据就是大堆大堆的预料库. 训练结束之后, 语言模型得到了, 词向量也得到了. 换言之, 词向量是这个语言模型的副产品. 但是这个模型的缺点就是速度问题, 因为词汇表往往很大,几十万几百王, 训练起来就很耗时, Bengo仅仅训练5个epoch就花了3周, 这还是40个CPU并行训练的结果. 因此才会有了后续好多的优化工作, word2vec便是其中一个.</p>
 <h2 id="word2vec">Word2Vec</h2>
 <h3 id="简介">简介</h3>
