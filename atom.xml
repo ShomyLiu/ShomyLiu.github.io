@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://shomy.top/"/>
-  <updated>2018-11-01T08:26:35.744Z</updated>
+  <updated>2018-12-31T08:30:30.249Z</updated>
   <id>http://shomy.top/</id>
   
   <author>
@@ -14,6 +14,54 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>因子分解机(Factorization Machine)笔记及Pytorch 实现</title>
+    <link href="http://shomy.top/2018/12/31/factorization-machine/"/>
+    <id>http://shomy.top/2018/12/31/factorization-machine/</id>
+    <published>2018-12-31T08:26:08.000Z</published>
+    <updated>2018-12-31T08:30:30.249Z</updated>
+    
+    <content type="html"><![CDATA[<h2 id="简介">简介</h2>
+<p>Factorization Machine （因子分解机) 是Steffen Rendle在2010年提出的一种机器学习算法，可以用来做任意实数值向量的预测。对比SVM，基本的优势有：</p>
+<a id="more"></a>
+<ul>
+<li>非常适用与稀疏的数据，尤其在推荐系统中。</li>
+<li>线性复杂度，在large scale数据里面效率高</li>
+<li>适用于任何的实数向量的预测任务，包括:
+<ul>
+<li>回归</li>
+<li>分类</li>
+<li>排序</li>
+</ul></li>
+</ul>
+<p>目前推荐系统中，很多深度学习模型最后都会接一个FM来做评分的预测，或者情感分类等。网上关于FM的讲解资料很多，这里简单记录下。 首先FM的形式如下(后续黑体表示向量，普通字体为实数值)： <span class="math display">\[y(\mathbf{x}) = w_0 + \sum_{i=0}^{n}w_ix_i + \sum_{i=1}^{n}\sum_{j=i+1}^{n}&lt;\mathbf{v_i}, \mathbf{v_j}&gt;x_ix_j\]</span> 其中前两项为基本的线性回归，后面一项为向量的交互项，参数为： - <span class="math inline">\(\mathbf{x} \in R^{n}\)</span> 为一个输入的向量，维度为<span class="math inline">\(n\)</span> - <span class="math inline">\(\mathbf{w}\)</span>为线性回归的参数 - <span class="math inline">\(\mathbf{V} \in R^{n \times k}\)</span>为交互矩阵, k是factor 维度，属于超参数。 相对于为输入<span class="math inline">\(\mathbf{x}\)</span>的每一个维度定义一个特征向量。 - <span class="math inline">\(&lt;\mathbf{v}_i, \mathbf{v}_j&gt; = \sum_{f=1}^k v_{i,f} \cdot v_{j,f}\)</span> ，向量内积表示交互。</p>
+<p>相比与SVM, 上述的模型完全是线性复杂度，并且由于对输入每个维度额外定义了一个因子向量<span class="math inline">\(\mathbf{v_i}\)</span>，能够赋予更多的特征信息。 FM可以用于不同任务： - 回归任务：直接以输出<span class="math inline">\(y\)</span>作为回归值即可 - 分类任务：在<span class="math inline">\(y\)</span>上接一个<span class="math inline">\(sigmoid\)</span>，即：y = <span class="math inline">\(\frac{1}{1+e^{-y}}\)</span> - 排序任务: 将<span class="math inline">\(y\)</span>作为输入<span class="math inline">\(x\)</span>的score.</p>
+<h2 id="实现">实现</h2>
+<p>如果直接按照公式来实现的话，第三项的复杂度为<span class="math inline">\(O(kn^2)\)</span>，不过论文中通过因子变化，可以优化到<span class="math inline">\(O(kn)\)</span>，具体推导如下，类似于<span class="math inline">\(2ab = (a+b)^2 - a^2 - b^2\)</span>： <img src="http://cdn.htliu.cn/blog/factorization_machine/fm1.jpg"> 这样复杂度即可降到<span class="math inline">\(O(kn)\)</span>, 转换为矩阵乘法即可。 pytorch的实现如下： <figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> torch</div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">FM_Layer</span><span class="params">(nn.Module)</span>:</span></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, n=<span class="number">10</span>, k=<span class="number">5</span>)</span>:</span></div></pre></td></tr></table></figure></p>
+<pre><code>    n: 输入维度
+    k: factor的维度
+    <figure class="highlight ruby"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">    <span class="keyword">super</span>(FM_Layer, <span class="keyword">self</span>).__init_<span class="number">_</span>()</div><div class="line">    <span class="keyword">self</span>.n = n</div><div class="line">    <span class="keyword">self</span>.k = k</div><div class="line">    <span class="keyword">self</span>.linear = nn.Linear(<span class="keyword">self</span>.n, <span class="number">1</span>)   <span class="comment"># 前两项线性层</span></div><div class="line">    <span class="keyword">self</span>.V = nn.Parameter(torch.randn(<span class="keyword">self</span>.n, <span class="keyword">self</span>.k))   <span class="comment"># 交互矩阵</span></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">fm_layer</span><span class="params">(<span class="keyword">self</span>, x)</span></span><span class="symbol">:</span></div></pre></td></tr></table></figure>
+
+    :输入:  x 为一个n维向量
+    :返回:  实数值
+    <figure class="highlight ruby"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">        linear_part = <span class="keyword">self</span>.linear(x)</div><div class="line">        interaction_part_1 = torch.mm(x, <span class="keyword">self</span>.V)</div><div class="line">        interaction_part_1 = torch.pow(interaction_part_1, <span class="number">2</span>)</div><div class="line">        interaction_part_2 = torch.mm(torch.pow(x, <span class="number">2</span>), torch.pow(<span class="keyword">self</span>.V, <span class="number">2</span>))</div><div class="line">        output = linear_part + torch.sum(<span class="number">0</span>.<span class="number">5</span> * interaction_part_2 - interaction_part_1)</div><div class="line">        <span class="keyword">return</span> output</div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">forward</span><span class="params">(<span class="keyword">self</span>, x)</span></span><span class="symbol">:</span></div><div class="line">        <span class="keyword">return</span> <span class="keyword">self</span>.fm_layer(x)</div><div class="line"></div><div class="line">fm = FM_Layer(<span class="number">10</span>, <span class="number">5</span>)</div><div class="line">x = torch.randn(<span class="number">1</span>, <span class="number">10</span>)</div><div class="line">output = fm(x)</div></pre></td></tr></table></figure></code></pre>
+<p>[1] Rendle S. Factorization machines[C]//Data Mining (ICDM), 2010 IEEE 10th International Conference on. IEEE, 2010: 995-1000. [2] https://github.com/vanzytay/KDD2018_MPCN/blob/master/tylib/lib/compose_op.py</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;h2 id=&quot;简介&quot;&gt;简介&lt;/h2&gt;
+&lt;p&gt;Factorization Machine （因子分解机) 是Steffen Rendle在2010年提出的一种机器学习算法，可以用来做任意实数值向量的预测。对比SVM，基本的优势有：&lt;/p&gt;
+    
+    </summary>
+    
+      <category term="读书笔记" scheme="http://shomy.top/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/"/>
+    
+    
+      <category term="factorization machine" scheme="http://shomy.top/tags/factorization-machine/"/>
+    
+  </entry>
   
   <entry>
     <title>docker搭建neo4j与elasticsearch数据同步</title>
@@ -1440,7 +1488,7 @@
     <link href="http://shomy.top/2017/07/28/word2vec-all/"/>
     <id>http://shomy.top/2017/07/28/word2vec-all/</id>
     <published>2017-07-28T07:42:21.000Z</published>
-    <updated>2018-12-06T13:32:07.162Z</updated>
+    <updated>2018-12-31T08:29:55.854Z</updated>
     
     <content type="html"><![CDATA[<p>目前需要做Network Embedding方面的课题，而复杂网络本身就经常借鉴NLP的一些算法模型, Embedding也不例外. 因此先从Word Embedding入手。之前对Word Embedding(暂且翻译为词嵌入或者词向量)的理解就是将单词根据某种特征转为数值向量，再来做其他工作比如文本分类的工作。而word2vec则是word embedding的一种模型，也是目前使用最广的词向量模型, 由Google的Mikolov团队2013年提出。之前仅仅能够使用第三方库来训练直接使用, 对其中原理并没有多少理解, 这篇博客则比较完整的从背景知识到原理，参数训练等方面整理一下word2Vec。</p>
 <a id="more"></a>
@@ -2383,110 +2431,6 @@
       <category term="machine learning" scheme="http://shomy.top/tags/machine-learning/"/>
     
       <category term="rbf" scheme="http://shomy.top/tags/rbf/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>机器学习技法笔记(5)-Soft Margin SVM</title>
-    <link href="http://shomy.top/2017/02/20/svm04-soft-margin/"/>
-    <id>http://shomy.top/2017/02/20/svm04-soft-margin/</id>
-    <published>2017-02-20T08:30:32.000Z</published>
-    <updated>2018-09-29T03:52:04.764Z</updated>
-    
-    <content type="html"><![CDATA[<p>上节介绍的Kernel SVM的结尾，提到了overfit的问题，那是因为SVM要找到的分类面是必须把所有的训练数据分开，即使有一些噪音数据，或者说是错误标注的数据，也要“坚持”分开，这可能就会形成很复杂的边界，很容易形成overfit，如下:</p>
-<a id="more"></a>
-<div class="figure">
-<img src="http://cdn.htliu.cn/svm04-1.png">
-
-</div>
-<p>我们希望的是左边的分类面，而非右边的，虽然右边的<span class="math inline">\(E_{in} = 0\)</span>，也就是说希望对于一些错误的数据忽略掉，前面介绍PLA的变种Pocket的用的就是这种方式:</p>
-<div class="figure">
-<img src="http://cdn.htliu.cn/svm04-2.png">
-
-</div>
-<p>Pocket找的是分类错误点尽可能少的分类面，不一定必须完全分开，容许错误的发生。而我们之前的SVM均是要求所有的数据都必须分类正确，如果我们将Pocket与SVM结合，即允许发生错误，如下:</p>
-<div class="figure">
-<img src="http://cdn.htliu.cn/svm04-3.png">
-
-</div>
-<p>上式约束条件中，对于分类正确的点，仍然需要满足<span class="math inline">\(\geq 1\)</span>的条件，对于当前分类错误的点不加任何限制。所以目标函数中除了原先的<code>margin</code>，还必须加入了分类错误的个数，对整体做最小化。系数<span class="math inline">\(C\)</span>的作用则是一种对<code>margin</code>和犯错个数的一个折中。<span class="math inline">\(C\)</span>越大表示犯错误越少越好，犯错误个数重要性大于<code>margin</code>，如果太大了， 就容易过拟合了，反之<span class="math inline">\(C\)</span>越小表示希望<code>magin</code> 越宽越好，也就是说<span class="math inline">\(\mathbf{w}\)</span>越小越好，就是说对错误的惩罚很小，这样就会导致分类效果变差。 用<span class="math inline">\(C\)</span>表示更重视<span class="math inline">\(margin\)</span>还是重视犯错误的多少, 如下图:</p>
-<div class="figure">
-<img src="http://cdn.htliu.cn/svm04-8.png">
-
-</div>
-<p>对于新的优化问题。然而由于存在bool的运算<span class="math inline">\(\neq\)</span>，也就是说该问题是离散的，无法用二次规划QP来求解。此外，还有一个缺点，那就是对所有的错误都是一视同仁的，无论是距离边界近还是远，只要分类错误，都计算在内，也就是说无法区分大错小错。</p>
-<p>为了解决上述问题，引入变量<span class="math inline">\(\xi \geq 0\)</span> 表示不满足<span class="math inline">\(y_n(\mathbf{w}^T\mathbf{z}+b) \geq 1\)</span>的数据距离当前分类边界的距离，用来量化偏离的程度，也就是错误的大小，把原问题转为如下:</p>
-<p><span class="math display">\[\begin{align} \min\limits_{b,\mathbf{w},\xi} &amp; \quad \frac{1}{2}\mathbf{w}^T\mathbf{w}+C \cdot \sum\limits_{n=1}^N \xi_n \\ s.t. &amp; \quad y_n(\mathbf{w}^T{\mathbf{z}}_n+b) \geq 1 - \xi_n, for \ all \ n; \\ &amp; \quad \xi_n \geq 0, for \ all \ n\end{align}\]</span></p>
-<p>对于满足margin条件的点其<span class="math inline">\(\xi =0\)</span>, 不满足margin条件的其<span class="math inline">\(\xi &gt; 0\)</span>; 如下图:</p>
-<div class="figure">
-<img src="http://cdn.htliu.cn/svm04-4.png">
-
-</div>
-<p>图中有除了A,B两点之外的点均满足条件，<span class="math inline">\(\xi=0\)</span>; 而A点属于没有不满足margin条件的，B点属于分类错误，因此<span class="math inline">\(\xi_{A} &gt;0, \xi_B&gt;0\)</span>。</p>
-<p>上述的优化问题已经可以使用二次规划问题的解法去求解了，三个自变量:<span class="math inline">\(b,\mathbf{w},\xi\)</span>，一共有<span class="math inline">\(\tilde{d}+1+N\)</span>维；约束条件的个数为<span class="math inline">\(2N\)</span>个，按照前面的解法即可。</p>
-<p>我们把这种容许犯错的SVM成为<strong>Soft-Margin SVM(软间隔SVM)</strong>，与前面几节的<strong>Hard-Margin SVM</strong>相对，并且引入的<span class="math inline">\(\xi\)</span>也叫做 <strong>松弛变量</strong>，顾名思义，允许数据偏离margin, 例如出现上图中A,B那样的数据。</p>
-<p>上述的优化问题是Soft-Margin原始问题，下面考虑Soft-Margin的对偶问题(Dual)，同Hard-Margin，只需将两个约束条件加入到Lagrange Function:</p>
-<p><span class="math display">\[\begin{align}\mathcal{L}(b, \mathbf{w}, \xi, \alpha, \beta)  = &amp;\frac{1}{2}\mathbf{w}^T\mathbf{w}+C \cdot \sum\limits_{n=1}^N \xi_n \\&amp;+ \sum\limits_{n=1}^{N}\alpha_n(1-\xi_n-y_n(\mathbf{w}^T\mathbf{z}_n+b)) \\ &amp; +\sum\limits_{n=1}^{N}\beta_n(-\xi_n) \end{align} \]</span></p>
-<p>然后将原始问题转为如下的对偶问题:</p>
-<p><span class="math display">\[\max\limits_{\alpha_n \geq 0,\ \beta \geq 0}\left(\min\limits_{b, \mathbf{w}, \xi} \quad   \mathcal{L(b, \mathbf{w}, \xi, \alpha, \beta)}\right)\]</span></p>
-<p>优化思路同Hard-Margin的对偶问题相同，首先对内层最小化部分对变量求微分： <span class="math display">\[\begin{align}&amp; \frac{\partial \mathcal{L}}{\partial \xi_n} = C - \alpha_n - \beta_n = 0 \\ &amp; \Rightarrow  \beta_n=C-\alpha_n \end{align}\]</span></p>
-<p>这样利用这个条件，就可以向Hard-Margin消去<span class="math inline">\(b\)</span>一样去掉<span class="math inline">\(\beta_n\)</span>, 同时结合<span class="math inline">\(\beta_n \geq 0\)</span>可以得到$ 0 _n C$。</p>
-<p>整理一下式子，提取出<span class="math inline">\(\xi\)</span>的部分：<span class="math inline">\(\sum(C-\alpha_n-\beta_n) \xi_n\)</span>，已知最优解满足<span class="math inline">\(\alpha_n+\beta_n =C\)</span>， 因此<span class="math inline">\(\xi\)</span>部分可以消去，最终如下：</p>
-<p><span class="math display">\[\max\limits_{ 0 \leq \alpha_n \leq C}\left(\min\limits_{b, \mathbf{w}} \quad   \frac{1}{2}\mathbf{w}^T{\mathbf{w}} + \sum\limits_{n=1}^{N}\alpha_n(1-y_n(\mathbf{w}^T\mathbf{z}+b))\right)\]</span></p>
-<p>除了外层的<span class="math inline">\(\alpha_n\)</span>多了一个上限之外，与Hard-Margin的对偶问题完全一样，接下来对<span class="math inline">\(b, \mathbf{w}\)</span>分别求微分，然后去掉<span class="math inline">\(b,\mathbf{w}\)</span>，再将外层最大化稍微化简，最终转为如下的二次规划(QP)问题：(此过程与Dual SVM中完全一样，不再重写一遍):</p>
-<p><span class="math display">\[\begin{align} \min\limits_{\alpha} &amp; \quad  \frac{1}{2}\sum\limits_{n=1}^N\sum\limits_{m=1}^N \alpha_n\alpha_my_ny_m\mathbf{z}_n^T\mathbf{z}_m - \sum\limits_{n=1}^{N}\alpha_n \\ s.t. &amp; \quad \sum\limits_{n=1}^{N}\alpha_ny_n = 0; \\ &amp; \quad 0 \leq \alpha_n \leq C, \ n = 1,2...N \end{align}\]</span></p>
-<p>当然还有一些中间条件: <span class="math inline">\(\mathbf{w} = \sum \alpha_ny_n\mathbf{z}_n, \beta_n=C-\alpha_n\)</span>；</p>
-<p>到这里我们的问题转为了有<span class="math inline">\(N\)</span>个变量，<span class="math inline">\(2N+1\)</span>个约束条件的二次规划问题，表示出<span class="math inline">\(Q,p,A,c\)</span>然后使用某个QP Solver即可得到最优的<span class="math inline">\(\alpha\)</span>:</p>
-<div class="figure">
-<img src="http://cdn.htliu.cn/svm04-5.png">
-
-</div>
-<ul>
-<li>Q矩阵元素: <span class="math inline">\(q_{n,m} = y_ny_m\mathbf{z}_n^T\mathbf{z}_m\)</span></li>
-<li>$ p = -_N$</li>
-<li>对于<span class="math inline">\(A,c\)</span>，对应如下:
-<ul>
-<li><span class="math inline">\(a_{\geq} = y, c_{\geq} = 0\)</span></li>
-<li><span class="math inline">\(a_{\leq} = -y, c_{\leq} = 0\)</span></li>
-<li>对于<span class="math inline">\(\alpha \geq 0\)</span> 有<span class="math inline">\(a_n^T =\)</span> n-th unit dircection, $c_n = 0 $</li>
-<li>对于<span class="math inline">\(\alpha \leq C\)</span> 有<span class="math inline">\(a_n^T =\)</span> n-th unit direction, <span class="math inline">\(c_n = -C\)</span></li>
-</ul></li>
-</ul>
-<p>到此为止，我们得到了对偶问题的最优的<span class="math inline">\(\alpha\)</span>, 再结合上节的Kernel Trick, 我们得到了 <strong>Kernel Soft-Margin SVM</strong>,基本流程如下:</p>
-<div class="figure">
-<img src="http://cdn.htliu.cn/svm04-6.png">
-
-</div>
-<p>这里有一点不一样的地方是对<span class="math inline">\(b\)</span>的求解，回想之前是利用转化为拉格朗日对偶问题(min(max) <span class="math inline">\(\Leftrightarrow\)</span> max(min))时候，利用互补条件(complementary slackness)，参考<a href="http://shomy.top/2017/02/17/svm-02-dual/#模型求解">Dual SVM</a>, 但是Soft-Margin有两个条件，即:</p>
-<p><span class="math display">\[\begin{align} \alpha_n(1-\xi_n-y_n(\mathbf{w}^T\mathbf{z}_n+b)) &amp;=0 \\ \beta_n \xi_n = (C- \alpha_n)\xi_n &amp; =0\end{align}\]</span></p>
-<p>首先对第一个式子，对于SV(<span class="math inline">\(\alpha_s &gt; 0\)</span>)， 那么可以得到 <span class="math inline">\(b=y_s - y_s\xi_s - \mathbf{w}^T\mathbf{z}_s\)</span>，但是里面含有<span class="math inline">\(\xi\)</span>，无法求解。 再看第二个式子，对于<span class="math inline">\(\alpha_s &lt; C\)</span>的那部分SV(也叫free SV)，则有<span class="math inline">\(\xi_s = 0\)</span>，因此利用这部分SV， 加上Kernel Function便可得到<span class="math inline">\(b\)</span>：</p>
-<p><span class="math display">\[b=y_s - \mathbf{w}^T\mathbf{z}_s = y_s - \sum\limits_{free \ SV} \alpha_ny_nK(\mathbf{x}_n, \mathbf{x}_s)\]</span></p>
-<p>到这里基本完成了<strong>Soft-Margin SVM</strong>的算法，集对偶，核，Soft-Margin于一身，可以解决非线性问题，松弛变量允许噪音数据等，在实际分类问题中，应用很广泛。 不过需要注意的是这种SVM也有可能overfit的，因此需要仔细调整参数<span class="math inline">\(C\)</span>，以及Kernel Function的参数，一般使用模型验证(Validation)手段比如交叉验证去选择最好的参数。</p>
-<p>最后再提一下Soft-Margin 中的<span class="math inline">\(\alpha\)</span>的物理意义，看下图:</p>
-<div class="figure">
-<img src="http://cdn.htliu.cn/svm04-9.png">
-
-</div>
-<p>根据两个互补条件，可以得到三类点点:</p>
-<ul>
-<li>非SV(支撑向量): 也就是距离分离面比较远的那些数据，如图中的圈圈叉叉，对应的<span class="math inline">\(\alpha_n = 0, \xi_n = 0\)</span></li>
-<li>free SV: 也就是说<span class="math inline">\(\alpha_n &lt; C, \xi_n =0\)</span>，它们在边界上, 满足条件。图中方框标记的点，我们使用这些点计算的<span class="math inline">\(b\)</span>。</li>
-<li>bounded SV: <span class="math inline">\(\alpha_n =C, \xi_n &gt; 0\)</span>，这种类型的数据，不满足margin条件，或者分错类别的，如图中三角标记的。</li>
-</ul>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;上节介绍的Kernel SVM的结尾，提到了overfit的问题，那是因为SVM要找到的分类面是必须把所有的训练数据分开，即使有一些噪音数据，或者说是错误标注的数据，也要“坚持”分开，这可能就会形成很复杂的边界，很容易形成overfit，如下:&lt;/p&gt;
-    
-    </summary>
-    
-      <category term="读书笔记" scheme="http://shomy.top/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/"/>
-    
-    
-      <category term="machine learning" scheme="http://shomy.top/tags/machine-learning/"/>
-    
-      <category term="svm" scheme="http://shomy.top/tags/svm/"/>
     
   </entry>
   
