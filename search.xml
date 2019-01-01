@@ -3,6 +3,58 @@
   
     
     <entry>
+      <title><![CDATA[ELMo词向量及使用方法记录]]></title>
+      <url>/2019/01/01/elmo-1/</url>
+      <content type="html"><![CDATA[<p>ELMo可以产生基于上下文词向量的模型。 ## ELMo简介</p>
+<a id="more"></a>
+<p>本质上线性组合不同层的LSTM输出的word vectors 作为最终的word representation.</p>
+<ul>
+<li>第一层是普通的word embedding 可以用wrod2vec或者glove来得到，或者使用character level得到token embedding》 这部分是general embedding，上下文无关。文中使用的character level的CNN+Highway.</li>
+<li>后面连接两个biLSTM 去encode 输入（同时也有残差连接), 每一层LSTM得到的输出（隐状态) 作为每个词的上下文相关的word vectors.</li>
+<li>这样每个词就会有（L+1）个词向量，L为biLSTM的层数.</li>
+<li>词向量的线性组合，针对不同的任务，不同层的向量做不同的权重加和。 其中权重s是一个维度为L的vector，参与训练。</li>
+</ul>
+<h2 id="pytorch版elmo-allennlp">Pytorch版ELMo (Allennlp)</h2>
+<p>这个是官方的ELMo的版本，基于Allennlp或者pytorch。<a href="https://github.com/allenai/allennlp/blob/master/tutorials/how_to/elmo.md#using-elmo-as-a-pytorch-module-to-train-a-new-model" target="_blank" rel="external">官方文档</a>给的example有些迷惑，这里记录一番。 Allennlp的ELMo的API为<code>allennlp.modules.elmo.Elmo</code>, 完整的输入参数参见<a href="https://github.com/allenai/allennlp/blob/master/allennlp/modules/elmo.py#L34" target="_blank" rel="external">文档</a>，几个比较重要的如下: - options_file : ELMo JSON options file - weight_file : ELMo hdf5 weight file - num_output_representations: The number of ELMo representation layers to output. - requires_grad: optional, If True, compute gradient of ELMo parameters for fine tuning.</p>
+<p>其中一个关键的参数为<code>num_output_reprensenations</code> 文档描述不太清楚，具体可以看见在github提的<a href="https://github.com/allenai/allennlp/issues/2245" target="_blank" rel="external">issue</a>和<a href="https://github.com/allenai/allennlp/pull/2256" target="_blank" rel="external">pr</a>。 这个<code>num_output_representation</code> 一开始理解这个参数是输出三层中前几层，但是其实并不是这样，因为这个参数的取值可以是任意正整数。我们知道ELMo文章中最后词向量表示即公式1计算的是三层表示的线性加权，针对不同的任务，可能会有不同的加权比例。 因此<code>num_output_representation</code> 表示输出多种线性加权的词向量，即多个公式1产生的词向量。 而Allennlp的ELMo 并不直接提供中间的三层输出(char-cnn, lstm-1, lstm-2)，不过可以通过稍微修改源代码的方法获得。 再看例子如下： <figure class="highlight makefile"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line">from allennlp.modules.elmo import Elmo, batch_to_ids</div><div class="line"></div><div class="line">options_file = <span class="string">"options.json"</span>  <span class="comment"># 配置文件地址 </span></div><div class="line">weight_file = <span class="string">"weights.hdf5"</span> <span class="comment"># 权重文件地址</span></div><div class="line"></div><div class="line"><span class="comment"># 这里的1表示产生一组线性加权的词向量。</span></div><div class="line"><span class="comment"># 如果改成2 即产生两组不同的线性加权的词向量。</span></div><div class="line">elmo = Elmo(options_file, weight_file, 1, dropout=0)</div><div class="line"></div><div class="line"><span class="comment"># use batch_to_ids to convert sentences to character ids</span></div><div class="line">sentences = [['First', 'sentence', '.'], ['Another', '.']]</div><div class="line">character_ids = batch_to_ids(sentences)</div><div class="line"></div><div class="line">embeddings = elmo(character_ids)['elmo_representations']</div></pre></td></tr></table></figure></p>
+<p>最终<code>len(embeddings) == 1</code>，里面的一个元素则是论文中公式1产生的ELMo的词向量。 如果上述参数1改为2，则表示产生两个权重不同的ELMo词向量，可以用于不同任务的词向量。</p>
+<h2 id="tensorflow版-elmo">tensorflow版 ELMo</h2>
+<p>首先载入ELMo的方法很简单，直接load即可: <figure class="highlight elm"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> tensorflow <span class="keyword">as</span> tf</div><div class="line"><span class="keyword">import</span> tensorflow_hub <span class="keyword">as</span> hub</div><div class="line"><span class="title">url</span> = <span class="string">"https://tfhub.dev/google/elmo/2"</span></div><div class="line"><span class="title">embed</span> = hub.<span class="type">Module</span>(url)</div></pre></td></tr></table></figure></p>
+<p>调用方法也很简单: <figure class="highlight ini"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="attr">sentence_lists</span> = [<span class="string">"I have a dog"</span>, <span class="string">"How are you , today is Monday"</span>,<span class="string">"I am fine thanks"</span>]</div><div class="line"><span class="attr">output</span> = embed(sentence_lists, as_dict=<span class="literal">True</span>)</div></pre></td></tr></table></figure></p>
+<p>输出的结果如下: <figure class="highlight xml"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">&#123;</div><div class="line">    'default': <span class="tag">&lt;<span class="name">tf.Tensor</span> '<span class="attr">module_apply_default_6</span>/<span class="attr">truediv:0</span>' <span class="attr">shape</span>=<span class="string">(3,</span> <span class="attr">1024</span>) <span class="attr">dtype</span>=<span class="string">float32</span>&gt;</span>,</div><div class="line">    'elmo': <span class="tag">&lt;<span class="name">tf.Tensor</span> '<span class="attr">module_apply_default_6</span>/<span class="attr">aggregation</span>/<span class="attr">mul_3:0</span>' <span class="attr">shape</span>=<span class="string">(3,</span> <span class="attr">9</span>, <span class="attr">1024</span>) <span class="attr">dtype</span>=<span class="string">float32</span>&gt;</span>,</div><div class="line">    'lstm_outputs1': <span class="tag">&lt;<span class="name">tf.Tensor</span> '<span class="attr">module_apply_default_6</span>/<span class="attr">concat:0</span>' <span class="attr">shape</span>=<span class="string">(3,</span> ?, <span class="attr">1024</span>) <span class="attr">dtype</span>=<span class="string">float32</span>&gt;</span>,</div><div class="line">    'lstm_outputs2': <span class="tag">&lt;<span class="name">tf.Tensor</span> '<span class="attr">module_apply_default_6</span>/<span class="attr">concat_1:0</span>' <span class="attr">shape</span>=<span class="string">(3,</span> ?, <span class="attr">1024</span>) <span class="attr">dtype</span>=<span class="string">float32</span>&gt;</span>,</div><div class="line">    'sequence_len': <span class="tag">&lt;<span class="name">tf.Tensor</span> '<span class="attr">module_apply_default_6</span>/<span class="attr">Sum:0</span>' <span class="attr">shape</span>=<span class="string">(3,)</span> <span class="attr">dtype</span>=<span class="string">int32</span>&gt;</span>,</div><div class="line">    'word_emb': <span class="tag">&lt;<span class="name">tf.Tensor</span> '<span class="attr">module_apply_default_6</span>/<span class="attr">bilm</span>/<span class="attr">Reshape_1:0</span>' <span class="attr">shape</span>=<span class="string">(3,</span> <span class="attr">9</span>, <span class="attr">512</span>) <span class="attr">dtype</span>=<span class="string">float32</span>&gt;</span></div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>解释下这些字段的意思:</p>
+<ul>
+<li><code>word_emb</code>: ELMo的最开始一层的基于character的word embedding, shape为<code>[batch_size, max_length, 512]</code></li>
+<li><code>lstm_outpus1/2</code>: ELMo中的第一层和第二层LSTM的隐状态输出，shape同样为 <code>[batch_size, max_length, 1024]</code></li>
+<li><code>elmo</code>: 对应文章中的公式1，每个词的输入层(word_emb)，第一层LSTM输出，第二层LSTM输出的线性加权之后的最终的词向量，shape为<code>[batch_size, max_length, 1024]</code>，此外这个线性权重是可训练的。</li>
+<li><code>default</code>: 前面得到的均为word级别的向量，这个选项给出了简单使用mean-pooling求的句子级别的向量，即将上述<code>elmo</code>的所有词取平均，方便后续下游任务。</li>
+<li><code>sequence_len</code> 输入中每个句子的长度</li>
+</ul>
+<p>一般情况使用<code>output ['elmo']</code> 也就是Allennlp版本的<code>elmo_representations</code>， 即可得到每个词的ELMo 词向量，即可用于后续的任务，比如分类等。</p>
+]]></content>
+      
+        <categories>
+            
+            <category> 读书笔记 </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> ELMo </tag>
+            
+            <tag> word emebdding </tag>
+            
+            <tag> pytorch </tag>
+            
+            <tag> tensorflow </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
       <title><![CDATA[Factorization Machine笔记及Pytorch 实现]]></title>
       <url>/2018/12/31/factorization-machine/</url>
       <content type="html"><![CDATA[<h2 id="简介">简介</h2>
