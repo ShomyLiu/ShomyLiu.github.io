@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://shomy.top/"/>
-  <updated>2019-01-01T16:34:27.841Z</updated>
+  <updated>2019-01-01T16:36:33.527Z</updated>
   <id>http://shomy.top/</id>
   
   <author>
@@ -20,9 +20,9 @@
     <link href="http://shomy.top/2019/01/01/elmo-1/"/>
     <id>http://shomy.top/2019/01/01/elmo-1/</id>
     <published>2019-01-01T15:59:36.000Z</published>
-    <updated>2019-01-01T16:34:27.841Z</updated>
+    <updated>2019-01-01T16:36:33.527Z</updated>
     
-    <content type="html"><![CDATA[<p>ELMo不同于word2vec、glove，属于下文词向量模型, 来自《Deep Contextualized Word Representations》(NAACL2018的best paper), 可以很好用于下游任务中。</p>
+    <content type="html"><![CDATA[<p>ELMo不同于word2vec、glove，属于上下文词向量模型, 来自《Deep Contextualized Word Representations》(NAACL2018的best paper), 可以很方便用于下游NLP任务中。</p>
 <h2 id="elmo简介">ELMo简介</h2>
 <p>ELMo使用双层BiLSTM来训练语言模型，创新是线性组合不同层的word vectors， 作为最终的word representation. 核心公式: <a id="more"></a></p>
 <div class="figure">
@@ -66,7 +66,7 @@
     
     <summary type="html">
     
-      &lt;p&gt;ELMo不同于word2vec、glove，属于下文词向量模型, 来自《Deep Contextualized Word Representations》(NAACL2018的best paper), 可以很好用于下游任务中。&lt;/p&gt;
+      &lt;p&gt;ELMo不同于word2vec、glove，属于上下文词向量模型, 来自《Deep Contextualized Word Representations》(NAACL2018的best paper), 可以很方便用于下游NLP任务中。&lt;/p&gt;
 &lt;h2 id=&quot;elmo简介&quot;&gt;ELMo简介&lt;/h2&gt;
 &lt;p&gt;ELMo使用双层BiLSTM来训练语言模型，创新是线性组合不同层的word vectors， 作为最终的word representation. 核心公式:
     
