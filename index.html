@@ -105,7 +105,7 @@ ga('send', 'pageview');
         <div class="counter-tag counter">
     <!-- 别忘记这个类名... post-title-link -->
     <span id="/2018/12/31/factorization-machine/" class="leancloud_visitors article-hits post-title-link"
-           data-flag-title="因子分解机(Factorization Machine)笔记及Pytorch 实现">
+           data-flag-title="Factorization Machine笔记及Pytorch 实现">
         次阅读
     </span>
 
@@ -120,7 +120,7 @@ ga('send', 'pageview');
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2018/12/31/factorization-machine/">因子分解机(Factorization Machine)笔记及Pytorch 实现</a>
+      <a class="article-title" href="/2018/12/31/factorization-machine/">Factorization Machine笔记及Pytorch 实现</a>
     </h1>
   
 
@@ -129,7 +129,17 @@ ga('send', 'pageview');
     <div class="article-entry" itemprop="articleBody">
       
         <h2 id="简介">简介</h2>
-<p>Factorization Machine （因子分解机) 是Steffen Rendle在2010年提出的一种机器学习算法，可以用来做任意实数值向量的预测。对比SVM，基本的优势有：</p>
+<p>Factorization Machine(因子分解机)是Steffen Rendle在2010年提出的一种机器学习算法，可以用来做任意实数值向量的预测。对比SVM，基本的优势有：</p>
+<ul>
+<li>非常适用与稀疏的数据，尤其在推荐系统中。</li>
+<li>线性复杂度，在large scale数据里面效率高</li>
+<li>适用于任何的实数向量的预测任务，包括:
+<ul>
+<li>回归</li>
+<li>分类</li>
+<li>排序</li>
+</ul></li>
+</ul>
         
           <p class="article-more-link">
             <a href="/2018/12/31/factorization-machine/#more">Read More</a>
