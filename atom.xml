@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://shomy.top/"/>
-  <updated>2019-01-01T16:36:33.527Z</updated>
+  <updated>2019-01-01T16:43:53.704Z</updated>
   <id>http://shomy.top/</id>
   
   <author>
@@ -20,7 +20,7 @@
     <link href="http://shomy.top/2019/01/01/elmo-1/"/>
     <id>http://shomy.top/2019/01/01/elmo-1/</id>
     <published>2019-01-01T15:59:36.000Z</published>
-    <updated>2019-01-01T16:36:33.527Z</updated>
+    <updated>2019-01-01T16:43:53.704Z</updated>
     
     <content type="html"><![CDATA[<p>ELMo不同于word2vec、glove，属于上下文词向量模型, 来自《Deep Contextualized Word Representations》(NAACL2018的best paper), 可以很方便用于下游NLP任务中。</p>
 <h2 id="elmo简介">ELMo简介</h2>
@@ -45,8 +45,9 @@
 <li>requires_grad: optional, If True, compute gradient of ELMo parameters for fine tuning.</li>
 </ul>
 <p>其中一个关键的参数为<code>num_output_reprensenations</code> 文档描述不太清楚，具体可以看见在github提的<a href="https://github.com/allenai/allennlp/issues/2245" target="_blank" rel="external">issue</a>和<a href="https://github.com/allenai/allennlp/pull/2256" target="_blank" rel="external">pr</a>。 这个num_output_representation 一开始理解这个参数是输出三层中前几层，但是其实并不是这样，因为这个参数的取值可以是任意正整数。 我们知道ELMo文章中最后词向量表示即公式1计算的是三层表示的线性加权，针对不同的任务，可能会有不同的加权比例。 因此<code>num_output_representation</code> 表示输出多种线性加权的词向量，即多个公式1产生的词向量。 而Allennlp的ELMo 并不直接提供中间的三层输出(char-cnn, lstm-1, lstm-2)，不过可以通过稍微修改源代码的方法获得。</p>
-<p>再看例子如下： <figure class="highlight makefile"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">from allennlp.modules.elmo import Elmo, batch_to_ids</div><div class="line"></div><div class="line">options_file = <span class="string">"options.json"</span>  <span class="comment"># 配置文件地址 </span></div><div class="line">weight_file = <span class="string">"weights.hdf5"</span> <span class="comment"># 权重文件地址</span></div><div class="line"><span class="comment"># 这里的1表示产生一组线性加权的词向量。</span></div><div class="line"><span class="comment"># 如果改成2 即产生两组不同的线性加权的词向量。</span></div><div class="line">elmo = Elmo(options_file, weight_file, 1, dropout=0)</div><div class="line"></div><div class="line"><span class="comment"># use batch_to_ids to convert sentences to character ids</span></div><div class="line">sentences = [['First', 'sentence', '.'], ['Another', '.']]</div><div class="line">character_ids = batch_to_ids(sentences)</div><div class="line"></div><div class="line">embeddings = elmo(character_ids)['elmo_representations']</div></pre></td></tr></table></figure></p>
-<p>最终<code>len(embeddings) == 1</code>，里面的一个元素则是论文中公式1产生的ELMo的词向量。 如果上述参数1改为2，则表示产生两个权重不同的ELMo词向量，可以用于不同任务的词向量。</p>
+<p>再看例子如下： <figure class="highlight makefile"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">from allennlp.modules.elmo import Elmo, batch_to_ids</div><div class="line"></div><div class="line">options_file = <span class="string">"options.json"</span>  <span class="comment"># 配置文件地址 </span></div><div class="line">weight_file = <span class="string">"weights.hdf5"</span> <span class="comment"># 权重文件地址</span></div><div class="line"><span class="comment"># 这里的1表示产生一组线性加权的词向量。</span></div><div class="line"><span class="comment"># 如果改成2 即产生两组不同的线性加权的词向量。</span></div><div class="line">elmo = Elmo(options_file, weight_file, 1, dropout=0)</div><div class="line"></div><div class="line"><span class="comment"># use batch_to_ids to convert sentences to character ids</span></div><div class="line">sentence_lists = [<span class="string">"I have a dog"</span>, <span class="string">"How are you , today is Monday"</span>,<span class="string">"I am fine thanks"</span>]</div><div class="line">character_ids = batch_to_ids(sentences_lists)</div><div class="line"></div><div class="line">embeddings = elmo(character_ids)['elmo_representations']</div></pre></td></tr></table></figure></p>
+<p>最终<code>len(embeddings) == 1</code>，里面的一个元素则是论文中公式1产生的ELMo的词向量, shape为<code>[batch_size, max_length, 1024]</code>, 即:[3, 9, 1024], (根据配置文件不同，最后维度可能不同, 参考<a href="https://allennlp.org/elmo" target="_blank" rel="external">预训练权重</a>)。</p>
+<p>如果上述参数1改为2，则表示产生两个权重不同的ELMo词向量，可以用于不同任务的词向量。</p>
 <p>一般单任务下，我们直接使用1就可以了。</p>
 <h2 id="tensorflow版-elmo">tensorflow版 ELMo</h2>
 <p>首先载入ELMo的方法很简单，直接load tfhub即可:</p>
