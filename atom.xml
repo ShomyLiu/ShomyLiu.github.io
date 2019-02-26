@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://shomy.top/"/>
-  <updated>2019-01-01T16:43:53.704Z</updated>
+  <updated>2019-02-26T16:13:16.665Z</updated>
   <id>http://shomy.top/</id>
   
   <author>
@@ -14,6 +14,49 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>2018</title>
+    <link href="http://shomy.top/2019/02/27/2018-review/"/>
+    <id>http://shomy.top/2019/02/27/2018-review/</id>
+    <published>2019-02-26T16:05:09.000Z</published>
+    <updated>2019-02-26T16:13:16.665Z</updated>
+    
+    <content type="html"><![CDATA[<p><img src="http://cdn.htliu.cn/blog/2018-reviewlake.jpg"> 又一年啊, 时间总是这么快。终于赶完了年后的两个deadline, 现在听着郭德纲于谦，回顾下这2018年。</p>
+<a id="more"></a>
+<iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width="80%" height="86" src="//music.163.com/outchain/player?type=2&amp;id=529786068&amp;auto=1&amp;height=66">
+</iframe>
+<h2 id="学习">学习</h2>
+<p>三个字总结下今年的科研经历：</p>
+<blockquote>
+<p>全拒得</p>
+</blockquote>
+<p>一个字总结就是：</p>
+<blockquote>
+<p>惨</p>
+</blockquote>
+<p>自己的几篇投稿7连拒，被拒都快自闭了，更有意思的是与别人合作的文章7连中，都让我开始怀疑是本命年的原因了，哈哈。主要还是自己火候未到，水平太次。总体来说还是因为不重视写作，各种语法问题，逻辑上的，每次写完之后都会被老师吐槽一顿，这一年感觉也没有什么进步。当然今年也算是见识到了各种各样的审稿人和审稿意见，比如前面一顿夸，最后说了一句有几个符号表示不清晰，直接reject，还有说paper跟一篇未出版的文章idea类似，给了reject，然而几个月过去了，到现在那篇文章依然unavailable。 最接近的一次感觉是WWW的一篇，前三个意见还可以，最后一个审稿人帮我修改了一遍论文， 从摘要到结语，一行一行的指出语法问题，两页的意见，最后给了弱拒，不过还是比较感谢这位如此负责的审稿人。 中间也换过一次小方向，不过总的还是NLP与复杂网络，偏推荐一些，或者说链接预测。 感觉相比关系抽取，可能更偏实用落地。 相比前两年，今年内心有点急了，压力也就接踵而来， 总想着赶紧发论文，达到毕业条件，欲速则不达，好多东西打磨的太少就着急投稿。 今年的小目标就是达到毕业条件，但愿能完成！</p>
+<h2 id="生活">生活</h2>
+<p>不知道为啥，现在总没有了本科期间那种冲劲了，做事情开始犹豫了，也更容易浮躁了，很难长时间集中精力了，比如现在还在听着相声写博客。 想起了《天空的城》里面的一句话，“每个人在刚出生的时候，心里都有一座空空的城市，随着自己的长大，浮躁，冷漠，世俗的名利便填满了这座空城，从此变得臃肿不堪，浑浊不清”。 哈哈 感伤了。 去年一年感觉越来越喜欢拿手机拍照了，不知道这是不是心态越来越老的缘故[cry]。 还是需要多出去走走，见见世面，开拓一下眼界。去年出差，去了几次深圳，香港，的确南方北方差异还是比较大。 先这样了，回头想起来什么可以更新上来，还是那句话，希望我的家人，朋友，被世界温柔以待。 最后以师兄一句话结尾：</p>
+<blockquote>
+<p>对得起自己，对得起对自己好的人。</p>
+</blockquote>
+<p>总之，加油.</p>
+<p>于2019年正月二十三.</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;&lt;img src=&quot;http://cdn.htliu.cn/blog/2018-reviewlake.jpg&quot;&gt; 又一年啊, 时间总是这么快。终于赶完了年后的两个deadline, 现在听着郭德纲于谦，回顾下这2018年。&lt;/p&gt;
+    
+    </summary>
+    
+      <category term="个人心得" scheme="http://shomy.top/categories/%E4%B8%AA%E4%BA%BA%E5%BF%83%E5%BE%97/"/>
+    
+    
+      <category term="2018" scheme="http://shomy.top/tags/2018/"/>
+    
+  </entry>
   
   <entry>
     <title>ELMo词向量及使用方法记录</title>
@@ -2230,113 +2273,6 @@
       <category term="machine learning" scheme="http://shomy.top/tags/machine-learning/"/>
     
       <category term="svr" scheme="http://shomy.top/tags/svr/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>机器学习技法笔记(7)-Kernel LR(核逻辑回归)</title>
-    <link href="http://shomy.top/2017/03/07/kernel-lr/"/>
-    <id>http://shomy.top/2017/03/07/kernel-lr/</id>
-    <published>2017-03-07T14:29:33.000Z</published>
-    <updated>2018-09-29T03:52:04.756Z</updated>
-    
-    <content type="html"><![CDATA[<h1 id="kernel-logistic-regression">Kernel Logistic Regression</h1>
-<blockquote>
-<p>这一节主要介绍如何将Kernel Trick引入到Logistic Regression，以及LR与SVM的结合</p>
-</blockquote>
-<h2 id="svm-与-正则化">SVM 与 正则化</h2>
-<a id="more"></a>
-<p>首先回顾Soft-Margin SVM的原始问题:</p>
-<p><span class="math display">\[\begin{align}\min\limits_{b,\mathbf{w}, \xi}  \quad &amp;\frac{1}{2} \mathbf{w}^T\mathbf{w} + C \cdot \sum\limits_{n=1}^{N}\xi_n \\ s.t. \quad &amp; y_n(\mathbf{w}^T\mathbf{z}^n+b) \geq 1-\xi_n, for \ all\ n \end{align}\]</span></p>
-<p>其中<span class="math inline">\(\xi_n\)</span>是训练数据违反边界的多少，没有违反的话，<span class="math inline">\(\xi_n =0\)</span>，反之<span class="math inline">\(\xi_n &gt; 0\)</span>，换句话说，目标函数的第二项就可以表示模型的损失。现在换一种方式来写，将二者结合起来: <span class="math inline">\(\xi_n = \max(1- y_n(\mathbf{w}^T\mathbf{z}^n+b),0)\)</span>，这一个等式就代表了上面的约束条件，这样上述问题，就与下面的无约束问题等价:</p>
-<p><span class="math display">\[\begin{align} &amp; \min\limits_{b,\mathbf w}\left({1\over 2}\mathbf w^T\mathbf w + C\sum_{n=1}^N\max\left(1-y_n\left(\mathbf w^T\mathbf z_n + b\right), 0\right)\right) \\ \Leftrightarrow &amp;\min\limits_{b,w}\left({1\over 2}\mathbf w^T\mathbf w + C \cdot \sum \widehat{err} \right) \end{align}\]</span></p>
-<p>这种形式与之前的<span class="math inline">\(L_2\)</span> 正则项很类似:</p>
-<p><span class="math display">\[\min\limits_{b,\mathbf w}\left({\lambda\over N}\mathbf w^T\mathbf w + {1\over N}\sum\mbox{err}\right)\]</span></p>
-<p>在<span class="math inline">\(L_2\)</span>中，通过最小化<span class="math inline">\(E_{in}\)</span>的同时控制<span class="math inline">\(\mathbf{w}\)</span>的大小，防止模型过度复杂。从正则化的角度来看的话，Soft-Margin 的SVM其实就属于一种正则化模型，如下的对比:</p>
-<div class="figure">
-<img src="http://cdn.htliu.cn/klr-1.png">
-
-</div>
-<p>其中SVM中的<span class="math inline">\(C\)</span>与<span class="math inline">\(L_2\)</span>中的<span class="math inline">\(\lambda\)</span>对应，<span class="math inline">\(C\)</span>越大，表示注重<span class="math inline">\(E_{in}\)</span>，那么<span class="math inline">\(\lambda\)</span>就越小，正则化的效果相对就弱。</p>
-<p>不过从正则化角度考虑Soft-Margin SVM的话，因为错误函数<span class="math inline">\(\widehat{err}\)</span>不是可微分的，因此不容易求解，因此我们采用的是二次规划来求解的。</p>
-<h2 id="svm-with-soft-binary-classification">SVM With Soft Binary Classification</h2>
-<p>上面我们定义了<span class="math inline">\(\widehat{err}\)</span>作为SVM的一种特殊的误差函数，也被叫做<strong>hinge error mesure</strong>，下面对比一下几种常见二分类的损失函数: PLA, Logistic Regression, Soft-Margin SVM，令<span class="math inline">\(s=\mathbf W^T \mathbf z_n + b\)</span>:</p>
-<p><span class="math display">\[\begin{align} PLA: \quad &amp; err_{0/1}(s, y) = [[ys \leq 0]] \\ LR: \quad &amp; err_{SCE}(s,y) = \log_{2}(1+\exp(-ys)) \\ SVM: \quad &amp; \widehat{err}_{SVM}(y,s) = \max(1-ys,0)\end{align}\]</span></p>
-<p>然后把三者的图像绘出来，如下:</p>
-<div class="figure">
-<img src="http://cdn.htliu.cn/klr-2.png">
-
-</div>
-<p>我们可以看出来SVM与LR的误差函数很类似，都表示0/1误差的上限，我们知道误差函数对于一个模型来说是至关重要的，那么从这个角度看的话，再结合第一部分Soft-Margin SVM与<span class="math inline">\(L_2\)</span>的正则项的形式很相似，那我们可以在一定程度上认为:Soft margin SVM $ L_2 $ Regulared LR。 不过二者各有优点，比如SVM可以通过Kernel Trick 分类非线性的数据，而LR通过最大似然的方式则可以得到属于某类的概率值。</p>
-<p>那我们可以将二者结合起来，也就是说使用SVM来做“软分类”，最终得到某类的概率值，有两种很直接的方式如下:</p>
-<ul>
-<li>第一种: 首先使用SVM得到<span class="math inline">\((b_{SVM}, \mathbf w_{SVM})\)</span>，然后直接使用sigmod函数计算概率，得到模型: $g(x) = (W^T_{SVM} x + b_{SVM}) $</li>
-<li>第二种: 使用SVM得到<span class="math inline">\((b_{SVM}, \mathbf w_{SVM})\)</span>，然后作为LR的初始<span class="math inline">\(\mathbf w_0\)</span>,再运行LR得到最终的模型</li>
-</ul>
-<p>第一种方式最直接，也可以得到概率，但是没有用到LR的优点，比如最大似然。而第二种则更没有用到Kernel Trick，充其量只是加快了LR的收敛速度。那么我们应该如何融合两者的优势呢？下面给出一个可能的模型，如下:</p>
-<p><span class="math display">\[g(\mathbf x) = \theta(A \cdot (\mathbf w^T_{SVM}\phi(\mathbf x)+b_{SVM}) + B)\]</span></p>
-<p>首先使用Kernel SVM得到<span class="math inline">\((\mathbf w_{SVM}, b_{SVM})\)</span>, 对数据做变换，如果令<span class="math inline">\(z_n=\mathbf w^T_{SVM}\phi(\mathbf x)+b_{SVM}\)</span>, 那么后面就是一个很简单的LR模型:<span class="math inline">\(g(x)=\theta(A\cdot z_n + B)\)</span>这样来看，第一个阶段其实就属于一种基于SVM的特征转换，或者说某种映射，将数据映射到了<span class="math inline">\(z\)</span>-space,，得到新的数据:<span class="math inline">\(\{ z_n, y_n\}\)</span>。然后在新数据上跑一个LR模型，得到最终的结果，这里需要注意的是，得到的<span class="math inline">\(z_n\)</span>是一个一维的实数，这样大大减少了LR的计算复杂度。LR的两个参数<span class="math inline">\(A,B\)</span>的作用则是fine-tune(微调)，平移或者放缩。一般情况下，如果SVM的效果好的话，<span class="math inline">\(A&gt;0, B \approx 0\)</span>。</p>
-<p>这样一来，新的模型就可以结合了SVM与LR二者的优势，这种模型最早是由Platt提出的，因此也叫作<strong>Platt’s Model of Probabilisitc SVM</strong>(概率模型)，具体步骤总结如下:</p>
-<div class="figure">
-<img src="http://cdn.htliu.cn/klr-3.png">
-
-</div>
-<p>如果把Kernel体现到模型的话，直接展开即可，最后的模型就是:</p>
-<p><span class="math display">\[\theta\left( \sum\limits_{SV}A \alpha_ny_nK(\mathbf x_n, \mathbf x) + Ab_{SVM} +B\right)\]</span></p>
-<p>需要说明的是，这种模型是利用SVM的解，然后将其作为了LR的在Z-Space的近似解，实质上并没有真正的在Z-Space求解LR(A,B只是起到了微调作用)，它的主要贡献是得到了概率SVM模型。</p>
-<h2 id="kernel-logistic-regression核逻辑回归">Kernel Logistic Regression(核逻辑回归)</h2>
-<p>这一部分则是介绍如何真正的在Z-Space使用Log-Reg模型，而非使用SVM的近似解，说到空间映射，Kernel Trick(核技巧)不得不提，那我们如何将Kernel运用到LR中呢？核到底是如何起作用的，回想SVM，我们从SVM的标准问题，转到对偶问题，然后因为对偶问题涉及到了Z-Space的内积，计算量很大，由此引出了Kernel Trick，<span class="math inline">\(\mathbf z_n \mathbf z = K(\mathbf x_n , \mathbf x)\)</span>，进而求出<span class="math inline">\(\mathbf w_{*} = \sum\beta_n \mathbf z_n\)</span>，实际上，只有将最优解<span class="math inline">\(\mathbf w\)</span>表示为<span class="math inline">\(\mathbf z_n\)</span>的线性组合，才能够利用核函数<span class="math inline">\(K\)</span>，因为模型中需要计算<span class="math inline">\(\mathbf w_{*}^{T} \mathbf z\)</span>:</p>
-<p><span class="math display">\[\mathbf w_{*}^{T} \mathbf z = \sum\beta_n\mathbf z_n \mathbf z = \sum \beta_n K(\mathbf x_n, \mathbf x)\]</span></p>
-<p>试想如果最优解<span class="math inline">\(\mathbf w_{*}\)</span>不是<span class="math inline">\(\mathbf z\)</span>的线性组合，那模型中的<span class="math inline">\(\mathbf w_{*}^{T} \mathbf z\)</span>就无法转为核函数的表达式了，那么核就无用武之地了(反过来想想，我们将数据从X-space转换到Z-Space的一个目的就是可以线性可分)。 因此，我们就可以得到一个结论，<strong>如果模型最优的<span class="math inline">\(\mathbf w_{*}\)</span>是Z-Space的线性组合，那么我们就可以把Kernel Trick运用到该模型中</strong>。举几个前面的例子:</p>
-<ul>
-<li>SVM: <span class="math inline">\(\mathbf w_{svm} = \sum (\alpha_ny_n)\mathbf z_n\)</span>，其中<span class="math inline">\(\alpha\)</span>是对偶问题中的拉格朗日乘子</li>
-<li>PLA: <span class="math inline">\(\mathbf w_{PLA} = \sum (\alpha_ny_n)\mathbf z_n\)</span>，这里的<span class="math inline">\(\alpha\)</span>则是在修正<span class="math inline">\(\mathbf w\)</span>的过程中，<span class="math inline">\(\mathbf z_n\)</span>这个点被分错误的次数</li>
-<li>LR: <span class="math inline">\(\mathbf w_{LR} = \sum (\alpha_ny_n)\mathbf z_n\)</span>，这里的<span class="math inline">\(\alpha_n\)</span>可以理解为在用梯度下降法更新<span class="math inline">\(\mathbf w\)</span>的步长</li>
-<li>…</li>
-</ul>
-<p>上面的三种模型中的<span class="math inline">\(\mathbf w\)</span>可以被数据表示，也就是说，我们都可以把Kernel Trick加到模型中(可以用来解决非线性可分)，那到底有什么特征的模型，才满足条件呢？下面给出一个很重要的定理: <strong>Representer Theorem</strong>：</p>
-<blockquote>
-<p>对于任意的<span class="math inline">\(L_2\)</span>正则化的线性模型，目标函数如下:</p>
-<p><span class="math display">\[\min\limits_{\mathbf w}  \quad  {\lambda \over N}\mathbf  w^T \mathbf w + {1 \over N}\sum\limits_{n=1}^{N}err(y_n, \mathbf w^T \mathbf z_n)\]</span></p>
-<p>均有最优的参数<span class="math inline">\(\mathbf w_{*} = \sum \beta_n\mathbf z_n\)</span></p>
-</blockquote>
-<p>简单证明如下:</p>
-<blockquote>
-<p>设最优解<span class="math inline">\(\mathbf w_{*} = \mathbf w_{||} + \mathbf w_{\perp}\)</span>，其中<span class="math inline">\(\mathbf w_{||} \in span(\mathbf z_n), \mathbf w_{\perp} \perp span(\mathbf z_n)\)</span></p>
-<p>反证法，假设<span class="math inline">\(\mathbf w_{\perp} \neq \mathbf 0\)</span>,将上述的<span class="math inline">\(E_{in}\)</span>分为两部分，先看第二部分的err，<span class="math inline">\(err(y_n, \mathbf w_{*}^T\mathbf z_n) = err(y_n, (\mathbf w_{||}+\mathbf w_{\perp})\mathbf z_{n}) = err(y_n, \mathbf w_{||}\mathbf z_n)\)</span>, 这部分与<span class="math inline">\(\mathbf w_{\perp}\)</span> 无关，看第一部分的正则项: <span class="math inline">\(\mathbf w_{*}^T \mathbf w_{*} = \mathbf w_{||}^T \mathbf w_{||} + 2\mathbf {w_{||}^T w_{\perp} } + \mathbf{w_{\perp}^T w_{\perp}} &gt; \mathbf w_{||}^T \mathbf w_{||}\)</span> ,矛盾产生，因为<span class="math inline">\(\mathbf w_{||}\)</span>比<span class="math inline">\(\mathbf w_{*}\)</span>有更小的误差。从而最优解与<span class="math inline">\(\mathbf z\)</span>在同一个超平面，定理得证。</p>
-</blockquote>
-<p>而前面介绍的<span class="math inline">\(L_2\)</span>正则化的Logistic Regression的目标函数:</p>
-<p><span class="math display">\[\min_{\mathbf w} \quad {\lambda\over N}\mathbf w^T\mathbf w+{1\over N}\sum_{n=1}^N\log\left(1+\exp\left(-y_n\mathbf w^T\mathbf z_n\right)\right)\]</span></p>
-<p>很显然，LR的最优解: <span class="math inline">\(\mathbf w_{*} = \sum \beta_n\mathbf z_n = \beta^T\mathbf Z\)</span>，既然这样，那么我们就直接不再求<span class="math inline">\(\mathbf w\)</span>,直接求解<span class="math inline">\(\beta\)</span>，然后加入Kernel Function，这样目标函数如下:</p>
-<div class="figure">
-<img src="http://cdn.htliu.cn/klr-4.png">
-
-</div>
-<p>这是一个无约束的优化问题，可以使用梯度下降等方式来来得到最优解。</p>
-<p>到此，我们成功将Kernel 加入到了Logistic Regression，得到的模型一般叫做<strong>Kernel Logistics Regression(KLR)</strong>，这样就可以很好地解决非线性问题了。</p>
-<p>最后说一句KLR其实相当于<span class="math inline">\(\beta\)</span>的线性模型了，核函数<span class="math inline">\(K\)</span> 就相当于特征转换，左侧的<span class="math inline">\(\sum\sum\)</span>写成矩阵形式就是: <span class="math inline">\(\beta^TK\beta\)</span>相当于正则项。此外，在Kernel SVM中<span class="math inline">\(\alpha\)</span>很稀疏，有很多项为0，Kernel LR中的<span class="math inline">\(\beta\)</span>则大部分都不为0。</p>
-<h2 id="总结">总结</h2>
-<p>这一讲主要讲了SVM与LR的相互交叉，得到两个新的模型，有概率的SVM以及带核的LR。Kernel Trick并不是SVM专有，在线性模型中，只需要满足表示定理就可以加入核，下一节我们就会在一般的Linear Regression中引入核。一般来说，引入Kernel，效果会好，不过计算量自然也就大了。</p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;h1 id=&quot;kernel-logistic-regression&quot;&gt;Kernel Logistic Regression&lt;/h1&gt;
-&lt;blockquote&gt;
-&lt;p&gt;这一节主要介绍如何将Kernel Trick引入到Logistic Regression，以及LR与SVM的结合&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;h2 id=&quot;svm-与-正则化&quot;&gt;SVM 与 正则化&lt;/h2&gt;
-    
-    </summary>
-    
-      <category term="读书笔记" scheme="http://shomy.top/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/"/>
-    
-    
-      <category term="machine learning" scheme="http://shomy.top/tags/machine-learning/"/>
-    
-      <category term="kernel" scheme="http://shomy.top/tags/kernel/"/>
-    
-      <category term="logistic regression" scheme="http://shomy.top/tags/logistic-regression/"/>
     
   </entry>
   
