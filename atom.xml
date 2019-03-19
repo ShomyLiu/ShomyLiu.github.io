@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://shomy.top/"/>
-  <updated>2019-03-08T10:55:48.803Z</updated>
+  <updated>2019-03-19T11:39:04.167Z</updated>
   <id>http://shomy.top/</id>
   
   <author>
@@ -14,6 +14,129 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>推荐系统结合知识图谱简单总结</title>
+    <link href="http://shomy.top/2019/03/19/kg-ns-recsys/"/>
+    <id>http://shomy.top/2019/03/19/kg-ns-recsys/</id>
+    <published>2019-03-19T11:35:17.000Z</published>
+    <updated>2019-03-19T11:39:04.167Z</updated>
+    
+    <content type="html"><![CDATA[<p>对近几年推荐系统领域结合Knowledge Graph Embedding (知识图谱表示学习) 或者 Network Embedding(网络表示)的几篇论文做了极简介绍。 目前来说，在推荐系统中，不少工作开始融合一些结构信息来提高性能，至于如何建模结构，个人理解已有工作大概可以分为两种类型：</p>
+<ul>
+<li>结合知识图谱（Knowledge Graph)</li>
+<li>结合异质信息网络 (Heterogenerous Network)</li>
+</ul>
+<p>本篇笔记主要集中在结合知识图谱的几篇工作做个非常简单的总结，后续如时间允许，会将这一系列补全。</p>
+<h2 id="cke">CKE</h2>
+<a id="more"></a>
+<blockquote>
+<p>Zhang F, Yuan N J, Lian D, et al. Collaborative knowledge base embedding for recommender systems[C]// KDD, 2016: 353-362.</p>
+</blockquote>
+<p>给用户推荐 一个item列表， 使用Map@K: Recall@K 评价（Top K） ### 总览 <img src="http://cdn.htliu.cn/blog/kg-ne-recsys/recsys-1.jpg"></p>
+<p>使用item外部辅助信息来融合到CF中， 包含: - 结构信息: 异质结构信息（知识图谱），如 （演员-》出演-电影） - 文本信息: item的文本描述，如电影的文字简介。 - 图片信息: item的图片，如电影海报 其中编码方式: - 结构信息: TransE - 文本信息/图片信息: SDAE(堆叠自动编码)</p>
+<p>得到关于item的三种Embedding，与CF的latent factor 加起来，得到item最终的embedding 用户：仅仅有CF的latent factor.</p>
+<p>得到item和user的Embedding之后， loss则使用pair-wise 的rankinig loss. 此外需要注意的是，CF过程中 user/item的交互是通过评分矩阵来的, 这里仅仅使用了Postive的评分信息（不小于3）。 ### 评价 - 局限性稍微大，需要大量的知识图谱中的额外信息，在实际的推荐中不易获得。 - 融合方法略微简略，直接使用向量相加</p>
+<h2 id="dkn">DKN</h2>
+<blockquote>
+<p>Wang H, Zhang F, Xie X, et al. Dkn: Deep knowledge-aware network for news recommendation[C]//WWW, 2018: 1835-1844.</p>
+</blockquote>
+<div class="figure">
+<img src="http://cdn.htliu.cn/blog/kg-ne-recsys/recsys-2.png">
+
+</div>
+<p>将KG Embedding结合到CTR中. （预训练的方式) CTR： 预测用户是否回点击某个新闻。 基本结合用户点击的历史新闻纪录，来判断是否会点击新的新闻。 本质上相当与 判断 历史新闻集合与新的新闻的相似度。</p>
+<h3 id="multi-channel-cnn">Multi Channel CNN</h3>
+<p>类似RGB的3通道: 作为CNN的输入（文本为新闻title) - word embedding: 词的word embedding - entity emebdding: KG Embedding得到的 entity embedding. 对于非实体的词，直接补全为0即可. - entity context embedding: 对于实体词，其一阶hop的邻居实体平均embedding 组成三通道作为cnn的输入 ### User-Candidate News Attention - Attention计算：将u点击的新闻与候选新闻embedding进行连接，输入到DNN - aggreate得到user embedding 与 候选新闻进行 相似度计算，这里还是使用dnn.</p>
+<h2 id="ripplenet">RippleNet</h2>
+<blockquote>
+<p>Wang H, Zhang F, Wang J, et al. Ripplenet: Propagating user preferences on the knowledge graph for recommender systems[C]//CIKM, 2018: 417-426.</p>
+</blockquote>
+<p>Wang H, Zhang F, Wang J, et al. Ripplenet: Propagating user preferences on the knowledge graph for recommender systems</p>
+<div class="figure">
+<img src="http://cdn.htliu.cn/blog/kg-ne-recsys/recsys-3.png">
+
+</div>
+<p>RippleNet: 将知识图谱作为额外信息，融入到CTR/Top-K推荐</p>
+<h3 id="动机">动机</h3>
+<p>考虑到水波(Ripple)的传播，以user感兴趣的item为seed，在商品知识图谱上向外一圈一圈的扩散到其他的item，这个过程称之为偏好传播(Preference Propagation). 该模型认为外层的item同样属于用户的潜在偏好, 因此在刻画user时候，需要将其考虑进去，而不能仅仅使用观测到的items去表示user偏好。</p>
+<h3 id="kg结合rs两种思路">KG结合RS两种思路</h3>
+<ul>
+<li>Embedding：item以及属性构建知识图谱，然后利用KG Embedding，计算item 的Embedding.</li>
+<li>Path-Based： 将user-item以及属性构建异质信息网络(HIN)， 然后利用HIN相关的算法建模(Metapath)</li>
+</ul>
+<p>一般情况，KG 只能考虑item，而HIN可以考虑user+item.</p>
+<h3 id="模型">模型</h3>
+<ul>
+<li>输入： 一个user u 和一个候选的 item i</li>
+<li>输出： user会点击item的概率</li>
+<li>构建 与 u 先关的 k-hop的 item 集合(知识图谱上以初始的item set向外扩展). [这些item可以作为user的偏好信息）</li>
+<li>根据embedding 向量内积，计算候选item i 与 每一层hop上的head item的归一化相似度</li>
+<li>根据相似度，加权求和tail items 作为这一层hop的输出 (本质上，属于Attention，其中Q=候选item i, K=Head Item, V= Tail Item)</li>
+<li>将所有k hop的输出向量相加，作为user的Embedding， 与 item的Embedding 内积计算最终的相似度</li>
+</ul>
+<p>一般来说，k取2,3.</p>
+<p>下面简单介绍下结合网络表示或者异质信息网络的的两篇文章。</p>
+<h2 id="nerm">NERM</h2>
+<blockquote>
+<p>Zhao W X, Huang J, Wen J R. Learning distributed representations for recommender systems with a network embedding approach[C]//AIRS, 2016: 224-236.</p>
+</blockquote>
+<p>将推荐的user,item以及属性作为graph中的节点，构造网络。 之后使用network embedding的方法来学习节点特征向量, 利用相似度来做TopK推荐.</p>
+<h3 id="构建graph">构建Graph</h3>
+<p>user, item ,feature 作为不同类型的节点， 构建网络： - user-item的二分网络，边为user购买或者其它行为item - user-item-tag的三分网络: 将item的tag属性加进来，也作为节点。</p>
+<h3 id="学习embedding">学习Embedding</h3>
+<p>本文完全使用LINE的一阶表示： 即对于a pair nodes (u, v) 如果 二者之间存在边，则二者的向量内积较大</p>
+<h3 id="推荐">推荐：</h3>
+<p>直接使用上述计算得到的user-item或者属性的 embedding， 利用内积来计算相似度，根据相似度排序来计算TopK</p>
+<h3 id="总览">总览</h3>
+<p>完全使用Network Embedding的方法来做Top-N推荐，属于尝试性工作, 对比工作也很单薄。</p>
+<h2 id="cdne">CDNE</h2>
+<blockquote>
+<p>Gao L, Yang H, Wu J, et al. Recommendation with multi-source heterogeneous information[J]. IJCAI 2018.</p>
+</blockquote>
+<div class="figure">
+<img src="http://cdn.htliu.cn/blog/kg-ne-recsys/recsys-4.jpg">
+
+</div>
+<p>问题与CKE(fzzhang)完全一致：为user推荐Top N可能感兴趣的item. 利用Network Embedding的方法建模辅助信息，继而结合CF: （Network Embedding 模型基本完全参考:Tri-Party Deep Network Representation)</p>
+<h3 id="融合辅助信息">融合辅助信息</h3>
+<p>为了更好的建模item, 结合辅助信息： - item的文本内容(word sequence) - item的标签tag(也是word) - item 与 item 的连接结构信息</p>
+<h3 id="deep-walkskip-gram-建模辅助信息">Deep Walk/Skip Gram 建模辅助信息</h3>
+<ul>
+<li>模仿skip gram, 中心词预测上下文的词。这里用中心item来预测在文本内容中word，以及用item的tag来预测word</li>
+<li>利用deep walk 来学习结构表示(本质上也是skip gram) 这与Tri-Party Deep Network Representation 完全一样。</li>
+</ul>
+<p>这样可以学到节点的Embedding， word 的Embedding， tag的Embedding。 其中节点的Embedding用于下面的CF。</p>
+<h3 id="结合cf">结合CF</h3>
+<p>同CKE, 将上述节点的Embedding 与CF的latent vectors 直接相加，作为item的表示向量， 用户的向量还是CF的latent vectors. 最后利用Min(R-UV) 来优化 (这里区别于CKE的pair wise ranking)</p>
+<p>数据: 用的两份CiteULike的数据，其中 item的节点并非使用paper的reference而是根据如果有多于4个相同作者的两篇文章，那么两篇文章之间加一条边。</p>
+<h3 id="总结">总结</h3>
+<ul>
+<li>方法与动机基本类似与CKE, 不过并没有对比CKE。</li>
+<li>相当于CKE + Tri-DNR的结合</li>
+</ul>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;对近几年推荐系统领域结合Knowledge Graph Embedding (知识图谱表示学习) 或者 Network Embedding(网络表示)的几篇论文做了极简介绍。 目前来说，在推荐系统中，不少工作开始融合一些结构信息来提高性能，至于如何建模结构，个人理解已有工作大概可以分为两种类型：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;结合知识图谱（Knowledge Graph)&lt;/li&gt;
+&lt;li&gt;结合异质信息网络 (Heterogenerous Network)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;本篇笔记主要集中在结合知识图谱的几篇工作做个非常简单的总结，后续如时间允许，会将这一系列补全。&lt;/p&gt;
+&lt;h2 id=&quot;cke&quot;&gt;CKE&lt;/h2&gt;
+    
+    </summary>
+    
+      <category term="读书笔记" scheme="http://shomy.top/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/"/>
+    
+    
+      <category term="Knowledge Graph" scheme="http://shomy.top/tags/Knowledge-Graph/"/>
+    
+      <category term="Recommendation System" scheme="http://shomy.top/tags/Recommendation-System/"/>
+    
+  </entry>
   
   <entry>
     <title>2018</title>
@@ -2191,99 +2314,6 @@
       <category term="TensorFlow" scheme="http://shomy.top/tags/TensorFlow/"/>
     
       <category term="api" scheme="http://shomy.top/tags/api/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>机器学习技法笔记(8)-SVR(支持向量回归)</title>
-    <link href="http://shomy.top/2017/03/09/support-vector-regression/"/>
-    <id>http://shomy.top/2017/03/09/support-vector-regression/</id>
-    <published>2017-03-09T04:08:28.000Z</published>
-    <updated>2018-09-29T03:52:04.764Z</updated>
-    
-    <content type="html"><![CDATA[<p>这一节是核模型的最后一部分了，将Kernel引入到一般的回归模型中: 核岭回归(Kernel Ridge Regression)以及支持向量回归(Support Vector Regression)，此外文末对这一占了整个课程40%的大块内容做了简单总结。</p>
-<a id="more"></a>
-<h2 id="核岭回归">核岭回归</h2>
-<p>上一节的表示定理(Representer Theorem)说明，任何<span class="math inline">\(L_2\)</span>正则化的线性模型的最优解都可以表示成数据的线性组合，也就可以引入Kernel了，进而更加Powerful。现在看之前的岭回归(<span class="math inline">\(L_2\)</span>正则化的线性回归):</p>
-<p><span class="math display">\[\min_{\mathbf w} \quad {\lambda\over N}\mathbf w^T\mathbf w+{1\over N}\sum_{n=1}^N\left(y_n-\mathbf w^T\mathbf z_n\right)^2\]</span></p>
-<p>显然最优解<span class="math inline">\(\mathbf w_{*} = \sum \beta_n \mathbf z_n\)</span>,那么完全按照上一节KLR的形式，引入Kernel Function，用<span class="math inline">\(\beta\)</span>替换<span class="math inline">\(\mathbf w\)</span>:</p>
-<p><span class="math display">\[\begin{align} &amp; \min_\beta \quad {\lambda\over N}\sum_{n=1}^N\sum_{m=1}^N\beta_n\beta_mK(\mathbf x_n,\mathbf x_m)+{1\over N}\sum_{n=1}^N\left(y_n-\sum_{n=1}^N\beta_mK(\mathbf x_n,\mathbf x_m)\right)^2 \\   \Leftrightarrow &amp; \min_\beta \quad {\lambda \over N } \beta^TK\beta +{1 \over N} \left( \mathbf y^T \mathbf y  - 2\beta^TK^T\mathbf y +  \beta^TK^TK\beta\right)\end{align}\]</span></p>
-<p>用矩阵表示一来看起来简介，求微分简单，二来矩阵计算比循环要快很多。(PS: 每一个<span class="math inline">\(\sum\)</span>都可以表示为矩阵的乘积，如果一眼看不出来，就展开只能一点点的凑)。</p>
-<p>同样得到一个这个无约束的优化问题了， 可以用梯度方式来直接接线性方程(KLR则需要梯度下降来求):</p>
-<p><span class="math display">\[{\partial E_{in} \over \partial \beta} = {2 \over N}\left( \lambda K^TI\beta+K^TK\beta - K^T\mathbf y \right)\]</span></p>
-<p>(引入<span class="math inline">\(I\)</span>是为了后面与<span class="math inline">\(\lambda\)</span>计算方便)然后令微分为0，得到下面的结果:</p>
-<p><span class="math display">\[\beta = (\lambda I +K)^{-1}\mathbf y\]</span></p>
-<p>前面在介绍SVM的时候提到过核函数矩阵K是半正定对称方阵，因此逆矩阵一定存在，对于<span class="math inline">\(N \times N\)</span>的矩阵求逆矩阵复杂大是<span class="math inline">\(O(N^3)\)</span>，而且由于核函数矩阵大部分都不为0，最后得到的<span class="math inline">\(\beta\)</span>也是非稀疏矩阵，因此在数据量比较大的时候，计算量还是蛮大的。</p>
-<p>到此，上述的模型就称为: Kernel Ridge Regression，完整如下为:</p>
-<p><span class="math display">\[g(\mathbf x) = \sum\limits_{n=1}^{N}\beta_nK(\mathbf x_n, \mathbf x)\]</span></p>
-<p>通过引入核，可以解决非线性的回归预测问题了。下面对比带核与否的Ridge Regression的一些区别:</p>
-<div class="figure">
-<img src="http://cdn.htliu.cn/svr-1.png">
-
-</div>
-<p>两种模型的优缺点与适用场合也就很明显了，只要数据量没有远大于数据维度的话，就可以用kernel ridge regression, 不过还是有一个原则: Linear First。</p>
-<h2 id="支持向量回归">支持向量回归</h2>
-<p>上面的核岭回归由于核函数矩阵不稀疏，计算量比较大。而之前SVM则只考虑少部分的Support Vectors，得到的<span class="math inline">\(\alpha\)</span>是sparse的，这一节就从Soft-Margin的角度来重新设计Linear Regression的误差衡量。</p>
-<p>定义Tube Regression的误差为:</p>
-<p><span class="math display">\[err(y,s)=\max(0, |s-y|-\epsilon), \quad s=\mathbf w^Tz_n +b, \ \epsilon &gt; 0\]</span></p>
-<p>也就是说，同Soft-Margin SVM分类问题容许偏差的存在，如果预测值与实际值的差距小于<span class="math inline">\(\epsilon\)</span>的时候，就认为err=0，tube可以理解为预测误差在允许范围内，如下图对比tube error与 square error：</p>
-<div class="figure">
-<img src="http://cdn.htliu.cn/svr-2.png">
-
-</div>
-<p>仿照SVM，加上<span class="math inline">\(L_2\)</span>正则项的Tube Regression的目标函数定义为:</p>
-<p><span class="math display">\[\min\limits_{b,\mathbf w}\left({1\over 2}\mathbf w^T\mathbf w+C\sum_{n=1}^N\max\left(0, \left\lvert \mathbf w^T\mathbf z_n+b-y_n\right\rvert-\epsilon\right)\right)\]</span></p>
-<p>不过由于含有max项，无法微分因此求解很困难，我们可以参考在SVM的方法将问题转为二次规划问题来解决。下面引入新的松弛变量<span class="math inline">\(\xi_n \geq 0\)</span>表示第n个数据的误差，这样目标函数转化为:</p>
-<p><span class="math display">\[\begin{align} \min\limits_{b,\mathbf w} \quad  &amp;\left({1\over 2}\mathbf w^T\mathbf w+C\sum_{n=1}^N\xi_n)\right) \\ s.t. \quad &amp; \left\lvert \mathbf w^T\mathbf z_n+b-y_n\right\rvert \leq\epsilon+\xi_n \\ &amp;for \ all \ n, \xi_n \geq 0 \end{align}\]</span></p>
-<p>这样的话，对于误差不大于<span class="math inline">\(\epsilon\)</span>的数据，<span class="math inline">\(\xi_n=0\)</span>，反之则<span class="math inline">\(\xi_n &gt; 0\)</span>，不过到此为止，还是不够的，因为约束条件里面有绝对值，这个还是无法用二次规划求解的。下面去掉绝对值，根绝取值的正负分两种情况，把<span class="math inline">\(\xi_n\)</span>拆成两个个<span class="math inline">\(\xi_n^{\wedge}, \xi_n^{\vee}\)</span>，分别真实值大于模型得到的值，以及真实值小于模型得到的值的情形，得到的最终目标函数:</p>
-<p><span class="math display">\[\begin{align} \min\limits_{b,\mathbf w} \quad  &amp;\left({1\over 2}\mathbf w^T\mathbf w+C\sum_{n=1}^N(\xi_n^{\vee}+\xi_n^{\wedge})\right) \\ s.t. \quad &amp;  \mathbf y_n-\mathbf w^T\mathbf z_n-b \leq\epsilon+\xi_n^{\wedge} \ \ \ \quad (1) \\ &amp; \mathbf y_n-\mathbf w^T\mathbf z_n-b \geq -\epsilon-\xi_n^{\vee}  \quad (2)\\&amp;\xi_n^{\wedge}, \xi_n^{\vee} \geq 0 \end{align}\]</span></p>
-<p>当真实值大于模型值的时候，需要满足约束条件(1)，当真实值小于模型值的时候，需要满足约束条件(2)，这样就是一个标准的二次规划的问题了。</p>
-<p>到此为止，支持向量回归的原始问题(SVR Primal)就得到了，考察一下这个QP的规模: 一共有<span class="math inline">\(\tilde{d}+1+2N\)</span>个变量(<span class="math inline">\(\mathbf w\)</span>是Z-Space的权重，维度为<span class="math inline">\(\tilde{d}+1\)</span>)，<span class="math inline">\(2N+2N\)</span>个约束条件，跟SVM的原始问题存在一样的缺陷，原始数据映射到Z-Space之后，维度太高，计算量过大。因此就引出了SVR Dual(支持向量回归的对偶问题)。</p>
-<p><strong>SVR Dual</strong></p>
-<p>对偶问题首先需要加入拉格朗日乘子，因为每个数据有四个约束条件，因此引入四个<span class="math inline">\(\alpha_n^{\wedge}, \alpha_n^{\vee},\beta_n^{\wedge}, \beta_n^{\vee}\geq0\)</span>:</p>
-<p><span class="math display">\[\begin{align}\mathcal L(b, \mathbf w, \alpha^{\vee}, \alpha^{\wedge}) = &amp;{1\over 2}\mathbf w^T \mathbf w+C\sum(\xi_n^{\vee}+\xi_n^{\wedge}) \\ +&amp;\sum\alpha_n^{\wedge}(\mathbf y_n - \mathbf w^T\mathbf z_n -b-\epsilon-\xi_n^{\wedge}) \\+&amp;\sum\alpha_n^{\vee}(-\epsilon-\xi_n^{\wedge}-\mathbf y_n + \mathbf w^T\mathbf z_n +b) \\+ &amp; \sum\beta_n^{\wedge}(-\xi_n^{\wedge}) + \sum\beta_n^{\vee}(-\xi_n^{\vee})\end{align}\]</span></p>
-<p>根据强对偶理论，以及在<a href="http://shomy.top/2017/02/17/svm-02-dual/">对偶SVM</a>介绍的内容，Primal SVR 与下面的对偶问题等价:</p>
-<p><span class="math display">\[\max \limits_{\alpha_n^{\vee}, \alpha_{n}^{\wedge}&gt;0} \left( \min\limits_{b, \mathbf w, \epsilon} \mathcal L(b, \mathbf w, \xi^{\vee}, \xi^{\wedge})\right)\]</span></p>
-<p>下面推导Dual SVR(课程中略):</p>
-<p>首先求各个变量微分优化<span class="math inline">\(\min\)</span>:</p>
-<p><span class="math display">\[\begin{align} &amp;{ \partial \mathcal L \over \partial \xi_n^{\wedge}} = C-\alpha_n^{\wedge}-\beta_n^{\wedge} = 0 \quad \quad \quad \quad(1) \\ &amp; {\partial \mathcal L \over \partial \xi_n^{\vee}} = C-\alpha_n^{\vee}-\beta_n^{\vee} = 0 \quad \quad \quad \quad (2)\\ &amp;{\partial  \mathcal L \over \partial b} = \sum(\alpha_n^{\vee}-\alpha_n^{\wedge}) = 0 \quad \quad \quad\quad (3)\\ &amp; {\partial \mathcal L \over \partial \mathbf w } = \mathbf w - \sum(\alpha_n^{\wedge}- \alpha_n^{\vee})\mathbf z_n = 0 \quad(4)\end{align}\]</span></p>
-<p>一共得到了4个(组)等式，这几个等式最优解也会满足，其中<span class="math inline">\(1 \leq\alpha_n \leq C\)</span>，将<span class="math inline">\(\beta^{\vee}, \beta^{\wedge}\)</span>,以及(3)式代入到<span class="math inline">\(\mathcal L\)</span>中，消去<span class="math inline">\(\beta,b,\xi_n\)</span>,经过化简得到:</p>
-<p><span class="math display">\[\begin{align}\min\limits_{\mathbf w}  \mathcal{L}(b, \mathbf w, \xi_{\vee}, \xi^{\wedge}) &amp;\Leftrightarrow \min \quad {1\over 2}\mathbf w^T\mathbf w + \sum(\alpha_n^{\vee}-\alpha_n^{\wedge})\mathbf w^T\mathbf z_n +\sum(\alpha_n^{\wedge}(y_n-\epsilon) + \alpha_n^{\vee}(-\epsilon-y_n) ) \\ &amp;\Leftrightarrow \min \quad  {1\over 2}\mathbf w^T\mathbf w -\mathbf w^T\mathbf w +\sum(\alpha_n^{\wedge}(y_n-\epsilon) + \alpha_n^{\vee}(-\epsilon-y_n) ) \\ &amp;\Leftrightarrow -{1 \over 2}\sum\limits_{n=1}^N\sum\limits_{m=1}^N(\alpha_n^{\wedge}- \alpha_n^{\vee}) (\alpha_m^{\wedge}- \alpha_m^{\vee})K(\mathbf x_n, \mathbf x_m)\\ &amp; \quad \quad  +\sum(\alpha_n^{\wedge}(y_n-\epsilon) + \alpha_n^{\vee}(-\epsilon-y_n) ) \end{align}\]</span></p>
-<p>上面的过程我们已经引入了核函数代替<span class="math inline">\(\mathbf {z_nz_m}\)</span>，至此最小化过程完成，开始考虑最外面<span class="math inline">\(\max\)</span>部分，取相反数，结合约束来求最小值，最后的问题如下:</p>
-<div class="figure">
-<img src="http://cdn.htliu.cn/svr-3.png">
-
-</div>
-<p>上式就是一个标准的二次规划问题，一共有<span class="math inline">\(2N\)</span>个变量，按照格式写出QP Solver的Q,p,A,c，即可得到最优解<span class="math inline">\(\alpha_n^{\vee}, \alpha_n^{\wedge}\)</span>。</p>
-<p>最后返回到模型，在对偶问题中，我们还有一个很重要的互补条件(complementary slackness)，如下:</p>
-<p><span class="math display">\[\begin{align}\alpha_n^\wedge\left(\epsilon+\xi_n^\wedge-y_n+\mathbf w^T\mathbf z_n+b\right)&amp;=0\\ \alpha_n^\vee\left(\epsilon+\xi_n^\vee+y_n-\mathbf w^T\mathbf z_n-b\right)&amp;=0 \\ \beta_n^{\vee}\xi_n^{\vee}=(C-\alpha_n^{\vee})\xi_{n}^{\vee} &amp;=0 \\ \beta_n^{\wedge}\xi_n^{\wedge}=(C-\alpha_n^{\wedge})\xi_{n}^{\wedge} &amp;=0 \end{align}\]</span></p>
-<p>现在考虑一些点: <span class="math inline">\(|\mathbf w^T\mathbf z_n +b - y_n| &lt; \epsilon\)</span>,也就是那些在tube内部的，预测值与真实值的误差在允许范围内的点，对于它们，以下条件成立:</p>
-<p><span class="math display">\[\begin{align} &amp; \xi_n^{\vee} = \xi_n^{\wedge} = 0 \\ \Rightarrow &amp;\epsilon -y_n+\mathbf w^T\mathbf z +b\neq0  \\ &amp; \epsilon +y_n-\mathbf w^T\mathbf z -b\neq0 \\ \Rightarrow &amp; \alpha_n^{\vee} =0 \\ &amp; \alpha_n^{\wedge}=0 \end{align}\]</span></p>
-<p>根据前面条件<span class="math inline">\(\mathbf w=\sum\limits_{n=1}^N(\alpha_n^{\wedge}-\alpha_n^{\vee})\mathbf z_n\)</span>，我们开始的目标之一便是想得到一个比较稀疏的系数, 现在对于在误差范围内的点<span class="math inline">\(\mathbf z_n\)</span>的系数已经为0。只有在tube外面的数据点的不为0，这些点也就是Supports Vectors。</p>
-<p>对于<span class="math inline">\(b\)</span>的解法，同soft-margin SVM，从Support Vectors中考虑，只需要找到某个<span class="math inline">\(0&lt;\alpha_s&lt;C\)</span>的数据，这样由互补约束便可知<span class="math inline">\(\xi_s=0\)</span>，从而得到b:</p>
-<p><span class="math display">\[b = \epsilon + y_s -\mathbf w^T\mathbf z_s = \epsilon + y_s -\sum(\alpha_n^{\wedge}-\alpha_n^{\vee})K(\mathbf x_s, x_n)\]</span></p>
-<p>最后得到<strong>Support Vector Regression(SVR)</strong>模型: <span class="math inline">\(g(\mathbf x)=\sum(\alpha_n^{\wedge}-\alpha_n^{\vee})K(\mathbf x_n, \mathbf x) + b\)</span></p>
-<h2 id="核模型kernel-model总结">核模型(Kernel Model)总结</h2>
-<p>到此为止，线性模型/核模型这一大块的内容基本完结了，占了技法课程的40%。回顾一下，整理一下，有如下约10个模型或者算法那:</p>
-<div class="figure">
-<img src="http://cdn.htliu.cn/svr-4.png">
-
-</div>
-<p>在实际中我们一般使用较少的有 PLA, Linear SVR,因为效果不好，限制很大。而至于Kernel Ridge Regression(核岭回归), Kernel Logistic Regression(核逻辑回归)也使用较少，因为其权重矩阵是稠密的(dense)，计算量较大。相比核岭回归，在实际中更加倾向使用SVR; 相比核逻辑回归，更倾向于使用概率SVM。常用的一般有SVM, SVR, 线性岭回归，L2正则化的逻辑回归等。</p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;这一节是核模型的最后一部分了，将Kernel引入到一般的回归模型中: 核岭回归(Kernel Ridge Regression)以及支持向量回归(Support Vector Regression)，此外文末对这一占了整个课程40%的大块内容做了简单总结。&lt;/p&gt;
-    
-    </summary>
-    
-      <category term="读书笔记" scheme="http://shomy.top/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/"/>
-    
-    
-      <category term="machine learning" scheme="http://shomy.top/tags/machine-learning/"/>
-    
-      <category term="svr" scheme="http://shomy.top/tags/svr/"/>
     
   </entry>
   
