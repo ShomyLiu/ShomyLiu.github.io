@@ -5,22 +5,24 @@
   
   <title>推荐系统结合知识图谱简单总结 | 天空的城</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="对近几年推荐系统领域结合Knowledge Graph Embedding (知识图谱表示学习) 或者 Network Embedding(网络表示)的几篇论文做了极简介绍。 目前来说，在推荐系统中，不少工作开始融合一些结构信息来提高性能，至于如何建模结构，个人理解已有工作大概可以分为两种类型：  结合知识图谱（Knowledge Graph) 结合异质信息网络 (Heterogenerous N">
+  <meta name="description" content="对近几年推荐系统(Recommendation System)领域结合Knowledge Graph Embedding (知识图谱表示学习) 或者 Network Embedding(网络表示)的几篇论文做了极简介绍。 首先对简单介绍推荐系统，之后整理了几篇结合知识表示的论文。 推荐系统简介">
 <meta name="keywords" content="Knowledge Graph,Recommendation System">
 <meta property="og:type" content="article">
 <meta property="og:title" content="推荐系统结合知识图谱简单总结">
 <meta property="og:url" content="http://shomy.top/2019/03/19/kg-ns-recsys/index.html">
 <meta property="og:site_name" content="天空的城">
-<meta property="og:description" content="对近几年推荐系统领域结合Knowledge Graph Embedding (知识图谱表示学习) 或者 Network Embedding(网络表示)的几篇论文做了极简介绍。 目前来说，在推荐系统中，不少工作开始融合一些结构信息来提高性能，至于如何建模结构，个人理解已有工作大概可以分为两种类型：  结合知识图谱（Knowledge Graph) 结合异质信息网络 (Heterogenerous N">
+<meta property="og:description" content="对近几年推荐系统(Recommendation System)领域结合Knowledge Graph Embedding (知识图谱表示学习) 或者 Network Embedding(网络表示)的几篇论文做了极简介绍。 首先对简单介绍推荐系统，之后整理了几篇结合知识表示的论文。 推荐系统简介">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="http://cdn.htliu.cn/blog/kg-ne-recsys/recsys-1.jpg">
 <meta property="og:image" content="http://cdn.htliu.cn/blog/kg-ne-recsys/recsys-2.png">
+<meta property="og:image" content="http://cdn.htliu.cn/blog/kg-ne-recsys/recsys-5.jpg">
 <meta property="og:image" content="http://cdn.htliu.cn/blog/kg-ne-recsys/recsys-3.png">
+<meta property="og:image" content="http://cdn.htliu.cn/blog/kg-ne-recsys/recsys-6.jpg">
 <meta property="og:image" content="http://cdn.htliu.cn/blog/kg-ne-recsys/recsys-4.jpg">
-<meta property="og:updated_time" content="2019-03-19T11:39:04.167Z">
+<meta property="og:updated_time" content="2019-03-19T12:55:03.320Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="推荐系统结合知识图谱简单总结">
-<meta name="twitter:description" content="对近几年推荐系统领域结合Knowledge Graph Embedding (知识图谱表示学习) 或者 Network Embedding(网络表示)的几篇论文做了极简介绍。 目前来说，在推荐系统中，不少工作开始融合一些结构信息来提高性能，至于如何建模结构，个人理解已有工作大概可以分为两种类型：  结合知识图谱（Knowledge Graph) 结合异质信息网络 (Heterogenerous N">
+<meta name="twitter:description" content="对近几年推荐系统(Recommendation System)领域结合Knowledge Graph Embedding (知识图谱表示学习) 或者 Network Embedding(网络表示)的几篇论文做了极简介绍。 首先对简单介绍推荐系统，之后整理了几篇结合知识表示的论文。 推荐系统简介">
 <meta name="twitter:image" content="http://cdn.htliu.cn/blog/kg-ne-recsys/recsys-1.jpg">
   
   
@@ -139,25 +141,55 @@ ga('send', 'pageview');
         
             <div id="toc" class="toc-article">
                 <strong class="toc-title">文章目录</strong>
-                <ol class="post-toc"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#cke"><span class="post-toc-text">CKE</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#dkn"><span class="post-toc-text">DKN</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#multi-channel-cnn"><span class="post-toc-text">Multi Channel CNN</span></a></li></ol></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#ripplenet"><span class="post-toc-text">RippleNet</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#动机"><span class="post-toc-text">动机</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#kg结合rs两种思路"><span class="post-toc-text">KG结合RS两种思路</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#模型"><span class="post-toc-text">模型</span></a></li></ol></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#nerm"><span class="post-toc-text">NERM</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#构建graph"><span class="post-toc-text">构建Graph</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#学习embedding"><span class="post-toc-text">学习Embedding</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#推荐"><span class="post-toc-text">推荐：</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#总览"><span class="post-toc-text">总览</span></a></li></ol></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#cdne"><span class="post-toc-text">CDNE</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#融合辅助信息"><span class="post-toc-text">融合辅助信息</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#deep-walkskip-gram-建模辅助信息"><span class="post-toc-text">Deep Walk/Skip Gram 建模辅助信息</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#结合cf"><span class="post-toc-text">结合CF</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#总结"><span class="post-toc-text">总结</span></a></li></ol></li></ol>
+                <ol class="post-toc"><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#推荐系统简介"><span class="post-toc-text">推荐系统简介</span></a></li><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#论文"><span class="post-toc-text">论文</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#cke"><span class="post-toc-text">CKE</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#总览"><span class="post-toc-text">总览</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#评价"><span class="post-toc-text">评价</span></a></li></ol></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#dkn"><span class="post-toc-text">DKN</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#multi-channel-cnn"><span class="post-toc-text">Multi Channel CNN</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#总结"><span class="post-toc-text">总结</span></a></li></ol></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#ripplenet"><span class="post-toc-text">RippleNet</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#动机"><span class="post-toc-text">动机</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#kg结合rs两种思路"><span class="post-toc-text">KG结合RS两种思路</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#模型介绍"><span class="post-toc-text">模型介绍</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#总结-1"><span class="post-toc-text">总结</span></a></li></ol></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#nerm"><span class="post-toc-text">NERM</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#构建graph"><span class="post-toc-text">构建Graph</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#学习embedding"><span class="post-toc-text">学习Embedding</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#推荐"><span class="post-toc-text">推荐：</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#总览-1"><span class="post-toc-text">总览</span></a></li></ol></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#cdne"><span class="post-toc-text">CDNE</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#融合辅助信息"><span class="post-toc-text">融合辅助信息</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#deep-walkskip-gram-建模辅助信息"><span class="post-toc-text">Deep Walk/Skip Gram 建模辅助信息</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#结合cf"><span class="post-toc-text">结合CF</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#简要"><span class="post-toc-text">简要</span></a></li></ol></li></ol></li></ol>
             </div>
         
         
-        <p>对近几年推荐系统领域结合Knowledge Graph Embedding (知识图谱表示学习) 或者 Network Embedding(网络表示)的几篇论文做了极简介绍。 目前来说，在推荐系统中，不少工作开始融合一些结构信息来提高性能，至于如何建模结构，个人理解已有工作大概可以分为两种类型：</p>
+        <p>对近几年推荐系统(Recommendation System)领域结合Knowledge Graph Embedding (知识图谱表示学习) 或者 Network Embedding(网络表示)的几篇论文做了极简介绍。 首先对简单介绍推荐系统，之后整理了几篇结合知识表示的论文。</p>
+<h1 id="推荐系统简介">推荐系统简介</h1>
+<a id="more"></a>
+<p>一句话来介绍的话，就是通过分析历史数据，来给用户 推荐 可能会喜欢/购买的商品， 这里面的核心就是用户 (User) 和 商品 (Item)。 更进一步，推荐系统的关键有下面三部分：</p>
+<ul>
+<li>用户偏好建模：User Preference</li>
+<li>商品特征建模: Item Feature</li>
+<li>交互: Interaction</li>
+</ul>
+<p>在RS中，具体的问题有多种，这篇笔记暂时侧重于Click-Through-Rate（点击预测) 问题，即根据用户历史点击/购买的Item列表，来预测 是否会点击/购买当前item，因此不考虑user的一些属性因素的话，本质就是判断历史item集合与当前新的item的相似度。</p>
+<p>因此item的建模比较关键，在推荐系统中，目前不少工作开始融合一些结构信息来提高性能与解释性，至于如何建模结构，个人理解已有工作大概可以分为两种类型：</p>
 <ul>
 <li>结合知识图谱（Knowledge Graph)</li>
 <li>结合异质信息网络 (Heterogenerous Network)</li>
 </ul>
-<p>本篇笔记主要集中在结合知识图谱的几篇工作做个非常简单的总结，后续如时间允许，会将这一系列补全。</p>
+<p>本篇笔记主要集中在推荐系统结合知识图谱的几篇工作做个非常简单的总结，后续如时间允许，会将这一系列补全。</p>
+<h1 id="论文">论文</h1>
 <h2 id="cke">CKE</h2>
-<a id="more"></a>
 <blockquote>
 <p>Zhang F, Yuan N J, Lian D, et al. Collaborative knowledge base embedding for recommender systems[C]// KDD, 2016: 353-362.</p>
 </blockquote>
-<p>给用户推荐 一个item列表， 使用Map@K: Recall@K 评价（Top K） ### 总览 <img src="http://cdn.htliu.cn/blog/kg-ne-recsys/recsys-1.jpg"></p>
-<p>使用item外部辅助信息来融合到CF中， 包含: - 结构信息: 异质结构信息（知识图谱），如 （演员-》出演-电影） - 文本信息: item的文本描述，如电影的文字简介。 - 图片信息: item的图片，如电影海报 其中编码方式: - 结构信息: TransE - 文本信息/图片信息: SDAE(堆叠自动编码)</p>
+<p>问题：给用户推荐 一个商品列表， 评价指标是使用Map@K: Recall@K 。</p>
+<h3 id="总览">总览</h3>
+<div class="figure">
+<img src="http://cdn.htliu.cn/blog/kg-ne-recsys/recsys-1.jpg">
+
+</div>
+<p>使用item各种外部辅助信息来融合到CF中， 包含:</p>
+<ul>
+<li>结构信息: 异质结构信息（知识图谱），如 （演员-》出演-电影）</li>
+<li>文本信息: item的文本描述，如电影的文字简介。</li>
+<li>图片信息: item的图片，如电影海报</li>
+</ul>
+<p>其中编码方式:</p>
+<ul>
+<li>结构信息: TransE/R</li>
+<li>文本信息/图片信息: SDAE(堆叠自动编码)</li>
+</ul>
 <p>得到关于item的三种Embedding，与CF的latent factor 加起来，得到item最终的embedding 用户：仅仅有CF的latent factor.</p>
-<p>得到item和user的Embedding之后， loss则使用pair-wise 的rankinig loss. 此外需要注意的是，CF过程中 user/item的交互是通过评分矩阵来的, 这里仅仅使用了Postive的评分信息（不小于3）。 ### 评价 - 局限性稍微大，需要大量的知识图谱中的额外信息，在实际的推荐中不易获得。 - 融合方法略微简略，直接使用向量相加</p>
+<p>得到item和user的Embedding之后， loss则使用pair-wise 的rankinig loss. 此外需要注意的是，CF过程中 user/item的交互是通过评分矩阵来的, 这里仅仅使用了Postive的评分信息（不小于3）。</p>
+<h3 id="评价">评价</h3>
+<ul>
+<li>局限性稍微大，需要大量的知识图谱中的额外信息，在实际的推荐中不易获得。</li>
+<li>融合方法略微简略粗暴，直接使用向量相加</li>
+</ul>
 <h2 id="dkn">DKN</h2>
 <blockquote>
 <p>Wang H, Zhang F, Xie X, et al. Dkn: Deep knowledge-aware network for news recommendation[C]//WWW, 2018: 1835-1844.</p>
@@ -166,14 +198,22 @@ ga('send', 'pageview');
 <img src="http://cdn.htliu.cn/blog/kg-ne-recsys/recsys-2.png">
 
 </div>
-<p>将KG Embedding结合到CTR中. （预训练的方式) CTR： 预测用户是否回点击某个新闻。 基本结合用户点击的历史新闻纪录，来判断是否会点击新的新闻。 本质上相当与 判断 历史新闻集合与新的新闻的相似度。</p>
+<p>本篇文章侧重于新闻推荐场景，将KG Embedding结合到CTR中（预训练的方式)， 基本结合用户点击的历史新闻纪录，来判断是否会点击新的新闻。 本质上相当与 判断 历史新闻集合与新的新闻的相似度。 动机如下图，通过提取新闻标题中的实体，接着通过知识图谱来传递相关其他新闻，如下图： <img src="http://cdn.htliu.cn/blog/kg-ne-recsys/recsys-5.jpg"></p>
+<p>下面介绍模型的主要部分。</p>
 <h3 id="multi-channel-cnn">Multi Channel CNN</h3>
-<p>类似RGB的3通道: 作为CNN的输入（文本为新闻title) - word embedding: 词的word embedding - entity emebdding: KG Embedding得到的 entity embedding. 对于非实体的词，直接补全为0即可. - entity context embedding: 对于实体词，其一阶hop的邻居实体平均embedding 组成三通道作为cnn的输入 ### User-Candidate News Attention - Attention计算：将u点击的新闻与候选新闻embedding进行连接，输入到DNN - aggreate得到user embedding 与 候选新闻进行 相似度计算，这里还是使用dnn.</p>
+<p>类似RGB的3通道: 作为CNN的输入（文本为新闻title)</p>
+<ul>
+<li>word embedding: 词的word embedding</li>
+<li>entity emebdding: KG Embedding得到的 entity embedding. 对于非实体的词，直接补全为0即可.</li>
+<li>entity context embedding: 对于实体词，其在知识图谱中的一阶邻居实体平均embedding作为补充信息</li>
+</ul>
+<p>组成三通道作为cnn的输入 ### User-Candidate News Attention - Attention计算：将u点击的新闻与候选新闻embedding进行连接，输入到DNN - Query Vector: 候选新闻的标题特征 - Key/Value：用户点击的所有历史新闻的标题特征 - 加权求得用户的点击偏好 - 是否点击二分类：aggreate得到user embedding 与 候选新闻进行 相似度计算，这里还是使用dnn</p>
+<h3 id="总结">总结</h3>
+<p>本篇文章更加侧重于对短文本的建模，三通道CNN那里很有技巧性，可以借鉴到其他领域。此外attention的计算方法（target item 为query，history items 为 key） 应用也比较广泛。</p>
 <h2 id="ripplenet">RippleNet</h2>
 <blockquote>
 <p>Wang H, Zhang F, Wang J, et al. Ripplenet: Propagating user preferences on the knowledge graph for recommender systems[C]//CIKM, 2018: 417-426.</p>
 </blockquote>
-<p>Wang H, Zhang F, Wang J, et al. Ripplenet: Propagating user preferences on the knowledge graph for recommender systems</p>
 <div class="figure">
 <img src="http://cdn.htliu.cn/blog/kg-ne-recsys/recsys-3.png">
 
@@ -181,22 +221,29 @@ ga('send', 'pageview');
 <p>RippleNet: 将知识图谱作为额外信息，融入到CTR/Top-K推荐</p>
 <h3 id="动机">动机</h3>
 <p>考虑到水波(Ripple)的传播，以user感兴趣的item为seed，在商品知识图谱上向外一圈一圈的扩散到其他的item，这个过程称之为偏好传播(Preference Propagation). 该模型认为外层的item同样属于用户的潜在偏好, 因此在刻画user时候，需要将其考虑进去，而不能仅仅使用观测到的items去表示user偏好。</p>
+<div class="figure">
+<img src="http://cdn.htliu.cn/blog/kg-ne-recsys/recsys-6.jpg">
+
+</div>
 <h3 id="kg结合rs两种思路">KG结合RS两种思路</h3>
 <ul>
 <li>Embedding：item以及属性构建知识图谱，然后利用KG Embedding，计算item 的Embedding.</li>
 <li>Path-Based： 将user-item以及属性构建异质信息网络(HIN)， 然后利用HIN相关的算法建模(Metapath)</li>
 </ul>
-<p>一般情况，KG 只能考虑item，而HIN可以考虑user+item.</p>
-<h3 id="模型">模型</h3>
+<p>一般情况，KG 只能考虑item，而HIN可以考虑user+item. 下面简要介绍下模型部分。</p>
+<h3 id="模型介绍">模型介绍</h3>
 <ul>
 <li>输入： 一个user u 和一个候选的 item i</li>
 <li>输出： user会点击item的概率</li>
 <li>构建 与 u 先关的 k-hop的 item 集合(知识图谱上以初始的item set向外扩展). [这些item可以作为user的偏好信息）</li>
 <li>根据embedding 向量内积，计算候选item i 与 每一层hop上的head item的归一化相似度</li>
-<li>根据相似度，加权求和tail items 作为这一层hop的输出 (本质上，属于Attention，其中Q=候选item i, K=Head Item, V= Tail Item)</li>
+<li>根据相似度，对<strong>尾实体 items</strong> 加权求和，作为这一层hop的输出 (本质上，属于Attention，其中Q=候选item i, K=Head Item, V= Tail Item)</li>
+<li>重复上述过程k次</li>
 <li>将所有k hop的输出向量相加，作为user的Embedding， 与 item的Embedding 内积计算最终的相似度</li>
 </ul>
-<p>一般来说，k取2,3.</p>
+<h3 id="总结-1">总结</h3>
+<p>这篇文章动机非常直观，因此可解释性非常强，模型的构建也充满技巧，比如采样等，很多地方值的挖掘。</p>
+<hr>
 <p>下面简单介绍下结合网络表示或者异质信息网络的的两篇文章。</p>
 <h2 id="nerm">NERM</h2>
 <blockquote>
@@ -204,12 +251,16 @@ ga('send', 'pageview');
 </blockquote>
 <p>将推荐的user,item以及属性作为graph中的节点，构造网络。 之后使用network embedding的方法来学习节点特征向量, 利用相似度来做TopK推荐.</p>
 <h3 id="构建graph">构建Graph</h3>
-<p>user, item ,feature 作为不同类型的节点， 构建网络： - user-item的二分网络，边为user购买或者其它行为item - user-item-tag的三分网络: 将item的tag属性加进来，也作为节点。</p>
+<p>user, item ,feature 作为不同类型的节点， 构建网络：</p>
+<ul>
+<li>user-item的二分网络，边为user购买或者其它行为item</li>
+<li>user-item-tag的三分网络: 将item的tag属性加进来，也作为节点。</li>
+</ul>
 <h3 id="学习embedding">学习Embedding</h3>
 <p>本文完全使用LINE的一阶表示： 即对于a pair nodes (u, v) 如果 二者之间存在边，则二者的向量内积较大</p>
 <h3 id="推荐">推荐：</h3>
 <p>直接使用上述计算得到的user-item或者属性的 embedding， 利用内积来计算相似度，根据相似度排序来计算TopK</p>
-<h3 id="总览">总览</h3>
+<h3 id="总览-1">总览</h3>
 <p>完全使用Network Embedding的方法来做Top-N推荐，属于尝试性工作, 对比工作也很单薄。</p>
 <h2 id="cdne">CDNE</h2>
 <blockquote>
@@ -219,9 +270,14 @@ ga('send', 'pageview');
 <img src="http://cdn.htliu.cn/blog/kg-ne-recsys/recsys-4.jpg">
 
 </div>
-<p>问题与CKE(fzzhang)完全一致：为user推荐Top N可能感兴趣的item. 利用Network Embedding的方法建模辅助信息，继而结合CF: （Network Embedding 模型基本完全参考:Tri-Party Deep Network Representation)</p>
+<p>问题与CKE(fzzhang)一致：为user推荐Top N可能感兴趣的item. 利用Network Embedding的方法建模辅助信息，继而结合CF: （Network Embedding 模型基本完全参考:Tri-Party Deep Network Representation)</p>
 <h3 id="融合辅助信息">融合辅助信息</h3>
-<p>为了更好的建模item, 结合辅助信息： - item的文本内容(word sequence) - item的标签tag(也是word) - item 与 item 的连接结构信息</p>
+<p>为了更好的建模item, 结合辅助信息：</p>
+<ul>
+<li>item的文本内容(word sequence)</li>
+<li>item的标签tag(也是word)</li>
+<li>item 与 item 的连接结构信息</li>
+</ul>
 <h3 id="deep-walkskip-gram-建模辅助信息">Deep Walk/Skip Gram 建模辅助信息</h3>
 <ul>
 <li>模仿skip gram, 中心词预测上下文的词。这里用中心item来预测在文本内容中word，以及用item的tag来预测word</li>
@@ -231,7 +287,7 @@ ga('send', 'pageview');
 <h3 id="结合cf">结合CF</h3>
 <p>同CKE, 将上述节点的Embedding 与CF的latent vectors 直接相加，作为item的表示向量， 用户的向量还是CF的latent vectors. 最后利用Min(R-UV) 来优化 (这里区别于CKE的pair wise ranking)</p>
 <p>数据: 用的两份CiteULike的数据，其中 item的节点并非使用paper的reference而是根据如果有多于4个相同作者的两篇文章，那么两篇文章之间加一条边。</p>
-<h3 id="总结">总结</h3>
+<h3 id="简要">简要</h3>
 <ul>
 <li>方法与动机基本类似与CKE, 不过并没有对比CKE。</li>
 <li>相当于CKE + Tri-DNR的结合</li>
@@ -253,7 +309,7 @@ ga('send', 'pageview');
 发布时间: 2019-03-19, 19:35:17<br/>
 <p>
 <p>
-最后更新: 2019-03-19, 19:39:04<br/>
+最后更新: 2019-03-19, 20:55:03<br/>
 <p>
 本文链接: <a href="/2019/03/19/kg-ns-recsys/" target="_blank">http://shomy.top/2019/03/19/kg-ns-recsys/</a>
 </p>
