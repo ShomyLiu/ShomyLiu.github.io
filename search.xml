@@ -226,7 +226,11 @@
     <entry>
       <title><![CDATA[ELMo词向量及使用方法记录]]></title>
       <url>/2019/01/01/elmo-1/</url>
-      <content type="html"><![CDATA[<p>ELMo不同于word2vec、glove，属于上下文词向量模型, 来自《Deep Contextualized Word Representations》(NAACL2018的best paper), 可以很方便用于下游NLP任务中。</p>
+      <content type="html"><![CDATA[<blockquote>
+<p>2019.4.3更新：新增使用AllenNLP的ELMo做文本分类的例子说明：详见github: <a href="https://github.com/ShomyLiu/pytorch_elmo_example" target="_blank" rel="external">Pytorch-ELMo</a></p>
+</blockquote>
+<hr>
+<p>ELMo不同于word2vec、glove，属于上下文词向量模型, 来自《Deep Contextualized Word Representations》(NAACL2018的best paper), 可以很方便用于下游NLP任务中。</p>
 <h2 id="elmo简介">ELMo简介</h2>
 <p>ELMo使用双层BiLSTM来训练语言模型，创新是线性组合不同层的word vectors， 作为最终的word representation. 核心公式: <a id="more"></a></p>
 <div class="figure">
