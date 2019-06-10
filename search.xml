@@ -1459,8 +1459,9 @@
 <p>根据个人及同学的使用Pytorch复现的实验结果，代码:<a href="https://github.com/ShomyLiu/pytorch-relation-extraction" target="_blank" rel="external">pytorch-relation-extraction</a>, 有下面经验结论（可能有误差):</p>
 <ul>
 <li>PCNN+ATT(Lin 2016) 在SMALL数据集上很难达到在LARGE数据集上的效果，甚至达不到PCNN+ONE(Zeng 2015)的效果, 原因正在探索</li>
-<li>在LARGE数据集上，复现的模型中， PCNN+ATT可以达到Lin 2016文中的效果，PCNN+ONE在该版本数据集上的表现也比SMALL数据集要好。</li>
+<li>在LARGE数据集上，复现的模型中， PCNN+ATT可以达到Lin 2016文中的效果，PCNN+ONE在该版本数据集上的表现也比SMALL数据集要好, 而且基本与PCNN+ATT持平。</li>
 </ul>
+<p>完整实验情况见: <a href="http://shomy.top/2018/07/05/pytorch-relation-extraction/">关系抽取实验</a></p>
 <p>鉴于上述的发现，正好也有个很有趣的现象与之对应，使用SMALL数据集的文章貌似没有与PCNN+ATT这一经典模型做对比实验的。另外在刘康老师组的AAAI2018的文中，也是在两个数据集上分开比较的，仅仅在LARGE数据集上与PCNN+ATT模型做了对比。</p>
 <p>…待续</p>
 ]]></content>
