@@ -19,7 +19,7 @@
 <meta property="og:image" content="http://cdn.htliu.cn/blog/kg-ne-recsys/recsys-3.png">
 <meta property="og:image" content="http://cdn.htliu.cn/blog/kg-ne-recsys/recsys-6.jpg">
 <meta property="og:image" content="http://cdn.htliu.cn/blog/kg-ne-recsys/recsys-4.jpg">
-<meta property="og:updated_time" content="2019-03-19T12:55:03.320Z">
+<meta property="og:updated_time" content="2019-12-06T04:43:06.337Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="推荐系统结合知识图谱简单总结">
 <meta name="twitter:description" content="对近几年推荐系统(Recommendation System)领域结合Knowledge Graph Embedding (知识图谱表示学习) 或者 Network Embedding(网络表示)的几篇论文做了极简介绍。 首先对简单介绍推荐系统，之后整理了几篇结合知识表示的论文。 推荐系统简介">
@@ -143,7 +143,7 @@ ga('send', 'pageview');
         
             <div id="toc" class="toc-article">
                 <strong class="toc-title">文章目录</strong>
-                <ol class="post-toc"><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#推荐系统简介"><span class="post-toc-text">推荐系统简介</span></a></li><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#论文"><span class="post-toc-text">论文</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#cke"><span class="post-toc-text">CKE</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#总览"><span class="post-toc-text">总览</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#评价"><span class="post-toc-text">评价</span></a></li></ol></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#dkn"><span class="post-toc-text">DKN</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#multi-channel-cnn"><span class="post-toc-text">Multi Channel CNN</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#总结"><span class="post-toc-text">总结</span></a></li></ol></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#ripplenet"><span class="post-toc-text">RippleNet</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#动机"><span class="post-toc-text">动机</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#kg结合rs两种思路"><span class="post-toc-text">KG结合RS两种思路</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#模型介绍"><span class="post-toc-text">模型介绍</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#总结-1"><span class="post-toc-text">总结</span></a></li></ol></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#nerm"><span class="post-toc-text">NERM</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#构建graph"><span class="post-toc-text">构建Graph</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#学习embedding"><span class="post-toc-text">学习Embedding</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#推荐"><span class="post-toc-text">推荐：</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#总览-1"><span class="post-toc-text">总览</span></a></li></ol></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#cdne"><span class="post-toc-text">CDNE</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#融合辅助信息"><span class="post-toc-text">融合辅助信息</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#deep-walkskip-gram-建模辅助信息"><span class="post-toc-text">Deep Walk/Skip Gram 建模辅助信息</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#结合cf"><span class="post-toc-text">结合CF</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#简要"><span class="post-toc-text">简要</span></a></li></ol></li></ol></li></ol>
+                <ol class="post-toc"><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#推荐系统简介"><span class="post-toc-text">推荐系统简介</span></a></li><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#论文"><span class="post-toc-text">论文</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#cke"><span class="post-toc-text">CKE</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#总览"><span class="post-toc-text">总览</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#评价"><span class="post-toc-text">评价</span></a></li></ol></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#dkn"><span class="post-toc-text">DKN</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#multi-channel-cnn"><span class="post-toc-text">Multi Channel CNN</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#user-candidate-news-attention"><span class="post-toc-text">User-Candidate News Attention</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#总结"><span class="post-toc-text">总结</span></a></li></ol></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#ripplenet"><span class="post-toc-text">RippleNet</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#动机"><span class="post-toc-text">动机</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#kg结合rs两种思路"><span class="post-toc-text">KG结合RS两种思路</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#模型介绍"><span class="post-toc-text">模型介绍</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#总结-1"><span class="post-toc-text">总结</span></a></li></ol></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#nerm"><span class="post-toc-text">NERM</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#构建graph"><span class="post-toc-text">构建Graph</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#学习embedding"><span class="post-toc-text">学习Embedding</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#推荐"><span class="post-toc-text">推荐：</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#总览-1"><span class="post-toc-text">总览</span></a></li></ol></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#cdne"><span class="post-toc-text">CDNE</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#融合辅助信息"><span class="post-toc-text">融合辅助信息</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#deep-walkskip-gram-建模辅助信息"><span class="post-toc-text">Deep Walk/Skip Gram 建模辅助信息</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#结合cf"><span class="post-toc-text">结合CF</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#简要"><span class="post-toc-text">简要</span></a></li></ol></li></ol></li></ol>
             </div>
         
         
@@ -209,7 +209,17 @@ ga('send', 'pageview');
 <li>entity emebdding: KG Embedding得到的 entity embedding. 对于非实体的词，直接补全为0即可.</li>
 <li>entity context embedding: 对于实体词，其在知识图谱中的一阶邻居实体平均embedding作为补充信息</li>
 </ul>
-<p>组成三通道作为cnn的输入 ### User-Candidate News Attention - Attention计算：将u点击的新闻与候选新闻embedding进行连接，输入到DNN - Query Vector: 候选新闻的标题特征 - Key/Value：用户点击的所有历史新闻的标题特征 - 加权求得用户的点击偏好 - 是否点击二分类：aggreate得到user embedding 与 候选新闻进行 相似度计算，这里还是使用dnn</p>
+<p>组成三通道作为cnn的输入</p>
+<h3 id="user-candidate-news-attention">User-Candidate News Attention</h3>
+<ul>
+<li>Attention计算：将u点击的新闻与候选新闻embedding进行连接，输入到DNN
+<ul>
+<li>Query Vector: 候选新闻的标题特征</li>
+<li>Key/Value：用户点击的所有历史新闻的标题特征</li>
+<li>加权求得用户的点击偏好</li>
+</ul></li>
+<li>是否点击二分类：aggreate得到user embedding 与 候选新闻进行 相似度计算，这里还是使用dnn</li>
+</ul>
 <h3 id="总结">总结</h3>
 <p>本篇文章更加侧重于对短文本的建模，三通道CNN那里很有技巧性，可以借鉴到其他领域。此外attention的计算方法（target item 为query，history items 为 key） 应用也比较广泛。</p>
 <h2 id="ripplenet">RippleNet</h2>
@@ -311,7 +321,7 @@ ga('send', 'pageview');
 发布时间: 2019-03-19, 19:35:17<br/>
 <p>
 <p>
-最后更新: 2019-03-19, 20:55:03<br/>
+最后更新: 2019-12-06, 12:43:06<br/>
 <p>
 本文链接: <a href="/2019/03/19/kg-ns-recsys/" target="_blank">http://shomy.top/2019/03/19/kg-ns-recsys/</a>
 </p>
