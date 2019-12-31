@@ -13,17 +13,16 @@
 <meta property="og:site_name" content="天空的城">
 <meta property="og:description" content="本文主要总结下近几年结合评论文本的推荐系统 (review-based recommendation)，主要侧重基于深度学习的模型，并且开源了相关的代码库: Neu-Review-Rec (未完待续…)。">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="http://cdn.htliu.cn/blog/review-based-rec/sample.png">
 <meta property="og:image" content="http://cdn.htliu.cn/blog/review-based-rec/frame.png">
 <meta property="og:image" content="http://cdn.htliu.cn/blog/review-based-rec/convmf.png">
 <meta property="og:image" content="http://cdn.htliu.cn/blog/review-based-rec/deepconn.png">
 <meta property="og:image" content="http://cdn.htliu.cn/blog/review-based-rec/dattn.png">
 <meta property="og:image" content="http://cdn.htliu.cn/blog/review-based-rec/narre.png">
-<meta property="og:updated_time" content="2019-12-31T15:48:25.156Z">
+<meta property="og:updated_time" content="2019-12-31T15:52:20.212Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="基于评论文本的深度推荐系统总结">
 <meta name="twitter:description" content="本文主要总结下近几年结合评论文本的推荐系统 (review-based recommendation)，主要侧重基于深度学习的模型，并且开源了相关的代码库: Neu-Review-Rec (未完待续…)。">
-<meta name="twitter:image" content="http://cdn.htliu.cn/blog/review-based-rec/sample.png">
+<meta name="twitter:image" content="http://cdn.htliu.cn/blog/review-based-rec/frame.png">
   
   
     <link rel="icon" href="/image/favicon.ico">
@@ -143,14 +142,14 @@ ga('send', 'pageview');
         
             <div id="toc" class="toc-article">
                 <strong class="toc-title">文章目录</strong>
-                <ol class="post-toc"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#问题简介"><span class="post-toc-text">问题简介</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#数据集"><span class="post-toc-text">数据集</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#评价指标"><span class="post-toc-text">评价指标</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#基本框架"><span class="post-toc-text">基本框架</span></a></li></ol></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#基于document建模的方法"><span class="post-toc-text">基于document建模的方法</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#deepconn-wsdm17"><span class="post-toc-text">DeepCoNN (WSDM’17)</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#d-attn-recsys17"><span class="post-toc-text">D-Attn (RecSys’17)</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#anr"><span class="post-toc-text">ANR</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#carl"><span class="post-toc-text">CARL</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#daml"><span class="post-toc-text">DAML</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#carp"><span class="post-toc-text">CARP</span></a></li></ol></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#基于review建模的方法"><span class="post-toc-text">基于review建模的方法</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#mpcn"><span class="post-toc-text">MPCN</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#tarmf"><span class="post-toc-text">TARMF</span></a></li></ol></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#其他"><span class="post-toc-text">其他</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#transnet"><span class="post-toc-text">TransNet</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#parl"><span class="post-toc-text">PARL</span></a></li></ol></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#总结"><span class="post-toc-text">总结</span></a></li></ol>
+                <ol class="post-toc"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#问题简介"><span class="post-toc-text">问题简介</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#数据集"><span class="post-toc-text">数据集</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#评价指标"><span class="post-toc-text">评价指标</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#基本框架"><span class="post-toc-text">基本框架</span></a></li></ol></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#基于document建模的方法"><span class="post-toc-text">基于document建模的方法</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#deepconn-wsdm17"><span class="post-toc-text">DeepCoNN (WSDM’17)</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#d-attn-recsys17"><span class="post-toc-text">D-Attn (RecSys’17)</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#anr"><span class="post-toc-text">ANR</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#carl"><span class="post-toc-text">CARL</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#daml"><span class="post-toc-text">DAML</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#carp"><span class="post-toc-text">CARP</span></a></li></ol></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#基于review建模的方法"><span class="post-toc-text">基于review建模的方法</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#narre-www18"><span class="post-toc-text">NARRE (WWW’18)</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#mpcn"><span class="post-toc-text">MPCN</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#tarmf"><span class="post-toc-text">TARMF</span></a></li></ol></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#其他"><span class="post-toc-text">其他</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#transnet"><span class="post-toc-text">TransNet</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#parl"><span class="post-toc-text">PARL</span></a></li></ol></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#总结"><span class="post-toc-text">总结</span></a></li></ol>
             </div>
         
         
         <p>本文主要总结下近几年结合评论文本的推荐系统 (review-based recommendation)，主要侧重基于深度学习的模型，并且开源了相关的代码库: <a href="https://github.com/ShomyLiu/Neu-Review-Rec" target="_blank" rel="external">Neu-Review-Rec</a> (未完待续…)。</p>
 <a id="more"></a>
 <h2 id="问题简介">问题简介</h2>
-<p>电商网站都允许用户为商品填写评论，这些文本评论能够体现出用户的偏好以及商品特征信息，是一种语义信息丰富的隐式特征。 相比于单纯的利用显式评分特征，文本信息一方面可以弥补评分稀疏性的问题，另一方面在推荐系统的可解释方面也能够做的更好。 如下图的Amazon的例子中，从用户对某部电影的评论中，能够看出电影的一些情节特征，还有用户自己的理解与喜好兴趣等。 <img src="http://cdn.htliu.cn/blog/review-based-rec/sample.png" alt="sample"></p>
+<p>电商网站都允许用户为商品填写评论，这些文本评论能够体现出用户的偏好以及商品特征信息，是一种语义信息丰富的隐式特征。 相比于单纯的利用显式评分特征，文本信息一方面可以弥补评分稀疏性的问题，另一方面在推荐系统的可解释方面也能够做的更好。 从用户对某部电影的评论中，能够看出电影的一些情节特征，还有用户自己的理解与喜好兴趣等。</p>
 <p>很多推荐系统工作开始考虑利用评论信息为用户和商品进行建模，在介绍具体的工作前，先简单介绍下常用的数据集，评价指标等。</p>
 <h3 id="数据集">数据集</h3>
 <p>一般情况，最常用的两大类带评论信息的数据集为：</p>
@@ -247,7 +246,11 @@ ga('send', 'pageview');
 <h3 id="daml">DAML</h3>
 <h3 id="carp">CARP</h3>
 <h2 id="基于review建模的方法">基于review建模的方法</h2>
-<p>接下来这一系列的方法都是单独对用户或商品的每一条评论进行建模，得到每一条review的feature，之后将所有的feature进行聚合，作为用户或者商品的特征。 ### NARRE (WWW’18) &gt;Chen C, Zhang M, Liu Y, et al. Neural attentional rating regression with review-level explanations[C]//Proceedings of the 2018 World Wide Web Conference. 2018: 1583-1592.</p>
+<p>接下来这一系列的方法都是单独对用户或商品的每一条评论进行建模，得到每一条review的feature，之后将所有的feature进行聚合，作为用户或者商品的特征。</p>
+<h3 id="narre-www18">NARRE (WWW’18)</h3>
+<blockquote>
+<p>Chen C, Zhang M, Liu Y, et al. Neural attentional rating regression with review-level explanations[C]//Proceedings of the 2018 World Wide Web Conference. 2018: 1583-1592.</p>
+</blockquote>
 <p><strong>基本介绍</strong></p>
 <p>这篇文章的出发点很简单，就是不同review的重要性是不同的，有的review包含信息量大，可能对建模用户或者商品更加有用 (usefulness), 而有的review可能没有作用。 因此这篇文章提出了review-level的注意力机制来刻画每一条review的权重。</p>
 <p><strong>方法</strong></p>
@@ -292,7 +295,7 @@ ga('send', 'pageview');
 发布时间: 2019-12-31, 23:44:37<br/>
 <p>
 <p>
-最后更新: 2019-12-31, 23:48:25<br/>
+最后更新: 2019-12-31, 23:52:20<br/>
 <p>
 本文链接: <a href="/2019/12/31/neu-review-rec/" target="_blank">http://shomy.top/2019/12/31/neu-review-rec/</a>
 </p>
