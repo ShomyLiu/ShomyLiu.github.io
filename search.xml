@@ -1963,7 +1963,7 @@
 <blockquote>
 <p>考虑<span class="math inline">\(\frac{\partial E}{\partial u_j} = y_j - t_j\)</span>: 直接对原始求导，如下:</p>
 <p>先考虑E的对数部分: <span class="math inline">\(\frac{\partial \log \sum\exp(u_k)}{\partial u_j} = \frac{\exp(u_j)}{\sum \exp(u_k)} = y_j\)</span></p>
-<p>再看 <span class="math inline">\(-u_{j^{*}}\)</span> 对 <span class="math inline">\(u_j\)</span> 的梯度: 当<span class="math inline">\(j = j^{\*}\)</span>时，<span class="math inline">\(\frac{\partial -u_{j^{*}}}{\partial u_j}=-1 = -t_j\)</span>, 反之二者不等时，<span class="math inline">\(\frac{\partial -u_{j^{*}}}{\partial u_j}=0= -t_j\)</span></p>
+<p>再看 <span class="math inline">\(-u_{j^{*}}\)</span> 对 <span class="math inline">\(u_j\)</span> 的梯度: 当<span class="math inline">\(j = j^{*}\)</span>时，<span class="math inline">\(\frac{\partial -u_{j^{*}}}{\partial u_j}=-1 = -t_j\)</span>, 反之二者不等时，<span class="math inline">\(\frac{\partial -u_{j^{*}}}{\partial u_j}=0= -t_j\)</span></p>
 <p>所以综合求导<span class="math inline">\(\frac{\partial E}{\partial u_j} = y_j - t_j\)</span>. 这个减法可以理解为输出层的第<span class="math inline">\(j\)</span>项为预测值与真实值的差</p>
 </blockquote>
 <p>因此梯度下降更新公式为:</p>

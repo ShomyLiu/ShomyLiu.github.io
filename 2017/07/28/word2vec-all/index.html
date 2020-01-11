@@ -20,7 +20,7 @@
 <meta property="og:image" content="http://cdn.htliu.cn/blog/w2v/cbow-1.png">
 <meta property="og:image" content="http://cdn.htliu.cn/blog/w2v/sg-1.png">
 <meta property="og:image" content="http://cdn.htliu.cn/blog/w2v/hs-1.png">
-<meta property="og:updated_time" content="2020-01-11T07:49:29.574Z">
+<meta property="og:updated_time" content="2020-01-11T07:54:37.346Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Word2vec数学原理全家桶">
 <meta name="twitter:description" content="目前需要做Network Embedding方面的课题，而复杂网络本身就经常借鉴NLP的一些算法模型, Embedding也不例外. 因此先从Word Embedding入手。之前对Word Embedding(暂且翻译为词嵌入或者词向量)的理解就是将单词根据某种特征转为数值向量，再来做其他工作比如文本分类的工作。而word2vec则是word embedding的一种模型，也是目前使用最广的词向">
@@ -227,7 +227,7 @@ ga('send', 'pageview');
 <blockquote>
 <p>考虑<span class="math inline">\(\frac{\partial E}{\partial u_j} = y_j - t_j\)</span>: 直接对原始求导，如下:</p>
 <p>先考虑E的对数部分: <span class="math inline">\(\frac{\partial \log \sum\exp(u_k)}{\partial u_j} = \frac{\exp(u_j)}{\sum \exp(u_k)} = y_j\)</span></p>
-<p>再看 <span class="math inline">\(-u_{j^{*}}\)</span> 对 <span class="math inline">\(u_j\)</span> 的梯度: 当<span class="math inline">\(j = j^{\*}\)</span>时，<span class="math inline">\(\frac{\partial -u_{j^{*}}}{\partial u_j}=-1 = -t_j\)</span>, 反之二者不等时，<span class="math inline">\(\frac{\partial -u_{j^{*}}}{\partial u_j}=0= -t_j\)</span></p>
+<p>再看 <span class="math inline">\(-u_{j^{*}}\)</span> 对 <span class="math inline">\(u_j\)</span> 的梯度: 当<span class="math inline">\(j = j^{*}\)</span>时，<span class="math inline">\(\frac{\partial -u_{j^{*}}}{\partial u_j}=-1 = -t_j\)</span>, 反之二者不等时，<span class="math inline">\(\frac{\partial -u_{j^{*}}}{\partial u_j}=0= -t_j\)</span></p>
 <p>所以综合求导<span class="math inline">\(\frac{\partial E}{\partial u_j} = y_j - t_j\)</span>. 这个减法可以理解为输出层的第<span class="math inline">\(j\)</span>项为预测值与真实值的差</p>
 </blockquote>
 <p>因此梯度下降更新公式为:</p>
@@ -368,7 +368,7 @@ ga('send', 'pageview');
 发布时间: 2017-07-28, 15:42:21<br/>
 <p>
 <p>
-最后更新: 2020-01-11, 15:49:29<br/>
+最后更新: 2020-01-11, 15:54:37<br/>
 <p>
 本文链接: <a href="/2017/07/28/word2vec-all/" target="_blank">http://shomy.top/2017/07/28/word2vec-all/</a>
 </p>
