@@ -3,6 +3,54 @@
   
     
     <entry>
+      <title><![CDATA[python使用futures进行并行处理]]></title>
+      <url>/2020/02/14/python-futures-para/</url>
+      <content type="html"><![CDATA[<p>很多时候任务都需要并行，比如IO密集型的爬数据，读写磁盘等，CPU计算密集型的计算任务等等。而Python由于GIL的原因，默认情况下只能单线程运行，无法直接利用硬件的多核多线程，因此效率较低，python也早提供了一些列的多线程多进程的库可以用来使用，比如multiprocessing, queue 等等, 不过使用起来都相对复杂，不易控制。 经过几番尝试发现，发现<code>futures</code>基本是最方便将单线程/进程代码改为并发的代码的一个模块。这篇博客主要是简单记录下futures最常用的方式，以方便后续使用。</p>
+<blockquote>
+<p>futures 是 从Python3.2 加入到python标准库，python2.x需要额外pip安装，主要是对线程池和进程池做了高度的封装，可以更加灵活的使用并行编程。</p>
+</blockquote>
+<a id="more"></a>
+<p>futures提供了多线程和多进程的接口：</p>
+<ul>
+<li><code>futures.ThreadPoolExecutor</code>: 多线程，适合IO密集型任务：爬虫，读写处理</li>
+<li><code>futures.ThreadPoolExecutor</code>: 多进程，适合CPU密集型任务，比如数学运算等。</li>
+</ul>
+<p>话不多说，直接先上一个最常用的例子模板：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#!/usr/bin/env python</span></div><div class="line"><span class="comment"># encoding: utf-8</span></div><div class="line"></div><div class="line"><span class="keyword">from</span> concurrent <span class="keyword">import</span> futures</div><div class="line"><span class="keyword">import</span> requests</div><div class="line"></div><div class="line">r = requests.Session()</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">func</span><span class="params">(url)</span>:</span></div><div class="line">    data = r.get(url).text</div><div class="line">    <span class="keyword">return</span> data</div><div class="line"></div><div class="line">task_list = [<span class="string">"https://www.163.com"</span>, <span class="string">"https://www.zhibo8.cc"</span>, <span class="string">"https://www.baidu.com"</span>]</div><div class="line">res = []</div><div class="line"><span class="keyword">with</span> futures.ThreadPoolExecutor(max_workers=<span class="number">2</span>) <span class="keyword">as</span> executor:</div><div class="line">   f_tasks = &#123;executor.submit(func, url): url <span class="keyword">for</span> url <span class="keyword">in</span> task_list&#125;</div><div class="line">   <span class="keyword">for</span> f <span class="keyword">in</span> futures.as_completed(f_tasks):</div><div class="line">            url = f_tasks[f]</div><div class="line">            <span class="keyword">try</span>:</div><div class="line">                data = f.result()</div><div class="line">                res.append(data)</div><div class="line">                print(<span class="string">f"<span class="subst">&#123;url&#125;</span> finished"</span>)</div><div class="line">            <span class="keyword">except</span> Exception <span class="keyword">as</span> exc:</div><div class="line">                print(<span class="string">f"<span class="subst">&#123;url&#125;</span> in wrong:<span class="subst">&#123;exc&#125;</span>"</span>)</div></pre></td></tr></table></figure>
+<p>简单解释下：</p>
+<ul>
+<li>func函数：对于每一个任务的执行函数，对应修改自己的任务即可</li>
+<li><code>ThreadPoolExecutor(max_workers=2)</code> 这里用的是多线程，多进程的话只需要修改为ProcessPoolExecutor, <code>max_workers</code> 调解并行线程或者进程数目。</li>
+<li><code>executor.submit(func, url)</code> 这个是定义了执行函数，一般不用特别修改，当然如果要传入多个参数的话，也是可以的，直接包装为一个list或者tuple即可。</li>
+<li><code>f.result()</code> 是在任务完成时候，取出结果</li>
+<li>最后 <code>try / except</code> 一定要保留，不然代码出错的话，也不会抛出异常。</li>
+</ul>
+<p>当然<code>futures</code>除了上面的用法，还有很多其他的API和用法，比如<code>executor.map</code>等，不过上面的用法是我个人最常用的，这篇博客就是记录下，免得以后用到了还得去查。</p>
+<p>想深入了解futures的话，可以看看下面的几个讲解</p>
+<ul>
+<li>https://www.dongwm.com/post/78/</li>
+<li>https://juejin.im/post/5b1e36476fb9a01e4a6e02e4</li>
+</ul>
+]]></content>
+      
+        <categories>
+            
+            <category> 编程语言 </category>
+            
+        </categories>
+        
+        
+        <tags>
+            
+            <tag> python </tag>
+            
+            <tag> futures </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
       <title><![CDATA[基于评论文本的深度推荐系统总结]]></title>
       <url>/2019/12/31/neu-review-rec/</url>
       <content type="html"><![CDATA[<p>本文主要总结下近几年结合评论文本的推荐系统 (review-based recommendation)，主要侧重基于深度学习的模型，并且开源了相关的代码库: <a href="https://github.com/ShomyLiu/Neu-Review-Rec" target="_blank" rel="external">Neu-Review-Rec</a> (未完待续…)。</p>

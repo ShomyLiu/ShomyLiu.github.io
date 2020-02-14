@@ -90,6 +90,84 @@ ga('send', 'pageview');
       <div class="outer">
         <section id="main">
   
+    <article id="post-python-futures-para" class="article article-type-post" itemscope itemprop="blogPost">
+  
+  <div class="article-meta">
+    <a href="/2020/02/14/python-futures-para/" class="article-date">
+  <time datetime="2020-02-14T06:59:11.000Z" itemprop="datePublished">2020-02-14</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/编程语言/">编程语言</a>
+  </div>
+
+
+    
+        <div class="counter-tag counter">
+    <!-- 别忘记这个类名... post-title-link -->
+    <span id="/2020/02/14/python-futures-para/" class="leancloud_visitors article-hits post-title-link"
+           data-flag-title="python使用futures进行并行处理">
+        次阅读
+    </span>
+
+  </div>
+
+    
+
+  </div>
+  
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2020/02/14/python-futures-para/">python使用futures进行并行处理</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>很多时候任务都需要并行，比如IO密集型的爬数据，读写磁盘等，CPU计算密集型的计算任务等等。而Python由于GIL的原因，默认情况下只能单线程运行，无法直接利用硬件的多核多线程，因此效率较低，python也早提供了一些列的多线程多进程的库可以用来使用，比如multiprocessing, queue 等等, 不过使用起来都相对复杂，不易控制。 经过几番尝试发现，发现<code>futures</code>基本是最方便将单线程/进程代码改为并发的代码的一个模块。这篇博客主要是简单记录下futures最常用的方式，以方便后续使用。</p>
+<blockquote>
+<p>futures 是 从Python3.2 加入到python标准库，python2.x需要额外pip安装，主要是对线程池和进程池做了高度的封装，可以更加灵活的使用并行编程。</p>
+</blockquote>
+        
+          <p class="article-more-link">
+            <a href="/2020/02/14/python-futures-para/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+
+
+    
+
+    
+
+    <footer class="article-footer">
+      
+        <a href="http://shomy.top/2020/02/14/python-futures-para/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/futures/">futures</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/python/">python</a></li></ul>
+
+    </footer>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+
+  
     <article id="post-neu-review-rec" class="article article-type-post" itemscope itemprop="blogPost">
   
   <div class="article-meta">
@@ -1174,85 +1252,6 @@ ga('send', 'pageview');
       
       
   <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hook/">hook</a></li></ul>
-
-    </footer>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-
-
-  
-    <article id="post-python-tuple-assign" class="article article-type-post" itemscope itemprop="blogPost">
-  
-  <div class="article-meta">
-    <a href="/2017/08/17/python-tuple-assign/" class="article-date">
-  <time datetime="2017-08-17T14:34:00.000Z" itemprop="datePublished">2017-08-17</time>
-</a>
-    
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/编程语言/">编程语言</a>
-  </div>
-
-
-    
-        <div class="counter-tag counter">
-    <!-- 别忘记这个类名... post-title-link -->
-    <span id="/2017/08/17/python-tuple-assign/" class="leancloud_visitors article-hits post-title-link"
-           data-flag-title="Python中tuple+=赋值的四个问题">
-        次阅读
-    </span>
-
-  </div>
-
-    
-
-  </div>
-  
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2017/08/17/python-tuple-assign/">Python中tuple+=赋值的四个问题</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <blockquote>
-<p>最近偶尔翻看Fluent Python，遇到有意思的东西就记下来. 下面的是在PyCon2013上提出的一个关于<code>tuple</code>的Augmented Assignment也就是增量赋值的一个问题。 并且基于此问题, 又引申出3个变种问题.</p>
-</blockquote>
-<h2 id="问题">问题</h2>
-<p>首先看第一个问题, 如下面的代码段: <figure class="highlight lsl"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">&gt;&gt;&gt; t = (<span class="number">1</span>,<span class="number">2</span>, [<span class="number">30</span>,<span class="number">40</span>])</div><div class="line">&gt;&gt;&gt; t[<span class="number">2</span>] += [<span class="number">50</span>,<span class="number">60</span>]</div></pre></td></tr></table></figure></p>
-        
-          <p class="article-more-link">
-            <a href="/2017/08/17/python-tuple-assign/#more">Read More</a>
-          </p>
-        
-      
-    </div>
-
-
-    
-
-    
-
-    <footer class="article-footer">
-      
-        <a href="http://shomy.top/2017/08/17/python-tuple-assign/#disqus_thread" class="article-comment-link">Comments</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/python/">python</a></li></ul>
 
     </footer>
     
