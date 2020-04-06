@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://shomy.top/"/>
-  <updated>2020-02-14T07:11:58.897Z</updated>
+  <updated>2020-04-06T07:41:17.708Z</updated>
   <id>http://shomy.top/</id>
   
   <author>
@@ -14,6 +14,46 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>2019-review</title>
+    <link href="http://shomy.top/2020/04/06/2019-review/"/>
+    <id>http://shomy.top/2020/04/06/2019-review/</id>
+    <published>2020-04-06T07:38:40.000Z</published>
+    <updated>2020-04-06T07:41:17.708Z</updated>
+    
+    <content type="html"><![CDATA[<p>2019年的总结来的实在晚了，但是一直惦记着，偶尔断断续续的写两句，这次总算写完了。 估计大家都没有想到，这次过年回家能待这么长的时间，看目前这疫情形势，估计这学期不用返校了，封面图为寒假放假前拍的学校图书馆： <img src="http://cdn.htliu.cn/blog/2019-review/lib.jpg" alt="雪后图书馆"></p>
+<a id="more"></a>
+<h2 id="学术">学术</h2>
+<p>过去一年总算是进账(水)了几篇论文，勉勉强强可以够到低保线的节奏， 虽然还是被拒的更多-_- 距离真正的毕业还是需要更多paper，压力还是很大啊。之前做的关系抽取的几个工作也都有了着落，比较欣慰的是一篇被拒了N次的工作最终拿到了NLPCC的杰出论文奖，也算些许安慰，感谢各位co-authors。 今年重心基本上都转到了review-based recommendation, 总体来说问题定义跟之前做的关系抽取很类似，都是在偏NLP与Graph，本质上属于<code>set pooling</code> 也都是从word到sentence，这也是为什么当时直接转过去的原因。不过每次做一个方向，做到后面都感觉有很大的问题，比如当时关系抽取的evaluation，推荐里面的辅助信息是否真正有用等等，说到底还是应该去多了解下工业界方面的需求，论文只是论文。 还有一点感触就是，作为博士生还是应该多涉猎几个相关领域，不能只关注自己的小领域，这样对自己的限制很明显，道路越走越窄，所以我也在尝试多进入几个其他相关方向，然后也被各种事情耽搁着，至今都躺在备忘录里面，争取今年都完成~ 哦对，趁着出去开会的机会，认识了不少朋友，也算是扩大了点圈子，以期以后能够相互交流(抱大腿~)。</p>
+<h2 id="生活">生活</h2>
+<blockquote>
+<p>这几个月在家比较忙碌，都是烧水喂猪干活，每天10点多就睡觉了~</p>
+</blockquote>
+<p>细细想来，去年2019一年开各种会走了很多地方，让俺这个村里娃见识各种异域风光，认识了不少新朋友，这可能也是当学生的福利了，中了论文可以去开会，顺带旅旅游，增添生活乐趣。 其实去的每个地方都可以单独记录一篇日记，可惜有点懒，再加上文字不行，只能靠拍照纪念走过的路了，话说这几年也渐渐喜欢上了用手机拍照，然后隔段时间翻回去看，真的是一种回忆，一种享受，后面附几张照片。 这一年时间感觉零碎化更加严重，很多繁杂无关事情，写申请书，做PPT什么的，也让内心越来越浮躁，很难真正踏下心来长时间的去做某件事情，这个感觉很可怕，一直在纠正，可是很难，习惯都是潜移默化的。 现在博士四年级了，还有1-2年毕业，如果能顺利出国交流那是极好的。 现在也需要认真思考自己后面的选择了，还很犹豫，只希望几年后不会后悔就好了。</p>
+<p>最后 希望我的家人，朋友，被世界温柔以待。希望我能对得起对我好的人。</p>
+<p>附图：</p>
+<ul>
+<li>2019.04: 广州转机-&gt;泰国清迈. 那边夜市很丰富，很多人都会说汉语，记得当时去的下午就下了暴雨，无奈在宾馆点了两份外卖。。。 <img src="http://cdn.htliu.cn/blog/2019-review/th.jpg" alt="DASFAA"></li>
+<li>2019.07: 法国巴黎，埃菲尔铁塔，塞纳河~印象最深的跟着导师转了一天的卢浮宫，绕着塞纳河一圈，四十来度，很热很渴 哈哈。 <img src="http://cdn.htliu.cn/blog/2019-review/pa.jpg" alt="SIGIR"></li>
+<li>2019.-8: 雅典古城+卡塔尔转机. 雅典的古建筑真的很多啊，大早上去爬山，俯瞰全城很有感觉。 <img src="http://cdn.htliu.cn/blog/2019-review/ath.jpg" alt="KSEM"></li>
+<li>2019.10: 敦煌-月牙泉鸣沙山很不错. 落地敦煌就感觉到西北气息，晚上月亮非常大，《又见敦煌》很震撼。 <img src="http://cdn.htliu.cn/blog/2019-review/gan.jpg" alt="NLPCC"></li>
+<li>2019.11: 无锡-包子很好吃呀~ <img src="http://cdn.htliu.cn/blog/2019-review/wuxi.jpg" alt="NSFC"></li>
+</ul>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;2019年的总结来的实在晚了，但是一直惦记着，偶尔断断续续的写两句，这次总算写完了。 估计大家都没有想到，这次过年回家能待这么长的时间，看目前这疫情形势，估计这学期不用返校了，封面图为寒假放假前拍的学校图书馆： &lt;img src=&quot;http://cdn.htliu.cn/blog/2019-review/lib.jpg&quot; alt=&quot;雪后图书馆&quot;&gt;&lt;/p&gt;
+    
+    </summary>
+    
+      <category term="个人心得" scheme="http://shomy.top/categories/%E4%B8%AA%E4%BA%BA%E5%BF%83%E5%BE%97/"/>
+    
+    
+      <category term="2019" scheme="http://shomy.top/tags/2019/"/>
+    
+  </entry>
   
   <entry>
     <title>python使用futures进行并行处理</title>
@@ -2315,103 +2355,6 @@
     
     
       <category term="alias method" scheme="http://shomy.top/tags/alias-method/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>机器学习技法笔记(10)-AdaBoost(提升算法)</title>
-    <link href="http://shomy.top/2017/03/16/adaptive-boosting/"/>
-    <id>http://shomy.top/2017/03/16/adaptive-boosting/</id>
-    <published>2017-03-16T12:55:55.000Z</published>
-    <updated>2018-09-29T03:52:04.736Z</updated>
-    
-    <content type="html"><![CDATA[<p>继上一节的Aggregation和Bagging，这一节对那一堆的g函数的产生做更深的探究，对训练数据引入权重的机制(Weight-Based)，加大错误数据的权重，缩小正确数据的权重，从而得到更加 Powerful的算法-AdaBoost</p>
-<a id="more"></a>
-<h2 id="从bagging引入权重">从Bagging引入权重</h2>
-<p>回想上节的Bagging，通过Bootstrap来生成多份的数据<span class="math inline">\(D_t\)</span>，这里面可能会有重复，例如:</p>
-<div class="figure">
-<img src="http://cdn.htliu.cn/adaboost-1.png">
-
-</div>
-<p>以分类为例，计算0/1误差: <span class="math inline">\(E_{in}={1\over4}\sum||y \neq h(x)||\)</span>。现在引入新的变量: <span class="math inline">\(u_n\)</span>表示<span class="math inline">\(\mathcal D\)</span>中的第n个数据在采样得到的<span class="math inline">\(\tilde{\mathcal D_t}\)</span>中的个数，对于上面的例子，则有：<span class="math inline">\(u_1=2, u_2=1, u_3=0,u_4=1\)</span>, 那么误差可以换一种方式写:<span class="math inline">\(E_{in}={1\over4}\sum u_n||y \neq h(x)||\)</span>。这样就把<span class="math inline">\(u_n\)</span>引入了错误函数中，可以表示某个数据的权重，这种思想在数据挖掘中很常见，在分类的时候，对于分错的数据，我们需要特别关注，因此把错误数据的重要性放大，或者说人为多复制几份错误数据放进去，这样再迭代的时候，错误数据就会变少了。</p>
-<p>我们可以将权重引入一些之前的模型中，比如SVM：</p>
-<div class="figure">
-<img src="http://cdn.htliu.cn/adaboost-2.png">
-
-</div>
-<p>未加权重之前，每个错误的惩罚系数为<span class="math inline">\(C\)</span>，现在加了权重可以理解为错误惩罚变为了<span class="math inline">\(Cu_n\)</span>, 同时也体现在<span class="math inline">\(\alpha_n\)</span>的上限中。 在比如Logistic Regression中，同样可以引入权重:</p>
-<div class="figure">
-<img src="http://cdn.htliu.cn/adaboost-3.png">
-
-</div>
-<p>这里可以理解为，在使用随机梯度下降优化的时候，同bagging，<span class="math inline">\(u_n\)</span>代表取出的数据的份数。</p>
-<h2 id="更新权重">更新权重</h2>
-<p>再次回到模型融合，在前一章的aggregation中，我们提到了如果<span class="math inline">\(g_1, g_2,...,g_T\)</span>中效果差距越明显，那么通过融合可以取得更好的结果，现在考察怎么样才可以让<span class="math inline">\(g\)</span>与<span class="math inline">\(g\)</span>之间区分度更明显，考虑<span class="math inline">\(g_t\)</span>与<span class="math inline">\(g_{t+1}\)</span>:</p>
-<div class="figure">
-<img src="http://cdn.htliu.cn/adaboost-4.png">
-
-</div>
-<p><span class="math inline">\(g_t\)</span>的是通过权重系数为<span class="math inline">\(u^{(t)}\)</span>中在假设空间中误差最下的h来得到的，<span class="math inline">\(g_{t+1}\)</span>则是<span class="math inline">\(u^{(t+1)}\)</span>, 如果<span class="math inline">\(g_t\)</span>在权重为<span class="math inline">\(u^{(t+1)}\)</span>的条件下，<strong>表现不好</strong>的话，那么在<span class="math inline">\(t+1\)</span>的时候，我们就不会选择出<span class="math inline">\(g_t\)</span>或者与<span class="math inline">\(g_t\)</span>很近似的h了，而是在<span class="math inline">\(u^{(t+1)}\)</span>的条件下误差最小的<span class="math inline">\(g_{t+1}\)</span>，这样就会使得<span class="math inline">\(g_t\)</span>与<span class="math inline">\(g_{t+1}\)</span>更加diverse。 那么如何来衡量表现不好呢？ 很简单的思路，在二分类问题中，表现不好那就是跟随机瞎猜一样，正确率50%，写成表达式便是:</p>
-<div class="figure">
-<img src="http://cdn.htliu.cn/adaboost-5.png">
-
-</div>
-<p>再剖析这个式子，因为可以将<span class="math inline">\(u_n\)</span>理解为数据有多少份。在<span class="math inline">\(g_t\)</span>中，即分子就是分类错误的数据个数，分母就是所有数据的个数了。因此我们需要的是，在<span class="math inline">\(u^{(t+1)}\)</span>的条件下，<strong>正确的份数==错误的份数</strong>，那<span class="math inline">\(u^{(t+1)}\)</span>应该与<span class="math inline">\(u^{(t)}\)</span>有什么关系呢？ 举个例子，假设在<span class="math inline">\(u^{(t)}\)</span>下, 分类错误1126份，正确6211份，那么在<span class="math inline">\(u^{(t+1)}\)</span>下，二者应该相等，那应该怎么办呢？看下面的几步:</p>
-<p><span class="math display">\[\begin{align} &amp; A = \sum u_n^{(t)}||y_n\neq g_t(x_n|| = 1126,  \quad B= \sum u_n^{(t)}||y_n ==\ g_t(x_n)|| = 6211 \\ \Rightarrow &amp;A*6211 = B*1126  \\ \Rightarrow &amp;\left(\sum (6211*u_n^{(t)} \neq)\right)  \mathbf = \left( \sum 1126 * u_n^{(t)} ==   \right)  \end{align}\]</span></p>
-<p>因此想要达到在<span class="math inline">\(u^{(t+1)}\)</span>下，<span class="math inline">\(g_t\)</span>正确率到50%，只需要做一个放缩即可:</p>
-<ul>
-<li>错误的数据: <span class="math inline">\(u_n^{(t+1)} = 6211 * u_n^{(t)}\)</span></li>
-<li>正确的数据: <span class="math inline">\(u_n^{(t+1)} = 1126 * u_n^{(t)}\)</span></li>
-</ul>
-<p>一般来说，我们都是用比率来放缩，假设错误率是<span class="math inline">\(\epsilon_t\)</span>，那么根据上面的思路，就可以更新<span class="math inline">\(u_n^{(t+1)}\)</span>如下:</p>
-<ul>
-<li>错误数据: <span class="math inline">\(u_n^{(t+1)} = (1-\epsilon_t) * u_n^{(t)}\)</span></li>
-<li>正确数据: <span class="math inline">\(u_n^{(t+1)} = \epsilon_t * u_n^{(t)}\)</span></li>
-</ul>
-<p><span class="math inline">\(g_t\)</span>的效果是可以接受的，因此一般来说<span class="math inline">\(\epsilon_t &lt; {1 \over 2}\)</span>，这样定性来说，其实就是在下一轮的g中，加强了上一轮分类错误数据的权重。</p>
-<h2 id="adapive-boosting算法">Adapive Boosting算法</h2>
-<p>除了上面使用<span class="math inline">\(\epsilon_t\)</span>作为缩放系数之外，在实际中使用一种等价的方式，定义<span class="math inline">\(\blacklozenge_t = \sqrt{1-\epsilon_t \over \epsilon_t}\)</span>，之后采用下面的策略更新<span class="math inline">\(u^{(t+1)}\)</span>：</p>
-<ul>
-<li>错误的数据: <span class="math inline">\(u_n^{(t+1)} = u_n^{(t)} \cdot \blacklozenge_t\)</span></li>
-<li>正确的数据: <span class="math inline">\(u_n^{(t+1)} = u_n^{(t)} / \blacklozenge_t\)</span></li>
-</ul>
-<p>意义也是一样的，因为<span class="math inline">\(\blacklozenge_t &gt; 1\)</span>，因此每次对于错误数据加大权重，正确数据减少权重，从而得到一个同<span class="math inline">\(g_t\)</span>不一样的<span class="math inline">\(g_{t+1}\)</span>。</p>
-<p>这样我们就可以得到了区分度较大的一堆<span class="math inline">\(g_1, g_2,....,g_T\)</span>，然后就可以用用线性后者非线性的融合方式进行融合。比较常用的是Linear Aggregation，即需要对<span class="math inline">\(g_t\)</span>进行线性组合: <span class="math inline">\(G(\mathbf x ) =sign(\sum\limits_{t=1}^{T}\alpha_t g_t)\)</span>，下面开始考察如何确定<span class="math inline">\(\alpha_t\)</span>。基本思路便是，<strong>效果好的<span class="math inline">\(g_t\)</span>对应的权重<span class="math inline">\(\alpha_t\)</span>应该大一点，反之应该小一点</strong>。 再回想<span class="math inline">\(\blacklozenge_t\)</span>正好是正确率(<span class="math inline">\(1-\epsilon_t\)</span>)的单调增函数，因此在实际中，经常用: <span class="math inline">\(\alpha_t = \ln\blacklozenge_t\)</span>，这样的好处是在计算<span class="math inline">\(g_t\)</span>的时候，就把其对应的权重<span class="math inline">\(\alpha_t\)</span>得到了。比如两种极限情况:</p>
-<ul>
-<li>如果随机乱分，<span class="math inline">\(\epsilon_t=0.5\)</span>，此时<span class="math inline">\(\blacklozenge_t=1\)</span>，那么<span class="math inline">\(\alpha_t=0\)</span>，也就是说坏的g分配0权重</li>
-<li>如果<span class="math inline">\(\epsilon_t=0\)</span>，此时<span class="math inline">\(\blacklozenge_t=\infty\)</span>，那么<span class="math inline">\(\alpha_t=\infty\)</span>也就是说好的g分配无穷大权重</li>
-</ul>
-<p>最后一个问题，最初的<span class="math inline">\(u^{(1)}\)</span>应该怎么确定？ 因为是初始值，并不知道数据情况，因此一般情况直接将权重初始化为相同:</p>
-<p><span class="math display">\[u^{(1)} = [ {1\over N}, {1 \over N},..., {1 \over N}]\]</span></p>
-<p>这样AdaBoost算法就完整了，总结一下流程如下:</p>
-<div class="figure">
-<img src="http://cdn.htliu.cn/adaboost-6.png">
-
-</div>
-<p>这个算法也叫<strong>Linear Aggregation On the Fly</strong>，当然也是属于Adaptive Boosting，叫boosting的原因是因为我们只需要开始有一个很弱的演算法<span class="math inline">\(\mathcal A\)</span>，然后通过一点点增加错误数据的权重，降低正确数据的权重，最后得到一个效果很好的分类器，因此一般也用三个臭皮匠赛过诸葛亮来形容Adaboosting。</p>
-<h2 id="vc-维保证">VC 维保证</h2>
-<p>这里简单介绍AdaBoost算法的理论保证。有数学证明可以得到Adaboost的VC Bound：</p>
-<div class="figure">
-<img src="http://cdn.htliu.cn/adaboost-7.png">
-
-</div>
-<p>因为算法一共需要T个g，因此在第二项模型复杂度中多了<span class="math inline">\(TlogT\)</span>这一项，其余不变。有实验证明如果每次的<span class="math inline">\(\epsilon_t &lt; 0.5\)</span>的话，也就是说不是乱猜的话， 只需要经过<span class="math inline">\(T= O(logN)\)</span>次迭代就可以收敛到<span class="math inline">\(E_{in} = 0\)</span>。</p>
-<h2 id="总结">总结</h2>
-<p>为什么这个算法叫做Adaptive Boost(自适应提升)呢？ 是因为我们一开始只需要一个很简单的弱分类算法，只要比随机分类好就行，也就是<span class="math inline">\(\epsilon_t &lt;0.5\)</span>，然后通过每次加大错误数据的权重，着重训练错误数据，一点点可以提高正确率，直到收敛。这种算法最开始用在人脸检测上，并且取得了当时最好的效果。</p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;继上一节的Aggregation和Bagging，这一节对那一堆的g函数的产生做更深的探究，对训练数据引入权重的机制(Weight-Based)，加大错误数据的权重，缩小正确数据的权重，从而得到更加 Powerful的算法-AdaBoost&lt;/p&gt;
-    
-    </summary>
-    
-      <category term="读书笔记" scheme="http://shomy.top/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/"/>
-    
-    
-      <category term="machine learning" scheme="http://shomy.top/tags/machine-learning/"/>
-    
-      <category term="AdaBoost" scheme="http://shomy.top/tags/AdaBoost/"/>
     
   </entry>
   
