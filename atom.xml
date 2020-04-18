@@ -126,9 +126,9 @@
     <link href="http://shomy.top/2019/12/31/neu-review-rec/"/>
     <id>http://shomy.top/2019/12/31/neu-review-rec/</id>
     <published>2019-12-31T15:44:37.000Z</published>
-    <updated>2020-04-18T12:58:48.329Z</updated>
+    <updated>2020-04-18T13:52:08.873Z</updated>
     
-    <content type="html"><![CDATA[<p>本文主要总结下近几年结合评论文本的推荐系统 (review-based recommendation)，主要侧重基于深度学习的模型，并且开源了一个代码库: <a href="https://github.com/ShomyLiu/Neu-Review-Rec" target="_blank" rel="external">Neu-Review-Rec</a> 主要完成了数据处理，模型构建，baseline复现等完整的Pipeline。[长文预警]</p>
+    <content type="html"><![CDATA[<p>本文主要总结下近几年结合评论文本的推荐系统 (review-based recommendation)，侧重深度学习的模型，并且开源了一个代码库: <a href="https://github.com/ShomyLiu/Neu-Review-Rec" target="_blank" rel="external">Neu-Review-Rec</a> 主要完成了数据处理，模型构建，baseline复现等完整的Pipeline。[<strong>长文预警</strong>]</p>
 <a id="more"></a>
 <h2 id="问题简介">问题简介</h2>
 <p>电商网站都允许用户为商品填写评论，这些文本评论能够体现出用户的偏好以及商品特征信息，是一种语义信息丰富的隐式特征。 相比于单纯的利用显式评分特征，文本信息一方面可以弥补评分稀疏性的问题，另一方面在推荐系统的可解释方面也能够做的更好。 从用户对某部电影的评论中，能够看出电影的一些情节特征，还有用户自己的理解与喜好兴趣等。</p>
@@ -156,16 +156,19 @@
 <p>其中:</p>
 <ul>
 <li>编码层：将用户和商品的文档通过模型编码，得到各自的特征，例如利用CNN/RNN，还有各种Attention的变种等。</li>
-<li>融合层：如何将用户表示(user embedding)和物品表示(item embedding) 进行融合，得到统一的向量，常见的element-wise的add，dot以及concatenate等，还有一些其他更复杂的操作。</li>
+<li>融合层：如何将用户表示(user embedding)和物品表示(item embedding) 进行融合以及交互，得到统一的向量，常见的element-wise的add，dot以及concatenate等，还有一些其他更复杂的操作。</li>
 <li>评分预测层：将融合得到的向量进行最终的rating prediction, 本质就是一个回归问题。常用的有使用MLP，FM, LFM等方式做最后的预测。多提一句，我们的实践发现这一层可能对部分模型效果影响较大，可能换一个输出层，指标就上去了….</li>
 </ul>
 <p>大部分的工作都会在上述三个模块中动手脚，这里面的核心就是编码层，如何利用用户与商品的评论进行建模， 尽可能的反映出用户偏好和商品特征，这是本质的目的。目前已有很多基于深度学习的工作，下面会对一些比较经典常用的工作分了两类，并做简单介绍。<br>
-关于分类标准，本文并没有从方法论的角度分类(如是否用注意力机制)，而是从问题建模的角度出发。 &gt;考虑到一个用户或者一个商品会有多条评论，关于如何处理多条评论，个人将已有工作分为两种。</p>
+关于分类标准，本文并没有从方法论的角度分类(如是否用注意力机制)，而是从问题建模的角度出发。</p>
+<blockquote>
+<p>考虑到一个用户或者一个商品会有多条评论，关于如何处理多条评论，个人将已有工作分为两种。</p>
+</blockquote>
 <ul>
 <li>将用户或商品的多条reviews进行concatenate得到一个较长的document, 然后对该document进行提取特征作为用户和商品特征。 这种方法将所有review聚合，能够得到用户或者商品一个全局的兴趣或者特征。</li>
 <li>单独建模每一条review，之后再将review的特征聚合为用户特征。这种方法能够捕获用户对某一特定商品的偏好信息。</li>
 </ul>
-<p>下面将会按照上述的分类对已有工作进行介绍，此外最后附上两篇角度比较新奇的工作。</p>
+<p>下面将会按照上述的分类对已有工作进行介绍，此外最后附上几篇角度比较新奇的工作。</p>
 <p>此外，这里先给出两种特征：</p>
 <ul>
 <li>review-based feaure：使用user与item的评论文本信息得到对应的语义特征。</li>
@@ -184,14 +187,20 @@
 <p>其中U，V也都利用均值为 (向量)的高斯分布来刻画： <span class="math display">\[p(U|\sigma_{U}^2) = \prod_{i=1}^{N} \mathcal{N}(U_i|0,\sigma_{U}^2\mathbf{I}), p(V|\sigma_{V}^2) = \prod_{j=1}^{M} \mathcal{N}(V_j|0,\sigma_{V}^2\mathbf{I})\]</span> 最后使用最大化后验概率来优化函数，然后推导化简最终可以得到 <span class="math display">\[\mathcal{L}(U,V) = \sum_{i=1}^N\sum_{j=1}^M(R_{ij} - U_i^TV_j)^2 + \frac{\lambda_U}{2}\sum_{i=1}^N||U_i||^2_2 + \frac{\lambda_V}{2}\sum_{j=1}^{M}||V_j||^2_2 \]</span> 从最后的损失函数中可以看出来，其实也就是一个MSE损失，后面两项可以看出正则项，所以虽然PMF是概率模型，通过后验概率去优化，不过与直接MSE殊途同归。这样根据训练数据去更新U和V到收敛, 得到用户和商品的潜在特征，最后的评分预测，就直接使用用户和商品特征的dot得到：<span class="math inline">\(r = U_i^TV_j\)</span>。</p>
 <p>理解了PMF, ConvMF这篇文章基本就很容易了。 ConvMF在商品的特征向量V的高斯分布上做文章，将经过CNN抽取出的评论信息特征，作为V的高斯分布的均值，而不再使用均值为<span class="math inline">\(\mathbf{0}\)</span>。如下: <span class="math display">\[p(V|W, X, \sigma_{V}^2) = \prod_{j=1}^{M} \mathcal{N}(V_j|cnn(W,X ),\sigma_{V}^2\mathbf{I})\]</span> 这其中<span class="math inline">\(\mathbf{X}\)</span>就是商品的评论文档，而<span class="math inline">\(\mathbf{W}\)</span>则是卷积的参数，包括卷积核和偏置。至于CNN的用法，这里就不再赘述了，毕竟现在看来还是比较简单，利用word embedding将词映射为向量，之后卷积，最大池化得到feature vector。完整的框架图如下: <img src="http://cdn.htliu.cn/blog/review-based-rec/convmf.png" alt="ConvMF"> 有了CNN，相当于在PMF的基础上多了一个W参数，这样在最后的损失函数上，就会变成下面的: <span class="math display">\[\mathcal{L}(U,V,W) = \sum_{i=1}^N\sum_{j=1}^M(R_{ij} - U_i^TV_j)^2 + \frac{\lambda_U}{2}\sum_{i=1}^N||U_i||^2_2 + \frac{\lambda_V}{2}\sum_{j=1}^{M}||V_j-cnn(W,X_j)||^2_2 + \frac{\lambda_W}{2}||W||^2_2 \]</span> 其中商品对应的高斯分布的均值将PMF与CNN的桥梁。 在最终优化的时候，很显然CNN的参数W不能得到解析解，因此这两部分参数还是需要分开优化。在固定U,V的前提下，使用BP更新W。固定W的条件下， 使用坐标梯度下降即可更新U后者V，直到收敛。</p>
 <p><strong>总结</strong></p>
-<p>现在看来这篇文章的思路其实很简单，利用CNN提取商品的feature，之后将其融入到PMF中。 其实这种方法也是深度学习与概率图模型的结合的一种很直接的方式，用深度模型学到的特征替换某一分布的参数，可以理解为先验。 后来也有不少工作在这个思路上发展，比如偶然看见的WWW2018的一篇Poster： &gt;Network Embedding Based Recommendation Method in Social Networks</p>
+<p>现在看来这篇文章的思路其实很简单，利用CNN提取商品的feature，之后将其融入到PMF中。 其实这种方法也是深度学习与概率图模型的结合的一种很直接的方式，用深度模型学到的特征替换某一分布的参数，可以理解为先验。 后来也有不少工作在这个思路上发展，比如偶然看见的WWW2018的一篇Poster：</p>
+<blockquote>
+<p>Network Embedding Based Recommendation Method in Social Networks</p>
+</blockquote>
 <p>基本思路也是利用预训练的Embedding替换分布参数。 此外，反过来思考这篇文章只用了商品的评论建模，没有利用用户的历史评论信息，可能是当时推荐系统优先考虑如何学习item embedding, 而对user embedding的研究并不是很多。</p>
 <h3 id="deepconn-wsdm17">DeepCoNN (WSDM’17)</h3>
 <blockquote>
 <p>Zheng L, Noroozi V, Yu P S. Joint deep modeling of users and items using reviews for recommendation[C]//Proceedings of the Tenth ACM International Conference on Web Search and Data Mining. ACM, 2017: 425-434.</p>
 </blockquote>
 <p><strong>基本介绍</strong></p>
-<p>上面说到ConvMFC只用了商品的评论文本，DeepCoNN这篇文章可以说是ConvMF的进阶版，全部使用深度学习模型去建模用户和商品，完全的end-to-end训练。 利用两个平行的卷积结构分别对用户和商品的评论文档建模，最后使用了FM (Factorization Machine) 做评分预测。 需要说明的是： &gt;DeepCoNN原文在处理数据的时候，并没有去掉在validation 和 test dataset中 的评论。</p>
+<p>上面说到ConvMFC只用了商品的评论文本，DeepCoNN这篇文章可以说是ConvMF的进阶版，全部使用深度学习模型去建模用户和商品，完全的end-to-end训练。 利用两个平行的卷积结构分别对用户和商品的评论文档建模，最后使用了FM (Factorization Machine) 做评分预测。 需要说明的是：</p>
+<blockquote>
+<p>DeepCoNN原文在处理数据的时候，并没有去掉在validation 和 test dataset中 的评论。</p>
+</blockquote>
 <p>第三方复现的代码：<a href="https://github.com/chenchongthu/DeepCoNN" target="_blank" rel="external">DeepCoNN</a> .</p>
 <p><strong>方法</strong></p>
 <p>模型其实现在看来很简单，首先将用户和商品的所有评论串联起来组成两个长的文档，然后用两个卷积结构（卷积层，池化层）学习文档的表示向量作为用户和商品的表示，最后串联二者输入到FM中预测评分，结构图如下：</p>
@@ -206,13 +215,16 @@
 <li>评分预测层：Factorization Machine 因子分解机</li>
 </ul>
 <p>具体的细节也就无需再介绍了。</p>
-<p><strong>总结</strong> 这篇文章应该算是第一篇完全基于深度学习的review-based rec模型，并且设计的用户和商品平行结构 （类似文本语义匹配的双塔结构）也是后面很多工作的基石。</p>
+<p><strong>总结</strong></p>
+<p>这篇文章应该算是第一篇完全基于深度学习的review-based rec模型，并且设计的用户和商品平行结构 （类似文本语义匹配的双塔结构）也是后面很多工作的基石。</p>
 <h3 id="d-attn-recsys17">D-Attn (RecSys’17)</h3>
 <blockquote>
 <p>Sungyong Seo, Jing Huang, Hao Yang, and Yan Liu. 2017. Interpretable Convolutional Neural Networks with Dual Local and Global Attention for Review Rating Prediction. In Proceedings ofthe Eleventh ACMConference on Recommender Systems.</p>
 </blockquote>
-<p><strong>基本介绍</strong> 这篇文章在DeepCoNN的基础上引入了词级别的attention，不同的词对于建模用户和商品的重要性是不同的， 因此这篇文章引入了两种词级别的注意力机制：local and global attention 都是为了寻找更informative的词，为不同的词赋予不同的权重。</p>
-<p><strong>方法</strong> 跟DeepCoNN一样，双塔结构。首先review document经过word embedding层，得到词矩阵表示<span class="math inline">\(\mathbf{d_u=[x_1, x_2, ..., x_ T]}\)</span>。之后分别是两种attention + CNN：</p>
+<p><strong>基本介绍</strong></p>
+<p>这篇文章在DeepCoNN的基础上引入了词级别的attention，不同的词对于建模用户和商品的重要性是不同的， 因此这篇文章引入了两种词级别的注意力机制：local and global attention 都是为了寻找更informative的词，为不同的词赋予不同的权重。</p>
+<p><strong>方法</strong></p>
+<p>跟DeepCoNN一样，双塔结构。首先review document经过word embedding层，得到词矩阵表示<span class="math inline">\(\mathbf{d_u=[x_1, x_2, ..., x_ T]}\)</span>。之后分别是两种attention + CNN：</p>
 <ul>
 <li>CNN based on local attention : 这一层利用词的上下文信息，来获得当前词的重要性。
 <ul>
@@ -336,7 +348,7 @@
     
     <summary type="html">
     
-      &lt;p&gt;本文主要总结下近几年结合评论文本的推荐系统 (review-based recommendation)，主要侧重基于深度学习的模型，并且开源了一个代码库: &lt;a href=&quot;https://github.com/ShomyLiu/Neu-Review-Rec&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;Neu-Review-Rec&lt;/a&gt; 主要完成了数据处理，模型构建，baseline复现等完整的Pipeline。[长文预警]&lt;/p&gt;
+      &lt;p&gt;本文主要总结下近几年结合评论文本的推荐系统 (review-based recommendation)，侧重深度学习的模型，并且开源了一个代码库: &lt;a href=&quot;https://github.com/ShomyLiu/Neu-Review-Rec&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;Neu-Review-Rec&lt;/a&gt; 主要完成了数据处理，模型构建，baseline复现等完整的Pipeline。[&lt;strong&gt;长文预警&lt;/strong&gt;]&lt;/p&gt;
     
     </summary>
     
