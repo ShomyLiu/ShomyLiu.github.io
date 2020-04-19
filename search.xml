@@ -111,10 +111,10 @@
 <h3 id="数据集">数据集</h3>
 <p>一般情况，最常用的两大类带评论信息的数据集为：</p>
 <ul>
-<li>Amazon Review: 亚马逊数据集一般分不同的类别，比如电影，音乐，衣服，工具，游戏等，由McAuley整理发布出来的。现在有两个版本，一个是旧版数据(<a href="http://jmcauley.ucsd.edu/data/amazon/" target="_blank" rel="external">链接</a>，时间为11996-2014年的Amazon数据。另外Mc课题组又更新到了新版数据(<a href="https://nijianmo.github.io/amazon/index.html" target="_blank" rel="external">链接</a>)，新加了2014-2018年间的Amazon Review数据，具体的字段可以到上述链接中查看。 目前大部分已有工作基于旧版数据中的small部分，一般是选择几个分类目录去做实验，当然也有文章把所有的分类都跑了的，比如MPCN。</li>
+<li>Amazon Review: 亚马逊数据集一般分不同的类别，比如电影，音乐，衣服，工具，游戏等，由McAuley整理发布出来的。现在有两个版本，一个是旧版数据(<a href="http://jmcauley.ucsd.edu/data/amazon/" target="_blank" rel="external">链接</a>，时间为1996-2014年的Amazon数据。另外Mc课题组又更新到了新版数据(<a href="https://nijianmo.github.io/amazon/index.html" target="_blank" rel="external">链接</a>)，新加了2014-2018年间的Amazon Review数据，具体的字段可以到上述链接中查看。 目前大部分已有工作基于旧版数据中的small部分，一般是选择几个分类目录去做实验，当然也有文章把所有的分类都跑了的，比如MPCN。</li>
 <li>Yelp Review dataset: Yelp网站上的评论数据 (<a href="https://www.yelp.com/dataset" target="_blank" rel="external">链接</a>) , 常用的几个Yelp数据有 yelp2013, yelp2014, 和 yelp2016。Yelp提供的是完整数据集，需要根据需要自己去筛选不同年份的数据。</li>
 </ul>
-<p>此外，还有一些用的比较少的数据，比如<a href="https://www.ratebeer.com/" target="_blank" rel="external">Beer Dataset</a>, 之前在SNAP上有相关数据集，后来被要求删除了。 不过一般情况做实验使用Amazon的几个目录以及Yelp的数据集就足够了。 数据格式都可以简化为用户评论商品的四元组： <code>user, item, review text, rating</code>，rating一般都是从1-5分。 一般将按照user-item pair将数据集划分为训练接/验证集/测试集三部分，不过这里有一个坑需要注意:</p>
+<p>此外，还有一些用的比较少的数据，比如<a href="https://www.ratebeer.com/" target="_blank" rel="external">Beer Dataset</a>, 之前在SNAP上有相关数据集，后来被要求删除了。 不过一般情况做实验使用Amazon的几个目录以及Yelp的数据集就足够了。 数据格式都可以简化为用户评论商品的四元组： <code>user, item, review text, rating</code>，其中rating一般都是从1-5分。 一般将按照user-item pair将数据集划分为训练接/验证集/测试集三部分，不过这里有一个坑需要注意:</p>
 <blockquote>
 <p>使用评论文本建模用户和商品，因此需要将在验证集和测试集中的user-item对应的review从训练集中去掉，这一条review在实际中是不存在的，因此不能用来建模用户或者对应的物品，如果这一条review没有移除的话，模型效果可能会不合理的提高。</p>
 </blockquote>
@@ -137,7 +137,7 @@
 <p>大部分的工作都会在上述三个模块中动手脚，这里面的核心就是编码层，如何利用用户与商品的评论进行建模， 尽可能的反映出用户偏好和商品特征，这是本质的目的。目前已有很多基于深度学习的工作，下面会对一些比较经典常用的工作分了两类，并做简单介绍。<br>
 关于分类标准，本文并没有从方法论的角度分类(如是否用注意力机制)，而是从问题建模的角度出发。</p>
 <blockquote>
-<p>考虑到一个用户或者一个商品会有多条评论，关于如何处理多条评论，个人将已有工作分为两种。</p>
+<p>考虑到一个用户或者一个商品会有多条评论，关于如何处理多条评论，个人将已有工作分为两种:</p>
 </blockquote>
 <ul>
 <li>将用户或商品的多条reviews进行concatenate得到一个较长的document, 然后对该document进行提取特征作为用户和商品特征。 这种方法将所有review聚合，能够得到用户或者商品一个全局的兴趣或者特征。</li>
