@@ -5,19 +5,19 @@
   
   <title>ELMo词向量及使用方法记录 | 天空的城</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="2019.4.3更新：新增使用AllenNLP的ELMo做文本分类的例子说明：详见github: Pytorch-ELMo   ELMo不同于word2vec、glove，属于上下文词向量模型, 来自《Deep Contextualized Word Representations》(NAACL2018的best paper), 可以很方便用于下游NLP任务中。 ELMo简介 ELMo使用双层B">
+  <meta name="description" content="2019.4.3更新：新增使用AllenNLP的ELMo做文本分类的例子说明：详见github: Pytorch-ELMo   ELMo不同于word2vec、glove，属于上下文词向量模型, 来自《Deep Contextualized Word Representations》(NAACL2018的best paper), 可以很方便用于下游NLP任务中。">
 <meta name="keywords" content="ELMo,word emebdding,pytorch,tensorflow">
 <meta property="og:type" content="article">
 <meta property="og:title" content="ELMo词向量及使用方法记录">
 <meta property="og:url" content="http://shomy.top/2019/01/01/elmo-1/index.html">
 <meta property="og:site_name" content="天空的城">
-<meta property="og:description" content="2019.4.3更新：新增使用AllenNLP的ELMo做文本分类的例子说明：详见github: Pytorch-ELMo   ELMo不同于word2vec、glove，属于上下文词向量模型, 来自《Deep Contextualized Word Representations》(NAACL2018的best paper), 可以很方便用于下游NLP任务中。 ELMo简介 ELMo使用双层B">
+<meta property="og:description" content="2019.4.3更新：新增使用AllenNLP的ELMo做文本分类的例子说明：详见github: Pytorch-ELMo   ELMo不同于word2vec、glove，属于上下文词向量模型, 来自《Deep Contextualized Word Representations》(NAACL2018的best paper), 可以很方便用于下游NLP任务中。">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="http://cdn.htliu.cn/blog/elmo-1/elmo.png">
-<meta property="og:updated_time" content="2019-04-03T02:30:05.041Z">
+<meta property="og:updated_time" content="2020-04-20T00:36:51.053Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="ELMo词向量及使用方法记录">
-<meta name="twitter:description" content="2019.4.3更新：新增使用AllenNLP的ELMo做文本分类的例子说明：详见github: Pytorch-ELMo   ELMo不同于word2vec、glove，属于上下文词向量模型, 来自《Deep Contextualized Word Representations》(NAACL2018的best paper), 可以很方便用于下游NLP任务中。 ELMo简介 ELMo使用双层B">
+<meta name="twitter:description" content="2019.4.3更新：新增使用AllenNLP的ELMo做文本分类的例子说明：详见github: Pytorch-ELMo   ELMo不同于word2vec、glove，属于上下文词向量模型, 来自《Deep Contextualized Word Representations》(NAACL2018的best paper), 可以很方便用于下游NLP任务中。">
 <meta name="twitter:image" content="http://cdn.htliu.cn/blog/elmo-1/elmo.png">
   
   
@@ -147,8 +147,9 @@ ga('send', 'pageview');
 </blockquote>
 <hr>
 <p>ELMo不同于word2vec、glove，属于上下文词向量模型, 来自《Deep Contextualized Word Representations》(NAACL2018的best paper), 可以很方便用于下游NLP任务中。</p>
+<a id="more"></a>
 <h2 id="elmo简介">ELMo简介</h2>
-<p>ELMo使用双层BiLSTM来训练语言模型，创新是线性组合不同层的word vectors， 作为最终的word representation. 核心公式: <a id="more"></a></p>
+<p>ELMo使用双层BiLSTM来训练语言模型，创新是线性组合不同层的word vectors， 作为最终的word representation. 核心公式:</p>
 <div class="figure">
 <img src="http://cdn.htliu.cn/blog/elmo-1/elmo.png">
 
@@ -204,7 +205,7 @@ ga('send', 'pageview');
 发布时间: 2019-01-01, 23:59:36<br/>
 <p>
 <p>
-最后更新: 2019-04-03, 10:30:05<br/>
+最后更新: 2020-04-20, 08:36:51<br/>
 <p>
 本文链接: <a href="/2019/01/01/elmo-1/" target="_blank">http://shomy.top/2019/01/01/elmo-1/</a>
 </p>

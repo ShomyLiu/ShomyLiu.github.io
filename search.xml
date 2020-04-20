@@ -55,11 +55,12 @@
     <entry>
       <title><![CDATA[python使用futures进行并行处理]]></title>
       <url>/2020/02/14/python-futures-para/</url>
-      <content type="html"><![CDATA[<p>很多时候任务都需要并行，比如IO密集型的爬数据，读写磁盘等，CPU计算密集型的计算任务等等。而Python由于GIL的原因，默认情况下只能单线程运行，无法直接利用硬件的多核多线程，因此效率较低，python也早提供了一些列的多线程多进程的库可以用来使用，比如multiprocessing, queue 等等, 不过使用起来都相对复杂，不易控制。 经过几番尝试发现，发现<code>futures</code>基本是最方便将单线程/进程代码改为并发的代码的一个模块。这篇博客主要是简单记录下futures最常用的方式，以方便后续使用。</p>
+      <content type="html"><![CDATA[<p>很多时候任务都需要并行，比如IO密集型的爬数据，读写磁盘等，CPU计算密集型的计算任务等等。而Python由于GIL的原因，默认情况下只能单线程运行，无法直接利用硬件的多核多线程，因此效率较低，python也早提供了一些列的多线程多进程的库可以用来使用，比如multiprocessing, queue 等等, 不过使用起来都相对复杂，不易控制。 经过几番尝试调研尝试，发现<code>futures</code>基本是最方便将单线程/进程代码改为并发的代码的一个模块。</p>
+<p>这篇博客主要是简单记录下futures最常用的方式，以方便后续使用。</p>
+<a id="more"></a>
 <blockquote>
 <p>futures 是 从Python3.2 加入到python标准库，python2.x需要额外pip安装，主要是对线程池和进程池做了高度的封装，可以更加灵活的使用并行编程。</p>
 </blockquote>
-<a id="more"></a>
 <p>futures提供了多线程和多进程的接口：</p>
 <ul>
 <li><code>futures.ThreadPoolExecutor</code>: 多线程，适合IO密集型任务：爬虫，读写处理</li>
@@ -581,8 +582,9 @@
 </blockquote>
 <hr>
 <p>ELMo不同于word2vec、glove，属于上下文词向量模型, 来自《Deep Contextualized Word Representations》(NAACL2018的best paper), 可以很方便用于下游NLP任务中。</p>
+<a id="more"></a>
 <h2 id="elmo简介">ELMo简介</h2>
-<p>ELMo使用双层BiLSTM来训练语言模型，创新是线性组合不同层的word vectors， 作为最终的word representation. 核心公式: <a id="more"></a></p>
+<p>ELMo使用双层BiLSTM来训练语言模型，创新是线性组合不同层的word vectors， 作为最终的word representation. 核心公式:</p>
 <div class="figure">
 <img src="http://cdn.htliu.cn/blog/elmo-1/elmo.png">
 
