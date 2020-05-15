@@ -244,7 +244,7 @@
 <p><strong>方法</strong></p>
 <p>评论文档建模的主要架构：</p>
 <div class="figure">
-<img src="http://cdn.htliu.cn/blog/review-based-rec/anr.png" alt="CARL">
+<img src="http://cdn.htliu.cn/blog/review-based-rec/carl.png" alt="CARL">
 <p class="caption">CARL</p>
 </div>
 <p>主要包含CNN编码层，以及基于注意力机制的user-item交互层。</p>
