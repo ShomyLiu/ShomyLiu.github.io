@@ -584,7 +584,11 @@
 <p>2019.4.3更新：新增使用AllenNLP的ELMo做文本分类的例子说明：详见github: <a href="https://github.com/ShomyLiu/pytorch_bert_elmo_example" target="_blank" rel="external">Pytorch-ELMo</a></p>
 </blockquote>
 <hr>
-<p>Bert/ELMo不同于word2vec、glove，属于上下文词向量模型, 可以很方便用于下游NLP任务中。 - ELMo基于LSTM，来自《Deep Contextualized Word Representations》 - Bert基于Transformer, 来自《BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding》</p>
+<p>Bert/ELMo不同于word2vec、glove，属于上下文词向量模型, 可以很方便用于下游NLP任务中。</p>
+<ul>
+<li>ELMo基于LSTM, 来自《Deep Contextualized Word Representations》</li>
+<li>Bert基于Transformer, 来自《BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding》</li>
+</ul>
 <a id="more"></a>
 <h1 id="elmo简介">ELMo简介</h1>
 <p>ELMo使用双层BiLSTM来训练语言模型，创新是线性组合不同层的word vectors， 作为最终的word representation. 核心公式:</p>
