@@ -14,7 +14,7 @@
 <meta property="og:description" content="2020.07.04更新： 加入使用Transformers的Bert的例子，见github: pytorch-bert-elmo-example   2019.4.3更新：新增使用AllenNLP的ELMo做文本分类的例子说明：详见github: Pytorch-ELMo   Bert/ELMo不同于word2vec、glove，属于上下文词向量模型, 可以很方便用于下游NLP任务中。  EL">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="http://cdn.htliu.cn/blog/elmo-1/elmo.png">
-<meta property="og:updated_time" content="2020-07-04T08:11:31.600Z">
+<meta property="og:updated_time" content="2020-07-04T08:12:40.442Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Bert&#x2F;ELMo词向量及使用方法记录">
 <meta name="twitter:description" content="2020.07.04更新： 加入使用Transformers的Bert的例子，见github: pytorch-bert-elmo-example   2019.4.3更新：新增使用AllenNLP的ELMo做文本分类的例子说明：详见github: Pytorch-ELMo   Bert/ELMo不同于word2vec、glove，属于上下文词向量模型, 可以很方便用于下游NLP任务中。  EL">
@@ -138,7 +138,7 @@ ga('send', 'pageview');
         
             <div id="toc" class="toc-article">
                 <strong class="toc-title">文章目录</strong>
-                <ol class="post-toc"><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#elmo简介"><span class="post-toc-text">ELMo简介</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#pytorch版elmo-allennlp"><span class="post-toc-text">Pytorch版ELMo (Allennlp)</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#tensorflow版-elmo"><span class="post-toc-text">tensorflow版 ELMo</span></a></li></ol></li><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#bert"><span class="post-toc-text">Bert</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#bert-1"><span class="post-toc-text">Bert</span></a></li></ol></li></ol>
+                <ol class="post-toc"><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#elmo简介"><span class="post-toc-text">ELMo简介</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#pytorch版elmo-allennlp"><span class="post-toc-text">Pytorch版ELMo (Allennlp)</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#tensorflow版-elmo"><span class="post-toc-text">tensorflow版 ELMo</span></a></li></ol></li><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#bert"><span class="post-toc-text">Bert</span></a></li></ol>
             </div>
         
         
@@ -196,16 +196,20 @@ ga('send', 'pageview');
 </ul>
 <p>一般情况使用<code>output ['elmo']</code> 也就是Allennlp版本的<code>elmo_representations</code>， 即可得到每个词的ELMo 词向量，即可用于后续的任务，比如分类等。</p>
 <h1 id="bert">Bert</h1>
-<p>Bert使用Transformer来代替LSTM， 具体原理这里不再赘述了，网上非常多的资料，给出几个: ## Transformer - 讲解理论 - http://jalammar.github.io/illustrated-transformer/ - https://www.youtube.com/watch?v=ugWDIIOHtPA - 【全面拥抱Transformer】https://zhuanlan.zhihu.com/p/54743941 - 【[整理] 聊聊 Transformer】https://zhuanlan.zhihu.com/p/47812375 - 实现介绍 - https://nlp.seas.harvard.edu/2018/04/03/attention.html</p>
-<h2 id="bert-1">Bert</h2>
+<p>Bert使用Transformer来代替LSTM， 具体原理这里不再赘述了，网上非常多的资料，给出几个:</p>
 <ul>
 <li>讲解理论
 <ul>
+<li>http://jalammar.github.io/illustrated-transformer/</li>
+<li>https://www.youtube.com/watch?v=ugWDIIOHtPA</li>
+<li>【全面拥抱Transformer】https://zhuanlan.zhihu.com/p/54743941</li>
+<li>【[整理] 聊聊 Transformer】https://zhuanlan.zhihu.com/p/47812375</li>
 <li>http://jalammar.github.io/illustrated-bert/</li>
 <li>https://www.youtube.com/watch?v=Bywo7m6ySlk</li>
 </ul></li>
 <li>实现介绍
 <ul>
+<li>https://nlp.seas.harvard.edu/2018/04/03/attention.html</li>
 <li>调用fine-tuning: https://github.com/huggingface/transformers</li>
 <li>pre-trained : https://github.com/google-research/bert</li>
 <li>pre-trained: https://github.com/dbiir/UER-py</li>
@@ -228,7 +232,7 @@ ga('send', 'pageview');
 发布时间: 2019-01-01, 23:59:36<br/>
 <p>
 <p>
-最后更新: 2020-07-04, 16:11:31<br/>
+最后更新: 2020-07-04, 16:12:40<br/>
 <p>
 本文链接: <a href="/2019/01/01/elmo-1/" target="_blank">http://shomy.top/2019/01/01/elmo-1/</a>
 </p>
