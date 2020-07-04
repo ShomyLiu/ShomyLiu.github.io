@@ -575,15 +575,18 @@
     </entry>
     
     <entry>
-      <title><![CDATA[ELMo词向量及使用方法记录]]></title>
+      <title><![CDATA[Bert/ELMo词向量及使用方法记录]]></title>
       <url>/2019/01/01/elmo-1/</url>
       <content type="html"><![CDATA[<blockquote>
-<p>2019.4.3更新：新增使用AllenNLP的ELMo做文本分类的例子说明：详见github: <a href="https://github.com/ShomyLiu/pytorch_elmo_example" target="_blank" rel="external">Pytorch-ELMo</a></p>
+<p>2020.07.04更新： 加入使用Transformers的Bert的例子，见github: <a href="https://github.com/ShomyLiu/pytorch_bert_elmo_example" target="_blank" rel="external">pytorch-bert-elmo-example</a></p>
+</blockquote>
+<blockquote>
+<p>2019.4.3更新：新增使用AllenNLP的ELMo做文本分类的例子说明：详见github: <a href="https://github.com/ShomyLiu/pytorch_bert_elmo_example" target="_blank" rel="external">Pytorch-ELMo</a></p>
 </blockquote>
 <hr>
-<p>ELMo不同于word2vec、glove，属于上下文词向量模型, 来自《Deep Contextualized Word Representations》(NAACL2018的best paper), 可以很方便用于下游NLP任务中。</p>
+<p>Bert/ELMo不同于word2vec、glove，属于上下文词向量模型, 可以很方便用于下游NLP任务中。 - ELMo基于LSTM，来自《Deep Contextualized Word Representations》 - Bert基于Transformer, 来自《BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding》</p>
 <a id="more"></a>
-<h2 id="elmo简介">ELMo简介</h2>
+<h1 id="elmo简介">ELMo简介</h1>
 <p>ELMo使用双层BiLSTM来训练语言模型，创新是线性组合不同层的word vectors， 作为最终的word representation. 核心公式:</p>
 <div class="figure">
 <img src="http://cdn.htliu.cn/blog/elmo-1/elmo.png">
@@ -623,6 +626,22 @@
 <li><code>sequence_len</code> 输入中每个句子的长度</li>
 </ul>
 <p>一般情况使用<code>output ['elmo']</code> 也就是Allennlp版本的<code>elmo_representations</code>， 即可得到每个词的ELMo 词向量，即可用于后续的任务，比如分类等。</p>
+<h1 id="bert">Bert</h1>
+<p>Bert使用Transformer来代替LSTM， 具体原理这里不再赘述了，网上非常多的资料，给出几个: ## Transformer - 讲解理论 - http://jalammar.github.io/illustrated-transformer/ - https://www.youtube.com/watch?v=ugWDIIOHtPA - 【全面拥抱Transformer】https://zhuanlan.zhihu.com/p/54743941 - 【[整理] 聊聊 Transformer】https://zhuanlan.zhihu.com/p/47812375 - 实现介绍 - https://nlp.seas.harvard.edu/2018/04/03/attention.html</p>
+<h2 id="bert-1">Bert</h2>
+<ul>
+<li>讲解理论
+<ul>
+<li>http://jalammar.github.io/illustrated-bert/</li>
+<li>https://www.youtube.com/watch?v=Bywo7m6ySlk</li>
+</ul></li>
+<li>实现介绍
+<ul>
+<li>调用fine-tuning: https://github.com/huggingface/transformers</li>
+<li>pre-trained : https://github.com/google-research/bert</li>
+<li>pre-trained: https://github.com/dbiir/UER-py</li>
+</ul></li>
+</ul>
 ]]></content>
       
         <categories>
