@@ -35,7 +35,7 @@
 <blockquote>
 <p>对<code>bert</code>与<code>ELMo</code> 的内部参数，目前实验中均保持<code>freeze</code> , 后续会尝试进行fine-tuning测试。（目前算力不太足）</p>
 </blockquote>
-<p>接着是数据集，本次实验采用2分类的情感分类数据，总计约10k条数据，进行训练接与测试集评价指标使用准确率(Accuracy)。</p>
+<p>接着是数据集，本次实验采用2分类的情感分类数据，总计约10k条数据。评价指标使用准确率(Accuracy)。</p>
 <h2 id="结果对比">结果对比</h2>
 <p>先直接上结果，其中second为每个epoch的training+evaluate的时间：</p>
 <table>
@@ -124,13 +124,17 @@
 </table>
 <p><strong>分析：</strong></p>
 <ul>
-<li>性能</li>
+<li>性能
+<ul>
 <li>Bert实现了最好的性能：Bert+Transformer实现了0.8472的准确率。 此外，在所有的Encoder中Bert均取得了最高的准确率。总体来看Bert &gt; ELM0 ≈ GloVe。</li>
 <li>比较惊讶的ELMo在文本分类效果并未有所提升，与GloVe不相上下，甚至在Mean和Transformer中效果还不如GloVe， 可能原因是ELMo需要对内部参数进行微调， 后续探究深入原因<code>TODO</code>。</li>
 <li>Encoder的比较上，在文本分类中 RNN≈Transformer &gt; CNN &gt; Mean。其中实验中Transformer不如RNN稳定。</li>
-<li>效率</li>
+</ul></li>
+<li>效率
+<ul>
 <li>很直观： ELMo &lt; Bert &lt; GloVe. 其中ELMo和Bert都是Contextual的词向量，相比GloVe，速度肯定要慢非常多，这还是在ELMo和Bert并没有开启内部参数fine-tuning的情况下。</li>
 <li>Transformer &lt; RNN &lt; CNN 。CNN最快这个容易理解，不过Transformer比RNN还要慢一些，有点意外，不过总体效率比较接近。</li>
+</ul></li>
 </ul>
 <p><strong>总结</strong></p>
 <p>从这个很简单的文本分类任务中，可以看到Bert的确效果很好，领先其他的词向量模型，此外从实验中我们还发现Bert收敛速度也很快，基本前面几个Epoch就差不多了，很稳定。 Bert在NLP领域是一个划时代的产物，需要及时跟进。前面用了几年的word2vec/glove + cnn/rnn的结构，我们也准备一步一步转向Transformer+Bert的阵营。</p>
@@ -1205,7 +1209,7 @@
 <p>这一部分主要记录下如何将图数据从文件中导入库，常见的格式为CSV和JSON格式。</p>
 <h3 id="导入csv-格式数据">导入CSV 格式数据</h3>
 <p>Neo4j内置了命令来导入CSV数据：使用方法也很简单。假设CSV格式如下:</p>
-<figure class="highlight 1c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="string">"Id"</span>,<span class="string">"Name"</span>,<span class="string">"Year"</span></div><div class="line"><span class="string">"1"</span>,<span class="string">"ABBA"</span>,<span class="string">"1992"</span></div><div class="line"><span class="string">"2"</span>,<span class="string">"Roxette"</span>,<span class="string">"1986"</span></div><div class="line"><span class="string">"3"</span>,<span class="string">"Europe"</span>,<span class="string">"1979"</span></div><div class="line"><span class="string">"4"</span>,<span class="string">"The Cardigans"</span>,<span class="string">"1992"</span></div></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="string">"Id"</span>,<span class="string">"Name"</span>,<span class="string">"Year"</span></div><div class="line"><span class="string">"1"</span>,<span class="string">"ABBA"</span>,<span class="string">"1992"</span></div><div class="line"><span class="string">"2"</span>,<span class="string">"Roxette"</span>,<span class="string">"1986"</span></div><div class="line"><span class="string">"3"</span>,<span class="string">"Europe"</span>,<span class="string">"1979"</span></div><div class="line"><span class="string">"4"</span>,<span class="string">"The Cardigans"</span>,<span class="string">"1992"</span></div></pre></td></tr></table></figure>
 <p>直接使用如下命令导入并直接引用headers来表示属性并创建节点:</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">LOAD</span> CSV <span class="keyword">WITH</span> HEADERS <span class="keyword">FROM</span> <span class="string">'FILE:/artists.csv'</span> <span class="keyword">AS</span> line</div><div class="line"><span class="keyword">CREATE</span> (:Artist &#123; <span class="keyword">name</span>: line.Name, <span class="keyword">year</span>: toInteger(line.Year)&#125;)</div></pre></td></tr></table></figure>
 <p>注意事项:</p>
