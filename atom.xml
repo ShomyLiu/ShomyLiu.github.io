@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://shomy.top/"/>
-  <updated>2020-04-07T15:01:57.713Z</updated>
+  <updated>2020-07-06T03:22:40.870Z</updated>
   <id>http://shomy.top/</id>
   
   <author>
@@ -14,6 +14,164 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Bert/ELMo文本分类小实验</title>
+    <link href="http://shomy.top/2020/07/06/bert-elmo-cls/"/>
+    <id>http://shomy.top/2020/07/06/bert-elmo-cls/</id>
+    <published>2020-07-06T03:12:28.000Z</published>
+    <updated>2020-07-06T03:22:40.870Z</updated>
+    
+    <content type="html"><![CDATA[<p>最近重新梳理了下Transformer和Bert的一些基本原理和概念，再加上之前做过关于ELMo的测试，于是这次就把Bert加进去，相对完整地在文本分类这任务上对不同的预训练词向量以及不同的编码器等做了简单的对比实验，代码如下<a href="https://github.com/ShomyLiu/pytorch_bert_elmo_example" target="_blank" rel="external">Bert/ELMo文本分类</a> ，使用Pytorch框架完成。</p>
+<a id="more"></a>
+<h2 id="基本框架">基本框架</h2>
+<p>文本分类 (text classification) 是NLP的基本任务之一，给定一个包含一堆词的句子，然后判断其类别。 文本分类主要包含三部分：</p>
+<ol style="list-style-type: decimal">
+<li><p>word embedding 比如使用经典的word2vec, glove或者近几年很火的ELMo和Bert等将word转换为词向量。</p></li>
+<li><p>Encoder 对word Embedding的输入进行下一步的特征提取，比如常用的CNN,RNN还有近年来很火的Transformer架构，都是能够抽取词的更high-level的语义特征。</p></li>
+<li><p>池化，将多个词特征进行池化得到一个句向量，进行最后的分类。比较常用的比如max-pooling，average-pooling，或者利用Attention机制计算每个词的不同权重，进行加权求和，得到句向量。</p></li>
+</ol>
+<p>本次实验集中在前两部分，测试在不同的词向量与不同的Encoder的文本分类的效果。</p>
+<h2 id="实验设置">实验设置</h2>
+<p>本次实验中选择了三类词向量，如下：</p>
+<ul>
+<li>GloVe: 使用Glove.6B.300d的词向量。</li>
+<li>ELMo: 使用<a href="https://allennlp.org/elmo" target="_blank" rel="external">AllenNLP</a>提供的预训练的Medium的上下文词向量，LSTM的隐层与输出层维度为2048/256。</li>
+<li>Bert：使用<a href="https://huggingface.co/bert-base-uncased" target="_blank" rel="external">Transformers</a>提供的Bert-base-uncased的词向量，结构为12层的transformer，输出层维度为512。</li>
+</ul>
+<p>使用四类Encoder的方法，如下：</p>
+<ul>
+<li>Mean：不适用Encoder，直接对所有的词向量取平均作为句向量。</li>
+<li>CNN：使用卷积神经网络抽取特征。</li>
+<li>RNN：使用GRU网络抽取特征。</li>
+<li>Transformer：结合Position Embedding+Transformer Encoder来抽取特征, 使用Pytorch提供的<code>nn.Transformer</code> 实现，其中<code>num_head=1</code>, <code>num_layer=1</code>。此外实验中发现<code>sin/cos</code>的位置向量效果很差，使用learning Embedding 而不是sin/cos</li>
+</ul>
+<p>由于本实验不考虑池化，因此统一使用<code>mean</code> 将所有词的特征取平均作为句向量。</p>
+<p>其余参数均保持一致，可以在<code>config.py</code> 里面查看，比如所有输出层都为64。需要注意的是，本次实验并没有刻意去调超参数，只有所有对比模型保持一致的原则。</p>
+<p>代码中模块分工比较明确，可以很方便制定或者修改参数，细节可以参考上述的github链接。</p>
+<blockquote>
+<p>对<code>bert</code>与<code>ELMo</code> 的内部参数，目前实验中均保持<code>freeze</code> , 后续会尝试进行fine-tuning测试。（目前算力不太足）</p>
+</blockquote>
+<p>接着是数据集，本次实验采用2分类的情感分类数据，总计约10k条数据，进行训练接与测试集评价指标使用准确率(Accuracy)。</p>
+<h2 id="结果对比">结果对比</h2>
+<p>先直接上结果，其中second为每个epoch的training+evaluate的时间：</p>
+<table>
+<thead>
+<tr class="header">
+<th>Embedding</th>
+<th>Encoder</th>
+<th>Acc</th>
+<th>Second</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Bert</strong></td>
+<td>MEAN</td>
+<td>0.8031</td>
+<td>17.98s</td>
+</tr>
+<tr class="even">
+<td><strong>Bert</strong></td>
+<td>CNN</td>
+<td>0.8397</td>
+<td>18.35s</td>
+</tr>
+<tr class="odd">
+<td><strong>Bert</strong></td>
+<td>RNN</td>
+<td>0.8444</td>
+<td>18.93s</td>
+</tr>
+<tr class="even">
+<td><strong>Bert</strong></td>
+<td>Transformer</td>
+<td><strong>0.8472</strong></td>
+<td>20.95s</td>
+</tr>
+<tr class="odd">
+<td><em>ELMo</em></td>
+<td>Mean</td>
+<td>0.7572</td>
+<td>25.05s</td>
+</tr>
+<tr class="even">
+<td><em>ELMo</em></td>
+<td>CNN</td>
+<td>0.8172</td>
+<td>25.53s</td>
+</tr>
+<tr class="odd">
+<td><em>ELMo</em></td>
+<td>RNN</td>
+<td><strong>0.8219</strong></td>
+<td>27.18s</td>
+</tr>
+<tr class="even">
+<td><em>ELMo</em></td>
+<td>Transformer</td>
+<td>0.8051</td>
+<td>26.209</td>
+</tr>
+<tr class="odd">
+<td>GloVe</td>
+<td>Mean</td>
+<td>0.8003</td>
+<td>0.60s</td>
+</tr>
+<tr class="even">
+<td>GloVe</td>
+<td>CNN</td>
+<td>0.8031</td>
+<td>0.76s</td>
+</tr>
+<tr class="odd">
+<td>GloVe</td>
+<td>RNN</td>
+<td><strong>0.8219</strong></td>
+<td>1.45s</td>
+</tr>
+<tr class="even">
+<td>GloVe</td>
+<td>Transformer</td>
+<td>0.8153</td>
+<td>1.71s</td>
+</tr>
+</tbody>
+</table>
+<p><strong>分析：</strong></p>
+<ul>
+<li>性能</li>
+<li>Bert实现了最好的性能：Bert+Transformer实现了0.8472的准确率。 此外，在所有的Encoder中Bert均取得了最高的准确率。总体来看Bert &gt; ELM0 ≈ GloVe。</li>
+<li>比较惊讶的ELMo在文本分类效果并未有所提升，与GloVe不相上下，甚至在Mean和Transformer中效果还不如GloVe， 可能原因是ELMo需要对内部参数进行微调， 后续探究深入原因<code>TODO</code>。</li>
+<li>Encoder的比较上，在文本分类中 RNN≈Transformer &gt; CNN &gt; Mean。其中实验中Transformer不如RNN稳定。</li>
+<li>效率</li>
+<li>很直观： ELMo &lt; Bert &lt; GloVe. 其中ELMo和Bert都是Contextual的词向量，相比GloVe，速度肯定要慢非常多，这还是在ELMo和Bert并没有开启内部参数fine-tuning的情况下。</li>
+<li>Transformer &lt; RNN &lt; CNN 。CNN最快这个容易理解，不过Transformer比RNN还要慢一些，有点意外，不过总体效率比较接近。</li>
+</ul>
+<p><strong>总结</strong></p>
+<p>从这个很简单的文本分类任务中，可以看到Bert的确效果很好，领先其他的词向量模型，此外从实验中我们还发现Bert收敛速度也很快，基本前面几个Epoch就差不多了，很稳定。 Bert在NLP领域是一个划时代的产物，需要及时跟进。前面用了几年的word2vec/glove + cnn/rnn的结构，我们也准备一步一步转向Transformer+Bert的阵营。</p>
+<h2 id="todo">TODO</h2>
+<ul>
+<li>考虑不同池化层的影响，加入不同的<code>pooling method</code></li>
+<li>更新Bert以及ELMo的参数</li>
+</ul>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;最近重新梳理了下Transformer和Bert的一些基本原理和概念，再加上之前做过关于ELMo的测试，于是这次就把Bert加进去，相对完整地在文本分类这任务上对不同的预训练词向量以及不同的编码器等做了简单的对比实验，代码如下&lt;a href=&quot;https://github.com/ShomyLiu/pytorch_bert_elmo_example&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;Bert/ELMo文本分类&lt;/a&gt; ，使用Pytorch框架完成。&lt;/p&gt;
+    
+    </summary>
+    
+      <category term="读书笔记" scheme="http://shomy.top/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/"/>
+    
+    
+      <category term="Bert" scheme="http://shomy.top/tags/Bert/"/>
+    
+      <category term="ELMo" scheme="http://shomy.top/tags/ELMo/"/>
+    
+  </entry>
   
   <entry>
     <title>2019</title>
@@ -2428,64 +2586,6 @@
       <category term="machine learning" scheme="http://shomy.top/tags/machine-learning/"/>
     
       <category term="word2vec" scheme="http://shomy.top/tags/word2vec/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>Alias Method离散分布随机取样</title>
-    <link href="http://shomy.top/2017/05/09/alias-method-sampling/"/>
-    <id>http://shomy.top/2017/05/09/alias-method-sampling/</id>
-    <published>2017-05-08T16:04:32.000Z</published>
-    <updated>2019-04-09T14:06:31.785Z</updated>
-    
-    <content type="html"><![CDATA[<blockquote>
-<p>在图的随机游走中，有一块需要随机取样， 比如当前到达v节点，那么下一次随机会到达哪个节点。这种问题其实就是离散分布的随机变量的取样问题。 查了一些资料， 发现<a href="https://en.wikipedia.org/wiki/Alias_method" target="_blank" rel="external">Alias Method</a> 是一种很高效的方式。<a id="more"></a>在初始好之后，每次取样的复杂度为<span class="math inline">\(O(1)\)</span>。 下面介绍下这种方法的使用，具体原理暂时没有深究，有兴趣转<a href="http://www.keithschwarz.com/darts-dice-coins/" target="_blank" rel="external">Darts,Dice, and coids</a>。</p>
-</blockquote>
-<h2 id="alias-method-原理">Alias-Method 原理</h2>
-<p>大部分资料都会以这个例子讲解：游戏中经常遇到按一定的掉落概率来随机掉落指定物品的情况，例如掉落 银币25%，金币20%, 钻石10%，装备5%，饰品40%。现在要求下一个掉落的物品类型，或者说一个掉落的随机序列，要求符合上述概率。</p>
-<p>其实方法很简单，最直接的方法就是直接取样，先构建一个<strong>累加</strong>概率分布列表:<code>[0.25,0.45,0.55, 0.60, 1.0]</code>，之后产生一个随机数(0-1)，假设为0.7，那么在列表中找到第一个大于0.7的数为1.0,对应的类别是第5类。 这种方法很简单直接，但是每次取样复杂度为<span class="math inline">\(O(K)​\)</span>，使用二分搜索之后，降为<span class="math inline">\(O(logK)​\)</span>。</p>
-<p>论文中经常使用的是另一种很巧妙的方法: Alias Method，它在初始化之后每次随机取样的复杂度为<span class="math inline">\(O(1)\)</span>。 下面以<a href="http://www.keithschwarz.com/darts-dice-coins/" target="_blank" rel="external">Darts,Dice, and coids</a>文中例子用图示说明整个步骤，原理太繁杂，不做介绍，参考博客即可:</p>
-<p>假设概率分布为: <span class="math inline">\(\frac{1}{2}, \frac{1}{3}, \frac{1}{12}. \frac{1}{12}\)</span>。</p>
-<ol style="list-style-type: decimal">
-<li><p>初始概率分布: 类别数目<span class="math inline">\(K=4\)</span>，以颜色表示不同的类别<img src="http://cdn.htliu.cn/alias-method-1.png"></p></li>
-<li><p>每个类别概率乘以K=4,使得总和为4. 这样分为两类，大于1:第一列与第二列; 小于1: 第三列与第四列。<img src="http://cdn.htliu.cn/alias-method-2.png"></p></li>
-<li>下面通过拼凑，使得每一列的和都为1，但是每一列中，最多只能是两种类型的拼凑，就是<strong>每一列最多两种颜色存在</strong>。
-<ul>
-<li>将第一列拿出<span class="math inline">\(\frac{2}{3}\)</span>给最后一列，使其变为1，如下:(棕色表示空缺)<img src="http://cdn.htliu.cn/alias-method-3.png"></li>
-<li>将第一列拿出<span class="math inline">\(\frac{2}{3}\)</span>给第三列，使之变为1，如下:<img src="http://cdn.htliu.cn/alias-method-4.png"></li>
-<li>最后一次,第二列给第一列<span class="math inline">\(\frac{1}{3}\)</span>, 最后每一列都是1，且每一列最多两种类型，其中下面一层表示原类的概率，上面层表示另外一种类型的概率，如只有一种比如第二列，那么第二层就是NULL:<img src="http://cdn.htliu.cn/alias-method-5.png"></li>
-</ul></li>
-<li><p>写出两个数组:</p></li>
-</ol>
-<ul>
-<li><strong>Probability table</strong> <span class="math inline">\(Prob\)</span>: 落在原类型的概率，每一列第一层的概率，即:<span class="math inline">\([\frac{2}{3}, 1, \frac{1}{3}, \frac{1}{3}]\)</span></li>
-<li><strong>Alias table</strong> <span class="math inline">\(Alias\)</span> : 每一列第二层的类型(颜色)，这里用下标表示: <span class="math inline">\([2, null, 1, ,1]\)</span></li>
-</ul>
-<p>用图表示如下:<img src="http://cdn.htliu.cn/alias-method-6.png"></p>
-<p>到此为止，得到<span class="math inline">\(Prob, Alias\)</span> 表示初始化完成。</p>
-<ol start="5" style="list-style-type: decimal">
-<li>采样过程: 随机取某一列k(即[1,4]的随机整数)，再随机产生一个[0-1]的小数c，如果<span class="math inline">\(Prob[k]\)</span> 大于 c，那么采样结果就是k，反之则为<span class="math inline">\(Alias[k]\)</span>。</li>
-</ol>
-<p>需要说明的是，该过程一定可以结束(原文有证明)。此外在初始化完成之后每次采样的复杂度为<span class="math inline">\(O(1)\)</span>，因此应用很广。</p>
-<p>举个例子说明采样过程，比如随机取得第1列， 随机产生的小数为<span class="math inline">\(0.5&lt; \frac{2}{3}\)</span>，那么采样的结果就是第一类。 如果随机产生的小数为<span class="math inline">\(0.8 &gt; \frac{2}{3}\)</span>，那么采样结果就是第一列的第二层的类别，也就是<span class="math inline">\(Alias[1] = 2\)</span>(紫色对应的类别: 第二列)。</p>
-<p>再简单验证下，看看该方法的采样是不是满足原始的概率分布<span class="math inline">\(\frac{1}{2}, \frac{1}{3}, \frac{1}{12}. \frac{1}{12}\)</span></p>
-<p>对于采到第一种的概率，采到第一种有三部分组成，第一列，第三，四列分别求概率求和: <span class="math inline">\(\frac{2}{3} * \frac{1}{4} + (1-\frac{1}{3}) * \frac{1}{4} + ({1-\frac{1}{3}}) * \frac{1}{4} = \frac{1}{2}\)</span> ，因此满足原始概率的分布，其余同理。</p>
-<h2 id="代码">代码</h2>
-<p>代码官网给了Java版本，不过网上有很多其他语言的版本，下面参考<a href="https://hips.seas.harvard.edu/blog/2013/03/03/the-alias-method-efficient-sampling-with-many-discrete-outcomes/" target="_blank" rel="external">1</a> 做了注释如下:</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> numpy        <span class="keyword">as</span> np</div><div class="line"><span class="keyword">import</span> numpy.random <span class="keyword">as</span> npr</div><div class="line"> </div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">alias_setup</span><span class="params">(probs)</span>:</span></div><div class="line">    <span class="string">'''</span></div><div class="line"><span class="string">    probs： 某个概率分布</span></div><div class="line"><span class="string">    返回: Alias数组与Prob数组</span></div><div class="line"><span class="string">    '''</span></div><div class="line">    K       = len(probs)</div><div class="line">    q       = np.zeros(K) <span class="comment"># 对应Prob数组</span></div><div class="line">    J       = np.zeros(K, dtype=np.int) <span class="comment"># 对应Alias数组</span></div><div class="line">    <span class="comment"># Sort the data into the outcomes with probabilities</span></div><div class="line">    <span class="comment"># that are larger and smaller than 1/K.</span></div><div class="line">    smaller = [] <span class="comment"># 存储比1小的列</span></div><div class="line">    larger  = [] <span class="comment"># 存储比1大的列</span></div><div class="line">    <span class="keyword">for</span> kk, prob <span class="keyword">in</span> enumerate(probs):</div><div class="line">        q[kk] = K*prob <span class="comment"># 概率</span></div><div class="line">        <span class="keyword">if</span> q[kk] &lt; <span class="number">1.0</span>:</div><div class="line">            smaller.append(kk)</div><div class="line">        <span class="keyword">else</span>:</div><div class="line">            larger.append(kk)</div><div class="line"> </div><div class="line">    <span class="comment"># Loop though and create little binary mixtures that</span></div><div class="line">    <span class="comment"># appropriately allocate the larger outcomes over the</span></div><div class="line">    <span class="comment"># overall uniform mixture.</span></div><div class="line">    </div><div class="line">    <span class="comment"># 通过拼凑，将各个类别都凑为1</span></div><div class="line">    <span class="keyword">while</span> len(smaller) &gt; <span class="number">0</span> <span class="keyword">and</span> len(larger) &gt; <span class="number">0</span>:</div><div class="line">        small = smaller.pop()</div><div class="line">        large = larger.pop()</div><div class="line"> </div><div class="line">        J[small] = large <span class="comment"># 填充Alias数组</span></div><div class="line">        q[large] = q[large] - (<span class="number">1.0</span> - q[small]) <span class="comment"># 将大的分到小的上</span></div><div class="line"> </div><div class="line">        <span class="keyword">if</span> q[large] &lt; <span class="number">1.0</span>:</div><div class="line">            smaller.append(large)</div><div class="line">        <span class="keyword">else</span>:</div><div class="line">            larger.append(large)</div><div class="line"> </div><div class="line">    <span class="keyword">return</span> J, q</div><div class="line"> </div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">alias_draw</span><span class="params">(J, q)</span>:</span></div><div class="line">    <span class="string">'''</span></div><div class="line"><span class="string">    输入: Prob数组和Alias数组</span></div><div class="line"><span class="string">    输出: 一次采样结果</span></div><div class="line"><span class="string">    '''</span></div><div class="line">    K  = len(J)</div><div class="line">    <span class="comment"># Draw from the overall uniform mixture.</span></div><div class="line">    kk = int(np.floor(npr.rand()*K)) <span class="comment"># 随机取一列</span></div><div class="line"> </div><div class="line">    <span class="comment"># Draw from the binary mixture, either keeping the</span></div><div class="line">    <span class="comment"># small one, or choosing the associated larger one.</span></div><div class="line">    <span class="keyword">if</span> npr.rand() &lt; q[kk]: <span class="comment"># 比较</span></div><div class="line">        <span class="keyword">return</span> kk</div><div class="line">    <span class="keyword">else</span>:</div><div class="line">        <span class="keyword">return</span> J[kk]</div><div class="line"> </div><div class="line">K = <span class="number">5</span></div><div class="line">N = <span class="number">100</span></div><div class="line"> </div><div class="line"><span class="comment"># Get a random probability vector.</span></div><div class="line">probs = npr.dirichlet(np.ones(K), <span class="number">1</span>).ravel()</div><div class="line"> </div><div class="line"><span class="comment"># Construct the table.</span></div><div class="line">J, q = alias_setup(probs)</div><div class="line"> </div><div class="line"><span class="comment"># Generate variates.</span></div><div class="line">X = np.zeros(N)</div><div class="line"><span class="keyword">for</span> nn <span class="keyword">in</span> xrange(N):</div><div class="line">    X[nn] = alias_draw(J, q)</div></pre></td></tr></table></figure>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;blockquote&gt;
-&lt;p&gt;在图的随机游走中，有一块需要随机取样， 比如当前到达v节点，那么下一次随机会到达哪个节点。这种问题其实就是离散分布的随机变量的取样问题。 查了一些资料， 发现&lt;a href=&quot;https://en.wikipedia.org/wiki/Alias_method&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;Alias Method&lt;/a&gt; 是一种很高效的方式。
-    
-    </summary>
-    
-      <category term="读书笔记" scheme="http://shomy.top/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/"/>
-    
-    
-      <category term="alias method" scheme="http://shomy.top/tags/alias-method/"/>
     
   </entry>
   
