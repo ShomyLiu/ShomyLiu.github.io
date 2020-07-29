@@ -5,11 +5,15 @@
     <entry>
       <title><![CDATA[CQA-1：社区问答中的深度关联推理模型]]></title>
       <url>/2020/07/29/cqa1-rmrn/</url>
-      <content type="html"><![CDATA[<h2 id="论文信息">论文信息</h2>
+      <content type="html"><![CDATA[<blockquote>
+<p>近期打算分享一些论文笔记，先从社区问答开始吧</p>
+</blockquote>
+<h2 id="论文信息">论文信息</h2>
 <div class="figure">
 <img src="http://cdn.htliu.cn/blog/cqa1-rmrn/RMRN-1.png" alt="paper_infor">
 <p class="caption">paper_infor</p>
 </div>
+<a id="more"></a>
 <h2 id="问题简介">问题简介</h2>
 <p>本文拟解决的问题为<strong>社区问答</strong>(Community Question Answering), 或者叫Expert Finding。虽然名字中带有QA，但是跟NLP中的问答系统不一样，CQA是在一些问答社区网站上比如Stackoverflow, 知乎等上面，把用户提出的问题推荐给潜在熟悉该问题的回答者(answerer)，从而能够使得用户快速地获得更专业的答案。</p>
 <p>拿知乎举个例子，如下图：</p>
