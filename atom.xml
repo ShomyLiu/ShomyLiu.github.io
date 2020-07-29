@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://shomy.top/"/>
-  <updated>2020-07-06T04:51:26.319Z</updated>
+  <updated>2020-07-29T09:02:29.212Z</updated>
   <id>http://shomy.top/</id>
   
   <author>
@@ -14,6 +14,146 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>CQA-1：社区问答中的深度关联推理模型</title>
+    <link href="http://shomy.top/2020/07/29/cqa1-rmrn/"/>
+    <id>http://shomy.top/2020/07/29/cqa1-rmrn/</id>
+    <published>2020-07-29T08:57:28.000Z</published>
+    <updated>2020-07-29T09:02:29.212Z</updated>
+    
+    <content type="html"><![CDATA[<h2 id="论文信息">论文信息</h2>
+<div class="figure">
+<img src="http://cdn.htliu.cn/blog/cqa1-rmrn/RMRN-1.png" alt="paper_infor">
+<p class="caption">paper_infor</p>
+</div>
+<h2 id="问题简介">问题简介</h2>
+<p>本文拟解决的问题为<strong>社区问答</strong>(Community Question Answering), 或者叫Expert Finding。虽然名字中带有QA，但是跟NLP中的问答系统不一样，CQA是在一些问答社区网站上比如Stackoverflow, 知乎等上面，把用户提出的问题推荐给潜在熟悉该问题的回答者(answerer)，从而能够使得用户快速地获得更专业的答案。</p>
+<p>拿知乎举个例子，如下图：</p>
+<div class="figure">
+<img src="http://cdn.htliu.cn/blog/cqa1-rmrn/RMRN-2.png" alt="zhihu-sample">
+<p class="caption">zhihu-sample</p>
+</div>
+<p>知乎会给用户推荐一些相关问题去回答，逛知乎的同学应该很了解。因此CQA问题本质上就是一个question与answerer的匹配问题，为问题寻找回答者。</p>
+<h2 id="挑战与动机">挑战与动机</h2>
+<p>之前大多数CQA的工作均基于文本内容相关性，即将问题与回答者回答过的历史问题集合进行相似度进行简单匹配，但是这样的方法存在一个弊端，即<strong>当一个回答者的回答过的问题与提问的问题没有直接显式联系，却包含隐式相关性，那么当前已有的模型就无法做出很好的推荐</strong>。</p>
+<p>比如下图中Yahoo! Answer的例子：</p>
+<div class="figure">
+<img src="http://cdn.htliu.cn/blog/cqa1-rmrn/RMRN-3.png" alt="sample">
+<p class="caption">sample</p>
+</div>
+<p>提问者的问题是关于如何写一篇学术论文，下面的一个候选用户并没有直接回答过类似写论文的问题。 然而从该用户的历史回答问题集合中可以看出该用户其实在撰写学术论文方面还是有足够的专业知识的，因此是有能力回答该问题的。</p>
+<p>因此已有的CQA的工作仅仅从单纯文本的表层相似度匹配上来看，很难将该问题推送给上面的用户，这里面需要模型有一定的Reasoning能力，能够挖掘问题与用户历史记录之间的深度关联。</p>
+<h2 id="方法">方法</h2>
+<p>为了解决上面的挑战，本文受到MAC(Memory, Attention, Control)门控机制的启发， 设计了一种推理记忆单元RMC(Reasoning Memory Cells) 来从建模问题文本，进而与候选用户的历史回答进行多方面推理，能够挖掘问题与用户的深度联系。</p>
+<p>首先给出CQA的形式化表示：</p>
+<ul>
+<li>提问的问题q，即:包含多个单词的句子<span class="math inline">\(q=\{qw_1, qw_2, ..qw_{n_q}\}\)</span> 其中<span class="math inline">\(n_q\)</span> 是问题的长度。</li>
+<li>候选用户的历史回答记录集合<span class="math inline">\(H=[H_1, H_2, ..., H_{n_H}]\)</span> 其中每个回答也是一个包含多个单词的句子： <span class="math inline">\(H_j = \{hw_1^j, hw_2^j, ..., hw^j_{n_h}\}\)</span>。</li>
+<li>根据问题q和候选用户的历史回答记录H，判断该用户是否适合回答当前问题。</li>
+</ul>
+<p>整体流程如下：</p>
+<ul>
+<li>使用BiGRU建模question文本Q以及用户的历史回答问题的文本集H，其中word embedding 部分还是结合了subword-level和character-level 的emebdding。</li>
+<li>利用RMC(Reasoning Memory Cell) 来计算Q与H的各种交互，选出H中与Q更相关的部分</li>
+<li>控制单元(Control Unit): 这部分主要是挖掘question的不同方面，用来与回答者的问题集合在读入单元与写入单元中进行交互。</li>
+<li>读入单元(Read Unit): 主要是提取H的相关信息，这里使用Gumbel-softmax 对集合进行了离散化，获得one-hot向量，能够point重要的相关回答。</li>
+<li>写入单元(Write Unit)：更新memory，可以理解为交互层(问题与用户回答的问题集合中重要的部分)。</li>
+<li>预测模块：作为二分类问题， 根据学到的问题表示以及用户候选集合表示进行01预测，类似CTR</li>
+</ul>
+<p>下面具体展开介绍，原文框架图如下：</p>
+<div class="figure">
+<img src="http://cdn.htliu.cn/blog/cqa1-rmrn/RMRN-4.png" alt="overview">
+<p class="caption">overview</p>
+</div>
+<h3 id="编码层">编码层</h3>
+<ul>
+<li>word embedding: 对q与H中的所有的词，均使用多粒度的word embedding技术来缓解OOV的问题，毕竟社区问答语料口语化比较严重。将每个词的<code>word-level</code>, <code>subword-level</code> 和 <code>character-level</code>进行concatenate作为word最终的特征表示: <span class="math inline">\(e_j = [e^w_j; e^s_j; e^c_j]\)</span> 其中subword使用BPE进行编码，character-level直接使用ELMo的预训练词向量。</li>
+<li>使用Bi-GRU对问题q进行编码:<span class="math inline">\(Q=[q_1, q_2, ..., q_{n_q}]\)</span> 其中<span class="math inline">\(q_i=BiGRU(qw_i)\)</span>，需要说明的这里面的<span class="math inline">\(q_i\)</span> 是一维向量，表示问题中第i个词的特征，<span class="math inline">\(Q \in R^{q_{n_q} \times d}\)</span> 其中d为BiGRU的输出维度。</li>
+<li>使用Bi-GRU对候选用户的问题集合H进行编码: <span class="math inline">\(y_j=BiGRU(H_j)\)</span>, <span class="math inline">\(H=[y_1, y_2, ..., y_j, ..., y_{n_{H}}]\)</span>。 其中<span class="math inline">\(y_j\)</span>表示第j条回答记录的表示，这里需要注意的是，此处做了pooling操作，保留的是sentence-level的特征，因此<span class="math inline">\(y_j\)</span>是一个向量，而不是词特征矩阵，因此<span class="math inline">\(H\in R^{n_{H} \times d}\)</span>，<span class="math inline">\(n_H\)</span> 为候选用户的历史回答问题数目。</li>
+</ul>
+<p>后续的RMCs的输入就是 <span class="math inline">\(Q\)</span> 与 <span class="math inline">\(H\)</span> ， 学习二者的交互。</p>
+<h3 id="rmcs-推理记忆单元">RMCs 推理记忆单元</h3>
+<p>类似RNN/GRU/LSTM等，包含基本cell，然后进行多步循环。 其中每个基本单元RMC包含三个unit，分别是control unit，read unit与write unit，三个变量分别是控制向量<span class="math inline">\(c\)</span>,记忆向量<span class="math inline">\(m\)</span>, 以及状态输出向量<span class="math inline">\(r\)</span> 。</p>
+<p>1.<strong>Control Unit</strong> 。 从图中可以看出来，输入是Q和上一时刻的控制向量<span class="math inline">\(c_{i-1}\)</span>, 使用多个MLP层，选出Q中当前重要的词，进一步更新下一时刻的控制向量<span class="math inline">\(c_i\)</span>(这部分的符号的下标均指的是第时刻，或者迭代)。</p>
+<p>首先将Q中最后一个词的隐状态向量<span class="math inline">\(q_{n_q}\)</span>作为句子的初始表示，之后通过一个MLP层进行线性转化，然后串联<span class="math inline">\(c_{i-1}\)</span>:</p>
+<p><span class="math display">\[
+q_i = W_i{q_{n_q}} + b_i \\
+cq_i = W_{cq}[q_i,c_{i-1}]+b_{cq}
+\]</span></p>
+<p>后面开始计算词分布：</p>
+<p><span class="math display">\[
+\alpha_i = softmax(W_\alpha(cq_i\otimes Q)+b_{\alpha}) \\
+c_i = \sum_{j=1}^{n_q} \alpha_i Q
+\]</span></p>
+<p>其中<span class="math inline">\(cq_i \otimes Q\)</span> 表示向量与矩阵的列进行element-wise product，得到一个新的矩阵。<span class="math inline">\(w_\alpha\in R^{d*1}\)</span>， <span class="math inline">\(\alpha_i \in R^{n_q}\)</span>表示问题中<span class="math inline">\(n_q\)</span>个词的权重系数， 最后与Q中对应词的特征加权求和，得到第<span class="math inline">\(i\)</span>时刻的控制向量<span class="math inline">\(c_i \in R^{d}\)</span>。</p>
+<p>其实本质上就是一个Attention的过程，其中<span class="math inline">\(c_{i-1}\)</span>是查询向量，计算Q中词的important weight分布，只是文中计算方法相对复杂一些，按说可以直接用 dot-product能达到类似效果，这样<span class="math inline">\(c_i\)</span> 中就可以捕获到当前时刻应该关注问题中哪些词。</p>
+<p>2.<strong>Read Unit</strong> 。这部分主要是来衡量候选用户的历史记录中， 哪些记录与当前问题更加相关，其实类似从H中retrieve有用的信息。输入就是根据控制向量<span class="math inline">\(c_i\)</span> ，上一时刻的记忆向量<span class="math inline">\(m_i\)</span>与 历史记录集合<span class="math inline">\(H\)</span>。</p>
+<p>首先使用MLP计算H与<span class="math inline">\(c_i\)</span>和<span class="math inline">\(m_{i-1}\)</span>的交互特征矩阵:</p>
+<p><span class="math display">\[
+mr_i = H \otimes m_{i-1} \\
+cr_i = H \otimes c_{i}
+\]</span></p>
+<p>得到的<span class="math inline">\(mr_i\)</span> 与 <span class="math inline">\(cr_i\)</span>均是与H同维度的矩阵，之后在使用Attention机制，来计算H中历史回答的weight，直接使用MLP的计算方法:<span class="math inline">\(\pi_{i} = W_e[mr_i, cr_i, H]+b_e\)</span>, 其中<span class="math inline">\(w_e \in R^{3d*1}\)</span>, 因此最终得到候选用户的历史回答问题记录的score: <span class="math inline">\(\pi_{i} \in R^{n_{H} * 1}\)</span>。</p>
+<p>这里需要注意的是后面并没有使用softmax 来score 求归一化后的weight，而是使用<code>Gumbel-softmax</code> 来得到one-hot的离散化的weight。这样做的目的是为了能够找出在当前时刻，<strong>某一个</strong>历史记录与当前问题最相关，直接将该历史记录拿出来进行后续计算。但是一次Gumbel-softmax只能point 一个相关的历史记录，因此一般情况，都会执行多次Gumbel-Softmax (应该是多组计算weight的MLP参数)，这样可以得到多个历史记录，如下：<span class="math inline">\(\tilde{H}^i = [\tilde{y_1}^i, \tilde{y_2}^2,...., \tilde{y_k}]\)</span></p>
+<p>其中，k表示执行次数，<span class="math inline">\(\tilde{y}^i_j\)</span>表示在当前i时刻, 第j次Gumbel-softmax所挑出的那个历史记录的表示向量。 这里类似self-attention中的multi-head。</p>
+<p>之后再利用一个Attention机制，利用<span class="math inline">\(m_{i-1}\)</span>和<span class="math inline">\(c_i\)</span>作为query vectors, 来对这k个选出的历史记录做一个re-weight如下:</p>
+<div class="figure">
+<img src="http://cdn.htliu.cn/blog/cqa1-rmrn/RMRN-5.png" alt="attention">
+<p class="caption">attention</p>
+</div>
+<p>这样得到的向量<span class="math inline">\(r_i\)</span>包含了在当前控制向量与记忆向量参与下，候选用户的历史记录信息最相关的部分， 为了将前面时刻的信息包含进来，这里又做了一种类似残差的操作, 经过p个step之后，最后的信息将所有的r聚合起来: <span class="math inline">\(R=[r_1, r_2, ..., r_i, ...,r_p]\)</span>。 这里的<span class="math inline">\(R\)</span> 就可以作为候选用户的表示了。</p>
+<p>3.<strong>Write Unit</strong> 这部分自然就是更新记忆向量<span class="math inline">\(m_i\)</span>了， 利用<span class="math inline">\(m_{i-1},c_i, r_i\)</span>各自几个MLP进行融合，最后利用一个简单的gate门控，来判断保留多少旧信息，和新加入多少新信息: <span class="math inline">\(m_i = g_im_{i_1}+(1-g_i)r_i\)</span>。</p>
+<p>这样整个RMC就完成了一次更新。 很多细节的内容，不过回头看，本质上，control unit与 read unit 就是两个Attention模块，其中control unit的attention为了选出当前应该关注问题中的哪些词，read unit中的attention则是为了找出候选用户的历史记录中哪些与问题更相关。 而memory则代表一种全局信息，可以连接<span class="math inline">\(c_i\)</span>和<span class="math inline">\(r_i\)</span>。 这是本文计算Attention的方法比较复杂，使用了非常多的MLP。</p>
+<h3 id="预测模块">预测模块</h3>
+<p>这部分额就是预测候选用户是否会回答这个问题，作为二分类问题，最后的特征向量，包含memory信息<span class="math inline">\(m_i\)</span>，问题向量<span class="math inline">\(q_{n_q}\)</span>和RMC的输出用户向量<span class="math inline">\(\hat{r}=MEAN(R)\)</span>, 直接将所有step的r取平均作为最终的候选用户的特征。</p>
+<p>继续使用MLP计算预测logits: <span class="math inline">\(f=W_f[m_i, q_{n_q}, \hat{r}] + b_r\)</span>。模型使用cross-entropy 来训练。</p>
+<h2 id="实验">实验</h2>
+<p>本文使用两个CQA数据集如下:</p>
+<div class="figure">
+<img src="http://cdn.htliu.cn/blog/cqa1-rmrn/RMRN-6.png" alt="dataset">
+<p class="caption">dataset</p>
+</div>
+<p>在CQA中模型可以给出一个候选用户list，因此实验使用S@N (Successfule@N) 也就是recall@N作为评价指标,即预测出的TopN中出现了best answerer 即可。</p>
+<p>首先看与baselines的对比实验结果，前面提到文中使用了多种的word embedding, 因此根据使用的Embedding类型，设置了四种模型，其中基本模型为RMRN,表示仅仅使用了word embedding. <img src="http://cdn.htliu.cn/blog/cqa1-rmrn/RMRN-7.png" alt="result"></p>
+<p>从实验结果可以看出来：</p>
+<ul>
+<li>标准的RMRN在一些数据集上无法取得最优结果，或者与baseline差距非常小。</li>
+<li>加上多粒度的word embedding的RMRN+sub/ELMo/Enhanced 效果就明显提高， 这个说明了模型的基本输入很重要，原因应该是在CQA语料中，非常多的口语化用语或者专业用语，导致OOV现象严重。 另一方面也说明模型本身效果或许不是十分优越。</li>
+</ul>
+<p>另外一个有意思的消融实验结果如下：</p>
+<div class="figure">
+<img src="http://cdn.htliu.cn/blog/cqa1-rmrn/RMRN-8.png" alt="ablation">
+<p class="caption">ablation</p>
+</div>
+<p>主要对control unit, read unit和 write unit以及predict 部分进行了ablation study</p>
+<p>从实验中可以看出：</p>
+<ul>
+<li>每个模块对模型的性能都有一定影响。</li>
+<li>对模型影响最大的还是预测层使用特征，三类特征都对模型有用。</li>
+<li>read unit中的Gumbel-softmax的作用也很明显，换成softmax attention效果下降较多。</li>
+</ul>
+<h2 id="总结">总结</h2>
+<p>这篇文章使用的RMC模块能够在一定程度上刻画问题与候选用户的深度联系。RMC的每个Step中，control unit可以学习到问题中的一个词重要性分布，read unit 可以根据当前的词重要分布，学习(Reasoning)出候选用户的哪些历史回答更相关。write unit 更新全局信息。 这样多个step进行recurrent，模型就可以学到更多的关联信息。本文的模型描述非常详细，完全可以根据模型复现。 此外，本文使用多粒度的词特征，缓解OOV的问题，实验证明效果得到了显著提升。不过稍显不足的是，作为核心的RMC带来的效果提升并没有那么明显，另一方面就是缺少Case Study，来直观的表明RMC的几个地方，是否匹配到了真正相关的词和历史记录，不同step是否有递进的reasoning能力。</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;h2 id=&quot;论文信息&quot;&gt;论文信息&lt;/h2&gt;
+&lt;div class=&quot;figure&quot;&gt;
+&lt;img src=&quot;http://cdn.htliu.cn/blog/cqa1-rmrn/RMRN-1.png&quot; alt=&quot;paper_infor&quot;&gt;
+&lt;p class=&quot;caption&quot;&gt;
+    
+    </summary>
+    
+      <category term="读书笔记" scheme="http://shomy.top/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/"/>
+    
+    
+      <category term="CQA" scheme="http://shomy.top/tags/CQA/"/>
+    
+      <category term="Paper" scheme="http://shomy.top/tags/Paper/"/>
+    
+  </entry>
   
   <entry>
     <title>Bert/ELMo文本分类小实验</title>
@@ -2363,233 +2503,6 @@
     
     
       <category term="hexo" scheme="http://shomy.top/tags/hexo/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>Word2vec数学原理全家桶</title>
-    <link href="http://shomy.top/2017/07/28/word2vec-all/"/>
-    <id>http://shomy.top/2017/07/28/word2vec-all/</id>
-    <published>2017-07-28T07:42:21.000Z</published>
-    <updated>2020-01-11T07:54:37.346Z</updated>
-    
-    <content type="html"><![CDATA[<p>目前需要做Network Embedding方面的课题，而复杂网络本身就经常借鉴NLP的一些算法模型, Embedding也不例外. 因此先从Word Embedding入手。之前对Word Embedding(暂且翻译为词嵌入或者词向量)的理解就是将单词根据某种特征转为数值向量，再来做其他工作比如文本分类的工作。而word2vec则是word embedding的一种模型，也是目前使用最广的词向量模型, 由Google的Mikolov团队2013年提出。之前仅仅能够使用第三方库来训练直接使用, 对其中原理并没有多少理解, 这篇博客则比较完整的从背景知识到原理，参数训练等方面整理一下word2Vec。</p>
-<a id="more"></a>
-<p>Mikolov的两篇文章中涉及word2vec的细节甚少. 有不少人都对此模型作出了更加详细的解释, 本文主要沿着Rong, X.word2vec Parameter Learning Explained这篇文章的思路来整理一下，很多公式参考于这篇文章。</p>
-<p>参考:</p>
-<ul>
-<li>Mikolov, T.(2013). Distributed Representations of Words and Phrases and their Compositionality.</li>
-<li>Mikolov, T.(2013). Efficient Estimation of Word Representations in Vector Space.</li>
-<li>Rong, X. (2014). word2vec Parameter Learning Explained.</li>
-</ul>
-<h2 id="背景">背景</h2>
-<h3 id="神经网络">神经网络</h3>
-<p>引入word2vec之前需要先对神经网络的知识有一定了解, 这里只贴一张图说明一个简单三层神经网络, 具体的细节不再赘述, 可以参考之前的一篇专门介绍神经网络的博文<a href="http://shomy.top/2016/12/07/basic-neural-network/">机器学习技法笔记(1)-神经网络</a> ; 如下图, <span class="math inline">\(x=[x_1, x_2,...x_K]\)</span>是模型的输入, 中间经过与权重矩阵<span class="math inline">\(\{w_{ki}\}\)</span> 运算, 矩阵运算结果再经过非线性激活函数得到隐层的结果<span class="math inline">\(h\)</span>, 从隐层到输出层同理. 这样从输入层到输出层既有线性变换,又有非线性变换, 因此可以更好刻画出输入变量的特征.</p>
-<div class="figure">
-<img src="http://cdn.htliu.cn/blog/w2v/nn1.png">
-
-</div>
-<h3 id="神经语言模型">神经语言模型</h3>
-<p>作为Word Embedding的背景, 语言模型(Language Model)也是很有必要简要介绍一下.</p>
-<blockquote>
-<p>统计语言模型就是用来计算一个句子的概率分布</p>
-</blockquote>
-<p>简单来说,就是计算一个句子的概率, 语言模型用处很广泛,比如机器翻译中, 如何挑选一个概率尽可能大的句子也就是尽量靠谱的句子返回. 假设一个长度为<span class="math inline">\(m\)</span>的句子,包含词:<span class="math inline">\([(w_1, w_2, w_3,..,w_m)\)</span>, 那么这个句子的概率,也就是这m个词共现的概率:</p>
-<p><span class="math display">\[P(sen=(w_1, w_2, .., w_m)) = P(w_1)P(w_2|w_1)P(w_3|w_2,w_1)...P(w_m|w_{m-1}..w_1)\]</span></p>
-<p>一般情况, 语言模型都是为了使得条件概率: <span class="math inline">\(P(w_t|w_1,w_2,..,w_{t-1})\)</span>最大化, 不过考虑到近因效应, 当前词与距离它比较近的n个词更加相关(一般n不超过5),而非前面所有的词都有关, 因此上述公式可以近似为:</p>
-<p><span class="math display">\[P(w_t|w_1,w_2,..,w_{t-1})=P(w_t|w_{t-1}, w_{t-2}...w_{t-(n+1)})\]</span></p>
-<p>上述便是经典的<code>n-gram</code>模型的近似表示方式. 下面需要介绍一下神经语言模型(NNLM), 最初由Bengio提出的A Neural Probabilistic Language Mode最为经典, word2vec便是从其中简化训练而来. Bengio通过下面的一个三层神经网络来计算<span class="math inline">\(P(w_t|w_{t-1}, w_{t-2}...w_{t-n(+1)})\)</span>:</p>
-<div class="figure">
-<img src="http://cdn.htliu.cn/blog/w2v/nnlm1.png">
-
-</div>
-<p>首先第一层输入就是前<span class="math inline">\(n-1\)</span>个词<span class="math inline">\(w_{t-(n+1)},...,w_{t-1}\)</span> 去预测第<span class="math inline">\(t\)</span>个词是<span class="math inline">\(w_t\)</span> 的概率. 这里面的矩阵<span class="math inline">\(C\in |V| \times d\)</span>维护着词汇表中所有词的词向量, 其中<span class="math inline">\(|V|\)</span>是词汇表中词的个数, <span class="math inline">\(d\)</span>是词向量的维度. 然后根据输入的前<span class="math inline">\(n-1\)</span>个词, 在C中找到它们对应的词向量, 然后直接串联起来成为一个维度为<span class="math inline">\((n-1)d\)</span>的向量x 作为接下来三层神经网络的输入, 后面就是普通神经网络了. 需要说明的是,因为我们那要预测概率最大的<span class="math inline">\(w_t\)</span>, 因此最后输出层的神经元应该与词汇表大小同样为<span class="math inline">\(|V|\)</span>, 这里使用使用softmax函数归一化输出层的值到[0,1], 代表可能的每个词的概率. 此外在原文中, 存在一些直连边, 也就是上图中的虚线, 从输入层直接到输出层, 是一个线性变换, Bingo在文中表示, 直连边的存在大幅降低迭代次数, 但对语言模型效果无提升, 随着计算能力的提高, 后续的工作基本都去掉了直连边.</p>
-<p>神经语言模型构建完成之后,就是训练参数了. 这里的参数包括词向量矩阵<span class="math inline">\(C\)</span>, 以及三层神经网络的权重, 偏置等参数. 训练数据就是大堆大堆的预料库. 训练结束之后, 语言模型得到了, 词向量也得到了. 换言之, 词向量是这个语言模型的副产品. 但是这个模型的缺点就是速度问题, 因为词汇表往往很大,几十万几百王, 训练起来就很耗时, Bengo仅仅训练5个epoch就花了3周, 这还是40个CPU并行训练的结果. 因此才会有了后续好多的优化工作, word2vec便是其中一个.</p>
-<h2 id="word2vec">Word2Vec</h2>
-<h3 id="简介">简介</h3>
-<p>背景介绍完毕, 终于到主角了. word2vec是google于2013年的Distributed Representations ofWords and Phrases and their Compositionality 以及后续的Distributed Representations ofWords and Phrases and their Compositionality 两篇文章中提出的一种高效训练词向量的模型, 基本出发点是<strong>上下文相似的两个词,它们的词向量也应该相似</strong>, 比如香蕉和梨在句子中可能经常出现在相同的上下文中，因此这两个词的表示向量应该就比较相似.</p>
-<p>word2vec模型中比较重要的概念是词汇的上下文, 说白了就是一个词周围的词, 比如<span class="math inline">\(w_t\)</span>的范围为1的上下文就是<span class="math inline">\(w_{t-1}\)</span>和<span class="math inline">\(w_{t+1}\)</span>. 在word2vec中提出两个模型(假设上下文窗口为3)</p>
-<ul>
-<li>CBOW(Continuous Bag-of-Word): 以上下文词汇预测当前词: <span class="math inline">\(w_{t-1}, w_{t+1}\)</span> 去预测 <span class="math inline">\(w_t\)</span></li>
-<li>SkipGram: 以当前词预测其上下文词汇: <span class="math inline">\(w_t\)</span> 去预测<span class="math inline">\(w_{t-1}, w_{t+1}\)</span></li>
-</ul>
-<p>两个模型图示如下</p>
-<div class="figure">
-<img src="http://cdn.htliu.cn/blog/w2v/word2vec-1.png">
-
-</div>
-<p>下面将会从最简单的上下文只有一个词的情形入手, 然后扩展到CBOW以及Skip-gram, 介绍原理以及参数训练过程. 关于word2vec的训练这里将会从完全的BP神经网络的过程来介绍.</p>
-<h3 id="one-word-model">One-Word Model</h3>
-<p>首先先看简化版入手: 输入输出都只有一个词, 如下图示:</p>
-<div class="figure">
-<img src="http://cdn.htliu.cn/blog/w2v/one-word.png">
-
-</div>
-<p>首先说明符号:</p>
-<ul>
-<li><p><span class="math inline">\(V\)</span>: 词汇表长度; <span class="math inline">\(N\)</span>: 隐层神经元个数, 同时也是词向量维度</p></li>
-<li><p><span class="math inline">\(W \in \mathcal{R}^{V\times N}\)</span>: 输入层到隐层的权重矩阵, 其实就是词向量矩阵,其中每一行代表一个词的词向量</p></li>
-<li><p><span class="math inline">\(W^{&#39;} \in \mathcal{R}^{N\times V}\)</span>: 隐层到输出层的权重矩阵, 其中每一列也可以看作额外的一种词向量</p></li>
-</ul>
-<p>​</p>
-<p>下面从神经网络的前向过程开始介绍:</p>
-<p>我们需要做的是用输入的词去预测输出的词. 其中 输入层的单词<span class="math inline">\(w_I\)</span>使用<code>one-hot</code>来表示的, 即在上图中<span class="math inline">\(x_1, x_2, x_3,...,x_V\)</span>只有<span class="math inline">\(x_k\)</span>为1, 其余为0, 其中k可以是输入的词在词汇表中的索引下标. 之后就是经过词向量矩阵<span class="math inline">\(W\)</span> 连接输入层和隐层. 其中由于X中只有一个1, 因此经过与W相乘, 相当于取出W中的的第k行，实际也就是输入单词的<span class="math inline">\(w_I\)</span>的<span class="math inline">\(N\)</span>维的词向量，使用<span class="math inline">\(v_{w_I}\)</span>表示，来作为隐层的值，注意<strong>word2vec的隐层并没有激活函数</strong>:</p>
-<p><span class="math display">\[\mathbf{h} = W^T \cdot X = v_{w_I}^T \]</span></p>
-<p>然后考虑从隐层的<span class="math inline">\(\mathbf{h}\)</span>到输出层<span class="math inline">\(Y\)</span>, 同样h经过矩阵<span class="math inline">\(W^{&#39;}\)</span>相乘，得到一个<span class="math inline">\(V \times 1\)</span>的向量<span class="math inline">\(\mathbf{u}\)</span>:</p>
-<p><span class="math display">\[\mathbf{u} = W^{&#39;T} \cdot h\]</span></p>
-<p>其中<span class="math inline">\(u\)</span>每个元素<span class="math inline">\(u_j\)</span> 就是<span class="math inline">\(W^{&#39;}\)</span>的第<span class="math inline">\(j\)</span>列用<span class="math inline">\(v^{&#39;}_{w_j}\)</span>表示, 与<span class="math inline">\(h\)</span>做内积得到: <span class="math inline">\(u_j = v_{w_O}^{&#39;T}\cdot h\)</span>，含义就是词汇表中第<span class="math inline">\(j\)</span>个词的分数，我们的目的就是要根据输入词<span class="math inline">\(w_I\)</span>去预测输出的词，因此预测的词就取分数最高的即可，这里为了方便概率表示，使用<code>softmax</code>将<span class="math inline">\(\mathbf{u}\)</span>归一化到[0,1]之间, 从而作为输出词的概率, 其实是一个多项分布, 也就是上图中的<span class="math inline">\(y\)</span>:</p>
-<p><span class="math display">\[P(w_j|w_I) = y_j = \frac{\exp(u_j)}{\sum\limits_{k\in V} \exp(u_k)} =   \frac{\exp(v_{w_j}^{&#39;T}\cdot v_{w_I})}{\sum\limits_{k\in V} \exp(v_{w_k}^{&#39;T}\cdot v_{w_I})}\]</span></p>
-<p>其中<span class="math inline">\(v_{w}\)</span>与<span class="math inline">\(v_{w}^{&#39;}\)</span> 都称为词<span class="math inline">\(w\)</span>的词向量，一般使用前者作为词向量，而非后者，原因后续会解释。至此前向过程完成，就是给定一个词作为输入，来预测它的上下文词，还是比较简单的，属于简化版的神经语言模型。这个过程中需要用到的参数有两个词向量矩阵<span class="math inline">\(W, W^{&#39;}\)</span>，下面就是重点了，介绍如何根据语料库来训练模型，更新参数，得到最终的词向量。</p>
-<hr>
-<p>首先明确训练数据的格式，对于一个训练样本(<span class="math inline">\(w_I\)</span>, <span class="math inline">\(w_O\)</span>)，输入是词<span class="math inline">\(w_I\)</span>的<code>one-hot</code> 的维度为<span class="math inline">\(V\)</span>的向量<span class="math inline">\(\mathbf{x}\)</span>，模型预测的输出同样也是一个维度为<span class="math inline">\(V\)</span>的向量<span class="math inline">\(\mathbf{y}\)</span>, 同时真实值<span class="math inline">\(w_O\)</span>也是用one-hot表示，记为<span class="math inline">\(\mathbf{t}=[0,0,0,...1,0,0]\)</span>，其中假设<span class="math inline">\(t_{j^{*}} = 1\)</span>, 也就是说<span class="math inline">\(j^{*}\)</span>是真实单词在词汇表中的下标，那么根据最大似然或者上面的语言模型，目标函数可以定义如下:</p>
-<p><span class="math display">\[\begin{align*} O &amp;= \max P(w_O|w_I) \\ &amp; = \max y_{j^{*}} :=  \max \log y_{j^{*}} \\ &amp;= \max \log(\frac{\exp(u_{j^{*}})}{\sum  \exp(u_k)}) = \max u_{j^{*}}-\log\sum_{k=1}^{V}\exp( u_k) \end{align*}\]</span></p>
-<p>一般我们习惯于最小化损失函数，因此定义损失函数:</p>
-<p><span class="math display">\[E = -u_{j^{*}}+\log\sum_{k=1}^{V}\exp( u_k) \]</span></p>
-<p>然后结合反向传播一层层求梯度，使用梯度下降来更新参数。</p>
-<p>先求隐层到输出层的向量矩阵<span class="math inline">\(W^{&#39;}\)</span>的梯度:</p>
-<p><span class="math display">\[\frac{\partial E}{ \partial w{&#39;}_{ij}} = \frac{\partial E}{\partial u_j} \frac{\partial u_j}{\partial w^{&#39;}_{ij}} = (y_j-t_j) h_i\]</span></p>
-<p>这里面的<span class="math inline">\(y_j\)</span>和<span class="math inline">\(t_j\)</span>分别是预测和真实值的第j项，<span class="math inline">\(h_i\)</span>是隐层的第<span class="math inline">\(i\)</span>项。</p>
-<blockquote>
-<p>考虑<span class="math inline">\(\frac{\partial E}{\partial u_j} = y_j - t_j\)</span>: 直接对原始求导，如下:</p>
-<p>先考虑E的对数部分: <span class="math inline">\(\frac{\partial \log \sum\exp(u_k)}{\partial u_j} = \frac{\exp(u_j)}{\sum \exp(u_k)} = y_j\)</span></p>
-<p>再看 <span class="math inline">\(-u_{j^{*}}\)</span> 对 <span class="math inline">\(u_j\)</span> 的梯度: 当<span class="math inline">\(j = j^{*}\)</span>时，<span class="math inline">\(\frac{\partial -u_{j^{*}}}{\partial u_j}=-1 = -t_j\)</span>, 反之二者不等时，<span class="math inline">\(\frac{\partial -u_{j^{*}}}{\partial u_j}=0= -t_j\)</span></p>
-<p>所以综合求导<span class="math inline">\(\frac{\partial E}{\partial u_j} = y_j - t_j\)</span>. 这个减法可以理解为输出层的第<span class="math inline">\(j\)</span>项为预测值与真实值的差</p>
-</blockquote>
-<p>因此梯度下降更新公式为:</p>
-<p><span class="math display">\[w^{&#39;}_{ij} = {w^{&#39;}_{ij}}^{(old)} -\eta (y_j - t_j) h_i\]</span></p>
-<p>整合为<span class="math inline">\(W^{&#39;}\)</span>的列向量<span class="math inline">\(\mathbf{v^{&#39;}}_{w_j} = \{w^{&#39;}_{ij}| i=1,2,3,...,N\}\)</span>的形式如下:</p>
-<p><span class="math display">\[\mathbf{v}^{&#39;}_{w_j} = {\mathbf{v}^{&#39;}_{w_j}}^{(old)} - \eta(y_j-t_j)\mathbf{h},  \ j \in \{ 1,2,3,...,V\}\]</span></p>
-<p>也就是说对每个训练样本都需要做一次复杂度为<span class="math inline">\(V\)</span>的操作去更新<span class="math inline">\(W^{&#39;}\)</span>.</p>
-<p>接着考虑隐层<span class="math inline">\(\mathbf{h}\)</span>的更新，其实也是输入层到隐层的矩阵<span class="math inline">\(W\)</span>的更新，继续反向传播，跟神经网络的相同, 输出层的<span class="math inline">\(V\)</span>个神经元都会影响<span class="math inline">\(h_i\)</span>:</p>
-<p><span class="math display">\[\frac{\partial E}{\partial h_i} = \sum_{j=1}^{V}\frac{\partial E}{\partial u_j}  \frac{\partial u_j}{\partial h_i} = \sum_{j=1}^{V} (y_j-t_j)w^{&#39;}_{ij} =W^{&#39;}_{i} \cdot P\]</span></p>
-<p>其中<span class="math inline">\(W^{&#39;}_{i}\)</span>是<span class="math inline">\(W^{&#39;}\)</span>的第i行, 这里为了方便书写, 令<span class="math inline">\(P = \{ y_j - t_j | j= 1,2,3,..,V\}\)</span>, 因此整合成整个隐层的向量<span class="math inline">\(\mathbf{h}\)</span>:</p>
-<p><span class="math display">\[\frac{\partial E}{\partial \mathbf{h}} =  W^{&#39;} \cdot P\]</span></p>
-<p>得到一个N维的向量，上面已经介绍过，<span class="math inline">\(\mathbf{h}\)</span>就是词向量矩阵<span class="math inline">\(\mathbf{W}\)</span>的一行: $ = W^T X = v_{w_I}^T <span class="math inline">\(, 但是因为X中只有一个1，因此每次只能更新\)</span><span class="math inline">\(的一行\)</span>v_{w_I}<span class="math inline">\(,其余行的梯度\)</span> = 0<span class="math inline">\(, 所以\)</span>v_{w_I}$的更新公式为:</p>
-<p><span class="math display">\[v_{w_I}^T = v_{w_I}^T - \eta  W^{&#39;} \cdot P\]</span></p>
-<p>到此为止， 一个训练样本的反向传播训练过程就为止了。 我们可以看到，对于输入层到隐层的矩阵<span class="math inline">\(W\)</span> 我们每次训练只需要更新一行向量即可，而对于隐层到输出层的矩阵<span class="math inline">\(W^{&#39;}\)</span>的所有<span class="math inline">\(N \times V\)</span>个元素都需要更新一遍，这里的计算量还是很大的。</p>
-<p>这一节主要比较细致的介绍了最简单的输入输出只有一个单词的情况的推理和训练的过程，后面的CBOW(上下文预测单词)以及SG(单词预测上下文)均基于这一节扩展开来。</p>
-<h3 id="cbow-model">CBOW Model</h3>
-<p>这一部分讲word2vec的第一个形式: Continurous Bag-Of-Word，模型图示如下:</p>
-<div class="figure">
-<img src="http://cdn.htliu.cn/blog/w2v/cbow-1.png">
-
-</div>
-<p>跟上一个模型唯一的不同就是输入不再是一个词<span class="math inline">\(w_I\)</span>, 而是多个词，上图中一共有C个单词: <span class="math inline">\(x_{1k},x_{2k},...,x_{Ck}\)</span>，每个<span class="math inline">\(x\)</span>都是one-hot表示。 这样隐层的<span class="math inline">\(\mathbf{h}\)</span>的计算就会不同了: 之前一个单词的模型是直接取出<span class="math inline">\(W\)</span>的一行<span class="math inline">\(v_{w_I}\)</span>作为<span class="math inline">\(h\)</span>的值，在CBOW中则是取出<span class="math inline">\(W\)</span>中输入的所有C个单词的词向量，然后直接取平均，如下:</p>
-<p><span class="math display">\[\begin{align*} \mathbf{h} &amp;= \frac{1}{C} W^T(x_{1} +x_2+...+x_{C}) \\ &amp;= \frac{1}{C}(v_{w_1} + v_{w_2}+...+v_{w_C})^T\end{align*}\]</span></p>
-<p>后面隐层到输出层的过程与One-Word Model 一模一样，包括目标函数定义， 反向传播训练等。将<span class="math inline">\(W^{&#39;}\)</span>的更新公式照抄下来如下,依旧是每次都需要更新所有的行:</p>
-<p><span class="math display">\[\mathbf{v}^{&#39;}_{w_j} = {\mathbf{v}^{&#39;}_{w_j}}^{(old)} - \eta(y_j-t_j)\mathbf{h},  \ j \in \{ 1,2,3,...,V\}\]</span></p>
-<p>隐层神经元的梯度也相同:</p>
-<p><span class="math display">\[\frac{\partial E}{\partial \mathbf{h}} =  W^{&#39;} \cdot P\]</span></p>
-<p>下面考虑输入层到隐层稍微有些不同，在One-Word Model里面因为输入只有一个词，因此每次训练只更新这个词对应到<span class="math inline">\(W\)</span>的那一行，但是在CBOW里面有多个词，这里采取的策略是将<span class="math inline">\(\mathbf{h}\)</span>的梯度均摊到每个词上，因此每次训练会更新<span class="math inline">\(W\)</span>中的C行，如下:</p>
-<p><span class="math display">\[v_{w_{I,c}}^T = v_{w_{I,c}}^T - \frac{1}{C}\ \eta  W^{&#39;} \cdot P,\ \ c=1,2,...,C\]</span></p>
-<p>到此为止 CBOW 的推理和训练过程也介绍完毕，基本跟One-Word Model 一样。</p>
-<h3 id="skipgram-model">SkipGram Model</h3>
-<p>现在开始介绍word2vec的第二种形式: SkipGram(根据单词预测上下文)，这个模型与One-Word Model不同的地方在于，SG的输出有多个词，而非One-Word 中输出只有一个词，这样输出层就不是一个多项分布了，而是<span class="math inline">\(C\)</span>个多项分布了，模型图示如下:</p>
-<div class="figure">
-<img src="http://cdn.htliu.cn/blog/w2v/sg-1.png">
-
-</div>
-<p>因此从输入层到隐层部分与One-Word Model 相同，隐层神经元的计算方式如下:</p>
-<p><span class="math display">\[\mathbf{h} = W^T \cdot X = v_{w_I}^T \]</span></p>
-<p>因为输出层是有C个单词， 因此有C个多项分布: <span class="math inline">\(y_{1}, y_{2}...y_{C}\)</span>, 因此前向计算的过程也需要分开计算，如下公式，用来计算第<span class="math inline">\(c\)</span>个输出单词的预测的多项分布中第j项，相比One-Word Model 多了一个c参数:</p>
-<p><span class="math display">\[P(w_{c,j}|w_I) = y_{c,j} = \frac{\exp (u_{c,j})}{\sum_{k=1}^{V} \exp(u_{c,k})}\]</span></p>
-<p>需要主要的是这<span class="math inline">\(C\)</span>个输出向量是相互独立的，可以当做是独立的<span class="math inline">\(C\)</span>个One-Word Model 中的输出向量，相互之间没有影响，并且从图中也可以看出，连接隐层与C个输出层的参数矩阵<span class="math inline">\(W^{&#39;}\)</span>是共享的，于是便有: <span class="math inline">\(u_{c,j} = u_{j} ={v^{&#39;}_{w_j}}^T \cdot \mathbf{h}\)</span> 这里的<span class="math inline">\(v^{&#39;}_{w_j}\)</span>的含义与One Word Model 中相同，都代表<span class="math inline">\(W^{&#39;}\)</span>的第j列，同时也是词汇表中第j个单词的一种词向量(虽然实际中不用)。</p>
-<p>从前向后 根据上述公式计算出C个输出向量之后，在每个<span class="math inline">\(V\)</span>维向量中选取概率最大的作为输出的单词，这样根据输出单词<span class="math inline">\(w_I\)</span> 就得到了<span class="math inline">\(C\)</span>个输出单词，也就达到了根据单词预测上下文的目的。</p>
-<p>下面开始介绍SG的反向传播训练的过程，这个跟前面的有些许的不同, 首先是损失函数:</p>
-<p><span class="math display">\[\begin{align*}E &amp;= -\log P(w_{1},w_{2},...,w_{C}| w_I) \\ &amp;=  - \log  \Pi_{c=1}^{C}P(w_c|w_i) \\ &amp;=-\log \Pi_{c=1}^{C} \frac{\exp (u_{c,j})}{\sum_{k=1}^{V} \exp(u_{c,k})} \\ &amp;= -\sum_{c=1}^{C}u_{j_c^{*}} + C \cdot \log \sum_{k=1}^{V} \exp(u_{k}) \end{align*}\]</span></p>
-<p>前面说过输出的C个词是相互独立，因此<span class="math inline">\(P(w_1,w_2,...,w_C|W_I) = \Pi P(w_c|w_I)\)</span>, 此外<span class="math inline">\(j_c^{*}\)</span>的含义同One-Word Model 中的<span class="math inline">\(u_{j^{*}}\)</span> 一样，都代表训练的真实的输出单词在词汇表的下标。下面开始从后向前求梯度，对第c个词对应的多项分布的第j项的梯度:</p>
-<p><span class="math display">\[\frac{\partial E}{\partial u_{c,j}} = y_{c,j} - t_{c,j}\]</span></p>
-<p>然后考虑<span class="math inline">\(W^{&#39;}\)</span>的梯度，考虑到C个多项分布产生影响，因此需要求和:</p>
-<p><span class="math display">\[\frac{\partial E}{\partial w^{&#39;}_{ij}}= \sum_{c=1}^{C}\frac{\partial E}{\partial u_{c,j}}  \frac{\partial u_{c,j}}{\partial w_{ij}^{&#39;}} =\sum_{c=1}^{C}(y_{c,j}-t_{c,j})\mathbf{h_{i}} = Q_j \mathbf{h_i}\]</span></p>
-<p>跟CBOW一样，为了方便书写定义<span class="math inline">\(Q_j = \sum_{c=1}^{C}(y_{c,j} - t_{c,j}), \ j = 1,2,3,...,V\)</span>，矩阵Q的维度是$V1 $</p>
-<p>有了梯度，就可以利用梯度下降 更新<span class="math inline">\(w_{ij}^{&#39;}\)</span>:</p>
-<p><span class="math display">\[w_{i,j}^{&#39;}={w_{ij}^{&#39;}}^{(old)} - \eta Q_j\mathbf{h}_i\]</span></p>
-<p>或者写成词向量的形式，其实就是<span class="math inline">\(W^{&#39;}\)</span>的一列:</p>
-<p><span class="math display">\[v_{w_j}^{&#39;} = {v_{w_j}^{&#39;}}^{(old)} - \eta Q_j \mathbf{h}, \ j = 1,2,3,...,V\]</span></p>
-<p>接着考虑对隐层神经元的梯度:</p>
-<p><span class="math display">\[\begin{align*}\frac{\partial E}{\partial \mathbf{h}_i} &amp;=\sum_{c=1}^{C}\sum_{j=1}^{V} \frac{\partial E}{\partial u_{c,j}} \frac{\partial u_{c,j}}{\partial \mathbf{h}_i} \\&amp;=\sum_{c=1}^{C}\sum_{j=1}^{V}(y_{c,j}-t_{c,j}) w^{&#39;}_{ij} \\ &amp;= \sum_{j=1}^{V}Q_jw^{&#39;}_{i,j}=W^{&#39;}_{i} \cdot Q \end{align*}\]</span></p>
-<p>因此跟One-Word Model一样整合成向量的形式:</p>
-<p><span class="math display">\[\frac{\partial E}{\partial \mathbf{h}} = W^{&#39;} \cdot Q\]</span></p>
-<p>考虑到输入只有一个词，因此跟One-Word Model 一样: <span class="math inline">\(\mathbf{h} = {v_{w_I}}^T\)</span>, 因此每次训练更新词向量矩阵<span class="math inline">\(W\)</span>的一行:</p>
-<p><span class="math display">\[v_{w_I}^T = v_{w_I}^T - \eta  W^{&#39;} \cdot Q\]</span></p>
-<p>到此SkipGram模型的前向推理与后向参数的训练也介绍完毕了。</p>
-<h2 id="优化">优化</h2>
-<h3 id="复杂度">复杂度</h3>
-<p>前面的CBOW与SG模型是标准的word2vec模型，或者说是神经语言模型的简化版，去掉了隐层的激活函数，其余的变化不大，因此训练效率还是很低的。我们分析下训练的复杂度。首先明确需要学习的两个词向量矩阵<span class="math inline">\(W, W^{&#39;}\)</span>，从前面的推导中知道对于每一个训练样本，CBOW更新<span class="math inline">\(W\)</span>的<span class="math inline">\(C\)</span>行，SG更新<span class="math inline">\(W\)</span>其中一行，也就是每次更新有限个词的词向量。但是对于<span class="math inline">\(W^{&#39;}\)</span>则不同了，正如前面一直提到的，无论是CBOW还是SG，对每个训练样本(或者Mini Batch)从梯度更新中需要对<span class="math inline">\(W^{&#39;}\)</span>的所有<span class="math inline">\(V \times N\)</span>个元素，也就是词汇表中所有<span class="math inline">\(V\)</span>个单词都需要更新词向量，考虑现实任务词汇表一般是几十万，上百万千万级别的， 这个计算成本是巨大的。</p>
-<p>关于计算成本大的原因，除了上面提到的训练部分，还有就是在每次前向计算的时候，隐层到输出层的softmax函数计算输出层<span class="math inline">\(V\)</span>个元素，计算量也是很大，这样整个模型现实意义不大。</p>
-<p>考虑到计算量大的部分都是在隐层到输出层上，尤其是<span class="math inline">\(W^{&#39;}\)</span>的更新。因此word2vec使用了两种优化策略: Hierarchical Softmax 和 Negative Sampling。二者的出发点一致，就是在每个训练样本中，<strong><em>不再完全计算或者更新</em></strong><span class="math inline">\(W^{&#39;}\)</span>这个矩阵。二者都不再显示使用<span class="math inline">\(W^{&#39;}\)</span>这个矩阵。因此这也就解释了前面说的为什么不用<span class="math inline">\(W^{&#39;}\)</span>作为最终词向量。</p>
-<p>在多一句，其实上述训练和推理的复杂度很大的根本原因是<code>softmax</code>的分母上的<span class="math inline">\(\sum\)</span>，因此在求梯度的时候，就会有<span class="math inline">\(V\)</span>次的计算。因此下面的<strong>两种方法其实是对softmax的优化，不仅仅限制在word2vec</strong>.</p>
-<p>两种优化方式使得word2vec的训练速度大大提升，并且词向量的质量几乎没有下降，这也是word2vec在NLP领域如此流行的原因。 下面依次介绍这两种优化算法。</p>
-<h3 id="hierarchical-softmax">Hierarchical SoftMax</h3>
-<p>首先Hierarchical SoftMax(HS)并不是word2vec提出来的, 而是之前Bengio在2005年最早提出来专门为了加速计算神经语言模型中的softmax的一种方式, 这里介绍如何在word2vec中使用. HS主要基于哈夫曼树(一种二叉数)将计算量大的部分变为了一种二分类的问题. 先看下面的图, 原来的模型在隐层之后通过<span class="math inline">\(W^{&#39;}\)</span>连接输出层, 现在HS则去掉了<span class="math inline">\(W^{&#39;}\)</span>, 隐层<span class="math inline">\(\mathbf{h}\)</span>直接与下面的二叉树的root节点相连:</p>
-<div class="figure">
-<img src="http://cdn.htliu.cn/blog/w2v/hs-1.png">
-
-</div>
-<p>其中图中白色的叶子节点表示词汇表中所有的<span class="math inline">\(|V|\)</span>个词, 黑色节点表示非叶子节点, 每一个叶子节点也就是每一个单词, 都对应唯一的一条从root节点出发的路径. 而我们的目的是使的<span class="math inline">\(w=w_O\)</span>这条路径的概率最大，即: <span class="math inline">\(P(w=w_O | w_I)\)</span> 最大, 此时每一个分支都代表一个选择, 向左转还是向右转. 所以如何判断向左还是向右呢? 我们用<span class="math inline">\(n(w,j)\)</span>表示从root到叶子节点<span class="math inline">\(w\)</span>的路径上的第<span class="math inline">\(j\)</span>个非叶子节点, 并且每个非叶子节点都对应一个向量<span class="math inline">\(v^{&#39;}_{n(w, j)}\)</span>, 维度与<span class="math inline">\(\mathbf{h}\)</span>相同, 然后使用一个sigmod函数: <span class="math inline">\(\sigma(x)= \frac{1}{1+\exp(-x)} \in [0, 1]\)</span>, 结合向量的内积, 来判断该向左还是向右, 如下, 第n个节点向左 以及向右的概率定义:</p>
-<p><span class="math display">\[\begin{align*}P(n, left ) &amp;= \sigma({v^{&#39;}_{w}} \cdot \mathbf{h}) \\ p(n, right) &amp;=1-\sigma(v^{&#39;}_w \cdot \mathbf{h}) = \sigma(-v_{w}^{&#39;} \cdot h) \end{align*}\]</span></p>
-<p>有了上述的概率, 我们可以重新定义<span class="math inline">\(P(w_O|w_i)\)</span>了:</p>
-<p><span class="math display">\[P(w=w_O|w_I)= \Pi_{j=1}^{L(w)-1}P(\sigma(I(n(w,j+1==left)  v^{&#39;}_{w} \cdot \mathbf{h}  ))\]</span></p>
-<p>其中<span class="math inline">\(I()\)</span>是指示函数, 条件成立值为1, 反之为-1. 而<span class="math inline">\(L(w)\)</span>表示整条路径的长度, 这样整个概率就是从root节点到叶子节点这条路径的概率, 这样我们在训练的时候, 通过训练样本来更新非叶子节点的参数<span class="math inline">\(v{&#39;}_{w}\)</span>.</p>
-<p>举个例子, 比如上图中的加粗的黑色路径: <span class="math inline">\((n(w_2,1), n(w_2, 2), n(w_2, 3), w_2\)</span> , 就是说假设有一个训练样本是<span class="math inline">\((w_I, w_2)\)</span>, 我们需要使得<span class="math inline">\(P(w_O=w_2|w_I)\)</span>概率最大:</p>
-<p><span class="math display">\[\begin{align*}P(w_2=w_O) &amp;= P(n(w_2,1), left)  \cdot P(n(w_2,2), left) \cdot P(n(w_2, 3), right) \\ &amp;= \sigma({v^{&#39;}_{n(w_2,1)}}^T \mathbf{h}) \cdot \sigma({v^{&#39;}_{n(w_2,2)}}^T \mathbf{h}) \cdot \sigma(-{v^{&#39;}_{n(w_2,3)}}^T \mathbf{h}) \end{align*}\]</span></p>
-<p>并且在一个非叶子节点处, 向左向右的概率和为1, 因此一直分裂下去,最后的和肯定还是1. 因此可以很容易得到:</p>
-<p><span class="math display">\[\sum\limits_{j=1}^{V}P(w_j=w_O) =1 \]</span></p>
-<p>这一点的证明是有必要的, 因为在原始的softmax本身保证了所有单词的概率和是1, 而通过上式也知道了通过HS得到的输出层仍然是一个概率多项分布, 输出所有的单词概率和为1.</p>
-<p>讲完了从前向后的如何得到输出单词的概率的过程, 下面开始后向传播的训练过程. 首先需要明确的是训练的参数: 输入层与隐层的词向量矩阵<span class="math inline">\(W\)</span>, 以及二叉树的非叶子节点对应的向量<span class="math inline">\(\{v{&#39;}_{n(w,j)}, j =1,2,3,..,L(w)-1\}\)</span>.</p>
-<p>为了书写方便,下面简化一部分的符号: 用<span class="math inline">\([I]\)</span>表示前面的指示函数<span class="math inline">\(I(n(w,j+1)==left)\)</span>, 使用<span class="math inline">\(v^{&#39;}_{j}\)</span>表示<span class="math inline">\(v^{&#39;}_{n(w,j)}\)</span></p>
-<p>对于一组训练数据, 损失函数的定义与前面相同, 最大似然(注意这里以One-Word Model为例，CBOW与Skip-Gram按照上述的思路完全一样):</p>
-<p><span class="math display">\[E = -\log P(w=w_O|w_I) = - \sum\limits_{j=1}^{L(w)-1}\log \sigma([I] {v^{&#39;}_{j}}^{T} \mathbf{h})\]</span></p>
-<p>之后便可以逐项求梯度了, 先考虑<span class="math inline">\(v^T \mathbf{h}\)</span>, 注意<span class="math inline">\(\frac{\partial \sigma(x)}{x} = \sigma(1-\sigma)\)</span>: <span class="math display">\[\begin{align*} \frac{\partial E}{\partial v^{&#39;}_j \mathbf{h}} &amp;= (\sigma([I] {v_{j}^{&#39;}}^T \mathbf{h}))[I] \end{align*}\]</span></p>
-<p>之后对<span class="math inline">\([I]\)</span> 分情况讨论, 可得: <span class="math inline">\(\frac{\partial E}{\partial {v^{&#39;}_{j}}^T \mathbf{h}} = \sigma( {v^{&#39;}_{j}}^T \mathbf{h}) - t_j\)</span> 这里如果[I]=1, 那么$t_j =1 $, 否则 <span class="math inline">\(t_j=0\)</span> , 这个公式与前面的<span class="math inline">\(y_j-t_j\)</span>很类似, 可以理解为预测值与实际值的差别。</p>
-<p>有了上述的梯度,就可以很简单的求出<span class="math inline">\(v^{&#39;}\)</span>的梯度了:</p>
-<p><span class="math display">\[\frac{\partial E}{\partial v^{&#39;}_j} = \frac{\partial E}{\partial  {v^{&#39;}_{j}}^T \mathbf{h}} \frac{\partial  {v^{&#39;}_{j}}^T \mathbf{h}}{\partial   {v^{&#39;}_{j}}^T} = (\sigma( {v^{&#39;}_{j}}^T \mathbf{h}) - t_j) \mathbf{h}\]</span></p>
-<p>有了梯度,便可以更新了, 具体公式还是梯度下降:</p>
-<p><span class="math display">\[{v^{&#39;}_{j}}^{(new)} = {v^{&#39;}_{j}}^{(old)} - \eta (\sigma( {v^{&#39;}_{j}}^T \mathbf{h}) - t_j) \mathbf{h},\ j=1,2,3,...,L(w)-1\]</span></p>
-<p>也就是说对于一个训练样本， 我们只需要更新<span class="math inline">\(L(w)-1\)</span>个向量就好了， 而未优化的版本需要更新<span class="math inline">\(V\)</span>个， 相当于时间复杂度从<span class="math inline">\(O(V)\)</span>降到了<span class="math inline">\(O(\log V)\)</span> , 这个提升还是非常大的， 同时在考察空间复杂度，HS的二叉树的非叶子节点有<span class="math inline">\(V-1\)</span>个，也就是我们需要<span class="math inline">\(V-1\)</span>存储<span class="math inline">\(v^{&#39;}_{j},\ \ j=1,2,3..V-1\)</span> ,优化之前则是<span class="math inline">\(V\)</span>个， 空间复杂度相同， 但是时间复杂度却大大降低。</p>
-<p>然后考虑隐层<span class="math inline">\(\mathbf{h}\)</span>的梯度，因为我们的优化目标都是在隐层到输出层，因此前面的几乎不变， 跟One-Word Model 一样，路径上的非叶子节点的表达式都含有<span class="math inline">\(\mathbf{h}\)</span>，因此需要对梯度求和：</p>
-<p><span class="math display">\[\begin{align*} \frac{\partial E}{\partial \mathbf{h}} &amp;= \sum\limits_{j=1}^{L(w)-1} \frac{\partial E}{\partial {v^{&#39;}_{j}}^T  \mathbf{h}} \frac{\partial {v^{&#39;}_{j}}^T  \mathbf{h}}{\partial \mathbf{h}} \\ &amp;=\sum\limits_{j=1}^{L(w)-1}(\sigma( {v^{&#39;}_{j}}^T \mathbf{h}) - t_j)\cdot v^{&#39;}_{j}\end{align*}\]</span></p>
-<p>其实跟前面很一样了， 只需要替代下导数就好了， 后面就不再赘述了。</p>
-<p>整个Hierarchical Softmax的优化算法介绍完了，隐层到输出层的计算量从<span class="math inline">\(O(V)\)</span>, 利用二叉树(更加具体来说是哈夫曼树）降为了<span class="math inline">\(O(\log V)\)</span>.</p>
-<h3 id="negative-sampling">Negative Sampling</h3>
-<p>相比Hierarchical Softmax用复杂的树形结构来对softmax进行优化， 负采样(Negative Sampling)更加直接简单。因为<code>softmax</code>的存在，在使用梯度下降的时候，每个训练样本需要更新<span class="math inline">\(V\)</span>个向量，这是根本问题。因此负采样NS仅仅更新一小部分向量，一般是5-20个，可以手工设定，而非全部<span class="math inline">\(V\)</span>个(一般来说V都是几万到几百万的量级)。</p>
-<p>再来考虑原始模型的训练过程，对于一个训练样本<span class="math inline">\((w_I, w_O)\)</span>, 我们要使得<span class="math inline">\(P(w=w_O|w_I)\)</span>最大， 也就是说要使得输出层的其它单词的概率要比较小一些，基于这种思想， 我们将输出层的<span class="math inline">\(V\)</span>个样本分为正例(Positive Sample)也就是<span class="math inline">\(w_O\)</span>对应的项， 以及剩余<span class="math inline">\(V-1\)</span>个负例(Negative Samples)。举个例子有个样本<code>phone number</code>，这样<span class="math inline">\(w_I=phone, w_O=number\)</span>, 正例就是number这个词， 负例就是不太可能与phone共同出现的词。</p>
-<p>负采样的思想便是每次训练只随机取一小部分的负例使他们的概率最小，以及对应的正例概率最大。那么如何对负例进行抽样呢？ 这里就需要定义一个noise distribution，有了分布<span class="math inline">\(P_n(w)\)</span>就可以依据概率分布进行带权随机抽样了。 在word2vec中，作者直接使基于词的频次的词的权重分布:</p>
-<p><span class="math display">\[weight(w) = \frac{coun(w)^{0.75}}{\sum _{u}count(w)^{0.75}}\]</span></p>
-<p>相比于直接使用频次作为权重， 取0.75幂的好处可以减弱不同频次差异过大带来的影响，使得小频次的单词被采样的概率变大。</p>
-<p>下面基于上面的思想，直接给出具体的损失函数:</p>
-<p><span class="math display">\[E = -\log \sigma(v^{&#39;}_{w_O}\mathbf{h}) - \sum\limits_{w_j \in \mathcal{W}_{neg}}\log \sigma(-v^{&#39;}_{w_j}\mathbf{h})\]</span></p>
-<p><span class="math inline">\(\mathcal{W}_{neg}\)</span>是负例单词集合。 上述公式跟原本的负采样的有些许差别，具体的推导细节可以参考这篇Goldberg, Y. and Levy, O. (2014). word2vec explained: deriving mikolov et al.’s negative- sampling word-embedding method. 这里不再赘述了。 只需要记住，NS也是对softmax函数做的优化，除了word2vec，在其他地方涉及到softmax的均可以采用类似的思想来重写目标函数。</p>
-<p>有了损失函数，然后跟HS一样，用梯度下降的方法更新<span class="math inline">\(v^{&#39;}\)</span>即可，推导思路跟HS也是一样，分<span class="math inline">\(w_j\)</span>是否等于<span class="math inline">\(w_O\)</span>来讨论，最终得到的梯度公式与HS一模一样：</p>
-<p><span class="math display">\[\frac{\partial E}{\partial {v^{&#39;}_{j}}^T \mathbf{h}} = \sigma( {v^{&#39;}_{j}}^T \mathbf{h}) - t_j\]</span></p>
-<p>这里的<span class="math inline">\(t_j\)</span>含义跟前面提到的几次都相同。最后给出更新<span class="math inline">\(v^{&#39;}\)</span>的公式:</p>
-<p><span class="math display">\[{v^{&#39;}_{j}}^{(new)} = {v^{&#39;}_{j}}^{(old)} - \eta (\sigma( {v^{&#39;}_{j}}^T \mathbf{h}) - t_j) \mathbf{h},\ w_j \in  \{w_O \} + \mathcal{W}_{neg}\]</span></p>
-<p>从公式也可以看出，对于每个训练数据，每次只需要更新很少的几个向量，而非原始的<span class="math inline">\(V\)</span>个，大大降低了训练复杂度。</p>
-<p>跟HS相同，NS的优化也是对隐层到输出层的优化，因此前面输入层到隐层的梯度只需要做相应修改即可，没有影响，具体可以参考HS的公式，这里不再重复了。</p>
-<p>到此为止，两种针对softmax的优化方式介绍完毕，简单对比一下两种方式:</p>
-<ul>
-<li>HS实现比较复杂， 需要借助哈夫曼树，而且HS是专门优化softmax的方法</li>
-<li>NS相对简单，仅仅是简单采样，NS则是一种概率采样的方法，属于NCE(Noise Contrastive Estimation)的一种简单形式，代码实现也很简单。 训练得到的词向量质量也很高，相对常用一些。</li>
-</ul>
-<h2 id="后话">后话</h2>
-<p>这篇博客侧重word2vec的数学原理，主要是以神经网络的反向传播思路来解释训练过程，以及介绍了优化的原因和思路，基本上相当于一份对w2v相对全面解释的全家桶了，除了具体的代码实现细节，关于代码实现的话，以后看有没有时间整理吧。google官方的c实现的word2vec的代码还是非常非常值得一读的，只有600多行，里面用到了很多技巧，包括快速<span class="math inline">\(\sigma\)</span>计算， 还有负采样的实现等等，使用异步梯度下降多线程训练(ASGD)等。</p>
-<blockquote>
-<p>在4月份花了几天时间看完了google的两篇原始paper以及word2vec Parameter Learning Explained这篇以后，就想结合论文按照自己的理解整理一下， 不过当时仅仅列出了目录，写了个开头背景，之后因为课程，读NE的paper等各种事情，一直拖着到现在了。 这段时间趁出差期间反正没事，现在算是就把这个坑补上了。 有什么写的不严谨的地方，烦请指出。</p>
-</blockquote>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;目前需要做Network Embedding方面的课题，而复杂网络本身就经常借鉴NLP的一些算法模型, Embedding也不例外. 因此先从Word Embedding入手。之前对Word Embedding(暂且翻译为词嵌入或者词向量)的理解就是将单词根据某种特征转为数值向量，再来做其他工作比如文本分类的工作。而word2vec则是word embedding的一种模型，也是目前使用最广的词向量模型, 由Google的Mikolov团队2013年提出。之前仅仅能够使用第三方库来训练直接使用, 对其中原理并没有多少理解, 这篇博客则比较完整的从背景知识到原理，参数训练等方面整理一下word2Vec。&lt;/p&gt;
-    
-    </summary>
-    
-      <category term="读书笔记" scheme="http://shomy.top/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/"/>
-    
-    
-      <category term="machine learning" scheme="http://shomy.top/tags/machine-learning/"/>
-    
-      <category term="word2vec" scheme="http://shomy.top/tags/word2vec/"/>
     
   </entry>
   
