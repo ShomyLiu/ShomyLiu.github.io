@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://shomy.top/"/>
-  <updated>2020-07-29T09:06:51.937Z</updated>
+  <updated>2020-12-10T03:52:40.807Z</updated>
   <id>http://shomy.top/</id>
   
   <author>
@@ -14,6 +14,95 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>docker部署Flask+MongoDB+Nginx</title>
+    <link href="http://shomy.top/2020/12/10/docker-mongo-nginx-flask/"/>
+    <id>http://shomy.top/2020/12/10/docker-mongo-nginx-flask/</id>
+    <published>2020-12-10T03:49:57.000Z</published>
+    <updated>2020-12-10T03:52:40.807Z</updated>
+    
+    <content type="html"><![CDATA[<p>近期需要将一个Flask+MongoDB+Nginx 小系统打包部署，之前只用过docker对简单的代码进行打包，这次使用docker-compose踩了很多坑，特此记录下。主要参考这篇详细的指南<a href="https://www.digitalocean.com/community/tutorials/how-to-set-up-flask-with-mongodb-and-docker" target="_blank" rel="external">How To Set Up Flask with MongoDB and Docker</a> {建议细看}。</p>
+<a id="more"></a>
+<h2 id="系统环境">系统环境</h2>
+<p>开始直接在原生机器上进行系统开发，采用前后端分离的设计方便协作，主要环境如下:</p>
+<ul>
+<li>web后端：Python Flask</li>
+<li>数据库: MongoDB，约10G数据</li>
+<li>前端静态资源: Nginx</li>
+</ul>
+<p>其中除了Flask之外，还有一些其他Python库，比如pandas, numpy等。最终要将系统利用docker部署到内部无网络机器上。</p>
+<p>最终实现目录结果如下：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">├── app</div><div class="line">│   ├── Dockerfile</div><div class="line">│   ├── requirements.txt</div><div class="line">│   ├── run.py</div><div class="line">│   ├── application/</div><div class="line">├── docker-compose.yml</div><div class="line">├── images.tar</div><div class="line">├── mongodb/</div><div class="line">├── nginx/</div><div class="line">│   ├── Dockerfile</div><div class="line">│   ├── conf.d/</div><div class="line">│   ├── resource/</div><div class="line">│   ├── log/</div></pre></td></tr></table></figure>
+<p>其中app目录里面存关于Flask的文件; mongodb目录为数据文件，直接将本机的mongodb数据库拷贝过去; nginx目录存储了静态资源，相关配置; docker-compose.yml为核心启动文件。下面先介绍下最终的配置，再一一记录遇到的坑。</p>
+<h2 id="方法">方法</h2>
+<p>最终的<code>docker-cmpose.yml</code> 如下, 基本是参考上面的教程来的:</p>
+<figure class="highlight dts"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div></pre></td><td class="code"><pre><div class="line"><span class="symbol">version:</span> <span class="string">'3'</span></div><div class="line"><span class="symbol">services:</span></div><div class="line"><span class="symbol">    flask:</span></div><div class="line"><span class="symbol">        build:</span></div><div class="line"><span class="symbol">            context:</span> app</div><div class="line"><span class="symbol">            dockerfile:</span> Dockerfile</div><div class="line"><span class="symbol">        container_name:</span> flask</div><div class="line"><span class="symbol">        image:</span> digitalocean.com/flask-python:<span class="number">3.6</span></div><div class="line"><span class="symbol">        restart:</span> unless-stopped</div><div class="line"><span class="symbol">        environment:</span></div><div class="line"><span class="symbol">            APP_PORT:</span> <span class="number">5000</span></div><div class="line"><span class="symbol">            MONGODB_DATABASE:</span> mydata</div><div class="line"><span class="symbol">            MONGODB_HOSTNAME:</span> mongodb</div><div class="line"><span class="symbol">        volumes:</span></div><div class="line">            - ./app:<span class="meta-keyword">/var/</span>www</div><div class="line"><span class="symbol">        depends_on:</span></div><div class="line">            - mongodb</div><div class="line"><span class="symbol">        networks:</span></div><div class="line">            - frontend</div><div class="line">            - backend</div><div class="line"></div><div class="line"><span class="symbol">    mongodb:</span></div><div class="line"><span class="symbol">        image:</span> mongo:<span class="number">3.6</span><span class="number">.19</span></div><div class="line"><span class="symbol">        container_name:</span> mongodb</div><div class="line"><span class="symbol">        restart:</span> unless-stopped</div><div class="line"><span class="symbol">        environment:</span></div><div class="line"><span class="symbol">            MONGODB_DATA_DIR:</span> <span class="meta-keyword">/data/</span>db</div><div class="line"><span class="symbol">            MONDODB_LOG_DIR:</span> <span class="meta-keyword">/dev/</span>null</div><div class="line"><span class="symbol">        volumes:</span></div><div class="line">            - ./mongodb:<span class="meta-keyword">/data/</span>db</div><div class="line"><span class="symbol">        networks:</span></div><div class="line">            - backend</div><div class="line"></div><div class="line"><span class="symbol">    webserver:</span></div><div class="line"><span class="symbol">        build:</span></div><div class="line"><span class="symbol">            context:</span> nginx</div><div class="line"><span class="symbol">            dockerfile:</span> Dockerfile</div><div class="line"><span class="symbol">        image:</span> digitalocean.com/webserver:latest</div><div class="line"><span class="symbol">        container_name:</span> webserver</div><div class="line"><span class="symbol">        restart:</span> unless-stopped</div><div class="line"><span class="symbol">        ports:</span></div><div class="line">            - <span class="string">"85:80"</span></div><div class="line"><span class="symbol">        volumes:</span></div><div class="line">            - .<span class="meta-keyword">/nginx/</span>log:<span class="meta-keyword">/var/</span>log/nginx</div><div class="line">            - .<span class="meta-keyword">/nginx/</span>resource:<span class="meta-keyword">/var/</span>www/</div><div class="line"><span class="symbol">        depends_on:</span></div><div class="line">            - flask</div><div class="line"><span class="symbol">        networks:</span></div><div class="line">            - frontend</div><div class="line"><span class="symbol">networks:</span></div><div class="line"><span class="symbol">    frontend:</span></div><div class="line"><span class="symbol">        driver:</span> bridge</div><div class="line"><span class="symbol">    backend:</span></div><div class="line"><span class="symbol">        driver:</span> bridge</div></pre></td></tr></table></figure>
+<p>一共包含三个主要的container:</p>
+<ul>
+<li>flask: 主要是web后端flask程序。</li>
+<li>mongodb: 数据库服务</li>
+<li>webserver: 基于nginx的静态资源访问</li>
+</ul>
+<p>下面记录下每一部分。</p>
+<h3 id="flask">Flask</h3>
+<p><code>build</code>的<code>context</code>表明Dockerfile在app目录下。另外就是挂载 将<code>./app</code> 挂载到容器中的<code>/var/www</code>中。 其中app目录中包含了flask程序(即application目录)。这里用挂载的好处就是方便外部修改程序，并可以直接同步到镜像内。</p>
+<p>这部分的<code>Dockerfile</code> 核心如下:</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">FROM</span> nickgryg/alpine-pandas:3.8.5</div><div class="line"></div><div class="line">ENV <span class="attribute">GROUP_ID</span>=1000 \</div><div class="line">    <span class="attribute">USER_ID</span>=1000</div><div class="line">WORKDIR /var/www/</div><div class="line"></div><div class="line"><span class="builtin-name">ADD</span> . /var/www/</div><div class="line"><span class="builtin-name">RUN</span> pip install -r requirements.txt</div><div class="line"><span class="builtin-name">RUN</span> pip install gunicorn</div><div class="line"></div><div class="line"><span class="builtin-name">RUN</span> addgroup -g <span class="variable">$GROUP_ID</span> www</div><div class="line"><span class="builtin-name">RUN</span> adduser -D -u <span class="variable">$USER_ID</span> -G www www -s /bin/sh</div><div class="line"></div><div class="line">USER www</div><div class="line">EXPOSE 5000</div><div class="line">CMD [ <span class="string">"gunicorn"</span>, <span class="string">"-w"</span>, <span class="string">"4"</span>, <span class="string">"--bind"</span>, <span class="string">"0.0.0.0:5000"</span>, <span class="string">"run:app"</span>]</div></pre></td></tr></table></figure>
+<p>这里面大部分命令都比较容易理解，暴露5000端口作为接口，比一般的多了一些用户配置。</p>
+<p><strong>坑：docker的alpine系镜像利用pip安装pandas安装失败，或者编译耗时非常长</strong></p>
+<p>原因：因为alpine系python或者linux是基于MUSL，而不是原生的glibc，因此对whl支持不太好。</p>
+<p>解决方法：尝试了多种方法，最后如下的两种方法可以；</p>
+<ul>
+<li>使用Debian的官方Python镜像，比如<code>python:3.8-slim-buster</code></li>
+<li>使用第三方将pandas编译好的Alpine镜像，如 <code>nickgryg/alpine-pandas:3.8.5</code></li>
+</ul>
+<p>后续python应用docker化时候，建议镜像直接使用Debian的镜像(python:3.8-slim-buster)，而非Alpine Linux的镜像(python:3.8-alpine), 不过有时候需要一些linux bash命令，还是得用alpine版的Python镜像。</p>
+<p>参考：</p>
+<ul>
+<li>https://stackoverflow.com/questions/49037742/why-does-it-take-ages-to-install-pandas-on-alpine-linux</li>
+<li>https://pythonspeed.com/articles/alpine-docker-python/ {mark}</li>
+<li>https://pythonspeed.com/articles/base-image-python-docker-images/ {mark}</li>
+</ul>
+<h3 id="mongodb">MongoDB</h3>
+<p>从docker-compose.yml里面的mongodb部分看，没有特别需要注意的地方，将本地数据目录挂载即可, mongodb的默认数据存储在 <code>/data/db</code> , 因此只需要将本地的mongodb的数据目录挂载映射过去即可，如果需要指定额外的数据目录，可以在<code>command</code> 中指定<code>-dpath</code>即可，比如:</p>
+<figure class="highlight dts"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="symbol">mongodb:</span></div><div class="line"><span class="symbol">        image:</span> mongo:<span class="number">3.6</span><span class="number">.19</span></div><div class="line"><span class="symbol">        container_name:</span> mongodb</div><div class="line"><span class="symbol">        restart:</span> unless-stopped</div><div class="line"><span class="symbol">        command:</span> mongod --auth -dpath=<span class="meta-keyword">/data/</span>other_path</div><div class="line"><span class="symbol">        environment:</span></div><div class="line"><span class="symbol">        	MONGO_INITDB_ROOT_USERNAME:</span> mongodbuser</div><div class="line"><span class="symbol">      		MONGO_INITDB_ROOT_PASSWORD:</span> password</div><div class="line"><span class="symbol">            MONGODB_DATA_DIR:</span> <span class="meta-keyword">/data/</span>db</div><div class="line"><span class="symbol">            MONDODB_LOG_DIR:</span> <span class="meta-keyword">/dev/</span>null</div><div class="line"><span class="symbol">        volumes:</span></div><div class="line">            - ./mongodb:<span class="meta-keyword">/data/</span>other_path</div><div class="line"><span class="symbol">        networks:</span></div><div class="line">            - backend</div></pre></td></tr></table></figure>
+<h3 id="nginx">Nginx</h3>
+<p>因为我们主要采用前后端分离进行开发，因此前端资源可以直接使用Nginx作为静态资源存储服务器，这个体现在<code>docker-compose.yml</code>的两处挂载映射，一个是挂载nginx配置文件，另外就是静态资源(Html, JS, CSS等)。</p>
+<p>首先Nginx的Dockerfile 如下：</p>
+<figure class="highlight vim"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line">FROM alpine:latest</div><div class="line">RUN apk --<span class="keyword">update</span> <span class="built_in">add</span> nginx &amp;&amp; \</div><div class="line">    <span class="keyword">ln</span> -<span class="keyword">sf</span> /dev/stdout /var/<span class="built_in">log</span>/nginx/access.<span class="built_in">log</span> &amp;&amp; \</div><div class="line">    <span class="keyword">ln</span> -<span class="keyword">sf</span> /dev/stderr /var/<span class="built_in">log</span>/nginx/error.<span class="built_in">log</span> &amp;&amp; \</div><div class="line">    <span class="built_in">mkdir</span> /etc/nginx/sites-enabled/ &amp;&amp; \</div><div class="line">    <span class="built_in">mkdir</span> -<span class="keyword">p</span> /run/nginx &amp;&amp; \</div><div class="line">    rm -rf /etc/nginx/<span class="keyword">conf</span>.d/default.<span class="keyword">conf</span> &amp;&amp; \</div><div class="line">    rm -rf /var/cache/apk/*</div><div class="line"></div><div class="line">COPY <span class="keyword">conf</span>.d/app.<span class="keyword">conf</span> /etc/nginx/<span class="keyword">conf</span>.d/app.<span class="keyword">conf</span></div><div class="line">EXPOSE <span class="number">80</span> <span class="number">443</span></div><div class="line">CMD [<span class="string">"nginx"</span>, <span class="string">"-g"</span>, <span class="string">"daemon off;"</span>]</div></pre></td></tr></table></figure>
+<p>还是用alpine 镜像，这里没有特别需要注意的。 下面就是如何配置nginx了，主要有两点需要考虑：</p>
+<ul>
+<li>静态资源</li>
+<li>flask的后端api访问</li>
+</ul>
+<p>首先静态资源，这个比较简单：</p>
+<figure class="highlight nginx"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="section">server</span> &#123;</div><div class="line">    <span class="attribute">listen</span> <span class="number">80</span>;</div><div class="line">    <span class="attribute">location</span> / &#123;</div><div class="line">        <span class="attribute">index</span> index.html;</div><div class="line">        <span class="attribute">root</span> /var/www/;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p><strong>坑2：不同域下前端ajax请求后端flask API</strong></p>
+<p>之前在本机开发时，ajax访问的domain就是一个固定的ip, 现在在docker中，肯定不能直接使用ip来访问，因为不同部署的ip是不同的， 在<code>docker-compose</code>中已经将nginx的80映射到外部的85端口，因此从外部直接访问flask后端api肯定是不行的，因此需要用nginx再加一个location配置，将api访问转到flask:</p>
+<figure class="highlight crmsh"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">location</span> <span class="title">/api</span>/ &#123;</div><div class="line">    proxy_pass http://flask:<span class="number">5000</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>因为docker中的nginx容器是可以直接访问flask容器的，因此可以直接使用<code>flask:5000</code>。 这样就可以达到，比如在外部访问 <code>ip:85/api/login</code> 会转到<code>http://flask:5000/api/login</code> 就可以实现ajax访问flask 的API。</p>
+<p>Nginx完整的app.conf:</p>
+<figure class="highlight nginx"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="section">server</span> &#123;</div><div class="line">    <span class="attribute">listen</span> <span class="number">80</span>;</div><div class="line">    <span class="attribute">location</span> / &#123;</div><div class="line">        <span class="attribute">index</span> index.html;</div><div class="line">        <span class="attribute">root</span> /var/www/;</div><div class="line">    &#125;</div><div class="line">    <span class="attribute">location</span> /api/ &#123;</div><div class="line">        <span class="attribute">proxy_pass</span> http://flask:5000;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>最终的镜像打包使用<code>docker save</code></p>
+<h2 id="总结">总结</h2>
+<p>之前没有用docker完整的进行打包和部署，这次完整的走一遍，又将docker恶补了一遍，上面的记录更多是根据本次项目的需求做的时候遇到的问题，写的比较杂乱，单纯作为记录吧。</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;近期需要将一个Flask+MongoDB+Nginx 小系统打包部署，之前只用过docker对简单的代码进行打包，这次使用docker-compose踩了很多坑，特此记录下。主要参考这篇详细的指南&lt;a href=&quot;https://www.digitalocean.com/community/tutorials/how-to-set-up-flask-with-mongodb-and-docker&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;How To Set Up Flask with MongoDB and Docker&lt;/a&gt; {建议细看}。&lt;/p&gt;
+    
+    </summary>
+    
+      <category term="工具使用" scheme="http://shomy.top/categories/%E5%B7%A5%E5%85%B7%E4%BD%BF%E7%94%A8/"/>
+    
+    
+      <category term="docker" scheme="http://shomy.top/tags/docker/"/>
+    
+      <category term="flask" scheme="http://shomy.top/tags/flask/"/>
+    
+  </entry>
   
   <entry>
     <title>CQA-1：社区问答中的深度关联推理模型</title>
@@ -1141,9 +1230,9 @@ cr_i = H \otimes c_{i}
       <category term="工具使用" scheme="http://shomy.top/categories/%E5%B7%A5%E5%85%B7%E4%BD%BF%E7%94%A8/"/>
     
     
-      <category term="neo4j" scheme="http://shomy.top/tags/neo4j/"/>
-    
       <category term="docker" scheme="http://shomy.top/tags/docker/"/>
+    
+      <category term="neo4j" scheme="http://shomy.top/tags/neo4j/"/>
     
       <category term="elasticsearch" scheme="http://shomy.top/tags/elasticsearch/"/>
     
@@ -2458,59 +2547,6 @@ cr_i = H \otimes c_{i}
     
     
       <category term="python" scheme="http://shomy.top/tags/python/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>Hexo-admin后台管理博客</title>
-    <link href="http://shomy.top/2017/07/29/Hexo-admin-for-blogs/"/>
-    <id>http://shomy.top/2017/07/29/Hexo-admin-for-blogs/</id>
-    <published>2017-07-29T07:38:00.000Z</published>
-    <updated>2018-09-29T03:52:04.756Z</updated>
-    
-    <content type="html"><![CDATA[<h2 id="需求">需求</h2>
-<p>像Hexo这种静态博客用起来很方便，但是硬伤就是没有后台管理，每次想写博客或者说想要修改原博客的话，都需要在本机上找markdown文件，修改之后发布，尤其是如果机器上没有安装hexo,git等工具的时候，就无法修改了。因此hexo可不可以以像wp,ghost这种有后台管理, 随时随地编辑博客呢? <a id="more"></a></p>
-<p>正巧hexo专门有一个插件<a href="https://jaredforsyth.com/hexo-admin/" target="_blank" rel="external">hexo-admin</a> 提供了在web UI下增删改查博客的功能，我也正好有一个VPS, 于是就有了下面的一种方法.</p>
-<h2 id="解决方法">解决方法</h2>
-<p>首先说一下条件与需求。 我自己有一个的VPS，本来是可以直接将hexo部署到VPS的，但是考虑到自己维护的VPS的稳定性等问题，最后决定将hexo的静态页面部署github-pages上。</p>
-<p>我的目的有两个:</p>
-<ul>
-<li>拥有在线编辑博客的后台</li>
-<li>本地机器同时也可以编辑发布博客</li>
-<li>二者需要保持同步</li>
-</ul>
-<p>基于这样的需求，仅仅靠github pages显然不可行了,必须借助VPS了.保持同步的意思是VPS的内容与本地机器上的博客的资源要保持一致。就是说我在线修改了某篇博客，然后之后如果可以很简单的同步到本地，使得两端保持同步，反过来一样。</p>
-<p>我的做法是:</p>
-<ul>
-<li>将hexo目录下的相关文件包括_config.yml,source/等文件建立一个私人repo(个人使用coding.net)</li>
-<li>VPS上安装好hexo,具体过程与换台机器安装同理, 可参考这篇博客<a href="http://shomy.top/2017/01/27/hexo-migrate-solution/">hexo迁移重装</a>。</li>
-<li>VPS上安装hexo-admin插件，这样可以在线编辑了. 在这一步的时候, 为了方便,我用了一个子域名以及在VPS上用nginx做前段端口转发.</li>
-</ul>
-<p>到这里后台管理基本没有问题了. 接下来就是在线发布了. 正巧的是hexo-admin提供了这个功能, 有一个Deploy的功能,具体实现是使用nodejs的<code>spawn</code>函数来执行发布脚本的. 一开始不太懂<code>spawn</code>这个函数的使用, 就直接在deploy中随便输入了东西,结果各种 spawn err. 后来查过资料,才知道deploy的输入的位置其实是对<code>hexo-admin</code>的配置里面<code>deployCommand</code>的选项,可以为空. 打个比方,如果我在<code>deployCommand</code>写的是<code>./hexo-deploy</code>, 然后点击deploy按钮之后, 后台就可以执行<code>hexo-deploy</code>脚本的内容了. 有了这个接口就非常灵活了. 因为基于此, 我们不但来发布博客,甚至可以把同步的脚本加进去.具体参考 https://github.com/jaredly/hexo-admin/issues/70</p>
-<p>下面说一下发布以及同步的操作:</p>
-<ul>
-<li>在博客目录写一个有关git同步的小脚本:<code>server-upload.sh</code> 用来同步VPS目录下的变化，主要代码其实就是先<code>git pull</code> 拉取repo最新, 之后在push. 具体脚本代码不再赘述.</li>
-<li><p>建一个<code>hexo-deploy</code>的脚本,内容: <figure class="highlight stata"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">hexo <span class="keyword">g</span> &amp;&amp; hexo <span class="built_in">d</span></div><div class="line">./server-upload.<span class="keyword">sh</span></div></pre></td></tr></table></figure></p></li>
-<li><p>利用hexo-admin的deploy功能，可以在线发布，注意修改<code>_config.yml</code>: 加上hexo-admin的admin选项, 加一个<code>deployCommand: ./hexo-deploy</code>的字段,如下: <figure class="highlight less"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="attribute">admin</span>:</div><div class="line">	<span class="attribute">username</span>: XXX</div><div class="line">    <span class="attribute">password</span>: XXXXX</div><div class="line">    <span class="attribute">deployCommand</span>: <span class="string">'./hexo-deploy'</span></div></pre></td></tr></table></figure></p></li>
-<li>编辑完博客时候，发布的时候，需要点击hexo-admin的deploy。这样在后台就可以执行前面定义的<code>hexo-deloy</code>脚本了</li>
-<li><p>本地机器也需要有一个<code>upload.sh</code>的脚本, 每次同样需要先git pull 在git push 到私人repo. 其实就是版本控制那一套.</p></li>
-</ul>
-<p>到现在基本完成了自己可以随时随地编辑博客并且多端同步的需求了. 之前也考虑过CI持续集成,但是大部分都是再建立一个分支, 需要把博客的source公开, 不太合适. 所以就选择了hexo-admin这种方法.</p>
-<p>这篇博客便是在线完成的. <img src="http://cdn.htliu.cn/blog/hexo-admin/hexo-admin.png"></p>
-<p>其实这里面的坑还是蛮多的(主要不熟悉node). 此外开始使用supervisor做后台运行监控, 结果不知为何, 在<code>hexo d</code>包括git的pull或者push等操作,都会报错,提示让我确认git用户, 但是我已经设置了<code>git config</code>的email和name. 查了很多资料也没有解决, 后来直接抛弃supervisor, 直接使用<code>nohup</code>来放后台运行了.每个人的需求肯定都不同，这里只是个人的一个思路。大概是这样了, 有什么问题可以留言或者邮件.</p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;h2 id=&quot;需求&quot;&gt;需求&lt;/h2&gt;
-&lt;p&gt;像Hexo这种静态博客用起来很方便，但是硬伤就是没有后台管理，每次想写博客或者说想要修改原博客的话，都需要在本机上找markdown文件，修改之后发布，尤其是如果机器上没有安装hexo,git等工具的时候，就无法修改了。因此hexo可不可以以像wp,ghost这种有后台管理, 随时随地编辑博客呢?
-    
-    </summary>
-    
-      <category term="工具使用" scheme="http://shomy.top/categories/%E5%B7%A5%E5%85%B7%E4%BD%BF%E7%94%A8/"/>
-    
-    
-      <category term="hexo" scheme="http://shomy.top/tags/hexo/"/>
     
   </entry>
   
