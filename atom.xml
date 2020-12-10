@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://shomy.top/"/>
-  <updated>2020-12-10T05:44:43.890Z</updated>
+  <updated>2020-12-10T05:45:40.531Z</updated>
   <id>http://shomy.top/</id>
   
   <author>
@@ -20,9 +20,10 @@
     <link href="http://shomy.top/2020/12/10/docker-mongo-nginx-flask/"/>
     <id>http://shomy.top/2020/12/10/docker-mongo-nginx-flask/</id>
     <published>2020-12-10T03:49:57.000Z</published>
-    <updated>2020-12-10T05:44:43.890Z</updated>
+    <updated>2020-12-10T05:45:40.531Z</updated>
     
     <content type="html"><![CDATA[<p>近期需要将一个Flask+MongoDB+Nginx 小系统打包部署，之前只用过docker对简单的代码进行打包，这次使用docker-compose踩了很多坑，特此记录下。主要参考这篇详细的指南<a href="https://www.digitalocean.com/community/tutorials/how-to-set-up-flask-with-mongodb-and-docker" target="_blank" rel="external">How To Set Up Flask with MongoDB and Docker</a> {建议细看}。</p>
+<a id="more"></a>
 <h2 id="系统环境">系统环境</h2>
 <p>开始直接在原生机器上进行系统开发，采用前后端分离的设计方便协作，主要环境如下:</p>
 <ul>
@@ -92,7 +93,7 @@
     
     <summary type="html">
     
-      &lt;p&gt;近期需要将一个Flask+MongoDB+Nginx 小系统打包部署，之前只用过docker对简单的代码进行打包，这次使用docker-compose踩了很多坑，特此记录下。主要参考这篇详细的指南&lt;a href=&quot;https://www.digitalocean.com/c
+      &lt;p&gt;近期需要将一个Flask+MongoDB+Nginx 小系统打包部署，之前只用过docker对简单的代码进行打包，这次使用docker-compose踩了很多坑，特此记录下。主要参考这篇详细的指南&lt;a href=&quot;https://www.digitalocean.com/community/tutorials/how-to-set-up-flask-with-mongodb-and-docker&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;How To Set Up Flask with MongoDB and Docker&lt;/a&gt; {建议细看}。&lt;/p&gt;
     
     </summary>
     
