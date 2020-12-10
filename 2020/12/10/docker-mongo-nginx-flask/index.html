@@ -5,18 +5,18 @@
   
   <title>docker部署Flask+MongoDB+Nginx | 天空的城</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="近期需要将一个Flask+MongoDB+Nginx 小系统打包部署，之前只用过docker对简单的代码进行打包，这次使用docker-compose踩了很多坑，特此记录下。主要参考这篇详细的指南How To Set Up Flask with MongoDB and Docker {建议细看}。">
+  <meta name="description" content="近期需要将一个Flask+MongoDB+Nginx 小系统打包部署，之前只用过docker对简单的代码进行打包，这次使用docker-compose踩了很多坑，特此记录下。主要参考这篇详细的指南How To Set Up Flask with MongoDB and Docker {建议细看}。 系统环境 开始直接在原生机器上进行系统开发，采用前后端分离的设计方便协作，主要环境如下:  web后">
 <meta name="keywords" content="docker,flask">
 <meta property="og:type" content="article">
 <meta property="og:title" content="docker部署Flask+MongoDB+Nginx">
 <meta property="og:url" content="http://shomy.top/2020/12/10/docker-mongo-nginx-flask/index.html">
 <meta property="og:site_name" content="天空的城">
-<meta property="og:description" content="近期需要将一个Flask+MongoDB+Nginx 小系统打包部署，之前只用过docker对简单的代码进行打包，这次使用docker-compose踩了很多坑，特此记录下。主要参考这篇详细的指南How To Set Up Flask with MongoDB and Docker {建议细看}。">
+<meta property="og:description" content="近期需要将一个Flask+MongoDB+Nginx 小系统打包部署，之前只用过docker对简单的代码进行打包，这次使用docker-compose踩了很多坑，特此记录下。主要参考这篇详细的指南How To Set Up Flask with MongoDB and Docker {建议细看}。 系统环境 开始直接在原生机器上进行系统开发，采用前后端分离的设计方便协作，主要环境如下:  web后">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2020-12-10T03:52:40.807Z">
+<meta property="og:updated_time" content="2020-12-10T05:44:43.890Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="docker部署Flask+MongoDB+Nginx">
-<meta name="twitter:description" content="近期需要将一个Flask+MongoDB+Nginx 小系统打包部署，之前只用过docker对简单的代码进行打包，这次使用docker-compose踩了很多坑，特此记录下。主要参考这篇详细的指南How To Set Up Flask with MongoDB and Docker {建议细看}。">
+<meta name="twitter:description" content="近期需要将一个Flask+MongoDB+Nginx 小系统打包部署，之前只用过docker对简单的代码进行打包，这次使用docker-compose踩了很多坑，特此记录下。主要参考这篇详细的指南How To Set Up Flask with MongoDB and Docker {建议细看}。 系统环境 开始直接在原生机器上进行系统开发，采用前后端分离的设计方便协作，主要环境如下:  web后">
   
   
     <link rel="icon" href="/image/favicon.ico">
@@ -141,7 +141,6 @@ ga('send', 'pageview');
         
         
         <p>近期需要将一个Flask+MongoDB+Nginx 小系统打包部署，之前只用过docker对简单的代码进行打包，这次使用docker-compose踩了很多坑，特此记录下。主要参考这篇详细的指南<a href="https://www.digitalocean.com/community/tutorials/how-to-set-up-flask-with-mongodb-and-docker" target="_blank" rel="external">How To Set Up Flask with MongoDB and Docker</a> {建议细看}。</p>
-<a id="more"></a>
 <h2 id="系统环境">系统环境</h2>
 <p>开始直接在原生机器上进行系统开发，采用前后端分离的设计方便协作，主要环境如下:</p>
 <ul>
@@ -185,6 +184,8 @@ ga('send', 'pageview');
 <h3 id="mongodb">MongoDB</h3>
 <p>从docker-compose.yml里面的mongodb部分看，没有特别需要注意的地方，将本地数据目录挂载即可, mongodb的默认数据存储在 <code>/data/db</code> , 因此只需要将本地的mongodb的数据目录挂载映射过去即可，如果需要指定额外的数据目录，可以在<code>command</code> 中指定<code>-dpath</code>即可，比如:</p>
 <figure class="highlight dts"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="symbol">mongodb:</span></div><div class="line"><span class="symbol">        image:</span> mongo:<span class="number">3.6</span><span class="number">.19</span></div><div class="line"><span class="symbol">        container_name:</span> mongodb</div><div class="line"><span class="symbol">        restart:</span> unless-stopped</div><div class="line"><span class="symbol">        command:</span> mongod --auth -dpath=<span class="meta-keyword">/data/</span>other_path</div><div class="line"><span class="symbol">        environment:</span></div><div class="line"><span class="symbol">        	MONGO_INITDB_ROOT_USERNAME:</span> mongodbuser</div><div class="line"><span class="symbol">      		MONGO_INITDB_ROOT_PASSWORD:</span> password</div><div class="line"><span class="symbol">            MONGODB_DATA_DIR:</span> <span class="meta-keyword">/data/</span>db</div><div class="line"><span class="symbol">            MONDODB_LOG_DIR:</span> <span class="meta-keyword">/dev/</span>null</div><div class="line"><span class="symbol">        volumes:</span></div><div class="line">            - ./mongodb:<span class="meta-keyword">/data/</span>other_path</div><div class="line"><span class="symbol">        networks:</span></div><div class="line">            - backend</div></pre></td></tr></table></figure>
+<p><strong>坑: Mongo版本问题导致：mongodb exited with code 14</strong></p>
+<p>这个bug查了很多地方，最终发现是版本问题，mongodb貌似不能向下兼容，我们主机用的3.6.19，latest的已经到了4.x了，数据格式有不兼容的地方，将镜像切换为3.6.19之后就正常了。</p>
 <h3 id="nginx">Nginx</h3>
 <p>因为我们主要采用前后端分离进行开发，因此前端资源可以直接使用Nginx作为静态资源存储服务器，这个体现在<code>docker-compose.yml</code>的两处挂载映射，一个是挂载nginx配置文件，另外就是静态资源(Html, JS, CSS等)。</p>
 <p>首先Nginx的Dockerfile 如下：</p>
@@ -196,7 +197,7 @@ ga('send', 'pageview');
 </ul>
 <p>首先静态资源，这个比较简单：</p>
 <figure class="highlight nginx"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="section">server</span> &#123;</div><div class="line">    <span class="attribute">listen</span> <span class="number">80</span>;</div><div class="line">    <span class="attribute">location</span> / &#123;</div><div class="line">        <span class="attribute">index</span> index.html;</div><div class="line">        <span class="attribute">root</span> /var/www/;</div><div class="line">    &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-<p><strong>坑2：不同域下前端ajax请求后端flask API</strong></p>
+<p><strong>坑：不同域下前端ajax请求后端flask API</strong></p>
 <p>之前在本机开发时，ajax访问的domain就是一个固定的ip, 现在在docker中，肯定不能直接使用ip来访问，因为不同部署的ip是不同的， 在<code>docker-compose</code>中已经将nginx的80映射到外部的85端口，因此从外部直接访问flask后端api肯定是不行的，因此需要用nginx再加一个location配置，将api访问转到flask:</p>
 <figure class="highlight crmsh"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">location</span> <span class="title">/api</span>/ &#123;</div><div class="line">    proxy_pass http://flask:<span class="number">5000</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <p>因为docker中的nginx容器是可以直接访问flask容器的，因此可以直接使用<code>flask:5000</code>。 这样就可以达到，比如在外部访问 <code>ip:85/api/login</code> 会转到<code>http://flask:5000/api/login</code> 就可以实现ajax访问flask 的API。</p>
@@ -222,7 +223,7 @@ ga('send', 'pageview');
 发布时间: 2020-12-10, 11:49:57<br/>
 <p>
 <p>
-最后更新: 2020-12-10, 11:52:40<br/>
+最后更新: 2020-12-10, 13:44:43<br/>
 <p>
 本文链接: <a href="/2020/12/10/docker-mongo-nginx-flask/" target="_blank">http://shomy.top/2020/12/10/docker-mongo-nginx-flask/</a>
 </p>
