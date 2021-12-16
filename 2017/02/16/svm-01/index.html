@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>机器学习技法笔记(2)-Linear SVM | 天空的城</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="从这一节开始学习机器学习技法课程中的SVM, 这一节主要介绍标准形式的SVM: Linear SVM  引入SVM">
+<meta property="og:type" content="article">
+<meta property="og:title" content="机器学习技法笔记(2)-Linear SVM">
+<meta property="og:url" content="http://shomy.top/2017/02/16/svm-01/index.html">
+<meta property="og:site_name" content="天空的城">
+<meta property="og:description" content="从这一节开始学习机器学习技法课程中的SVM, 这一节主要介绍标准形式的SVM: Linear SVM  引入SVM">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://cdn.htliu.cn/svm01-1.png">
+<meta property="og:image" content="http://cdn.htliu.cn/svm01-2.png">
+<meta property="og:image" content="http://cdn.htliu.cn/svm01-3.png">
+<meta property="og:image" content="http://cdn.htliu.cn/svm01-4.png">
+<meta property="og:image" content="http://cdn.htliu.cn/svm01-6.png">
+<meta property="og:image" content="http://cdn.htliu.cn/svm01-7.png">
+<meta property="og:image" content="http://cdn.htliu.cn/svm01-8.png">
+<meta property="og:image" content="http://cdn.htliu.cn/svm01-9.png">
+<meta property="og:image" content="http://cdn.htliu.cn/svm01-10.png">
+<meta property="article:published_time" content="2017-02-16T07:20:25.000Z">
+<meta property="article:modified_time" content="2021-12-16T15:11:45.671Z">
+<meta property="article:author" content="ShomyLiu">
+<meta property="article:tag" content="machine learning">
+<meta property="article:tag" content="svm">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://cdn.htliu.cn/svm01-1.png">
+  
+  
+    <link rel="icon" href="/image/favicon.ico">
+  
+
+  
+  <link href="https://cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.css" rel="stylesheet">
+  
+  <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  <link href="https://cdn.bootcss.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+<!-- Google Analytics -->
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-74368890-2', 'auto');
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+
+
+  
+
+  
+  <div class="site-search header-inner">
+    <div class="popup">
+        <span class="search-icon fa fa-search"></span>
+        <input type="text" id="local-search-input">
+        <div id="local-search-result"></div>
+        <span class="popup-btn-close">close</span>
+    </div>
+</div>
+
+
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      
+<header id="header">
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">天空的城</a>
+      </h1>
+      
+    </div>
+    <div id="header-menu">
+      <nav id="main-nav">
+        <ul>
+        
+          <li><a href="/"><i class="fa fa-home icon-setting"></i></a></li>
+        
+          <li><a href="/archives"><i class="fa fa-archive icon-setting"></i></a></li>
+        
+          <li><a href="/tags"><i class="fa fa-tag icon-setting"></i></a></li>
+        
+          <li><a href="/about"><i class="fa fa-user icon-setting"></i></a></li>
+        
+        
+          <li><a href="javascript:;" class="popup-trigger"><i class="fa fa-search > icon-setting"></i></a></li>
+        
+        </ul>
+      </nav>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-svm-01" class="article article-type-post" itemscope itemprop="blogPost">
+  
+  <div class="article-meta">
+    <a href="/2017/02/16/svm-01/" class="article-date">
+  <time datetime="2017-02-16T07:20:25.000Z" itemprop="datePublished">2017-02-16</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/">读书笔记</a>
+  </div>
+
+
+    
+        <div class="counter-tag counter">
+    <!-- 别忘记这个类名... post-title-link -->
+    <span id="/2017/02/16/svm-01/" class="leancloud_visitors article-hits post-title-link"
+           data-flag-title="机器学习技法笔记(2)-Linear SVM">
+        次阅读
+    </span>
+
+  </div>
+
+    
+
+  </div>
+  
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      机器学习技法笔记(2)-Linear SVM
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+            <div id="toc" class="toc-article">
+                <strong class="toc-title">文章目录</strong>
+                <ol class="post-toc"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E5%BC%95%E5%85%A5svm"><span class="post-toc-text">引入SVM</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#svm%E6%B1%82%E8%A7%A3"><span class="post-toc-text">SVM求解</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#svm-%E4%B8%8E-vc-%E7%BB%B4"><span class="post-toc-text">SVM 与 VC 维</span></a></li></ol>
+            </div>
+        
+        
+        <blockquote>
+<p>从这一节开始学习机器学习技法课程中的SVM, 这一节主要介绍标准形式的SVM: Linear SVM</p>
+</blockquote>
+<h2 id="引入svm">引入SVM</h2>
+<span id="more"></span>
+<p>首先回顾Percentron Learning Algrithm(感知器算法PLA)是如何分类的，如下图，找到一条线，将两类训练数据点分开即可:</p>
+<p><img src="http://cdn.htliu.cn/svm01-1.png" /></p>
+<p>PLA的最后的直线可能有很多条，那到底哪条好呢？好坏的标准则是其泛化性能，即在测试数据集上的正确率，如下，下面三条直线都能正确的分开训练数据，那到底哪个好呢？SVM就是解决这个问题的。</p>
+<p><img src="http://cdn.htliu.cn/svm01-2.png" /></p>
+<h2 id="svm求解">SVM求解</h2>
+<p>直觉告诉我们最右的要好一些，因为测试数据的分布应该与训练数据的分布类似，因此看起来它可以容忍更多的噪音，假设有一个数据在第一个红叉叉下方位置，也是属于叉类别，前两直线则容易把它分到圈圈的类别，而造成错误。因此理想的直线或者分类平面应该距离两类训练数据集越远越好：也就是下面的灰色区域越胖越好:</p>
+<p><img src="http://cdn.htliu.cn/svm01-3.png" /></p>
+<p>灰色区域的宽度是由直线与训练数据<span class="math inline">\(x_{1..N}\)</span> 中到分类平面最近的距离决定的，这个距离称为<code>margin</code>，因此我们就可以将问题描述如下:</p>
+<p><span class="math display">\[\begin{align} &amp; \max\limits_{W,b}(margin(W,b))  \\  &amp; s.t. y_n(W^TX_n+b) &gt; 0  \end{align}\]</span></p>
+<p>其中，分类平面由<span class="math inline">\(W,b\)</span>决定，我们要找出最大<span class="math inline">\(margin\)</span>的那条直线，这里的<span class="math inline">\(margin(W)=\min\limits_{n=1...N} distance(x_n,,W,b)\)</span>, 约束条件是这条直线已经将两类完全分开，即:<span class="math inline">\(y_n(X_n+b) &gt;0\)</span> 。下面我们看看点<span class="math inline">\((x_n)\)</span>到平面<span class="math inline">\(W^TX+b = 0\)</span>的距离，看下图:</p>
+<p><img src="http://cdn.htliu.cn/svm01-4.png" /></p>
+<p><span class="math inline">\(W\)</span> 为平面<span class="math inline">\(W^TX+b=0\)</span>的法向量，<span class="math inline">\(x^{&#39;}\)</span>与<span class="math inline">\(x^{&#39;&#39;}\)</span>为平面上的两个点，现在如果要求点<span class="math inline">\(X\)</span>到平面的距离<span class="math inline">\(dist(X,W,b)\)</span>，即向量<span class="math inline">\(X-X^{&#39;}\)</span>投影(proj)到法向量<span class="math inline">\(W\)</span>:</p>
+<p><span class="math display">\[distance(X,W,b)=\left | \frac{W^T}{\Arrowvert W\Arrowvert }(X-X^{&#39;}) \right |= \frac{1}{\Arrowvert W\Arrowvert }|(W^TX +b) |\]</span></p>
+<p>到此，再结合约束条件<span class="math inline">\(y_n(W^TX+b)&gt;0, \ y_n \in \{-1, 1\}\)</span>, 点<span class="math inline">\(X\)</span>到平面的距离可以通过去绝对值符号，转化为如下的式子:</p>
+<p><span class="math display">\[distance(X,W,b)=\frac{1}{\Arrowvert W \Arrowvert }y_n(W^TX+b)\]</span></p>
+<p>因此问题转化如下的优化问题:</p>
+<p><span class="math display">\[\begin{align} &amp; \max\limits_{W,b} \quad &amp;  margin(b,W)  \\ &amp; s.t. &amp; every \ y_n(W^TX_n +b) &gt; 0 \\ &amp; &amp; margin(b,W) = \min\limits_{n=1..N} \frac{1}{\Arrowvert W \Arrowvert}y_n(W^TX_n +b)\end{align}\]</span></p>
+<p>另外，考虑到<span class="math inline">\(W^TX+b=0\)</span>与<span class="math inline">\(2W^TX+2b=0\)</span>这两个平面是同一个平面，只是对<span class="math inline">\(W,b\)</span>经过了放缩(scaling)，因此在缩放的过程中，不管是<span class="math inline">\(W,b\)</span>，还是<span class="math inline">\(2W,2b\)</span>, 都是对应同一个平面，因此求距离进行优化的过程不会有影响，利用这个特点，同时为了方便计算，对于某个的超平面，作出如下的假设放缩:</p>
+<p><span class="math display">\[\min\limits_{n=1...N}y_n(W^TX_n+b) = 1\]</span></p>
+<p>因为对于一个固定的平面，通过放缩，肯定存在一组<span class="math inline">\(W,b\)</span>使得上述的等式成立，同时也保证了条件<span class="math inline">\(y_n(W^TX_n+b) &gt;0\)</span>，这样<span class="math inline">\(margin(W,b) = \frac{1}{\Arrowvert W \Arrowvert}\)</span>，因此我们的优化问题转化为如下：</p>
+<p><span class="math display">\[\begin{align} &amp; \max\limits_{W,b} \quad  \frac{1}{\Arrowvert W\Arrowvert} \\  &amp; s.t. \quad  \min\limits_{n=1...N}(y_n(W^TX_n+b)) =1 \end{align}\]</span></p>
+<p>上述的约束条件是最小值等于1，对于优化问题来说，一般是某个等式或者不等式，这样容易求解，因此将上述的约束条件转为:<span class="math display">\[y_n(W^TX_n +b) \geq 1, \quad for \ all \ n\]</span></p>
+<p>考虑上述转换的正确性: 反证法，假设对于所有的<span class="math inline">\(n\)</span>, 有<span class="math inline">\(y_n(W^TX_n+b) &gt; 1\)</span>， 即不满足最小值为1的条件，不妨设为<span class="math inline">\(\min = K, K&gt;1\)</span>,设此时得到的最优解为<span class="math inline">\(W,b\)</span>,那么<span class="math inline">\(\frac{W}{K},\frac{b}{K}\)</span> 很显然比<span class="math inline">\(W,b\)</span>更优，矛盾。因此下面两式等价:</p>
+<p><span class="math display">\[\begin{align}&amp; \min(y_n(W^TX_n + b)) =1 \\ &amp; y_n(W^TX_n+B) \geq 1, \ for \ all \ n \end{align}\]</span></p>
+<p>再结合将求max转为min, 求距离，转为求平方等转化，最后我们的优化问题如下:</p>
+<p><span class="math display">\[\begin{align} &amp; \min\limits_{W,b} \quad \frac{1}{2}W^TW \\ &amp; s.t. \ y_n(W^TX_n +b) \geq 1, \ for \ all \ n \end{align}\]</span></p>
+<p>这个问题的优化方程为二次方程，条件为一次线性约束，是一个典型的二次规划问题(Quadratic Programming)，而QP问题有很多解法，我们只需要将上述优化问题，转化为QP问题解法的格式，然后直接代入QP Solver,即可，如下:</p>
+<p><img src="http://cdn.htliu.cn/svm01-6.png" /></p>
+<p>左侧是我们最后的优化问题，右侧是标准的QP问题的输入格式，一共有4个输入变量: <span class="math inline">\(Q,p,A,c\)</span>, 及一个最终的优化结果: <span class="math inline">\(u\)</span> ，我们只需要表示出上述四个输入变量，就可以输入到某个QP Solver里面即可，通过对应关系，表示如下:</p>
+<p><img src="http://cdn.htliu.cn/svm01-7.png" /></p>
+<p>这样就可以得到最优的<span class="math inline">\(W,b\)</span>，进而求出<span class="math inline">\(g_{SVM} = sign(W^TX+b)\)</span>，进行后续预测。</p>
+<p>上述的算法仅仅是最简单的线性SVM, 不过是其它类型SVM的基础，总结一下，流程很简单，如下:</p>
+<p><img src="http://cdn.htliu.cn/svm01-8.png" /></p>
+<p>这种算法同样也可以解决非线性分类问题，通过之前的<a href="http://shomy.top/2016/12/02/nonlinera-transformation/">非线性转化</a>，到线性空间: <span class="math inline">\(z_n = \phi(x_n)\)</span>，理论上即可直接应用到非线性问题中。不过缺陷也很明显，要求数据点必须线性可分，由于这个特点，这种算法也叫做: Linear Hard-Margin SVM。</p>
+<h2 id="svm-与-vc-维">SVM 与 VC 维</h2>
+<p>这里需要提一下，SVM(Support Vector Machine)的含义，我们了解到，SVM就是要找到最胖的那个分类面，如下:</p>
+<p><img src="http://cdn.htliu.cn/svm01-9.png" /></p>
+<p>其中，在边界上的用黑框圈出来的三个点，我们就称为<strong>SV</strong>,Support Vector，因为它们才是求解过程中，真正起到作用的点，其余的点没有起到作用，后续的课程中也有进一步的介绍SV。</p>
+<p>简单来说，SVM是基于PLA的一个算法，上面开始说了， 直觉告诉我们最胖的直线应该容错性好，其中的原理其实则是SVM相对于PLA，VC维降低了(注: 算法的VC维的定义不太明确，类比与<span class="math inline">\(\mathcal{H}\)</span>的VC维定义即可, 这里只是定性的介绍)，看下图:</p>
+<p><img src="http://cdn.htliu.cn/svm01-10.png" /></p>
+<p>以三个输入的数据为例，PLA可以shatter(能够将<span class="math inline">\(2^3\)</span>种情况都分开)，而无法将4个数据点shatter，因此VC(PLA)=3，我们从另外一个角度来考虑， 假设我们规定了Margin的值为<span class="math inline">\(\rho\)</span> ，也就是胖瘦的程度，那么肯定会存在输入数据量为3,且无法shatter的情形，比如上图的后两种，在<span class="math inline">\(\rho\)</span>下 无法shatter，因此大致看起来，<span class="math inline">\(d_{VC}(\rho) &lt; 3\)</span>的。其实有严格的数学证明，可以得到:</p>
+<p><span class="math display">\[d_{VC}(\rho)  \leq d+1 = d_{VC}(PLA)\]</span></p>
+<p>VC维减少了，意味着复杂度降低，也就是说更不容易overfitting，泛化性能更好，这也是就是我们要找最胖的分类面的原因。</p>
+
+      
+    </div>
+
+
+    
+
+    
+	    <div class="article-footer-copyright">
+<!--<p>本文作者: shomy 发表于 <a href="http://shomy.top" target="_blank">个人博客</a></p> -->
+<p>
+本文标题: 机器学习技法笔记(2)-Linear SVM<br/>
+</p>
+<p>
+发布时间: 2017-02-16, 15:20:25<br/>
+<p>
+<p>
+最后更新: 2021-12-16, 23:11:45<br/>
+<p>
+本文链接: <a href="/2017/02/16/svm-01/" target="_blank">http://shomy.top/2017/02/16/svm-01/</a>
+</p>
+<p>非商业转载请注明作者及出处。商业转载请联系<a href="mailto:shomyliu@gmail.com">作者</a>本人。</p>
+</div>
+
+    
+
+    <footer class="article-footer">
+      
+        <a href="http://shomy.top/2017/02/16/svm-01/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/machine-learning/" rel="tag">machine learning</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/svm/" rel="tag">svm</a></li></ul>
+
+    </footer>
+    
+	    <script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+    
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2017/02/17/svm-02-dual/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          机器学习技法笔记(3)-对偶SVM
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2017/01/28/2016-review/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">2016</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+
+
+<section id="comments">
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+<script>
+  var disqus_shortname = 'shomy';
+  
+  var disqus_url = 'http://shomy.top/2017/02/16/svm-01/';
+  
+  (function(){
+    var dsq = document.createElement('script');
+    dsq.type = 'text/javascript';
+    dsq.async = true;
+    dsq.src = 'https://' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  }());
+</script>
+</section>
+
+
+
+
+</section>
+      </div>
+    </div>
+    
+    
+<a id="rocket" href="#top" ></a>
+
+<script src="https://cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <script src="http://cdn.htliu.cn/static/js/leancloud.js"></script>
+<script>AV.initialize("k883AKdzaz5jccQnH1eIrG2r-gzGzoHsz", "4HBQOmslEp3VdwK1SGL8vB9Y");</script>
+
+<script src="/js/Counter.js"></script>
+
+
+
+
+
+<script id="dsq-count-scr" src="//shomy.disqus.com/count.js" async></script>
+ 
+
+
+  <script src="https://cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.js"></script>
+  
+<script src="/js/fancybox.js"></script>
+
+
+
+
+  
+<script src="/js/search.js"></script>
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

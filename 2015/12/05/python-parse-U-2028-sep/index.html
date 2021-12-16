@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Python:使用codecs解析文本中U+2028分隔符的异常 | 天空的城</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="在使用python codecs读取文本内容的时候，会遇到U+2028的分隔符， 会自动把它作为行分隔符，U+2028之后的内容，会丢失。 在网上查过了之后，最容易的解决方法就是不使用codecs.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Python:使用codecs解析文本中U+2028分隔符的异常">
+<meta property="og:url" content="http://shomy.top/2015/12/05/python-parse-U-2028-sep/index.html">
+<meta property="og:site_name" content="天空的城">
+<meta property="og:description" content="在使用python codecs读取文本内容的时候，会遇到U+2028的分隔符， 会自动把它作为行分隔符，U+2028之后的内容，会丢失。 在网上查过了之后，最容易的解决方法就是不使用codecs.">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2015-12-05T06:36:08.000Z">
+<meta property="article:modified_time" content="2021-12-16T15:11:45.668Z">
+<meta property="article:author" content="ShomyLiu">
+<meta property="article:tag" content="python">
+<meta property="article:tag" content="U+2028">
+<meta name="twitter:card" content="summary">
+  
+  
+    <link rel="icon" href="/image/favicon.ico">
+  
+
+  
+  <link href="https://cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.css" rel="stylesheet">
+  
+  <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  <link href="https://cdn.bootcss.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+<!-- Google Analytics -->
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-74368890-2', 'auto');
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+
+
+  
+
+  
+  <div class="site-search header-inner">
+    <div class="popup">
+        <span class="search-icon fa fa-search"></span>
+        <input type="text" id="local-search-input">
+        <div id="local-search-result"></div>
+        <span class="popup-btn-close">close</span>
+    </div>
+</div>
+
+
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      
+<header id="header">
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">天空的城</a>
+      </h1>
+      
+    </div>
+    <div id="header-menu">
+      <nav id="main-nav">
+        <ul>
+        
+          <li><a href="/"><i class="fa fa-home icon-setting"></i></a></li>
+        
+          <li><a href="/archives"><i class="fa fa-archive icon-setting"></i></a></li>
+        
+          <li><a href="/tags"><i class="fa fa-tag icon-setting"></i></a></li>
+        
+          <li><a href="/about"><i class="fa fa-user icon-setting"></i></a></li>
+        
+        
+          <li><a href="javascript:;" class="popup-trigger"><i class="fa fa-search > icon-setting"></i></a></li>
+        
+        </ul>
+      </nav>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-python-parse-U-2028-sep" class="article article-type-post" itemscope itemprop="blogPost">
+  
+  <div class="article-meta">
+    <a href="/2015/12/05/python-parse-U-2028-sep/" class="article-date">
+  <time datetime="2015-12-05T06:36:08.000Z" itemprop="datePublished">2015-12-05</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">编程语言</a>
+  </div>
+
+
+    
+        <div class="counter-tag counter">
+    <!-- 别忘记这个类名... post-title-link -->
+    <span id="/2015/12/05/python-parse-U-2028-sep/" class="leancloud_visitors article-hits post-title-link"
+           data-flag-title="Python:使用codecs解析文本中U+2028分隔符的异常">
+        次阅读
+    </span>
+
+  </div>
+
+    
+
+  </div>
+  
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Python:使用codecs解析文本中U+2028分隔符的异常
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+        
+        <blockquote>
+<p>在使用<code>python codecs</code>读取文本内容的时候，会遇到<code>U+2028</code>的分隔符， 会自动把它作为行分隔符，<code>U+2028</code>之后的内容，会丢失。 在网上查过了之后，最容易的解决方法就是不使用<code>codecs</code>.</p>
+</blockquote>
+<span id="more"></span>
+<p>如下，如果使用<code>codecs</code>的话， <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">f = codecs.<span class="built_in">open</span>(filename,encoding=<span class="string">&quot;utf-8&quot;</span>)</span><br><span class="line"><span class="keyword">for</span> line <span class="keyword">in</span> f:</span><br><span class="line">    <span class="built_in">print</span> line</span><br><span class="line"></span><br></pre></td></tr></table></figure></p>
+<p>这样写的话，如果遇到<code>U+2028</code>的话，会出现问题。</p>
+<p>解决方法是直接使用<code>open</code>或者<code>file</code> 来读取就ok了 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">f = file(filename,<span class="string">&quot;r&quot;</span>)</span><br><span class="line"><span class="keyword">for</span> line <span class="keyword">in</span> f:</span><br><span class="line">    line = line.decode(<span class="string">&quot;utf-8&quot;</span>)</span><br><span class="line"></span><br></pre></td></tr></table></figure> 便可以忽略分隔符。</p>
+<p>参考: <a target="_blank" rel="noopener" href="http://stackoverflow.com/questions/1105106/how-to-exclude-u2028-from-line-separators-in-python-when-reading-file">http://stackoverflow.com/questions/1105106/how-to-exclude-u2028-from-line-separators-in-python-when-reading-file</a></p>
+
+      
+    </div>
+
+
+    
+
+    
+	    <div class="article-footer-copyright">
+<!--<p>本文作者: shomy 发表于 <a href="http://shomy.top" target="_blank">个人博客</a></p> -->
+<p>
+本文标题: Python:使用codecs解析文本中U+2028分隔符的异常<br/>
+</p>
+<p>
+发布时间: 2015-12-05, 14:36:08<br/>
+<p>
+<p>
+最后更新: 2021-12-16, 23:11:45<br/>
+<p>
+本文链接: <a href="/2015/12/05/python-parse-U-2028-sep/" target="_blank">http://shomy.top/2015/12/05/python-parse-U-2028-sep/</a>
+</p>
+<p>非商业转载请注明作者及出处。商业转载请联系<a href="mailto:shomyliu@gmail.com">作者</a>本人。</p>
+</div>
+
+    
+
+    <footer class="article-footer">
+      
+        <a href="http://shomy.top/2015/12/05/python-parse-U-2028-sep/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/U-2028/" rel="tag">U+2028</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/python/" rel="tag">python</a></li></ul>
+
+    </footer>
+    
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2015/12/11/dns-probe-possible/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          电脑连上无线无法上网 dns-probe-possible
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2015/12/04/Ubuntu-ScreenShot/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">Ubuntu截屏软件:ScreenShot</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+
+
+<section id="comments">
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+<script>
+  var disqus_shortname = 'shomy';
+  
+  var disqus_url = 'http://shomy.top/2015/12/05/python-parse-U-2028-sep/';
+  
+  (function(){
+    var dsq = document.createElement('script');
+    dsq.type = 'text/javascript';
+    dsq.async = true;
+    dsq.src = 'https://' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  }());
+</script>
+</section>
+
+
+
+
+</section>
+      </div>
+    </div>
+    
+    
+<a id="rocket" href="#top" ></a>
+
+<script src="https://cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <script src="http://cdn.htliu.cn/static/js/leancloud.js"></script>
+<script>AV.initialize("k883AKdzaz5jccQnH1eIrG2r-gzGzoHsz", "4HBQOmslEp3VdwK1SGL8vB9Y");</script>
+
+<script src="/js/Counter.js"></script>
+
+
+
+
+
+<script id="dsq-count-scr" src="//shomy.disqus.com/count.js" async></script>
+ 
+
+
+  <script src="https://cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.js"></script>
+  
+<script src="/js/fancybox.js"></script>
+
+
+
+
+  
+<script src="/js/search.js"></script>
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>TensorFlow练习1-前馈神经网络实现分类 | 天空的城</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="开始学习TensorFlow， 看了一些文档以及教学视频，主要是周莫烦的TensorFlow入门视频 ，之前自己手写过BPNN，各种debug，费了很多事情，而且还有很多地方需要优化，想到自己还要用CNN, RNN等DNN，自己写的话， 可能性不大了，于是就打算使用深度学习框架了，准备多写几个例子加深印象。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="TensorFlow练习1-前馈神经网络实现分类">
+<meta property="og:url" content="http://shomy.top/2017/01/01/tensorflow-fnn-example-1/index.html">
+<meta property="og:site_name" content="天空的城">
+<meta property="og:description" content="开始学习TensorFlow， 看了一些文档以及教学视频，主要是周莫烦的TensorFlow入门视频 ，之前自己手写过BPNN，各种debug，费了很多事情，而且还有很多地方需要优化，想到自己还要用CNN, RNN等DNN，自己写的话， 可能性不大了，于是就打算使用深度学习框架了，准备多写几个例子加深印象。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2017-01-01T07:19:59.000Z">
+<meta property="article:modified_time" content="2021-12-16T15:11:45.674Z">
+<meta property="article:author" content="ShomyLiu">
+<meta property="article:tag" content="TensorFlow">
+<meta property="article:tag" content="DeepLearning">
+<meta property="article:tag" content="NN">
+<meta name="twitter:card" content="summary">
+  
+  
+    <link rel="icon" href="/image/favicon.ico">
+  
+
+  
+  <link href="https://cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.css" rel="stylesheet">
+  
+  <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  <link href="https://cdn.bootcss.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+<!-- Google Analytics -->
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-74368890-2', 'auto');
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+
+
+  
+
+  
+  <div class="site-search header-inner">
+    <div class="popup">
+        <span class="search-icon fa fa-search"></span>
+        <input type="text" id="local-search-input">
+        <div id="local-search-result"></div>
+        <span class="popup-btn-close">close</span>
+    </div>
+</div>
+
+
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      
+<header id="header">
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">天空的城</a>
+      </h1>
+      
+    </div>
+    <div id="header-menu">
+      <nav id="main-nav">
+        <ul>
+        
+          <li><a href="/"><i class="fa fa-home icon-setting"></i></a></li>
+        
+          <li><a href="/archives"><i class="fa fa-archive icon-setting"></i></a></li>
+        
+          <li><a href="/tags"><i class="fa fa-tag icon-setting"></i></a></li>
+        
+          <li><a href="/about"><i class="fa fa-user icon-setting"></i></a></li>
+        
+        
+          <li><a href="javascript:;" class="popup-trigger"><i class="fa fa-search > icon-setting"></i></a></li>
+        
+        </ul>
+      </nav>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-tensorflow-fnn-example-1" class="article article-type-post" itemscope itemprop="blogPost">
+  
+  <div class="article-meta">
+    <a href="/2017/01/01/tensorflow-fnn-example-1/" class="article-date">
+  <time datetime="2017-01-01T07:19:59.000Z" itemprop="datePublished">2017-01-01</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E5%B7%A5%E5%85%B7%E4%BD%BF%E7%94%A8/">工具使用</a>
+  </div>
+
+
+    
+        <div class="counter-tag counter">
+    <!-- 别忘记这个类名... post-title-link -->
+    <span id="/2017/01/01/tensorflow-fnn-example-1/" class="leancloud_visitors article-hits post-title-link"
+           data-flag-title="TensorFlow练习1-前馈神经网络实现分类">
+        次阅读
+    </span>
+
+  </div>
+
+    
+
+  </div>
+  
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      TensorFlow练习1-前馈神经网络实现分类
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+            <div id="toc" class="toc-article">
+                <strong class="toc-title">文章目录</strong>
+                <ol class="post-toc"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E4%BB%8B%E7%BB%8D"><span class="post-toc-text">介绍</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E5%AE%9E%E7%8E%B0%E9%83%A8%E5%88%86"><span class="post-toc-text">实现部分</span></a></li></ol>
+            </div>
+        
+        
+        <blockquote>
+<p>开始学习TensorFlow， 看了一些文档以及教学视频，主要是<a target="_blank" rel="noopener" href="https://www.youtube.com/playlist?list=PLXO45tsB95cKI5AIlf5TxxFPzb-0zeVZ8">周莫烦的TensorFlow入门视频</a> ，之前自己手写过BPNN，各种debug，费了很多事情，而且还有很多地方需要优化，想到自己还要用CNN, RNN等DNN，自己写的话， 可能性不大了，于是就打算使用深度学习框架了，准备多写几个例子加深印象。</p>
+</blockquote>
+<span id="more"></span>
+<h2 id="介绍">介绍</h2>
+<p>TF属于google提出的一套graph计算框架，跟我们之前的思路不太一样，之前是导入数据，然后进行训练，测试等等，而TF事先设计好网络，然后再填充数据，这种方式的好处是设计与数据分离，不用针对具体数据，而坏处是不容易调试，因为network中的变量在没有数据之前，都还没有分配内存，还好有可视化工具tensorboard，可以很清楚的看到每个变量的shape。</p>
+<p>TensorFlow的安装，上一篇博客已经记录了。 这一个博客主要是使用TensorFlow做一个mnist数据集的分类的例子。主要记录下，自己的学习流程。</p>
+<h2 id="实现部分">实现部分</h2>
+<p>首先定义了添加层的函数。 每添加一个层，需要有输入， 参数权重，偏置，以及最后的输出， 当然还有激励函数。如下:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">add_layer</span>(<span class="params">inputs, in_size, out_size, layer_name, activity_func=<span class="literal">None</span></span>):</span></span><br><span class="line">    <span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"><span class="string">    args:</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">        inputs: 层的输入</span></span><br><span class="line"><span class="string">        in_size: 输入的shape</span></span><br><span class="line"><span class="string">        out_size: 输出的shape, 与in_size共同决定了权重的shape</span></span><br><span class="line"><span class="string">        activity_fuc: 激活函数</span></span><br><span class="line"><span class="string">    &#x27;&#x27;&#x27;</span></span><br><span class="line">    <span class="comment"># 正太分布下，初始化权重W</span></span><br><span class="line">    W = tf.Variable(tf.random_uniform([in_size, out_size], -<span class="number">1.0</span>, <span class="number">1.0</span>), name=<span class="string">&quot;W&quot;</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># 偏置一般用一个常数来初始化就行</span></span><br><span class="line">    bias =  tf.Variable(tf.constant(<span class="number">0.1</span>, shape=[out_size]), name=<span class="string">&quot;bias&quot;</span>)</span><br><span class="line"></span><br><span class="line">    <span class="comment"># Wx_Plus_b = tf.matmul(inputs, W) + bias 这种方式与下面的均可以</span></span><br><span class="line">    Wx_Plus_b = tf.nn.xw_plus_b(inputs, W, bias)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> activity_func <span class="keyword">is</span> <span class="literal">None</span>:</span><br><span class="line">        outputs = Wx_Plus_b</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        outputs = activity_func(Wx_Plus_b)</span><br><span class="line">    <span class="keyword">return</span> outputs <span class="comment"># 返回的是该层的输出</span></span><br></pre></td></tr></table></figure>
+<p>接着，开始构造神经网络。使用的数据集手写数字识别的mnist数据集，包含训练数据和测试数据，属于机器学习中的Hello World。数据的输入已经处理为了28*28的向量，标签是one-hot的10维的向量。 基于数据集，我们先定义一些参数:</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">hidden_layers</span> = <span class="number">1</span> <span class="comment"># 一共有多少层，这里只用了一个隐层，多层一样</span></span><br><span class="line"><span class="attr">hidden_units</span> = <span class="number">200</span> <span class="comment"># 每一层的隐层神经元的个数，实际上应该是一个列表，由于只有一个隐层，直接设置为了一个数字</span></span><br><span class="line"><span class="attr">n_input</span> = <span class="number">784</span> <span class="comment"># 输入向量维度</span></span><br><span class="line"><span class="attr">n_classes</span> = <span class="number">10</span> <span class="comment"># 最后一层的输出的维度，分类问题中就是类别的个数</span></span><br><span class="line"><span class="attr">learning_rate</span> = <span class="number">0.5</span> <span class="comment"># 学习率，一般是梯度下降等优化算法的参数.</span></span><br></pre></td></tr></table></figure>
+<p>下面就可以定义网络的结构了，TF的特点就是先设计网络，无需实际的数据。先定义输入数据和输出数据:</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">xs = tf<span class="selector-class">.placeholder</span>(tf<span class="selector-class">.float32</span>, <span class="selector-attr">[None, n_input]</span>, name=<span class="string">&quot;input&quot;</span>)</span><br><span class="line">ys = tf<span class="selector-class">.placeholder</span>(tf<span class="selector-class">.float32</span>, <span class="selector-attr">[None, n_classes]</span>, name=<span class="string">&quot;output&quot;</span>)</span><br></pre></td></tr></table></figure>
+<p>使用<code>placeholder</code>相当于给<code>xs, ys</code> 预留个位置，等后续填充数据，第二个参数是<code>shape</code>,其中<code>None</code>表示任何数都可以，一般是<code>batch_size</code>，就是训练的数据量。 有了输入数据，下面开始添加层，这里加入一个隐含层:</p>
+<figure class="highlight reasonml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"># 第一层，输入数据就是xs</span><br><span class="line">l1 = add<span class="constructor">_layer(<span class="params">xs</span>, <span class="params">n_input</span>, <span class="params">hidden_units</span>, &#x27;<span class="params">hidden_layer_1</span>&#x27;, <span class="params">activity_func</span>=<span class="params">tf</span>.<span class="params">nn</span>.<span class="params">tanh</span>)</span></span><br><span class="line"></span><br><span class="line">#l2 = add<span class="constructor">_layer(<span class="params">l1</span>, <span class="params">in_size</span>, <span class="params">out_size</span>, <span class="operator">...</span>..)</span> 类似可以定义多层</span><br><span class="line">#定义隐层到输出层:, 输入是隐层的输出即: l1 ， 最后使用一个softmax 分类</span><br><span class="line">prediction = add<span class="constructor">_layer(<span class="params">l1</span>, <span class="params">hidden_units</span>, <span class="params">n_classes</span>, &#x27;<span class="params">prediction_layer</span>&#x27;, <span class="params">activity_func</span>=<span class="params">tf</span>.<span class="params">nn</span>.<span class="params">softmax</span>)</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>就上面的几行代码就可以构造好我们的神经网络了。 下面开始训练操作，一般神经网络是用BackProg来训练，然后SGD进行优化。 在TensorFlow里面，下面两行就可以了，手写的时候，写了一堆函数---:</p>
+<figure class="highlight reasonml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"># cross_entropy = tf.reduce<span class="constructor">_mean(-<span class="params">tf</span>.<span class="params">reduce_sum</span>(<span class="params">ys</span> <span class="operator">*</span> <span class="params">tf</span>.<span class="params">log</span>(<span class="params">prediction</span>)</span>)) 也可以用下面tf自带的计算交叉熵的函数</span><br><span class="line"># 使用预测值与真实值，计算误差，不推荐平方误差</span><br><span class="line">cross_entropy = tf.reduce<span class="constructor">_mean(<span class="params">tf</span>.<span class="params">nn</span>.<span class="params">softmax_cross_entropy_with_logits</span>(<span class="params">prediction</span>, <span class="params">ys</span>)</span>) </span><br><span class="line">train_op = tf.train.<span class="constructor">GradientDescentOptimizer(<span class="params">learning_rate</span>)</span>.minimize(cross_entropy) # 直接指定学习率，最小化损失函数即可</span><br></pre></td></tr></table></figure>
+<p>到这里，我们的网络以及训练都完成了，可以把数据传进去，进行训练了，不过，在这之前，最好是加入一下测试，每轮训练完了，看看测试数据集的正确率。 也很简单，直接看看预测与实际的偏差，然后构造一个Tensor即可:</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">## accuracy</span></span><br><span class="line"><span class="comment"># 数据集是10维的， 只需要选出最大作为识别的类别即可。</span></span><br><span class="line"><span class="attr">correct_prediction</span> = tf.equal(tf.argmax(prediction, <span class="number">1</span>), tf.argmax(ys, <span class="number">1</span>)) </span><br><span class="line"><span class="comment"># TensorFlow里面运算均是 float32，因此这里有个强制转化</span></span><br><span class="line"><span class="attr">accuracy</span> = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>到此，所有事情准备完毕，开始装数据！直接看完整的代码:</p>
+<figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br></pre></td><td class="code"><pre><span class="line">#!/usr/bin/env <span class="keyword">python</span></span><br><span class="line"># encodin<span class="variable">g:</span> utf-<span class="number">8</span></span><br><span class="line"></span><br><span class="line">import tensorflow <span class="keyword">as</span> <span class="keyword">tf</span></span><br><span class="line">from tensorflow.examples.tutorials.mnist import input_data</span><br><span class="line">import time</span><br><span class="line"></span><br><span class="line">mnist = input_data.read_data_sets(<span class="string">&#x27;MNIST_data&#x27;</span>, one_hot=True)</span><br><span class="line"></span><br><span class="line">def add_layer(inputs, in_size, out_size, layer_name, activity_func=None):</span><br><span class="line">    <span class="string">&#x27;&#x27;</span><span class="string">&#x27;&#x27;</span><span class="string">&#x27;&#x27;</span></span><br><span class="line">    W = <span class="keyword">tf</span>.Variable(<span class="keyword">tf</span>.random_uniform([in_size, out_size], -<span class="number">1.0</span>, <span class="number">1.0</span>), name=<span class="string">&quot;W&quot;</span>)</span><br><span class="line">    bias =  <span class="keyword">tf</span>.Variable(<span class="keyword">tf</span>.constant(<span class="number">0.1</span>, shape=[out_size]), name=<span class="string">&quot;bias&quot;</span>)</span><br><span class="line"></span><br><span class="line">    # Wx_Plus_b = <span class="keyword">tf</span>.matmul(inputs, W) + bias</span><br><span class="line">    Wx_Plus_b = <span class="keyword">tf</span>.<span class="keyword">nn</span>.xw_plus_b(inputs, W, bias)</span><br><span class="line"></span><br><span class="line">    # Wx_Plus_b = <span class="keyword">tf</span>.<span class="keyword">nn</span>.dropout(Wx_Plus_b, keep_prob)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> activity_func <span class="keyword">is</span> None:</span><br><span class="line">        outputs = Wx_Plus_b</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        outputs = activity_func(Wx_Plus_b)</span><br><span class="line">    <span class="keyword">return</span> outputs</span><br><span class="line"></span><br><span class="line">## para</span><br><span class="line">hidden_layers = <span class="number">1</span></span><br><span class="line">hidden_units = <span class="number">200</span></span><br><span class="line">n_input = <span class="number">784</span></span><br><span class="line">n_classes = <span class="number">10</span></span><br><span class="line">learning_rate = <span class="number">0.8</span></span><br><span class="line"></span><br><span class="line">## define network</span><br><span class="line">xs = <span class="keyword">tf</span>.placeholder(<span class="keyword">tf</span>.float32, [None, n_input], name=<span class="string">&quot;input&quot;</span>)</span><br><span class="line">ys = <span class="keyword">tf</span>.placeholder(<span class="keyword">tf</span>.float32, [None, n_classes], name=<span class="string">&quot;output&quot;</span>)</span><br><span class="line">keep_prob = <span class="keyword">tf</span>.placeholder(<span class="keyword">tf</span>.float32)</span><br><span class="line"></span><br><span class="line">l1 = add_layer(xs, n_input, hidden_units, <span class="string">&#x27;hidden_layer_1&#x27;</span>, activity_func=<span class="keyword">tf</span>.<span class="keyword">nn</span>.<span class="built_in">tanh</span>)</span><br><span class="line">prediction = add_layer(l1, hidden_units, n_classes, <span class="string">&#x27;prediction_layer&#x27;</span>, activity_func=<span class="keyword">tf</span>.<span class="keyword">nn</span>.softmax)</span><br><span class="line"></span><br><span class="line">## coss <span class="built_in">and</span> train step</span><br><span class="line"># cross_entropy = <span class="keyword">tf</span>.reduce_mean(-<span class="keyword">tf</span>.reduce_sum(ys * <span class="keyword">tf</span>.<span class="built_in">log</span>(prediction)))</span><br><span class="line"></span><br><span class="line">cross_entropy = <span class="keyword">tf</span>.reduce_mean(<span class="keyword">tf</span>.<span class="keyword">nn</span>.softmax_cross_entropy_with_logits(prediction, ys))</span><br><span class="line">train_op = <span class="keyword">tf</span>.train.GradientDescentOptimizer(learning_rate).minimize(cross_entropy)</span><br><span class="line"><span class="keyword">tf</span>.summary.scalar(<span class="string">&#x27;loss&#x27;</span>, cross_entropy)</span><br><span class="line"></span><br><span class="line">## accuracy</span><br><span class="line">correct_prediction = <span class="keyword">tf</span>.equal(<span class="keyword">tf</span>.argmax(prediction, <span class="number">1</span>), <span class="keyword">tf</span>.argmax(ys, <span class="number">1</span>))</span><br><span class="line">accuracy = <span class="keyword">tf</span>.reduce_mean(<span class="keyword">tf</span>.cast(correct_prediction, <span class="keyword">tf</span>.float32))</span><br><span class="line"></span><br><span class="line">init = <span class="keyword">tf</span>.global_variables_initializer()</span><br><span class="line"></span><br><span class="line"># para</span><br><span class="line">n_epochs = <span class="number">40</span></span><br><span class="line">batch_size = <span class="number">100</span></span><br><span class="line"></span><br><span class="line">with <span class="keyword">tf</span>.Session() <span class="keyword">as</span> ses<span class="variable">s:</span></span><br><span class="line">    <span class="keyword">st</span> = time.time()</span><br><span class="line">    <span class="keyword">write</span> = <span class="keyword">tf</span>.summary.FileWriter(<span class="string">&#x27;logs/&#x27;</span>, sess.graph)</span><br><span class="line">    sess.run(init)</span><br><span class="line">    <span class="keyword">for</span> epoch in <span class="built_in">range</span>(n_epochs):</span><br><span class="line">        n_batch = mnist.train.num_examples / batch_size</span><br><span class="line">        <span class="keyword">for</span> i in <span class="built_in">range</span>(n_batch):</span><br><span class="line">            batch_xs, batch_ys = mnist.train.next_batch(batch_size)</span><br><span class="line">            sess.run(train_op, feed_dict=&#123;<span class="keyword">x</span><span class="variable">s:</span> batch_xs, <span class="keyword">y</span><span class="variable">s:</span> batch_ys, keep_pro<span class="variable">b:1</span>.<span class="number">0</span>&#125;)</span><br><span class="line">        <span class="keyword">print</span> <span class="string">&#x27;epoch&#x27;</span>, epoch, <span class="string">&#x27;accuracy:&#x27;</span>, sess.run(accuracy, feed_dict=&#123;keep_pro<span class="variable">b:1</span>.<span class="number">0</span>, <span class="keyword">x</span><span class="variable">s:</span> mnist.test.images, <span class="keyword">y</span><span class="variable">s:</span> mnist.test.labels&#125;)</span><br><span class="line"></span><br><span class="line">    end = time.time()</span><br><span class="line">    <span class="keyword">print</span> <span class="string">&#x27;*&#x27;</span> * <span class="number">30</span></span><br><span class="line">    <span class="keyword">print</span> <span class="string">&#x27;training finish. cost time:&#x27;</span>, <span class="keyword">int</span>(end-<span class="keyword">st</span>) , <span class="string">&#x27;seconds; accuracy:&#x27;</span>, sess.run(accuracy, feed_dict=&#123;keep_pro<span class="variable">b:1</span>.<span class="number">0</span>, <span class="keyword">x</span><span class="variable">s:</span> mnist.test.images, <span class="keyword">y</span><span class="variable">s:</span> mnist.test.labels&#125;)</span><br></pre></td></tr></table></figure>
+<p>最终的结果，正确率到了94%:</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">epoch 34 accuracy:</span> <span class="number">0.9424</span></span><br><span class="line"><span class="attr">epoch 35 accuracy:</span> <span class="number">0.9426</span></span><br><span class="line"><span class="attr">epoch 36 accuracy:</span> <span class="number">0.9429</span></span><br><span class="line"><span class="attr">epoch 37 accuracy:</span> <span class="number">0.9433</span></span><br><span class="line"><span class="attr">epoch 38 accuracy:</span> <span class="number">0.9438</span></span><br><span class="line"><span class="attr">epoch 39 accuracy:</span> <span class="number">0.9437</span></span><br><span class="line"></span><br><span class="line"><span class="string">******************************</span></span><br><span class="line"><span class="attr">training finish. cost time:</span> <span class="number">34</span> <span class="string">seconds;</span> <span class="attr">accuracy:</span> <span class="number">0.9437</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>因为网络的初始值都是随机的， 因此结果肯定不一样，有时候，初始值好的话， 可能很快就可以收敛，有时候运气不好，可能很多轮很慢，到百分之七八十，这个时候，就需要尝试了，调整学习率什么的，或者加大迭代的轮数，比如我增加到100轮，正确率到了95.2%。 最后说一个加快训练并且避免过拟合的方式: <code>Dropout</code>, 道理简单来说，就是每次训练随机性的忽略一些节点的贡献，将一些节点权重设置为0，这样就会避免特别依赖某些神经元，减少过拟合。DropOut在TF里面很容易实现，在add_layer里面加入一句话即可:</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">Wx_Plus_b</span> = tf.nn.dropout(Wx_Plus_b, keep_prob)</span><br></pre></td></tr></table></figure>
+<p>其中<code>keep_prob</code>是要保留训练的比重，一般设置0.6,0.75等等，也是一个placeholder：</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">xs = tf<span class="selector-class">.placeholder</span>(tf<span class="selector-class">.float32</span>, <span class="selector-attr">[None, n_input]</span>, name=<span class="string">&quot;input&quot;</span>)</span><br><span class="line">ys = tf<span class="selector-class">.placeholder</span>(tf<span class="selector-class">.float32</span>, <span class="selector-attr">[None, n_classes]</span>, name=<span class="string">&quot;output&quot;</span>)</span><br><span class="line">keep_prob = tf<span class="selector-class">.placeholder</span>(tf.float32)</span><br></pre></td></tr></table></figure>
+<p>在训练的时候，传入进去就ok了。 这篇主要记录了在用TensorFlow做神经网络的时候，一个大概的流程，其余基本很类似。下面的训练也会基于这样的流程。</p>
+
+      
+    </div>
+
+
+    
+
+    
+	    <div class="article-footer-copyright">
+<!--<p>本文作者: shomy 发表于 <a href="http://shomy.top" target="_blank">个人博客</a></p> -->
+<p>
+本文标题: TensorFlow练习1-前馈神经网络实现分类<br/>
+</p>
+<p>
+发布时间: 2017-01-01, 15:19:59<br/>
+<p>
+<p>
+最后更新: 2021-12-16, 23:11:45<br/>
+<p>
+本文链接: <a href="/2017/01/01/tensorflow-fnn-example-1/" target="_blank">http://shomy.top/2017/01/01/tensorflow-fnn-example-1/</a>
+</p>
+<p>非商业转载请注明作者及出处。商业转载请联系<a href="mailto:shomyliu@gmail.com">作者</a>本人。</p>
+</div>
+
+    
+
+    <footer class="article-footer">
+      
+        <a href="http://shomy.top/2017/01/01/tensorflow-fnn-example-1/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/DeepLearning/" rel="tag">DeepLearning</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/NN/" rel="tag">NN</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/TensorFlow/" rel="tag">TensorFlow</a></li></ul>
+
+    </footer>
+    
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2017/01/01/tensorflow-cnn-example-2/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          TensorFlow练习2-CNNs实现分类
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2016/12/29/gpu-tensorflow-install/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">Ubuntu安装GPU版TensorFlow</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+
+
+<section id="comments">
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+<script>
+  var disqus_shortname = 'shomy';
+  
+  var disqus_url = 'http://shomy.top/2017/01/01/tensorflow-fnn-example-1/';
+  
+  (function(){
+    var dsq = document.createElement('script');
+    dsq.type = 'text/javascript';
+    dsq.async = true;
+    dsq.src = 'https://' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  }());
+</script>
+</section>
+
+
+
+
+</section>
+      </div>
+    </div>
+    
+    
+<a id="rocket" href="#top" ></a>
+
+<script src="https://cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <script src="http://cdn.htliu.cn/static/js/leancloud.js"></script>
+<script>AV.initialize("k883AKdzaz5jccQnH1eIrG2r-gzGzoHsz", "4HBQOmslEp3VdwK1SGL8vB9Y");</script>
+
+<script src="/js/Counter.js"></script>
+
+
+
+
+
+<script id="dsq-count-scr" src="//shomy.disqus.com/count.js" async></script>
+ 
+
+
+  <script src="https://cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.js"></script>
+  
+<script src="/js/fancybox.js"></script>
+
+
+
+
+  
+<script src="/js/search.js"></script>
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

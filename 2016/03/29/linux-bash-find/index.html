@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Linux命令-Find | 天空的城</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="在文本处理中，经常涉及到对文件或者目录的查找操作，find命令用的很多，每次用只会那些简单的用法，有时候还需要网上查，这次总结记录下吧。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Linux命令-Find">
+<meta property="og:url" content="http://shomy.top/2016/03/29/linux-bash-find/index.html">
+<meta property="og:site_name" content="天空的城">
+<meta property="og:description" content="在文本处理中，经常涉及到对文件或者目录的查找操作，find命令用的很多，每次用只会那些简单的用法，有时候还需要网上查，这次总结记录下吧。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2016-03-29T06:48:44.000Z">
+<meta property="article:modified_time" content="2021-12-16T15:11:45.663Z">
+<meta property="article:author" content="ShomyLiu">
+<meta property="article:tag" content="find">
+<meta property="article:tag" content="linux">
+<meta name="twitter:card" content="summary">
+  
+  
+    <link rel="icon" href="/image/favicon.ico">
+  
+
+  
+  <link href="https://cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.css" rel="stylesheet">
+  
+  <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  <link href="https://cdn.bootcss.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+<!-- Google Analytics -->
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-74368890-2', 'auto');
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+
+
+  
+
+  
+  <div class="site-search header-inner">
+    <div class="popup">
+        <span class="search-icon fa fa-search"></span>
+        <input type="text" id="local-search-input">
+        <div id="local-search-result"></div>
+        <span class="popup-btn-close">close</span>
+    </div>
+</div>
+
+
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      
+<header id="header">
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">天空的城</a>
+      </h1>
+      
+    </div>
+    <div id="header-menu">
+      <nav id="main-nav">
+        <ul>
+        
+          <li><a href="/"><i class="fa fa-home icon-setting"></i></a></li>
+        
+          <li><a href="/archives"><i class="fa fa-archive icon-setting"></i></a></li>
+        
+          <li><a href="/tags"><i class="fa fa-tag icon-setting"></i></a></li>
+        
+          <li><a href="/about"><i class="fa fa-user icon-setting"></i></a></li>
+        
+        
+          <li><a href="javascript:;" class="popup-trigger"><i class="fa fa-search > icon-setting"></i></a></li>
+        
+        </ul>
+      </nav>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-linux-bash-find" class="article article-type-post" itemscope itemprop="blogPost">
+  
+  <div class="article-meta">
+    <a href="/2016/03/29/linux-bash-find/" class="article-date">
+  <time datetime="2016-03-29T06:48:44.000Z" itemprop="datePublished">2016-03-29</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">编程语言</a>
+  </div>
+
+
+    
+        <div class="counter-tag counter">
+    <!-- 别忘记这个类名... post-title-link -->
+    <span id="/2016/03/29/linux-bash-find/" class="leancloud_visitors article-hits post-title-link"
+           data-flag-title="Linux命令-Find">
+        次阅读
+    </span>
+
+  </div>
+
+    
+
+  </div>
+  
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Linux命令-Find
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+            <div id="toc" class="toc-article">
+                <strong class="toc-title">文章目录</strong>
+                <ol class="post-toc"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E5%9F%BA%E6%9C%AC%E4%BD%BF%E7%94%A8"><span class="post-toc-text">基本使用</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E4%BE%8B%E5%AD%90"><span class="post-toc-text">例子</span></a></li></ol>
+            </div>
+        
+        
+        <blockquote>
+<p>在文本处理中，经常涉及到对文件或者目录的查找操作，<code>find</code>命令用的很多，每次用只会那些简单的用法，有时候还需要网上查，这次总结记录下吧。</p>
+</blockquote>
+<span id="more"></span>
+<h2 id="基本使用">基本使用</h2>
+<p>基本格式如下: <figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">find <span class="selector-attr">[目录]</span> <span class="selector-attr">[文件形式]</span> <span class="selector-attr">[操作]</span></span><br></pre></td></tr></table></figure></p>
+<ul>
+<li>目录的话，没什么好说的，默认当前目录.</li>
+<li>文件形式，或者说查找的特征，常用的有以下几个
+<ul>
+<li><code>-name</code>: 最常用的，就是查找文件的名字, 可以用通配符符号,使用<code>iname</code>可以忽略大小写</li>
+<li><code>-type</code>: 指定要查找的类型，就跟Linux的文件形式一样，有<code>s:socket文件,d:目录, f: 普通文件</code>等</li>
+<li><code>-not</code>: 否定选项，就是查找与后面选项相反的文件.</li>
+<li><code>-mindepth, maxdepth</code>: 就是限定搜索制定目录的深度。</li>
+<li><code>-perm</code>: 按照权限来查找， 支持八进制位以及符号的权限搜索.</li>
+<li><code>-empty</code>: 空文件,也就是0字节的文件</li>
+<li><code>mtime</code>系列。后续详细说明.</li>
+<li><code>-size</code>: 指定文件大小，<code>+100M</code>表示大于100M的，<code>-100M</code>表示小于100M的。</li>
+<li><code>-exec</code>: 就是后续的操作命令了，<code>-exec ls &#123;&#125; \;</code> 其中<code>&#123;&#125;</code>表示匹配的文件</li>
+</ul></li>
+</ul>
+<h2 id="例子">例子</h2>
+<blockquote>
+<p>以下例子转载自: -<a target="_blank" rel="noopener" href="http://www.thegeekstuff.com/2009/03/15-practical-linux-find-command-examples/">Mommy, I found it!</a> -<a target="_blank" rel="noopener" href="http://www.thegeekstuff.com/2009/06/15-practical-unix-linux-find-command-examples-part-2/">Daddy, I found it!</a></p>
+</blockquote>
+<p>首先创建如下的文件以及目录: <figure class="highlight reasonml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"># vim create_sample_files.sh</span><br><span class="line">touch <span class="module-access"><span class="module"><span class="identifier">MybashProgram</span>.</span></span>sh</span><br><span class="line">touch mycprogram.c</span><br><span class="line">touch <span class="module-access"><span class="module"><span class="identifier">MyCProgram</span>.</span></span>c</span><br><span class="line">touch <span class="module-access"><span class="module"><span class="identifier">Program</span>.</span></span>c</span><br><span class="line"></span><br><span class="line">mkdir backup</span><br><span class="line">cd backup</span><br><span class="line"></span><br><span class="line">touch <span class="module-access"><span class="module"><span class="identifier">MybashProgram</span>.</span></span>sh</span><br><span class="line">touch mycprogram.c</span><br><span class="line">touch <span class="module-access"><span class="module"><span class="identifier">MyCProgram</span>.</span></span>c</span><br><span class="line">touch <span class="module-access"><span class="module"><span class="identifier">Program</span>.</span></span>c</span><br><span class="line"></span><br><span class="line"># chmod +x create_sample_files.sh</span><br><span class="line"></span><br><span class="line"># ./create_sample_files.sh</span><br><span class="line"></span><br><span class="line"># ls -R</span><br><span class="line">.:</span><br><span class="line">backup                  <span class="module-access"><span class="module"><span class="identifier">MybashProgram</span>.</span></span>sh  <span class="module-access"><span class="module"><span class="identifier">MyCProgram</span>.</span></span>c</span><br><span class="line">create_sample_files.sh  mycprogram.c      <span class="module-access"><span class="module"><span class="identifier">Program</span>.</span></span>c</span><br><span class="line"></span><br><span class="line">./backup:</span><br><span class="line"><span class="module-access"><span class="module"><span class="identifier">MybashProgram</span>.</span></span>sh  mycprogram.c  <span class="module-access"><span class="module"><span class="identifier">MyCProgram</span>.</span></span>c  <span class="module-access"><span class="module"><span class="identifier">Program</span>.</span></span>c</span><br></pre></td></tr></table></figure> 以下的例子均基于以上的文件。</p>
+<p>1.按照名字查找： 这个基本就是最基本的用法了，会查找目录下的所有文件，包括子目录里面的. <figure class="highlight reasonml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ find . -name <span class="string">&quot;MyCProgram.c&quot;</span></span><br><span class="line"></span><br><span class="line">./backup/<span class="module-access"><span class="module"><span class="identifier">MyCProgram</span>.</span></span>c</span><br><span class="line">./<span class="module-access"><span class="module"><span class="identifier">MyCProgram</span>.</span></span>c</span><br></pre></td></tr></table></figure> 或者使用<code>-iname</code>忽略大小写 <figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="keyword">find</span> . -iname <span class="string">&quot;MyCProgram.c&quot;</span></span><br><span class="line"></span><br><span class="line">.<span class="regexp">/backup/my</span>cprogram.c</span><br><span class="line">.<span class="regexp">/backup/My</span>CProgram.c</span><br><span class="line">./mycprogram.c</span><br><span class="line">./MyCProgram.c</span><br></pre></td></tr></table></figure></p>
+<p>2.使用<code>maxdepth</code>,以及<code>mindepth</code>限制搜索的层数</p>
+<p>当前层为第1层，其子目录就为第二层了。 <figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">shomy@LiuPC:findtest$ <span class="keyword">find</span> . -maxdepth <span class="number">2</span> -iname <span class="string">&quot;MyCProgram.c&quot;</span></span><br><span class="line">.<span class="regexp">/backup/my</span>cprogram.c</span><br><span class="line">.<span class="regexp">/backup/My</span>CProgram.c</span><br><span class="line">./mycprogram.c</span><br><span class="line">./MyCProgram.c</span><br><span class="line"></span><br><span class="line">shomy@LiuPC:findtest$ <span class="keyword">find</span> . -maxdepth <span class="number">1</span> -iname <span class="string">&quot;MyCProgram.c&quot;</span></span><br><span class="line">./mycprogram.c</span><br><span class="line">./MyCProgram.c</span><br><span class="line"></span><br><span class="line">shomy@LiuPC:findtest$ <span class="keyword">find</span> . -mindepth <span class="number">2</span> -iname <span class="string">&quot;MyCProgram.c&quot;</span></span><br><span class="line">.<span class="regexp">/backup/my</span>cprogram.c</span><br><span class="line">.<span class="regexp">/backup/My</span>CProgram.c</span><br></pre></td></tr></table></figure></p>
+<p>3.使用<code>-exec</code>执行命令 在找到符合条件的文件时，可以接着执行一些命令，格式就是: <figure class="highlight jboss-cli"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">shomy@LiuPC<span class="function">:findtest</span>$ find -iname <span class="string">&quot;MyCProgram.c&quot;</span> -exec md5sum &#123;&#125; \;</span><br><span class="line">d41d8<span class="keyword">cd</span>98f00b204e9800998ecf8427e  <span class="string">./backup/mycprogram.c</span></span><br><span class="line">d41d8<span class="keyword">cd</span>98f00b204e9800998ecf8427e  <span class="string">./backup/MyCProgram.c</span></span><br><span class="line">d41d8<span class="keyword">cd</span>98f00b204e9800998ecf8427e  <span class="string">./mycprogram.c</span></span><br><span class="line">d41d8<span class="keyword">cd</span>98f00b204e9800998ecf8427e  <span class="string">./MyCProgram.c</span></span><br></pre></td></tr></table></figure> 选项就是<code>-exec</code>, 后面紧跟命令，<code>&#123;&#125;</code>代表的是执行命令的当前文件，<code>\;</code>这个需要有。 比如查看详细信息: <figure class="highlight tap"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">shomy@LiuPC:findtest$ find -iname &quot;MyCProgram.c&quot; -exec ls -l &#123;&#125; \;</span><br><span class="line">-rw-rw-r--<span class="number"> 1 </span>shomy shomy<span class="number"> 0 </span> 3月<span class="number"> 29 </span>16:11 ./backup/mycprogram.c</span><br><span class="line">-rw-rw-r--<span class="number"> 1 </span>shomy shomy<span class="number"> 0 </span> 3月<span class="number"> 29 </span>16:11 ./backup/MyCProgram.c</span><br><span class="line">-rw-rw-r--<span class="number"> 1 </span>shomy shomy<span class="number"> 0 </span> 3月<span class="number"> 29 </span>16:11 ./mycprogram.c</span><br><span class="line">-rw-rw-r--<span class="number"> 1 </span>shomy shomy<span class="number"> 0 </span> 3月<span class="number"> 29 </span>16:11 ./MyCProgram.c</span><br><span class="line"></span><br></pre></td></tr></table></figure></p>
+<p>4.相反的匹配 就是使用<code>-not</code>命令来查找 <figure class="highlight jboss-cli"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">shomy@LiuPC<span class="function">:findtest</span>$ find -maxdepth 1 -not -iname <span class="string">&quot;MyCProgram.c&quot;</span></span><br><span class="line">.</span><br><span class="line"><span class="string">./backup</span></span><br><span class="line"><span class="string">./Program.c</span></span><br><span class="line"><span class="string">./create_sample_files.sh</span></span><br><span class="line"><span class="string">./MybashProgram.sh</span></span><br></pre></td></tr></table></figure> 就是找名字不是<code>MyCProgram</code>的文件或者目录。</p>
+<p>5.根据<code>inode</code>查找文件 每个文件都有独一无二的一个节点id, <code>find</code>同样支持根据inode查找文件。 <figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="builtin-name">find</span> -inum id</span><br></pre></td></tr></table></figure> 这种查找应用场景，比如有俩文件名字很像，仅仅差一个空格如下: <figure class="highlight mipsasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ touch <span class="string">&quot;test_new&quot;</span></span><br><span class="line">$ touch <span class="string">&quot;test_new &quot;</span></span><br><span class="line">$ <span class="keyword">ll </span>-i</span><br><span class="line"><span class="number">1725411</span> -rw-rw-r-- <span class="number">1</span> <span class="keyword">shomy </span><span class="keyword">shomy </span>   <span class="number">0</span>  <span class="number">3</span>月 <span class="number">30</span> <span class="number">12</span>:<span class="number">18</span> test_new</span><br><span class="line"><span class="number">1725412</span> -rw-rw-r-- <span class="number">1</span> <span class="keyword">shomy </span><span class="keyword">shomy </span>   <span class="number">0</span>  <span class="number">3</span>月 <span class="number">30</span> <span class="number">12</span>:<span class="number">19</span> test_new</span><br></pre></td></tr></table></figure> 这样直接看的话，是看不出差别的，这时候想删除某一个的时候，就可以用<code>inum</code> <figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="builtin-name">find</span> -inum 1725412 -exec rm &#123;&#125; \;</span><br></pre></td></tr></table></figure> 还有一种情况就是比如说有如下俩文件:</p>
+<figure class="highlight tap"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">-rw-rw-r--<span class="number"> 1 </span>shomy shomy   <span class="number"> 0 </span> 3月<span class="number"> 30 </span>13:01 test_new?.txt</span><br><span class="line">-rw-rw-r--<span class="number"> 1 </span>shomy shomy   <span class="number"> 0 </span> 3月<span class="number"> 30 </span>13:01 test_new1.txt</span><br></pre></td></tr></table></figure>
+<p>此时如果想删除<code>test_new?.txt</code>的话，如果使用<code>rm test_new?.txt</code>的话，俩文件都会被删除， 这个时候，可以先找到<code>test_new?.txt</code>的inode, 然后再用上述过程删除</p>
+<p>6.根据权限查找文件 使用<code>-perm</code>选项， 假设如下的文件: <figure class="highlight tap"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># ls -l</span></span><br><span class="line">total 0</span><br><span class="line">-rwxrwxrwx<span class="number"> 1 </span>root root<span class="number"> 0 </span>2009-02-19 20:31 all_for_all</span><br><span class="line">-rw-r--r--<span class="number"> 1 </span>root root<span class="number"> 0 </span>2009-02-19 20:30 everybody_read</span><br><span class="line">----------<span class="number"> 1 </span>root root<span class="number"> 0 </span>2009-02-19 20:31 no_for_all</span><br><span class="line">-rw-------<span class="number"> 1 </span>root root<span class="number"> 0 </span>2009-02-19 20:29 ordinary_file</span><br><span class="line">-rw-r-----<span class="number"> 1 </span>root root<span class="number"> 0 </span>2009-02-19 20:27 others_can_also_read</span><br><span class="line">----r-----<span class="number"> 1 </span>root root<span class="number"> 0 </span>2009-02-19 20:27 others_can_only_read</span><br></pre></td></tr></table></figure> 例如要找到对group用户有读权限，并且忽略其他权限的文件,使用<code>-g=r</code>: <figure class="highlight tap"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># find -pern -g=r -type f -exec ls -l &#123;&#125; \;</span></span><br><span class="line">-rw-r--r--<span class="number"> 1 </span>root root<span class="number"> 0 </span>2009-02-19 20:30 ./everybody_read</span><br><span class="line">-rwxrwxrwx<span class="number"> 1 </span>root root<span class="number"> 0 </span>2009-02-19 20:31 ./all_for_all</span><br><span class="line">----r-----<span class="number"> 1 </span>root root<span class="number"> 0 </span>2009-02-19 20:27 ./others_can_only_read</span><br><span class="line">-rw-r-----<span class="number"> 1 </span>root root<span class="number"> 0 </span>2009-02-19 20:27 ./others_can_also_read</span><br></pre></td></tr></table></figure> 然后如果想要找到只有读权限的文件，使用<code>g=r</code> 就可以: <figure class="highlight elm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"># find -pern g=r -<span class="keyword">type</span> f -exec ls -l &#123;&#125; \;</span><br><span class="line"><span class="comment">----r----- 1 root root 0 2009-02-19 20:27 ./others_can_only_read</span></span><br><span class="line"></span><br></pre></td></tr></table></figure> <code>-perm</code>还支持八进制权限查询： <figure class="highlight elm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># find . -perm <span class="number">040</span> -<span class="keyword">type</span> f -exec ls -l &#123;&#125; \;</span><br><span class="line"><span class="comment">----r----- 1 root root 0 2009-02-19 20:27 ./others_can_only_read</span></span><br></pre></td></tr></table></figure> 7.根据大小查找文件 使用<code>-size</code> ： - <code>+</code> 代表比给定大小 大 - <code>-</code> 表示比给定大小 小 - 单位可以用<code>K,M,G</code>等， 没有单位默认字节 <figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 查找大于100M的文件</span></span><br><span class="line"><span class="builtin-name">find</span> -size +100M</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查找小于100M的文件</span></span><br><span class="line"><span class="builtin-name">find</span> -size -100M</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查找等于100M的文件</span></span><br><span class="line"><span class="builtin-name">find</span> -size 100M</span><br><span class="line"></span><br></pre></td></tr></table></figure> 8.根据时间来查找 首先文件的时间属性，一般分为三种:</p>
+<ul>
+<li>Access time: 访问时间，也就是访问该文件时，Atime更新</li>
+<li>Modified time: 文件的修改时间，文件被修改时，Mtime更新</li>
+<li>Change time: 文件本身的属性被改变时，Ctime更新，与Mtime不一样，这个主要是指inode发生变化，比如文件权限，所有人等变化。</li>
+</ul>
+<p>另外针对时间的有两种量法:</p>
+<ul>
+<li>min: 表示时间单位是分钟</li>
+<li>time: 表示时间单位是天</li>
+</ul>
+<p>因此针对以上的情况，就可以这样组合搜索了</p>
+<ul>
+<li><code>-mmin n</code>: 表示最后一次修改是在n分钟内</li>
+<li><code>-mtime n</code>: 表示最后一次修改是在n天内</li>
+<li><code>-atime n</code>: 表示最后一次访问是在n天内</li>
+<li>其它同理</li>
+</ul>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">查找一个小时内修过过的文件：</span><br><span class="line">$ <span class="builtin-name">find</span> -mmin 60</span><br><span class="line"></span><br><span class="line">查找一天内修过过的文件：</span><br><span class="line">$ <span class="builtin-name">find</span> -mtime 1</span><br></pre></td></tr></table></figure>
+<p>上述是查找某个文件的时间，除此之外，也可以比较查找， <code>newer</code> 如下的文件: <figure class="highlight tap"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">shomy@LiuPC:findtest$ ll</span><br><span class="line">总用量 24</span><br><span class="line">drwxrwxr-x<span class="number"> 3 </span>shomy shomy<span class="number"> 4096 </span> 3月<span class="number"> 30 </span>13:03 ./</span><br><span class="line">drwxrwxr-x<span class="number"> 4 </span>shomy shomy<span class="number"> 4096 </span> 3月<span class="number"> 29 </span>16:10 ../</span><br><span class="line">drwxrwxr-x<span class="number"> 2 </span>shomy shomy<span class="number"> 4096 </span> 3月<span class="number"> 29 </span>16:11 backup/</span><br><span class="line">-rw-rw-r--<span class="number"> 1 </span>shomy shomy   <span class="number"> 0 </span> 3月<span class="number"> 29 </span>16:11 MybashProgram.sh</span><br><span class="line">-rw-rw-r--<span class="number"> 1 </span>shomy shomy   <span class="number"> 0 </span> 3月<span class="number"> 29 </span>16:11 mycprogram.c</span><br><span class="line">-rw-rw-r--<span class="number"> 1 </span>shomy shomy   <span class="number"> 0 </span> 3月<span class="number"> 29 </span>16:11 MyCProgram.c</span><br><span class="line">-rw-rw-r--<span class="number"> 1 </span>shomy shomy   <span class="number"> 0 </span> 3月<span class="number"> 29 </span>16:11 Program.c</span><br><span class="line">-rw-rw-r--<span class="number"> 1 </span>shomy shomy   <span class="number"> 0 </span> 3月<span class="number"> 30 </span>13:01 test_new</span><br><span class="line">-rw-rw-r--<span class="number"> 1 </span>shomy shomy   <span class="number"> 5 </span> 3月<span class="number"> 30 </span>16:34 test_new?</span><br><span class="line">-rw-rw-r--<span class="number"> 1 </span>shomy shomy   <span class="number"> 5 </span> 3月<span class="number"> 30 </span>16:34 test_new.tx</span><br></pre></td></tr></table></figure> 如下，查找修改时间比<code>test_new</code>晚的文件: <figure class="highlight haxe"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">shomy@LiuPC:<span class="type">findtest</span>$ find -<span class="keyword">new</span><span class="type">er</span> test_new<span class="type"></span></span><br><span class="line">.</span><br><span class="line">./test_new<span class="type"></span>?</span><br><span class="line">./test_new<span class="type"></span>.txt</span><br><span class="line"></span><br></pre></td></tr></table></figure> 同理：还有<code>-anewer</code> 以及<code>-cnewer</code>.对应的是访问时间以及inode修改的时间.</p>
+<p>9.查找完成后执行 比如要找最大的5个文件： <figure class="highlight sqf"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">find</span> -<span class="built_in">type</span> f -<span class="built_in">exec</span> ls -s &#123;&#125; \; | <span class="built_in">sort</span> -rn | head -<span class="number">5</span></span><br></pre></td></tr></table></figure> 首先是查找普通文件，不包括目录，然后执行<code>ls -s</code>，列出大小信息，接着借用管道排序,最后输出前5项.空间</p>
+<p>10.<code>-regex</code>与<code>-name</code>的区别 这两个都是按照文件名字查找，但是不一样的地方是，<code>-regex</code>是绝对路径，<code>-name</code>只是文件的名字 另外<code>-regex</code>后面的规则是正规的正则表达式形式，而<code>-name</code>则是通配符， 例如在正则表达式中<code>.*</code>是匹配任意长度的字符，而在<code>-name</code>中<code>*</code>是匹配任意长度字符。 假设当前文件如下 <figure class="highlight tap"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">shomy@LiuPC:findtest$ ll</span><br><span class="line">drwxrwxr-x<span class="number"> 3 </span>shomy shomy<span class="number"> 4096 </span> 3月<span class="number"> 30 </span>13:03 ./</span><br><span class="line">drwxrwxr-x<span class="number"> 4 </span>shomy shomy<span class="number"> 4096 </span> 3月<span class="number"> 29 </span>16:10 ../</span><br><span class="line">-rw-rw-r--<span class="number"> 1 </span>shomy shomy   <span class="number"> 0 </span> 3月<span class="number"> 30 </span>13:01 test_new</span><br><span class="line">-rw-rw-r--<span class="number"> 1 </span>shomy shomy   <span class="number"> 5 </span> 3月<span class="number"> 30 </span>16:34 test_new?</span><br><span class="line">-rw-rw-r--<span class="number"> 1 </span>shomy shomy   <span class="number"> 5 </span> 3月<span class="number"> 30 </span>16:34 test_new.txt</span><br><span class="line"></span><br></pre></td></tr></table></figure> 查找<code>test_new</code>文件如下: <figure class="highlight elixir"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">shomy<span class="variable">@LiuPC</span><span class="symbol">:findtest</span><span class="variable">$ </span>find -name <span class="string">&#x27;test_new&#x27;</span></span><br><span class="line">./test_new</span><br><span class="line"></span><br><span class="line"><span class="comment"># 未查找到:</span></span><br><span class="line">shomy<span class="variable">@LiuPC</span><span class="symbol">:findtest</span><span class="variable">$ </span>find -regex <span class="string">&#x27;test_new&#x27;</span></span><br><span class="line"></span><br><span class="line">shomy<span class="variable">@LiuPC</span><span class="symbol">:findtest</span><span class="variable">$ </span>find -regex <span class="string">&#x27;.*test_new&#x27;</span></span><br><span class="line">./test_new</span><br></pre></td></tr></table></figure></p>
+<hr />
+<p>暂时先到这里吧，总结都是一些基本用法， 还有一些关于正则表达式的还没涉及，以后再补上吧。</p>
+
+      
+    </div>
+
+
+    
+
+    
+	    <div class="article-footer-copyright">
+<!--<p>本文作者: shomy 发表于 <a href="http://shomy.top" target="_blank">个人博客</a></p> -->
+<p>
+本文标题: Linux命令-Find<br/>
+</p>
+<p>
+发布时间: 2016-03-29, 14:48:44<br/>
+<p>
+<p>
+最后更新: 2021-12-16, 23:11:45<br/>
+<p>
+本文链接: <a href="/2016/03/29/linux-bash-find/" target="_blank">http://shomy.top/2016/03/29/linux-bash-find/</a>
+</p>
+<p>非商业转载请注明作者及出处。商业转载请联系<a href="mailto:shomyliu@gmail.com">作者</a>本人。</p>
+</div>
+
+    
+
+    <footer class="article-footer">
+      
+        <a href="http://shomy.top/2016/03/29/linux-bash-find/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/find/" rel="tag">find</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/linux/" rel="tag">linux</a></li></ul>
+
+    </footer>
+    
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2016/04/04/chrome-http2https-google/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          利用chrome扩展使用HTTPS访问google
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2016/03/11/ubuntu-python-pyv8/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">记录Ubuntu &amp; Windows下安装PyV8</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+
+
+<section id="comments">
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+<script>
+  var disqus_shortname = 'shomy';
+  
+  var disqus_url = 'http://shomy.top/2016/03/29/linux-bash-find/';
+  
+  (function(){
+    var dsq = document.createElement('script');
+    dsq.type = 'text/javascript';
+    dsq.async = true;
+    dsq.src = 'https://' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  }());
+</script>
+</section>
+
+
+
+
+</section>
+      </div>
+    </div>
+    
+    
+<a id="rocket" href="#top" ></a>
+
+<script src="https://cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <script src="http://cdn.htliu.cn/static/js/leancloud.js"></script>
+<script>AV.initialize("k883AKdzaz5jccQnH1eIrG2r-gzGzoHsz", "4HBQOmslEp3VdwK1SGL8vB9Y");</script>
+
+<script src="/js/Counter.js"></script>
+
+
+
+
+
+<script id="dsq-count-scr" src="//shomy.disqus.com/count.js" async></script>
+ 
+
+
+  <script src="https://cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.js"></script>
+  
+<script src="/js/fancybox.js"></script>
+
+
+
+
+  
+<script src="/js/search.js"></script>
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

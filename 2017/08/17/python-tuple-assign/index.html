@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Python中tuple+=赋值的四个问题 | 天空的城</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="最近偶尔翻看Fluent Python，遇到有意思的东西就记下来. 下面的是在PyCon2013上提出的一个关于tuple的Augmented Assignment也就是增量赋值的一个问题。 并且基于此问题, 又引申出3个变种问题.  问题 首先看第一个问题, 如下面的代码段: 12&gt;&gt;&gt; t &#x3D; (1,2, [30,40])&gt;&gt;&gt; t[2] +&#x3D; [50,6">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Python中tuple+&#x3D;赋值的四个问题">
+<meta property="og:url" content="http://shomy.top/2017/08/17/python-tuple-assign/index.html">
+<meta property="og:site_name" content="天空的城">
+<meta property="og:description" content="最近偶尔翻看Fluent Python，遇到有意思的东西就记下来. 下面的是在PyCon2013上提出的一个关于tuple的Augmented Assignment也就是增量赋值的一个问题。 并且基于此问题, 又引申出3个变种问题.  问题 首先看第一个问题, 如下面的代码段: 12&gt;&gt;&gt; t &#x3D; (1,2, [30,40])&gt;&gt;&gt; t[2] +&#x3D; [50,6">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2017-08-17T14:34:00.000Z">
+<meta property="article:modified_time" content="2021-12-16T15:11:45.669Z">
+<meta property="article:author" content="ShomyLiu">
+<meta property="article:tag" content="python">
+<meta name="twitter:card" content="summary">
+  
+  
+    <link rel="icon" href="/image/favicon.ico">
+  
+
+  
+  <link href="https://cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.css" rel="stylesheet">
+  
+  <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  <link href="https://cdn.bootcss.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+<!-- Google Analytics -->
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-74368890-2', 'auto');
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+
+
+  
+
+  
+  <div class="site-search header-inner">
+    <div class="popup">
+        <span class="search-icon fa fa-search"></span>
+        <input type="text" id="local-search-input">
+        <div id="local-search-result"></div>
+        <span class="popup-btn-close">close</span>
+    </div>
+</div>
+
+
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      
+<header id="header">
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">天空的城</a>
+      </h1>
+      
+    </div>
+    <div id="header-menu">
+      <nav id="main-nav">
+        <ul>
+        
+          <li><a href="/"><i class="fa fa-home icon-setting"></i></a></li>
+        
+          <li><a href="/archives"><i class="fa fa-archive icon-setting"></i></a></li>
+        
+          <li><a href="/tags"><i class="fa fa-tag icon-setting"></i></a></li>
+        
+          <li><a href="/about"><i class="fa fa-user icon-setting"></i></a></li>
+        
+        
+          <li><a href="javascript:;" class="popup-trigger"><i class="fa fa-search > icon-setting"></i></a></li>
+        
+        </ul>
+      </nav>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-python-tuple-assign" class="article article-type-post" itemscope itemprop="blogPost">
+  
+  <div class="article-meta">
+    <a href="/2017/08/17/python-tuple-assign/" class="article-date">
+  <time datetime="2017-08-17T14:34:00.000Z" itemprop="datePublished">2017-08-17</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">编程语言</a>
+  </div>
+
+
+    
+        <div class="counter-tag counter">
+    <!-- 别忘记这个类名... post-title-link -->
+    <span id="/2017/08/17/python-tuple-assign/" class="leancloud_visitors article-hits post-title-link"
+           data-flag-title="Python中tuple+=赋值的四个问题">
+        次阅读
+    </span>
+
+  </div>
+
+    
+
+  </div>
+  
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Python中tuple+=赋值的四个问题
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+            <div id="toc" class="toc-article">
+                <strong class="toc-title">文章目录</strong>
+                <ol class="post-toc"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E9%97%AE%E9%A2%98"><span class="post-toc-text">问题</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E5%8E%9F%E5%9B%A0"><span class="post-toc-text">原因</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E6%80%BB%E7%BB%93"><span class="post-toc-text">总结</span></a></li></ol>
+            </div>
+        
+        
+        <blockquote>
+<p>最近偶尔翻看Fluent Python，遇到有意思的东西就记下来. 下面的是在PyCon2013上提出的一个关于<code>tuple</code>的Augmented Assignment也就是增量赋值的一个问题。 并且基于此问题, 又引申出3个变种问题.</p>
+</blockquote>
+<h2 id="问题">问题</h2>
+<p>首先看第一个问题, 如下面的代码段: <figure class="highlight python-repl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt;</span> <span class="python">t = (<span class="number">1</span>,<span class="number">2</span>, [<span class="number">30</span>,<span class="number">40</span>])</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt;</span> <span class="python">t[<span class="number">2</span>] += [<span class="number">50</span>,<span class="number">60</span>]</span></span><br></pre></td></tr></table></figure></p>
+<span id="more"></span>
+<p>会产生什么结果呢？ 给出了四个选项: 1. <code>t</code> 变成 <code>[1,2, [30,40,50,60]</code> 2. <code>TypeError is raised with the message 'tuple' object does not support item assignment</code> 3. Neither 1 nor 2 4. Both 1 and 2</p>
+<p>按照之前的理解, <code>tuple</code>里面的元素是不能被修改的，因此会选<code>2</code>. 如果真是这样的话，这篇笔记就没必要了，Fluent Python中也就不会拿出一节来讲了。 正确答案是<code>4</code> <figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; t = (<span class="number">1</span>,<span class="number">2</span>,<span class="selector-attr">[30,40]</span>)</span><br><span class="line">&gt;&gt;&gt; t<span class="selector-attr">[2]</span> += <span class="selector-attr">[50,60]</span></span><br><span class="line">Traceback (most recent call last):</span><br><span class="line">  File <span class="string">&quot;&lt;stdin&gt;&quot;</span>, line <span class="number">1</span>, <span class="keyword">in</span> &lt;module&gt;</span><br><span class="line">TypeError: <span class="string">&#x27;tuple&#x27;</span> <span class="selector-tag">object</span> does not support item assignment</span><br><span class="line">&gt;&gt;&gt; t</span><br><span class="line">(<span class="number">1</span>, <span class="number">2</span>, <span class="selector-attr">[30, 40, 50, 60]</span>)</span><br></pre></td></tr></table></figure> 问题来了，为什么异常都出来了， <code>t</code>还是变了? 再看第二种情况，稍微变化一下,将<code>+=</code>变为<code>=</code>: <figure class="highlight python-repl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt;</span> <span class="python">t = (<span class="number">1</span>,<span class="number">2</span>, [<span class="number">30</span>,<span class="number">40</span>])</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt;</span> <span class="python">t[<span class="number">2</span>] = [<span class="number">50</span>,<span class="number">60</span>]</span></span><br></pre></td></tr></table></figure> 结果就成酱紫了: <figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; t = (<span class="number">1</span>,<span class="number">2</span>, <span class="selector-attr">[30,40]</span>)</span><br><span class="line">&gt;&gt;&gt; t<span class="selector-attr">[2]</span> = <span class="selector-attr">[50,60]</span></span><br><span class="line">Traceback (most recent call last):</span><br><span class="line">  File <span class="string">&quot;&lt;stdin&gt;&quot;</span>, line <span class="number">1</span>, <span class="keyword">in</span> &lt;module&gt;</span><br><span class="line">TypeError: <span class="string">&#x27;tuple&#x27;</span> <span class="selector-tag">object</span> does not support item assignment</span><br><span class="line">&gt;&gt;&gt; t</span><br><span class="line">(<span class="number">1</span>, <span class="number">2</span>, <span class="selector-attr">[30, 40]</span>)</span><br></pre></td></tr></table></figure> 再看第三种情况,只把<code>+=</code>换为<code>extend</code>或者<code>append</code>,: <figure class="highlight python-repl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt;</span> <span class="python">t = (<span class="number">1</span>, <span class="number">2</span>, [<span class="number">30</span>,<span class="number">40</span>])</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt;</span> <span class="python">t[<span class="number">2</span>].extend([<span class="number">50</span>,<span class="number">60</span>])</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt;</span> <span class="python">t</span></span><br><span class="line">(1, 2, [30, 40, 50, 60])</span><br><span class="line"><span class="meta">&gt;&gt;&gt;</span> <span class="python">t[<span class="number">2</span>].append(<span class="number">70</span>)</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt;</span> <span class="python">t</span></span><br><span class="line">(1, 2, [30, 40, 50, 60, 70])</span><br><span class="line"></span><br></pre></td></tr></table></figure> 又正常了,没抛出异常?</p>
+<p>最后第四种情况, 用变量的形式: <figure class="highlight python-repl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt;</span> <span class="python">a = [<span class="number">30</span>,<span class="number">40</span>]</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt;</span> <span class="python">t = (<span class="number">1</span>, <span class="number">2</span>, a)</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt;</span> <span class="python">a+=[<span class="number">50</span>,<span class="number">60</span>]</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt;</span> <span class="python">a</span></span><br><span class="line">[30, 40, 50, 60]</span><br><span class="line"><span class="meta">&gt;&gt;&gt;</span> <span class="python">t</span></span><br><span class="line">(1, 2, [30, 40, 50, 60])</span><br><span class="line"><span class="meta">&gt;&gt;&gt;</span> <span class="python">t[<span class="number">2</span>] += [<span class="number">70</span>,<span class="number">80</span>]</span></span><br><span class="line">Traceback (most recent call last):</span><br><span class="line">  File &quot;&lt;stdin&gt;&quot;, line 1, in &lt;module&gt;</span><br><span class="line">TypeError: &#x27;tuple&#x27; object does not support item assignment</span><br><span class="line"><span class="meta">&gt;&gt;&gt;</span> <span class="python">t</span></span><br><span class="line">(1, 2, [30, 40, 50, 60, 70, 80])</span><br></pre></td></tr></table></figure> 又是一种情况, 下面就探究一下其中的原因.</p>
+<h2 id="原因">原因</h2>
+<p>首先需要重温<code>+=</code>这个运算符,如<code>a+=b</code>:</p>
+<ul>
+<li>对于可变对象(mutable object)如<code>list</code>, <code>+=</code>操作的结果会直接在<code>a</code>对应的变量进行修改，而<code>a</code>对应的地址不变.</li>
+<li>对于不可变对象(imutable object)如<code>tuple</code>, <code>+=</code>则是等价于<code>a = a+b</code> 会产生新的变量，然后绑定到<code>a</code>上而已.</li>
+</ul>
+<p>如下代码段, 可以看出来: <figure class="highlight python-repl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt;</span> <span class="python">a = [<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>]</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt;</span> <span class="python"><span class="built_in">id</span>(a)</span></span><br><span class="line">53430752</span><br><span class="line"><span class="meta">&gt;&gt;&gt;</span> <span class="python">a+=[<span class="number">4</span>,<span class="number">5</span>]</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt;</span> <span class="python">a</span></span><br><span class="line">[1, 2, 3, 4, 5]</span><br><span class="line"><span class="meta">&gt;&gt;&gt;</span> <span class="python"><span class="built_in">id</span>(a)</span></span><br><span class="line">53430752 # 地址没有变化</span><br><span class="line"><span class="meta">&gt;&gt;&gt;</span> <span class="python">b = (<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>)</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt;</span> <span class="python"><span class="built_in">id</span>(b)</span></span><br><span class="line">49134888</span><br><span class="line"><span class="meta">&gt;&gt;&gt;</span> <span class="python">b += (<span class="number">4</span>,<span class="number">5</span>)</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt;</span> <span class="python">b</span></span><br><span class="line">(1, 2, 3, 4, 5)</span><br><span class="line"><span class="meta">&gt;&gt;&gt;</span> <span class="python"><span class="built_in">id</span>(b)</span></span><br><span class="line">48560912 # 地址变化了</span><br></pre></td></tr></table></figure></p>
+<p>此外还需要注意的是, python中的<code>tuple</code>作为不可变对象, 也就是我们平时说的元素不能改变, 实际上从报错信息<code>TypeError: 'tuple' object does not support item assignment</code>来看, 更准确的说法是指其中的元素不支持赋值操作<code>=</code>(<strong>assignment</strong>).</p>
+<p>先看最简单的第二种情况, 它的结果是符合我们的预期, 因为<code>=</code>产生了<code>assign</code>的操作.(在<a href="http://shomy.top/2016/03/01/python-namespace-1/">由一个例子到python的名字空间</a> 中指出了赋值操作<code>=</code>就是创建新的变量), 因此<code>s[2]=[50,60]</code>就会抛出异常.</p>
+<p>再看第三种情况,包含<code>extend/append</code>的, 结果tuple中的列表值发生了变化,但是没有异常抛出. 这个其实也相对容易理解. 因为我们知道<code>tuple</code>中存储的其实是元素所对应的地址(id), 因此如果没有赋值操作且tuple中的元素的<code>id</code>不变,即可,而<code>list.extend/append</code>只是修改了列表的元素,而列表本身id并没有变化,看看下面的例子: <figure class="highlight python-repl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt;</span> <span class="python">a=(<span class="number">1</span>,<span class="number">2</span>,[<span class="number">30</span>,<span class="number">40</span>])</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt;</span> <span class="python"><span class="built_in">id</span>(a[<span class="number">2</span>])</span></span><br><span class="line">140628739513736</span><br><span class="line"><span class="meta">&gt;&gt;&gt;</span> <span class="python">a[<span class="number">2</span>].extend([<span class="number">50</span>,<span class="number">60</span>])</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt;</span> <span class="python">a</span></span><br><span class="line">(1, 2, [30, 40, 50, 60])</span><br><span class="line"><span class="meta">&gt;&gt;&gt;</span> <span class="python"><span class="built_in">id</span>(a[<span class="number">2</span>])</span></span><br><span class="line">140628739513736</span><br></pre></td></tr></table></figure> 目前解决了第二个和第三个问题, 先梳理一下, 其实就是两点:</p>
+<ul>
+<li>tuple内部的元素不支持赋值操作</li>
+<li>在第一条的基础上, 如果元素的<code>id</code>没有变化, 元素其实是可以改变的.</li>
+</ul>
+<p>现在再来看最初的第一个问题: <code>t[2] += [50,60]</code> 按照上面的结论, 不应该抛异常啊,因为在我们看来<code>+=</code> 对于可变对象<code>t[2]</code>来说, 属于<code>in-place</code>操作,也就是直接修改自身的内容, <code>id</code>并不变, 确认下id并没有变化: <figure class="highlight python-repl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt;</span> <span class="python">a=(<span class="number">1</span>,<span class="number">2</span>,[<span class="number">30</span>,<span class="number">40</span>])</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt;</span> <span class="python"><span class="built_in">id</span>(a[<span class="number">2</span>])</span></span><br><span class="line">140628739587392</span><br><span class="line"><span class="meta">&gt;&gt;&gt;</span> <span class="python">a[<span class="number">2</span>]+=[<span class="number">50</span>,<span class="number">60</span>]</span></span><br><span class="line">Traceback (most recent call last):</span><br><span class="line">  File &quot;&lt;stdin&gt;&quot;, line 1, in &lt;module&gt;</span><br><span class="line">TypeError: &#x27;tuple&#x27; object does not support item assignment</span><br><span class="line"><span class="meta">&gt;&gt;&gt;</span> <span class="python">a</span></span><br><span class="line">(1, 2, [30, 40, 50, 60])</span><br><span class="line"><span class="meta">&gt;&gt;&gt;</span> <span class="python"><span class="built_in">id</span>(a[<span class="number">2</span>]) <span class="comment"># ID 并没有发生改变</span></span></span><br><span class="line">140628739587392</span><br><span class="line"></span><br></pre></td></tr></table></figure> 跟第三个问题仅仅从<code>t[2].extend</code>改成了<code>t[2]+=</code>, 就抛出异常了,所以问题应该是出在<code>+=</code>上了. 下面用<code>dis</code>模块看看它俩执行的步骤: 对下面的代码块执行<code>dis</code>: <figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">t</span> = (<span class="number">1</span>,<span class="number">2</span>,<span class="meta"> [30,40])</span></span><br><span class="line"><span class="meta">t[2] += [50,60]</span></span><br><span class="line"><span class="attribute">t</span>[<span class="number">2</span>].extend([<span class="number">70</span>, <span class="number">80</span>])</span><br></pre></td></tr></table></figure> 执行<code>python -m dis test.py</code>,结果如下，下面只保留第2,3行代码的执行过程，以及关键步骤的注释如下: <figure class="highlight tap"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">2         <span class="number"> 21 </span>LOAD_NAME               <span class="number"> 0 </span>(t)</span><br><span class="line">          <span class="number"> 24 </span>LOAD_CONST              <span class="number"> 1 </span>(2)</span><br><span class="line">          <span class="number"> 27 </span>DUP_TOPX                 2</span><br><span class="line">          <span class="number"> 30 </span>BINARY_SUBSCR							</span><br><span class="line">          <span class="number"> 31 </span>LOAD_CONST              <span class="number"> 4 </span>(50)</span><br><span class="line">          <span class="number"> 34 </span>LOAD_CONST              <span class="number"> 5 </span>(60)</span><br><span class="line">          <span class="number"> 37 </span>BUILD_LIST               2			 </span><br><span class="line">          <span class="number"> 40 </span>INPLACE_ADD</span><br><span class="line">          <span class="number"> 41 </span>ROT_THREE</span><br><span class="line">          <span class="number"> 42 </span>STORE_SUBSCR</span><br><span class="line"></span><br><span class="line">3         <span class="number"> 43 </span>LOAD_NAME               <span class="number"> 0 </span>(t)</span><br><span class="line">          <span class="number"> 46 </span>LOAD_CONST              <span class="number"> 1 </span>(2)</span><br><span class="line">          <span class="number"> 49 </span>BINARY_SUBSCR</span><br><span class="line">          <span class="number"> 50 </span>LOAD_ATTR               <span class="number"> 1 </span>(extend)</span><br><span class="line">          <span class="number"> 53 </span>LOAD_CONST              <span class="number"> 6 </span>(70)</span><br><span class="line">          <span class="number"> 56 </span>LOAD_CONST              <span class="number"> 7 </span>(80)</span><br><span class="line">          <span class="number"> 59 </span>BUILD_LIST               2</span><br><span class="line">          <span class="number"> 62 </span>CALL_FUNCTION            1</span><br><span class="line">          <span class="number"> 65 </span>POP_TOP</span><br><span class="line">          <span class="number"> 66 </span>LOAD_CONST              <span class="number"> 8 </span>(None)</span><br><span class="line">          <span class="number"> 69 </span>RETURN_VALUE</span><br></pre></td></tr></table></figure> 解释一下关键的语句:</p>
+<ul>
+<li><code>30 BINARY_SUBSCR</code>: 表示将<code>t[2]</code>的值放在TOS(Top of Stack)，这里是指<code>[30, 40]</code>这个列表</li>
+<li><code>40 INPLACE_ADD</code>: 表示<code>TOS += [50,60]</code> 执行这一步是可以成功的，修改了TOS的列表为<code>[30,40,50,60]</code></li>
+<li><code>42 STORE_SUBSCR</code>: 表示<code>s[2] = TOS</code> 问题就出在这里了，这里产生了一个<strong>赋值操作</strong>，因此会抛异常！但是上述对列表的修改已经完成, 这也就解释了开篇的第一个问题。</li>
+</ul>
+<p>再看<code>extend</code>的过程，前面都一样，只有这一行:</p>
+<ul>
+<li><code>62 CALL_FUNCTION</code>: 这个直接调用内置extend函数完成了对原列表的修改，其中并没有<code>assign</code>操作，因此可以正常执行。</li>
+</ul>
+<p>现在逐渐清晰了， 换句话说，<code>+=</code><strong>并不是原子操作</strong>，相当于下面的两步: <figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">t</span>[<span class="number">2</span>].extend([<span class="number">50</span>,<span class="number">60</span>])</span><br><span class="line"><span class="attribute">t</span>[<span class="number">2</span>] = t[<span class="number">2</span>]</span><br></pre></td></tr></table></figure> 第一步可以正确执行，但是第二步有了<code>=</code>，肯定会抛异常的。 同样这也可以解释在使用<code>+=</code>的时候，为何<code>t[2]</code>的<code>id</code>明明没有变化，但是仍然抛出异常了。</p>
+<p>现在用一句话总结下:</p>
+<blockquote>
+<p>tuple中元素不支持<code>assign</code>操作，但是对于那些是可变对象的元素如列表，字典等，在没有<code>assign</code>操作的基础上，比如一些<code>in-place</code>操作，是可以修改内容的</p>
+</blockquote>
+<p>可以用第四个问题来简单验证一下，使用一个指向<code>[30,40]</code>的名称<code>a</code>来作为元素的值，然后对<code>a</code>做<code>in-place</code>的修改，其中并没有涉及到对tuple的<code>assign</code>操作，那肯定是正常执行的。</p>
+<h2 id="总结">总结</h2>
+<p>这个问题其实以前也就遇到过，但是没想过具体的原理，后来翻书的时候又看到了， 于是花了点时间把这一个系列查了部分资料以及结合自己的理解都整理了出来, 算是饭后茶点吧, 不严谨的地方烦请指出.</p>
+<p>部分参考如下:</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="http://bugs.python.org/issue11562">python bugs</a></li>
+<li><a target="_blank" rel="noopener" href="https://docs.python.org/2/faq/programming.html#why-does-a-tuple-i-item-raise-an-exception-when-the-addition-works">python faq</a></li>
+<li><a target="_blank" rel="noopener" href="https://stackoverflow.com/questions/10397121/why-does-of-a-list-within-a-python-tuple-raise-typeerror-but-modify-the-list">stackoverflow</a></li>
+<li>Fluent Python</li>
+</ul>
+
+      
+    </div>
+
+
+    
+
+    
+	    <div class="article-footer-copyright">
+<!--<p>本文作者: shomy 发表于 <a href="http://shomy.top" target="_blank">个人博客</a></p> -->
+<p>
+本文标题: Python中tuple+=赋值的四个问题<br/>
+</p>
+<p>
+发布时间: 2017-08-17, 22:34:00<br/>
+<p>
+<p>
+最后更新: 2021-12-16, 23:11:45<br/>
+<p>
+本文链接: <a href="/2017/08/17/python-tuple-assign/" target="_blank">http://shomy.top/2017/08/17/python-tuple-assign/</a>
+</p>
+<p>非商业转载请注明作者及出处。商业转载请联系<a href="mailto:shomyliu@gmail.com">作者</a>本人。</p>
+</div>
+
+    
+
+    <footer class="article-footer">
+      
+        <a href="http://shomy.top/2017/08/17/python-tuple-assign/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/python/" rel="tag">python</a></li></ul>
+
+    </footer>
+    
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2017/09/29/codings-webhook/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          使用coding/github的webhook实现自动化部署
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2017/07/29/Hexo-admin-for-blogs/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">Hexo-admin后台管理博客</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+
+
+<section id="comments">
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+<script>
+  var disqus_shortname = 'shomy';
+  
+  var disqus_url = 'http://shomy.top/2017/08/17/python-tuple-assign/';
+  
+  (function(){
+    var dsq = document.createElement('script');
+    dsq.type = 'text/javascript';
+    dsq.async = true;
+    dsq.src = 'https://' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  }());
+</script>
+</section>
+
+
+
+
+</section>
+      </div>
+    </div>
+    
+    
+<a id="rocket" href="#top" ></a>
+
+<script src="https://cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <script src="http://cdn.htliu.cn/static/js/leancloud.js"></script>
+<script>AV.initialize("k883AKdzaz5jccQnH1eIrG2r-gzGzoHsz", "4HBQOmslEp3VdwK1SGL8vB9Y");</script>
+
+<script src="/js/Counter.js"></script>
+
+
+
+
+
+<script id="dsq-count-scr" src="//shomy.disqus.com/count.js" async></script>
+ 
+
+
+  <script src="https://cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.js"></script>
+  
+<script src="/js/fancybox.js"></script>
+
+
+
+
+  
+<script src="/js/search.js"></script>
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

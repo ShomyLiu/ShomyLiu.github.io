@@ -1,0 +1,1299 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>天空的城</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta property="og:type" content="website">
+<meta property="og:title" content="天空的城">
+<meta property="og:url" content="http://shomy.top/page/2/index.html">
+<meta property="og:site_name" content="天空的城">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:author" content="ShomyLiu">
+<meta name="twitter:card" content="summary">
+  
+  
+    <link rel="icon" href="/image/favicon.ico">
+  
+
+  
+  <link href="https://cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.css" rel="stylesheet">
+  
+  <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  <link href="https://cdn.bootcss.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+<!-- Google Analytics -->
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-74368890-2', 'auto');
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+
+
+  
+
+  
+  <div class="site-search header-inner">
+    <div class="popup">
+        <span class="search-icon fa fa-search"></span>
+        <input type="text" id="local-search-input">
+        <div id="local-search-result"></div>
+        <span class="popup-btn-close">close</span>
+    </div>
+</div>
+
+
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      
+<header id="header">
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">天空的城</a>
+      </h1>
+      
+    </div>
+    <div id="header-menu">
+      <nav id="main-nav">
+        <ul>
+        
+          <li><a href="/"><i class="fa fa-home icon-setting"></i></a></li>
+        
+          <li><a href="/archives"><i class="fa fa-archive icon-setting"></i></a></li>
+        
+          <li><a href="/tags"><i class="fa fa-tag icon-setting"></i></a></li>
+        
+          <li><a href="/about"><i class="fa fa-user icon-setting"></i></a></li>
+        
+        
+          <li><a href="javascript:;" class="popup-trigger"><i class="fa fa-search > icon-setting"></i></a></li>
+        
+        </ul>
+      </nav>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main">
+  
+    <article id="post-neo4j-aminer-import" class="article article-type-post" itemscope itemprop="blogPost">
+  
+  <div class="article-meta">
+    <a href="/2018/06/26/neo4j-aminer-import/" class="article-date">
+  <time datetime="2018-06-26T00:49:46.000Z" itemprop="datePublished">2018-06-26</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E5%B7%A5%E5%85%B7%E4%BD%BF%E7%94%A8/">工具使用</a>
+  </div>
+
+
+    
+        <div class="counter-tag counter">
+    <!-- 别忘记这个类名... post-title-link -->
+    <span id="/2018/06/26/neo4j-aminer-import/" class="leancloud_visitors article-hits post-title-link"
+           data-flag-title="Neo4j导入Aminer论文数据">
+        次阅读
+    </span>
+
+  </div>
+
+    
+
+  </div>
+  
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/06/26/neo4j-aminer-import/">Neo4j导入Aminer论文数据</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <blockquote>
+<p>2018.12.2更新：使用<code>neo-admin import</code> 导入全量的Aminer数据到Neo4j.</p>
+</blockquote>
+        
+          <p class="article-more-link">
+            <a href="/2018/06/26/neo4j-aminer-import/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+
+
+    
+
+    
+
+    <footer class="article-footer">
+      
+        <a href="http://shomy.top/2018/06/26/neo4j-aminer-import/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/aminer/" rel="tag">aminer</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/graph/" rel="tag">graph</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/neo4j/" rel="tag">neo4j</a></li></ul>
+
+    </footer>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+
+  
+    <article id="post-neo4j-start" class="article article-type-post" itemscope itemprop="blogPost">
+  
+  <div class="article-meta">
+    <a href="/2018/06/08/neo4j-start/" class="article-date">
+  <time datetime="2018-06-08T12:52:49.000Z" itemprop="datePublished">2018-06-08</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E5%B7%A5%E5%85%B7%E4%BD%BF%E7%94%A8/">工具使用</a>
+  </div>
+
+
+    
+        <div class="counter-tag counter">
+    <!-- 别忘记这个类名... post-title-link -->
+    <span id="/2018/06/08/neo4j-start/" class="leancloud_visitors article-hits post-title-link"
+           data-flag-title="Neo4j初探">
+        次阅读
+    </span>
+
+  </div>
+
+    
+
+  </div>
+  
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/06/08/neo4j-start/">Neo4j初探</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <blockquote>
+<p>2018.10.28 更新: docker 安装Neo4j的坑</p>
+</blockquote>
+<p>使用docker安装neo4j，官网文档有误，安装之后启动失败; 官网文档上错误的启动命令:
+        
+          <p class="article-more-link">
+            <a href="/2018/06/08/neo4j-start/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+
+
+    
+
+    
+
+    <footer class="article-footer">
+      
+        <a href="http://shomy.top/2018/06/08/neo4j-start/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/graph/" rel="tag">graph</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/neo4j/" rel="tag">neo4j</a></li></ul>
+
+    </footer>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+
+  
+    <article id="post-2017-review" class="article article-type-post" itemscope itemprop="blogPost">
+  
+  <div class="article-meta">
+    <a href="/2018/03/01/2017-review/" class="article-date">
+  <time datetime="2018-03-01T03:15:09.000Z" itemprop="datePublished">2018-03-01</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E4%B8%AA%E4%BA%BA%E5%BF%83%E5%BE%97/">个人心得</a>
+  </div>
+
+
+    
+        <div class="counter-tag counter">
+    <!-- 别忘记这个类名... post-title-link -->
+    <span id="/2018/03/01/2017-review/" class="leancloud_visitors article-hits post-title-link"
+           data-flag-title="2017">
+        次阅读
+    </span>
+
+  </div>
+
+    
+
+  </div>
+  
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/03/01/2017-review/">2017</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p><img src="http://cdn.htliu.cn/blog/2017-review/2017-1.png" /></p>
+<p>翻看了一下从<a href="http://shomy.top/2017/01/28/2016-review/">2016总结</a>开始，到现在一年时间写了16篇博客，也算是对匆匆学习生活的一种留念吧。</p>
+        
+          <p class="article-more-link">
+            <a href="/2018/03/01/2017-review/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+
+
+    
+
+    
+
+    <footer class="article-footer">
+      
+        <a href="http://shomy.top/2018/03/01/2017-review/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/2017/" rel="tag">2017</a></li></ul>
+
+    </footer>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+
+  
+    <article id="post-relation-extraction" class="article article-type-post" itemscope itemprop="blogPost">
+  
+  <div class="article-meta">
+    <a href="/2018/02/28/relation-extraction/" class="article-date">
+  <time datetime="2018-02-28T03:58:30.000Z" itemprop="datePublished">2018-02-28</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/">读书笔记</a>
+  </div>
+
+
+    
+        <div class="counter-tag counter">
+    <!-- 别忘记这个类名... post-title-link -->
+    <span id="/2018/02/28/relation-extraction/" class="leancloud_visitors article-hits post-title-link"
+           data-flag-title="关系抽取(分类)总结">
+        次阅读
+    </span>
+
+  </div>
+
+    
+
+  </div>
+  
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2018/02/28/relation-extraction/">关系抽取(分类)总结</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <blockquote>
+<p>2018.10.14更新: 增加全监督关系抽取PCNN的复现代码: <a target="_blank" rel="noopener" href="https://github.com/ShomyLiu/pytorch-pcnn">PCNN</a>.</p>
+</blockquote>
+<blockquote>
+<p>2018.07.08更新: 增加对远程监督两份数据集补充实验对比: <a href="http://shomy.top/2018/07/05/pytorch-relation-extraction/">关系抽取实验</a>.</p>
+</blockquote>
+<blockquote>
+<p>2018.04.04更新：增加对NYT+Freebase数据集的两个版本的说明</p>
+</blockquote>
+<blockquote>
+<p>对近几年(到2017)一些关系抽取/分类(Relation Extraction)的部分文献的一个简单总结。</p>
+</blockquote>
+        
+          <p class="article-more-link">
+            <a href="/2018/02/28/relation-extraction/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+
+
+    
+
+    
+
+    <footer class="article-footer">
+      
+        <a href="http://shomy.top/2018/02/28/relation-extraction/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Knowledge-Graph/" rel="tag">Knowledge Graph</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/NLP/" rel="tag">NLP</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/relation-extraction/" rel="tag">relation-extraction</a></li></ul>
+
+    </footer>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+
+  
+    <article id="post-Feature-Scaling-Batch-Norm" class="article article-type-post" itemscope itemprop="blogPost">
+  
+  <div class="article-meta">
+    <a href="/2017/12/05/Feature-Scaling-Batch-Norm/" class="article-date">
+  <time datetime="2017-12-05T08:50:00.000Z" itemprop="datePublished">2017-12-05</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/">读书笔记</a>
+  </div>
+
+
+    
+        <div class="counter-tag counter">
+    <!-- 别忘记这个类名... post-title-link -->
+    <span id="/2017/12/05/Feature-Scaling-Batch-Norm/" class="leancloud_visitors article-hits post-title-link"
+           data-flag-title="Feature Scaling 和 Batch Norm 笔记">
+        次阅读
+    </span>
+
+  </div>
+
+    
+
+  </div>
+  
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/12/05/Feature-Scaling-Batch-Norm/">Feature Scaling 和 Batch Norm 笔记</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <blockquote>
+<p>Batch Normlization是2015年提出的一个加速神经网络训练的技巧，同时对performance也有一定的提高，现在基本已经广泛使用了。这里相对完整的整理一下学习笔记。主要参考李宏毅老师的机器学习课程。</p>
+</blockquote>
+<h2 id="从feature-scaling-开始">从Feature Scaling 开始</h2>
+        
+          <p class="article-more-link">
+            <a href="/2017/12/05/Feature-Scaling-Batch-Norm/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+
+
+    
+
+    
+
+    <footer class="article-footer">
+      
+        <a href="http://shomy.top/2017/12/05/Feature-Scaling-Batch-Norm/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/machine-learning/" rel="tag">machine learning</a></li></ul>
+
+    </footer>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+
+  
+    <article id="post-codings-webhook" class="article article-type-post" itemscope itemprop="blogPost">
+  
+  <div class="article-meta">
+    <a href="/2017/09/29/codings-webhook/" class="article-date">
+  <time datetime="2017-09-29T09:48:00.000Z" itemprop="datePublished">2017-09-29</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E5%B7%A5%E5%85%B7%E4%BD%BF%E7%94%A8/">工具使用</a>
+  </div>
+
+
+    
+        <div class="counter-tag counter">
+    <!-- 别忘记这个类名... post-title-link -->
+    <span id="/2017/09/29/codings-webhook/" class="leancloud_visitors article-hits post-title-link"
+           data-flag-title="使用coding/github的webhook实现自动化部署">
+        次阅读
+    </span>
+
+  </div>
+
+    
+
+  </div>
+  
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/09/29/codings-webhook/">使用coding/github的webhook实现自动化部署</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="需求">需求</h2>
+<p>一些代码托管网站比如coding.net/github.com 等都提供了webhook的工具， 经常用于自动化部署。 之前写过一篇博客<a href="http://shomy.top/2016/04/14/git-server-hook/">搭建git服务器以及web自动化部署</a> 主要记录的是在自己服务器上如何搭建git服务，并且利用hook进行自动化部署。不过这种方式有个缺点，没有像github或者coding.net的web界面，管理起来可能稍微麻烦，因此我们还是习惯在github,coding.net上进行代码托管。然后再部署到服务器上，这样有些不方便。还好这些托管网站均提供了webhook的工具，功能与git的hook一致。
+        
+          <p class="article-more-link">
+            <a href="/2017/09/29/codings-webhook/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+
+
+    
+
+    
+
+    <footer class="article-footer">
+      
+        <a href="http://shomy.top/2017/09/29/codings-webhook/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hook/" rel="tag">hook</a></li></ul>
+
+    </footer>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+
+  
+    <article id="post-python-tuple-assign" class="article article-type-post" itemscope itemprop="blogPost">
+  
+  <div class="article-meta">
+    <a href="/2017/08/17/python-tuple-assign/" class="article-date">
+  <time datetime="2017-08-17T14:34:00.000Z" itemprop="datePublished">2017-08-17</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">编程语言</a>
+  </div>
+
+
+    
+        <div class="counter-tag counter">
+    <!-- 别忘记这个类名... post-title-link -->
+    <span id="/2017/08/17/python-tuple-assign/" class="leancloud_visitors article-hits post-title-link"
+           data-flag-title="Python中tuple+=赋值的四个问题">
+        次阅读
+    </span>
+
+  </div>
+
+    
+
+  </div>
+  
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/08/17/python-tuple-assign/">Python中tuple+=赋值的四个问题</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <blockquote>
+<p>最近偶尔翻看Fluent Python，遇到有意思的东西就记下来. 下面的是在PyCon2013上提出的一个关于<code>tuple</code>的Augmented Assignment也就是增量赋值的一个问题。 并且基于此问题, 又引申出3个变种问题.</p>
+</blockquote>
+<h2 id="问题">问题</h2>
+<p>首先看第一个问题, 如下面的代码段: <figure class="highlight python-repl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt;</span> <span class="python">t = (<span class="number">1</span>,<span class="number">2</span>, [<span class="number">30</span>,<span class="number">40</span>])</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt;</span> <span class="python">t[<span class="number">2</span>] += [<span class="number">50</span>,<span class="number">60</span>]</span></span><br></pre></td></tr></table></figure></p>
+        
+          <p class="article-more-link">
+            <a href="/2017/08/17/python-tuple-assign/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+
+
+    
+
+    
+
+    <footer class="article-footer">
+      
+        <a href="http://shomy.top/2017/08/17/python-tuple-assign/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/python/" rel="tag">python</a></li></ul>
+
+    </footer>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+
+  
+    <article id="post-Hexo-admin-for-blogs" class="article article-type-post" itemscope itemprop="blogPost">
+  
+  <div class="article-meta">
+    <a href="/2017/07/29/Hexo-admin-for-blogs/" class="article-date">
+  <time datetime="2017-07-29T07:38:00.000Z" itemprop="datePublished">2017-07-29</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E5%B7%A5%E5%85%B7%E4%BD%BF%E7%94%A8/">工具使用</a>
+  </div>
+
+
+    
+        <div class="counter-tag counter">
+    <!-- 别忘记这个类名... post-title-link -->
+    <span id="/2017/07/29/Hexo-admin-for-blogs/" class="leancloud_visitors article-hits post-title-link"
+           data-flag-title="Hexo-admin后台管理博客">
+        次阅读
+    </span>
+
+  </div>
+
+    
+
+  </div>
+  
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/07/29/Hexo-admin-for-blogs/">Hexo-admin后台管理博客</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="需求">需求</h2>
+<p>像Hexo这种静态博客用起来很方便，但是硬伤就是没有后台管理，每次想写博客或者说想要修改原博客的话，都需要在本机上找markdown文件，修改之后发布，尤其是如果机器上没有安装hexo,git等工具的时候，就无法修改了。因此hexo可不可以以像wp,ghost这种有后台管理, 随时随地编辑博客呢?
+        
+          <p class="article-more-link">
+            <a href="/2017/07/29/Hexo-admin-for-blogs/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+
+
+    
+
+    
+
+    <footer class="article-footer">
+      
+        <a href="http://shomy.top/2017/07/29/Hexo-admin-for-blogs/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hexo/" rel="tag">hexo</a></li></ul>
+
+    </footer>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+
+  
+    <article id="post-word2vec-all" class="article article-type-post" itemscope itemprop="blogPost">
+  
+  <div class="article-meta">
+    <a href="/2017/07/28/word2vec-all/" class="article-date">
+  <time datetime="2017-07-28T07:42:21.000Z" itemprop="datePublished">2017-07-28</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/">读书笔记</a>
+  </div>
+
+
+    
+        <div class="counter-tag counter">
+    <!-- 别忘记这个类名... post-title-link -->
+    <span id="/2017/07/28/word2vec-all/" class="leancloud_visitors article-hits post-title-link"
+           data-flag-title="Word2vec数学原理全家桶">
+        次阅读
+    </span>
+
+  </div>
+
+    
+
+  </div>
+  
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/07/28/word2vec-all/">Word2vec数学原理全家桶</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>目前需要做Network Embedding方面的课题，而复杂网络本身就经常借鉴NLP的一些算法模型, Embedding也不例外. 因此先从Word Embedding入手。之前对Word Embedding(暂且翻译为词嵌入或者词向量)的理解就是将单词根据某种特征转为数值向量，再来做其他工作比如文本分类的工作。而word2vec则是word embedding的一种模型，也是目前使用最广的词向量模型, 由Google的Mikolov团队2013年提出。之前仅仅能够使用第三方库来训练直接使用, 对其中原理并没有多少理解, 这篇博客则比较完整的从背景知识到原理，参数训练等方面整理一下word2Vec。</p>
+        
+          <p class="article-more-link">
+            <a href="/2017/07/28/word2vec-all/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+
+
+    
+
+    
+
+    <footer class="article-footer">
+      
+        <a href="http://shomy.top/2017/07/28/word2vec-all/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/machine-learning/" rel="tag">machine learning</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/word2vec/" rel="tag">word2vec</a></li></ul>
+
+    </footer>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+
+  
+    <article id="post-alias-method-sampling" class="article article-type-post" itemscope itemprop="blogPost">
+  
+  <div class="article-meta">
+    <a href="/2017/05/09/alias-method-sampling/" class="article-date">
+  <time datetime="2017-05-08T16:04:32.000Z" itemprop="datePublished">2017-05-09</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/">读书笔记</a>
+  </div>
+
+
+    
+        <div class="counter-tag counter">
+    <!-- 别忘记这个类名... post-title-link -->
+    <span id="/2017/05/09/alias-method-sampling/" class="leancloud_visitors article-hits post-title-link"
+           data-flag-title="Alias Method离散分布随机取样">
+        次阅读
+    </span>
+
+  </div>
+
+    
+
+  </div>
+  
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/05/09/alias-method-sampling/">Alias Method离散分布随机取样</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <blockquote>
+<p>在图的随机游走中，有一块需要随机取样， 比如当前到达v节点，那么下一次随机会到达哪个节点。这种问题其实就是离散分布的随机变量的取样问题。 查了一些资料， 发现<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Alias_method">Alias Method</a> 是一种很高效的方式。
+        
+          <p class="article-more-link">
+            <a href="/2017/05/09/alias-method-sampling/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+
+
+    
+
+    
+
+    <footer class="article-footer">
+      
+        <a href="http://shomy.top/2017/05/09/alias-method-sampling/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/alias-method/" rel="tag">alias method</a></li></ul>
+
+    </footer>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+
+  
+    <article id="post-adaptive-boosting" class="article article-type-post" itemscope itemprop="blogPost">
+  
+  <div class="article-meta">
+    <a href="/2017/03/16/adaptive-boosting/" class="article-date">
+  <time datetime="2017-03-16T12:55:55.000Z" itemprop="datePublished">2017-03-16</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/">读书笔记</a>
+  </div>
+
+
+    
+        <div class="counter-tag counter">
+    <!-- 别忘记这个类名... post-title-link -->
+    <span id="/2017/03/16/adaptive-boosting/" class="leancloud_visitors article-hits post-title-link"
+           data-flag-title="机器学习技法笔记(10)-AdaBoost(提升算法)">
+        次阅读
+    </span>
+
+  </div>
+
+    
+
+  </div>
+  
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/03/16/adaptive-boosting/">机器学习技法笔记(10)-AdaBoost(提升算法)</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>继上一节的Aggregation和Bagging，这一节对那一堆的g函数的产生做更深的探究，对训练数据引入权重的机制(Weight-Based)，加大错误数据的权重，缩小正确数据的权重，从而得到更加 Powerful的算法-AdaBoost</p>
+        
+          <p class="article-more-link">
+            <a href="/2017/03/16/adaptive-boosting/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+
+
+    
+
+    
+
+    <footer class="article-footer">
+      
+        <a href="http://shomy.top/2017/03/16/adaptive-boosting/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/AdaBoost/" rel="tag">AdaBoost</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/machine-learning/" rel="tag">machine learning</a></li></ul>
+
+    </footer>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+
+  
+    <article id="post-blending-bagging" class="article article-type-post" itemscope itemprop="blogPost">
+  
+  <div class="article-meta">
+    <a href="/2017/03/15/blending-bagging/" class="article-date">
+  <time datetime="2017-03-15T04:56:38.000Z" itemprop="datePublished">2017-03-15</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/">读书笔记</a>
+  </div>
+
+
+    
+        <div class="counter-tag counter">
+    <!-- 别忘记这个类名... post-title-link -->
+    <span id="/2017/03/15/blending-bagging/" class="leancloud_visitors article-hits post-title-link"
+           data-flag-title="机器学习技法笔记(9)-Blending and Bagging(模型融合)">
+        次阅读
+    </span>
+
+  </div>
+
+    
+
+  </div>
+  
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/03/15/blending-bagging/">机器学习技法笔记(9)-Blending and Bagging(模型融合)</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>前面的课程着重介绍某单一模型，比如逻辑回归，SVM等，从这一节开始以及接下来的3,4节的课程都是在介绍多个模型之间的融合得到一个新的模型的问题。</p>
+<h2 id="为什么要进行模型融合">为什么要进行模型融合</h2>
+        
+          <p class="article-more-link">
+            <a href="/2017/03/15/blending-bagging/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+
+
+    
+
+    
+
+    <footer class="article-footer">
+      
+        <a href="http://shomy.top/2017/03/15/blending-bagging/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/blending-bagging/" rel="tag">blending bagging</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/machine-learning/" rel="tag">machine learning</a></li></ul>
+
+    </footer>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+
+  
+    <article id="post-tensorflow-basic-api" class="article article-type-post" itemscope itemprop="blogPost">
+  
+  <div class="article-meta">
+    <a href="/2017/03/11/tensorflow-basic-api/" class="article-date">
+  <time datetime="2017-03-11T11:53:09.000Z" itemprop="datePublished">2017-03-11</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E5%B7%A5%E5%85%B7%E4%BD%BF%E7%94%A8/">工具使用</a>
+  </div>
+
+
+    
+        <div class="counter-tag counter">
+    <!-- 别忘记这个类名... post-title-link -->
+    <span id="/2017/03/11/tensorflow-basic-api/" class="leancloud_visitors article-hits post-title-link"
+           data-flag-title="TensorFlow常用API">
+        次阅读
+    </span>
+
+  </div>
+
+    
+
+  </div>
+  
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/03/11/tensorflow-basic-api/">TensorFlow常用API</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>越来越感觉学习python一个第三方库就跟学一门新语言差不多，庞大的TensorFlow更是如此。这篇博客会持续记录关于tensorflow的一些api的用法。</p>
+        
+          <p class="article-more-link">
+            <a href="/2017/03/11/tensorflow-basic-api/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+
+
+    
+
+    
+
+    <footer class="article-footer">
+      
+        <a href="http://shomy.top/2017/03/11/tensorflow-basic-api/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/TensorFlow/" rel="tag">TensorFlow</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/api/" rel="tag">api</a></li></ul>
+
+    </footer>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+
+  
+    <article id="post-support-vector-regression" class="article article-type-post" itemscope itemprop="blogPost">
+  
+  <div class="article-meta">
+    <a href="/2017/03/09/support-vector-regression/" class="article-date">
+  <time datetime="2017-03-09T04:08:28.000Z" itemprop="datePublished">2017-03-09</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/">读书笔记</a>
+  </div>
+
+
+    
+        <div class="counter-tag counter">
+    <!-- 别忘记这个类名... post-title-link -->
+    <span id="/2017/03/09/support-vector-regression/" class="leancloud_visitors article-hits post-title-link"
+           data-flag-title="机器学习技法笔记(8)-SVR(支持向量回归)">
+        次阅读
+    </span>
+
+  </div>
+
+    
+
+  </div>
+  
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/03/09/support-vector-regression/">机器学习技法笔记(8)-SVR(支持向量回归)</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>这一节是核模型的最后一部分了，将Kernel引入到一般的回归模型中: 核岭回归(Kernel Ridge Regression)以及支持向量回归(Support Vector Regression)，此外文末对这一占了整个课程40%的大块内容做了简单总结。</p>
+        
+          <p class="article-more-link">
+            <a href="/2017/03/09/support-vector-regression/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+
+
+    
+
+    
+
+    <footer class="article-footer">
+      
+        <a href="http://shomy.top/2017/03/09/support-vector-regression/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/machine-learning/" rel="tag">machine learning</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/svr/" rel="tag">svr</a></li></ul>
+
+    </footer>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+
+  
+    <article id="post-kernel-lr" class="article article-type-post" itemscope itemprop="blogPost">
+  
+  <div class="article-meta">
+    <a href="/2017/03/07/kernel-lr/" class="article-date">
+  <time datetime="2017-03-07T14:29:33.000Z" itemprop="datePublished">2017-03-07</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/">读书笔记</a>
+  </div>
+
+
+    
+        <div class="counter-tag counter">
+    <!-- 别忘记这个类名... post-title-link -->
+    <span id="/2017/03/07/kernel-lr/" class="leancloud_visitors article-hits post-title-link"
+           data-flag-title="机器学习技法笔记(7)-Kernel LR(核逻辑回归)">
+        次阅读
+    </span>
+
+  </div>
+
+    
+
+  </div>
+  
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2017/03/07/kernel-lr/">机器学习技法笔记(7)-Kernel LR(核逻辑回归)</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="kernel-logistic-regression">Kernel Logistic Regression</h1>
+<blockquote>
+<p>这一节主要介绍如何将Kernel Trick引入到Logistic Regression，以及LR与SVM的结合</p>
+</blockquote>
+<h2 id="svm-与-正则化">SVM 与 正则化</h2>
+        
+          <p class="article-more-link">
+            <a href="/2017/03/07/kernel-lr/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+
+
+    
+
+    
+
+    <footer class="article-footer">
+      
+        <a href="http://shomy.top/2017/03/07/kernel-lr/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/kernel/" rel="tag">kernel</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/logistic-regression/" rel="tag">logistic regression</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/machine-learning/" rel="tag">machine learning</a></li></ul>
+
+    </footer>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+
+  
+  
+    <nav id="page-nav">
+      <a class="extend prev" rel="prev" href="/">&amp;laquo; Prev</a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><a class="page-number" href="/page/5/">5</a><a class="extend next" rel="next" href="/page/3/">Next &amp;raquo;</a>
+    </nav>
+  
+
+</section>
+      </div>
+    </div>
+    
+    
+<a id="rocket" href="#top" ></a>
+
+<script src="https://cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <script src="http://cdn.htliu.cn/static/js/leancloud.js"></script>
+<script>AV.initialize("k883AKdzaz5jccQnH1eIrG2r-gzGzoHsz", "4HBQOmslEp3VdwK1SGL8vB9Y");</script>
+
+<script src="/js/Counter.js"></script>
+
+
+
+
+
+<script id="dsq-count-scr" src="//shomy.disqus.com/count.js" async></script>
+ 
+
+
+  <script src="https://cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.js"></script>
+  
+<script src="/js/fancybox.js"></script>
+
+
+
+
+  
+<script src="/js/search.js"></script>
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>python迭代器与生成器小结 | 天空的城</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="2016.3.10关于例子解释的补充更新  例子 老规矩，先上一个代码:">
+<meta property="og:type" content="article">
+<meta property="og:title" content="python迭代器与生成器小结">
+<meta property="og:url" content="http://shomy.top/2016/03/06/python-generator-1/index.html">
+<meta property="og:site_name" content="天空的城">
+<meta property="og:description" content="2016.3.10关于例子解释的补充更新  例子 老规矩，先上一个代码:">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2016-03-06T07:50:39.000Z">
+<meta property="article:modified_time" content="2021-12-16T15:11:45.668Z">
+<meta property="article:author" content="ShomyLiu">
+<meta property="article:tag" content="python">
+<meta property="article:tag" content="generator">
+<meta name="twitter:card" content="summary">
+  
+  
+    <link rel="icon" href="/image/favicon.ico">
+  
+
+  
+  <link href="https://cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.css" rel="stylesheet">
+  
+  <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  <link href="https://cdn.bootcss.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+<!-- Google Analytics -->
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-74368890-2', 'auto');
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+
+
+  
+
+  
+  <div class="site-search header-inner">
+    <div class="popup">
+        <span class="search-icon fa fa-search"></span>
+        <input type="text" id="local-search-input">
+        <div id="local-search-result"></div>
+        <span class="popup-btn-close">close</span>
+    </div>
+</div>
+
+
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      
+<header id="header">
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">天空的城</a>
+      </h1>
+      
+    </div>
+    <div id="header-menu">
+      <nav id="main-nav">
+        <ul>
+        
+          <li><a href="/"><i class="fa fa-home icon-setting"></i></a></li>
+        
+          <li><a href="/archives"><i class="fa fa-archive icon-setting"></i></a></li>
+        
+          <li><a href="/tags"><i class="fa fa-tag icon-setting"></i></a></li>
+        
+          <li><a href="/about"><i class="fa fa-user icon-setting"></i></a></li>
+        
+        
+          <li><a href="javascript:;" class="popup-trigger"><i class="fa fa-search > icon-setting"></i></a></li>
+        
+        </ul>
+      </nav>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-python-generator-1" class="article article-type-post" itemscope itemprop="blogPost">
+  
+  <div class="article-meta">
+    <a href="/2016/03/06/python-generator-1/" class="article-date">
+  <time datetime="2016-03-06T07:50:39.000Z" itemprop="datePublished">2016-03-06</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">编程语言</a>
+  </div>
+
+
+    
+        <div class="counter-tag counter">
+    <!-- 别忘记这个类名... post-title-link -->
+    <span id="/2016/03/06/python-generator-1/" class="leancloud_visitors article-hits post-title-link"
+           data-flag-title="python迭代器与生成器小结">
+        次阅读
+    </span>
+
+  </div>
+
+    
+
+  </div>
+  
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      python迭代器与生成器小结
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+            <div id="toc" class="toc-article">
+                <strong class="toc-title">文章目录</strong>
+                <ol class="post-toc"><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#%E4%BE%8B%E5%AD%90"><span class="post-toc-text">例子</span></a></li><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#%E8%BF%AD%E4%BB%A3%E5%99%A8iterator"><span class="post-toc-text">迭代器(iterator)</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#iterableiterator%E4%B8%8Eitertion"><span class="post-toc-text">iterable,iterator与itertion</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89iterator-%E4%B8%8E%E6%95%B0%E6%8D%AE%E5%88%86%E7%A6%BB"><span class="post-toc-text">自定义iterator 与数据分离</span></a></li></ol></li><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#%E7%94%9F%E6%88%90%E5%99%A8generator"><span class="post-toc-text">生成器(generator)</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E4%B8%A4%E7%A7%8D%E5%88%9B%E5%BB%BA%E6%96%B9%E5%BC%8F"><span class="post-toc-text">两种创建方式</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#%E5%8C%85%E5%90%AByield%E7%9A%84%E5%87%BD%E6%95%B0"><span class="post-toc-text">包含yield的函数</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#%E7%94%9F%E6%88%90%E5%99%A8%E8%A1%A8%E8%BE%BE%E5%BC%8F"><span class="post-toc-text">生成器表达式</span></a></li></ol></li></ol></li><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#%E5%9B%9E%E5%88%B0%E4%BE%8B%E5%AD%90"><span class="post-toc-text">回到例子</span></a></li><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#%E5%B0%8F%E7%BB%93"><span class="post-toc-text">小结</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E6%A6%82%E6%8B%AC"><span class="post-toc-text">概括</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E5%8F%82%E8%80%83"><span class="post-toc-text">参考</span></a></li></ol></li></ol>
+            </div>
+        
+        
+        <blockquote>
+<p>2016.3.10关于例子解释的补充更新</p>
+</blockquote>
+<h1 id="例子">例子</h1>
+<p>老规矩，先上一个代码:</p>
+<span id="more"></span>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">def <span class="title">add</span>(<span class="params">s, x</span>):</span></span><br><span class="line"><span class="function">    <span class="keyword">return</span> s + x</span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function">def <span class="title">gen</span>(<span class="params"></span>):</span></span><br><span class="line"><span class="function">    <span class="keyword">for</span>  i <span class="keyword">in</span> <span class="title">range</span>(<span class="params"><span class="number">4</span></span>):</span></span><br><span class="line"><span class="function">        <span class="keyword">yield</span> i</span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function"><span class="keyword">base</span></span> = gen()</span><br><span class="line"><span class="keyword">for</span> n <span class="keyword">in</span> [<span class="number">1</span>, <span class="number">10</span>]:</span><br><span class="line">    <span class="keyword">base</span> = (<span class="keyword">add</span>(i,  n) <span class="keyword">for</span> i <span class="keyword">in</span> <span class="keyword">base</span>)</span><br><span class="line"></span><br><span class="line"><span class="function">print <span class="title">list</span>(<span class="params"><span class="keyword">base</span></span>)</span></span><br><span class="line"><span class="function"></span></span><br></pre></td></tr></table></figure>
+<p>这个东西输出可以脑补一下， 结果是<code>[20,21,22,23]</code>, 而不是<code>[10, 11, 12, 13]</code>。 当时纠结了半天，一直没搞懂，后来<a target="_blank" rel="noopener" href="http://www.itdiffer.com/">齐老师</a>稍微指点了一下， 突然想明白了--真够笨的，唉。。好了--正好趁机会稍微小结一下python里面的生成器。</p>
+<hr />
+<h1 id="迭代器iterator">迭代器(iterator)</h1>
+<blockquote>
+<p>要说生成器，必须首先说迭代器;</p>
+</blockquote>
+<h2 id="iterableiterator与itertion">iterable,iterator与itertion</h2>
+<p>讲到迭代器，就需要区别几个概念:<code>iterable</code>,<code>iterator</code>,<code>itertion</code>, 看着都差不多，其实不然。下面区分一下。</p>
+<ul>
+<li><code>itertion</code>: 就是<code>迭代</code>,一个接一个(one after another),是一个通用的概念，比如一个循环遍历某个数组。</li>
+<li><code>iterable</code>: 这个是<code>可迭代对象</code>,属于python的名词，范围也很广，可重复迭代，满足如下其中之一的都是<code>iterable</code>:
+<ul>
+<li>可以<code>for</code>循环: <code>for i in iterable</code></li>
+<li>可以按<code>index</code>索引的对象，也就是定义了<code>__getitem__</code>方法，比如<code>list,str</code>;</li>
+<li>定义了<code>__iter__</code>方法。可以随意返回。</li>
+<li>可以调用<code>iter(obj)</code>的对象，并且返回一个<code>iterator</code></li>
+</ul></li>
+<li><code>iterator</code>: <code>迭代器对象</code>,也属于python的名词，只能迭代一次。需要满足如下的<code>迭代器协议</code>
+<ul>
+<li>定义了<code>__iter__</code>方法，但是必须<strong>返回自身</strong></li>
+<li>定义了<code>next</code>方法,在python3.x是<code>__next__</code>。<strong>用来返回下一个值</strong>，并且当没有数据了，抛出<code>StopIteration</code></li>
+<li>可以保持当前的状态</li>
+</ul></li>
+</ul>
+<p>首先<code>str和list</code>是<code>iterable</code> 但不是<code>iterator</code>:</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">In</span> [<span class="number">3</span>]: s = <span class="string">&#x27;hi&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">In</span> [<span class="number">4</span>]: s.__getitem__</span><br><span class="line"><span class="keyword">Out</span>[<span class="number">4</span>]: &lt;<span class="keyword">method</span>-<span class="keyword">wrapper</span> <span class="string">&#x27;__getitem__&#x27;</span> <span class="keyword">of</span> str <span class="keyword">object</span> at <span class="number">0x7f9457eed580</span>&gt;</span><br><span class="line"></span><br><span class="line"><span class="keyword">In</span> [<span class="number">5</span>]: s.next # 没有next方法</span><br><span class="line"><span class="comment">---------------------------------------------------------------------------</span></span><br><span class="line">AttributeError                            Traceback (most recent <span class="keyword">call</span> last)</span><br><span class="line">&lt;ipython-<span class="keyword">input</span><span class="number">-5</span><span class="number">-136</span>d3c11be25&gt; <span class="keyword">in</span> &lt;module&gt;()</span><br><span class="line"><span class="comment">----&gt; 1 s.next</span></span><br><span class="line"></span><br><span class="line">AttributeError: <span class="string">&#x27;str&#x27;</span> <span class="keyword">object</span> has <span class="keyword">no</span> <span class="keyword">attribute</span> <span class="string">&#x27;next&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">In</span> [<span class="number">6</span>]: l = [<span class="number">1</span>,<span class="number">2</span>] # 同理</span><br><span class="line"></span><br><span class="line"><span class="keyword">In</span> [<span class="number">7</span>]: l.__iter__</span><br><span class="line"><span class="keyword">Out</span>[<span class="number">7</span>]: &lt;<span class="keyword">method</span>-<span class="keyword">wrapper</span> <span class="string">&#x27;__iter__&#x27;</span> <span class="keyword">of</span> list <span class="keyword">object</span> at <span class="number">0x7f945328c320</span>&gt;</span><br><span class="line"></span><br><span class="line"><span class="keyword">In</span> [<span class="number">8</span>]: l.next</span><br><span class="line"><span class="comment">---------------------------------------------------------------------------</span></span><br><span class="line">AttributeError                            Traceback (most recent <span class="keyword">call</span> last)</span><br><span class="line">&lt;ipython-<span class="keyword">input</span><span class="number">-8</span>-c6f8fb94c4cd&gt; <span class="keyword">in</span> &lt;module&gt;()</span><br><span class="line"><span class="comment">----&gt; 1 l.next</span></span><br><span class="line"></span><br><span class="line">AttributeError: <span class="string">&#x27;list&#x27;</span> <span class="keyword">object</span> has <span class="keyword">no</span> <span class="keyword">attribute</span> <span class="string">&#x27;next&#x27;</span></span><br><span class="line"><span class="keyword">In</span> [<span class="number">9</span>]: iter(s) <span class="keyword">is</span> s #iter() 没有返回本身</span><br><span class="line"><span class="keyword">Out</span>[<span class="number">9</span>]: <span class="keyword">False</span></span><br><span class="line"><span class="keyword">In</span> [<span class="number">10</span>]: iter(l) <span class="keyword">is</span> l #同理</span><br><span class="line"><span class="keyword">Out</span>[<span class="number">10</span>]: <span class="keyword">False</span></span><br></pre></td></tr></table></figure>
+<p>但是对于<code>iterator</code>则不一样如下, 另外<code>iterable</code>可以支持多次迭代，而<code>iterator</code>在多次<code>next</code>之后，再次调用就会抛异常,只可以迭代一次。 <figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">In</span> [<span class="number">13</span>]: si = iter(s)</span><br><span class="line"></span><br><span class="line"><span class="keyword">In</span> [<span class="number">14</span>]: si</span><br><span class="line"><span class="keyword">Out</span>[<span class="number">14</span>]: &lt;iterator at <span class="number">0x7f9453279dd0</span>&gt;</span><br><span class="line"></span><br><span class="line"><span class="keyword">In</span> [<span class="number">15</span>]: si.__iter__ # 有__iter__</span><br><span class="line"><span class="keyword">Out</span>[<span class="number">15</span>]: &lt;<span class="keyword">method</span>-<span class="keyword">wrapper</span> <span class="string">&#x27;__iter__&#x27;</span> <span class="keyword">of</span> iterator <span class="keyword">object</span> at <span class="number">0x7f9453279dd0</span>&gt;</span><br><span class="line"></span><br><span class="line"><span class="keyword">In</span> [<span class="number">16</span>]: si.next #拥有next</span><br><span class="line"><span class="keyword">Out</span>[<span class="number">16</span>]: &lt;<span class="keyword">method</span>-<span class="keyword">wrapper</span> <span class="string">&#x27;next&#x27;</span> <span class="keyword">of</span> iterator <span class="keyword">object</span> at <span class="number">0x7f9453279dd0</span>&gt;</span><br><span class="line"></span><br><span class="line"><span class="keyword">In</span> [<span class="number">20</span>]: si.__iter__() <span class="keyword">is</span> si #__iter__返回自己</span><br><span class="line"><span class="keyword">Out</span>[<span class="number">20</span>]: <span class="keyword">True</span></span><br></pre></td></tr></table></figure></p>
+<p>这样，由这几个例子可以解释清楚这几个概念的区别。</p>
+<h2 id="自定义iterator-与数据分离">自定义iterator 与数据分离</h2>
+<p>说到这里，迭代器对象基本出来了。下面大致说一下，如何让自定义的类的对象成为迭代器对象,其实就是定义<code>__iter__</code>和<code>next</code>方法: <figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">In [<span class="number">1</span>]: %paste</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">DataIter</span>(<span class="title">object</span>):</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(<span class="keyword">self</span>, *args)</span></span>:</span><br><span class="line">        <span class="keyword">self</span>.data = list(args)</span><br><span class="line">        <span class="keyword">self</span>.ind = <span class="number">0</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__iter__</span><span class="params">(<span class="keyword">self</span>)</span></span>: <span class="comment">#返回自身</span></span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">self</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">next</span><span class="params">(<span class="keyword">self</span>)</span></span>: <span class="comment">#　返回数据</span></span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">self</span>.ind == len(<span class="keyword">self</span>.data):</span><br><span class="line">            raise StopIteration</span><br><span class="line">        <span class="symbol">else:</span></span><br><span class="line">            data = <span class="keyword">self</span>.data[<span class="keyword">self</span>.ind]</span><br><span class="line">            <span class="keyword">self</span>.ind += <span class="number">1</span></span><br><span class="line">            <span class="keyword">return</span> data</span><br><span class="line"><span class="comment">## -- End pasted text --</span></span><br><span class="line"></span><br><span class="line">In [<span class="number">9</span>]: d  = DataIter(<span class="number">1</span>,<span class="number">2</span>)</span><br><span class="line"></span><br><span class="line">In [<span class="number">10</span>]: <span class="keyword">for</span> x <span class="keyword">in</span> <span class="symbol">d:</span> <span class="comment">#　开始迭代</span></span><br><span class="line">   ....:     print x</span><br><span class="line">   ....:</span><br><span class="line"><span class="number">1</span></span><br><span class="line"><span class="number">2</span></span><br><span class="line"></span><br><span class="line">In [<span class="number">13</span>]: d.<span class="keyword">next</span>() <span class="comment">#　只能迭代一次,再次使用则会抛异常</span></span><br><span class="line">---------------------------------------------------------------------------</span><br><span class="line">StopIteration                             Traceback (most recent call last)</span><br><span class="line">----&gt; <span class="number">1</span> d.<span class="keyword">next</span>()</span><br><span class="line">&lt;ipython-input-<span class="number">1</span>-c44abc1904d8&gt; <span class="keyword">in</span> <span class="keyword">next</span>(<span class="keyword">self</span>)</span><br><span class="line">     <span class="number">10</span>     <span class="function"><span class="keyword">def</span> <span class="title">next</span><span class="params">(<span class="keyword">self</span>)</span></span>:</span><br><span class="line">     <span class="number">11</span>         <span class="keyword">if</span> <span class="keyword">self</span>.ind == len(<span class="keyword">self</span>.data):</span><br><span class="line">---&gt; <span class="number">12</span>             raise StopIteration</span><br><span class="line">     <span class="number">13</span>         <span class="symbol">else:</span></span><br><span class="line">     <span class="number">14</span>             data = <span class="keyword">self</span>.data[<span class="keyword">self</span>.ind]</span><br><span class="line"></span><br></pre></td></tr></table></figure> 从<code>next</code>函数中只能向前取数据,一次取一个可以看出来，不过不能重复取数据，那这个可不可以解决呢？ 我们知道<code>iterator</code>只能迭代一次，但是<code>iterable</code>对象则没有这个限制，因此我们可以把<code>iterator</code>从数据中分离出来，分别定义一个<code>iterable</code>与<code>iterator</code>如下: <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Data</span>(<span class="params"><span class="built_in">object</span></span>):</span>   <span class="comment"># 只是iterable:可迭代对象而不iterator:迭代器</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span>(<span class="params">self, *args</span>):</span></span><br><span class="line">        self.data = <span class="built_in">list</span>(args)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__iter__</span>(<span class="params">self</span>):</span>  <span class="comment"># 并没有返回自身</span></span><br><span class="line">        <span class="keyword">return</span> DataIterator(self)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">DataIterator</span>(<span class="params"><span class="built_in">object</span></span>):</span>  <span class="comment"># iterator: 迭代器</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span>(<span class="params">self, data</span>):</span></span><br><span class="line">        self.data = data.data</span><br><span class="line">        self.ind = <span class="number">0</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__iter__</span>(<span class="params">self</span>):</span></span><br><span class="line">        <span class="keyword">return</span> self</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">next</span>(<span class="params">self</span>):</span></span><br><span class="line">        <span class="keyword">if</span> self.ind == <span class="built_in">len</span>(self.data):</span><br><span class="line">            <span class="keyword">raise</span> StopIteration</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            data = self.data[self.ind]</span><br><span class="line">            self.ind += <span class="number">1</span></span><br><span class="line">            <span class="keyword">return</span> data</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&#x27;__main__&#x27;</span>:</span><br><span class="line">    d = Data(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>)</span><br><span class="line">    <span class="keyword">for</span> x <span class="keyword">in</span> d:</span><br><span class="line">        <span class="built_in">print</span> x,</span><br><span class="line">    <span class="keyword">for</span> x <span class="keyword">in</span> d:</span><br><span class="line">        <span class="built_in">print</span> x,</span><br><span class="line"></span><br></pre></td></tr></table></figure> 输出就是: <figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">1</span>,<span class="number">2</span>,<span class="number">3</span></span><br><span class="line"><span class="attribute">1</span>,<span class="number">2</span>,<span class="number">3</span></span><br></pre></td></tr></table></figure> 可以看出来数据可以复用，因为每次都返回一个<code>DataIterator</code>，但是数据却可以这样使用,这种实现方式很常见，比如<code>xrange</code>的实现便是这种数据与迭代分离的形式,但是很节省内存，如下: <figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">In</span> <span class="selector-attr">[8]</span>: <span class="selector-tag">sys</span><span class="selector-class">.getsizeof</span>(range(<span class="number">1000000</span>))</span><br><span class="line"><span class="selector-tag">Out</span><span class="selector-attr">[8]</span>: <span class="selector-tag">8000072</span></span><br><span class="line"></span><br><span class="line"><span class="selector-tag">In</span> <span class="selector-attr">[9]</span>: <span class="selector-tag">sys</span><span class="selector-class">.getsizeof</span>(xrange(<span class="number">1000000</span>))</span><br><span class="line"><span class="selector-tag">Out</span><span class="selector-attr">[9]</span>: <span class="selector-tag">40</span></span><br></pre></td></tr></table></figure></p>
+<p>另外有个小tips， 就是为什么可以使用for 迭代迭代器对象，原因就是<code>for</code>替我们做了<code>next</code>的活，以及接收<code>StopIteration</code>的处理。 迭代器大概就记录到这里了，下面开始一个特殊的更加优雅的迭代器: 生成器</p>
+<h1 id="生成器generator">生成器(generator)</h1>
+<p>首先需要明确的就是生成器也是<code>iterator</code>迭代器，因为它遵循了迭代器协议.</p>
+<h2 id="两种创建方式">两种创建方式</h2>
+<h3 id="包含yield的函数">包含<code>yield</code>的函数</h3>
+<p>生成器函数跟普通函数只有一点不一样，就是把 <code>return</code> 换成<code>yield</code>,其中<code>yield</code>是一个语法糖，内部实现了迭代器协议，同时保持状态可以挂起。如下: 记住一点，<code>yield</code>是数据的生产者，而诸如<code>for</code>等是数据的消费者。 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">gen</span>():</span></span><br><span class="line">    <span class="built_in">print</span> <span class="string">&#x27;begin: generator&#x27;</span></span><br><span class="line">    i = <span class="number">0</span></span><br><span class="line">    <span class="keyword">while</span> <span class="literal">True</span>:</span><br><span class="line">        <span class="built_in">print</span> <span class="string">&#x27;before return &#x27;</span>, i</span><br><span class="line">        <span class="keyword">yield</span> i</span><br><span class="line">        i += <span class="number">1</span></span><br><span class="line">        <span class="built_in">print</span> <span class="string">&#x27;after return &#x27;</span>, i</span><br><span class="line"></span><br><span class="line">a  = gen()</span><br><span class="line"></span><br><span class="line">In [<span class="number">10</span>]: a <span class="comment">#只是返回一个对象</span></span><br><span class="line">Out[<span class="number">10</span>]: &lt;generator <span class="built_in">object</span> gen at <span class="number">0x7f40c33adfa0</span>&gt;</span><br><span class="line"></span><br><span class="line">In [<span class="number">11</span>]: a.<span class="built_in">next</span>() <span class="comment">#开始执行</span></span><br><span class="line">begin: generator</span><br><span class="line">before <span class="keyword">return</span>  <span class="number">0</span></span><br><span class="line">Out[<span class="number">11</span>]: <span class="number">0</span></span><br><span class="line"></span><br><span class="line">In [<span class="number">12</span>]: a.<span class="built_in">next</span>()</span><br><span class="line">after <span class="keyword">return</span>  <span class="number">1</span></span><br><span class="line">before <span class="keyword">return</span>  <span class="number">1</span></span><br><span class="line">Out[<span class="number">12</span>]: <span class="number">1</span></span><br></pre></td></tr></table></figure> 首先看到<code>while True</code> 不必惊慌，它只会一个一个的执行～ 看结果可以看出一点东西: - 调用<code>gen()</code>并没有真实执行函数，而是只是返回了一个生成器对象 - 执行第一次<code>a.next()</code>时，才真正执行函数，执行到<code>yield</code>一个返回值，然后就会挂起，保持当前的名字空间等状态。然后等待下一次的调用,从<code>yield</code>的下一行继续执行。</p>
+<p>还有一种情况也会执行生成器函数，就是当检索生成器的元素时，如<code>list(generator)</code>, 说白了就是当需要数据的时候，才会执行。 <figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">In [<span class="number">15</span>]: def <span class="function"><span class="keyword">func</span><span class="params">()</span>:</span></span><br><span class="line">   ....:     <span class="built_in">print</span> <span class="string">&#x27;begin&#x27;</span></span><br><span class="line">   ....:     <span class="keyword">for</span> i in <span class="keyword">range</span>(<span class="number">4</span>):</span><br><span class="line">   ....:         yield i</span><br><span class="line"></span><br><span class="line">In [<span class="number">16</span>]: a = <span class="function"><span class="keyword">func</span><span class="params">()</span></span></span><br><span class="line"></span><br><span class="line">In [<span class="number">17</span>]: list(a) #检索数据，开始执行</span><br><span class="line">begin</span><br><span class="line">Out[<span class="number">17</span>]: [<span class="number">0</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>]</span><br><span class="line"></span><br></pre></td></tr></table></figure> <code>yield</code>还有其他高级应用，后面再慢慢学习。</p>
+<h3 id="生成器表达式">生成器表达式</h3>
+<p>列表生成器十分方便：如下,求10以内的奇数: <code>[i  for i in range(10) if i % 2]</code></p>
+<p>同样在<code>python 2.4</code>也引入了<code>生成器表达式</code>，而且形式非常类似，就是把<code>[]</code>换成了<code>()</code>. <figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">In <span class="selector-attr">[18]</span>: <span class="selector-tag">a</span> = ( <span class="selector-tag">i</span> <span class="keyword">for</span> <span class="selector-tag">i</span> <span class="keyword">in</span> range(<span class="number">4</span>))</span><br><span class="line"></span><br><span class="line">In <span class="selector-attr">[19]</span>: <span class="selector-tag">a</span></span><br><span class="line">Out<span class="selector-attr">[19]</span>: &lt;generator <span class="selector-tag">object</span> &lt;genexpr&gt; at <span class="number">0</span>x7f40c2cfe410&gt;</span><br><span class="line"></span><br><span class="line">In <span class="selector-attr">[20]</span>: <span class="selector-tag">a</span><span class="selector-class">.next</span>()</span><br><span class="line">Out<span class="selector-attr">[20]</span>: <span class="number">0</span></span><br></pre></td></tr></table></figure> 可以看出生成器表达式创建了一个生成器，而且生有个特点就是<code>惰性计算</code>, 只有在被检索时候，才会被赋值。 之前有篇文章:<a target="_blank" rel="noopener" href="https://shomyliu.github.io/2016/02/28/python-default-para/">python 默认参数问题及一个应用</a>,最后有一个例子: <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">multipliers</span>():</span></span><br><span class="line">    <span class="keyword">return</span> (<span class="keyword">lambda</span> x : i * x <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">4</span>))  <span class="comment">#修改成生成器</span></span><br><span class="line"><span class="built_in">print</span> [m(<span class="number">2</span>) <span class="keyword">for</span> m <span class="keyword">in</span> multipliers()]</span><br></pre></td></tr></table></figure> 这个就是说，只有在执行<code>m(2)</code>的时候，生成器表达式里面的<code>for</code>才会开始从0循环，然后接着才是<code>i * x</code>,因此不存在那篇文章中的问题. <strong>惰性计算</strong>这个特点很有用，上述就是一个应用，<a target="_blank" rel="noopener" href="http://www.2gua.info/">2gua</a>这样说的:</p>
+<blockquote>
+<p>惰性计算想像成水龙头，需要的时候打开，接完水了关掉，这时候数据流就暂停了，再需要的时候再打开水龙头，这时候数据仍是接着输出，不需要从头开始循环</p>
+</blockquote>
+<p>个人理解就是就是可以利用生成器来作为数据管道使用，当被检索的时候，每次拿出一个数据，然后向下面传递,传到最后，再拿第二个数据，在下面的例子中会详细说明。 其实本质跟迭代器差不多,不一次性把数据都那过来，需要的时候，才拿。</p>
+<h1 id="回到例子">回到例子</h1>
+<p>看到这里，开始的例子应该大概可以有点清晰了， 核心语句就是: <figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">def <span class="title">gen</span>(<span class="params"></span>):</span></span><br><span class="line"><span class="function">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="title">range</span>(<span class="params"><span class="number">4</span></span>):</span></span><br><span class="line"><span class="function">        <span class="keyword">yield</span> i</span></span><br><span class="line"><span class="function"><span class="keyword">for</span> n <span class="keyword">in</span> [1, 10]:</span></span><br><span class="line"><span class="function">    <span class="keyword">base</span></span> = (<span class="keyword">add</span>(i, n) <span class="keyword">for</span> i <span class="keyword">in</span> <span class="keyword">base</span>)</span><br></pre></td></tr></table></figure> &gt;之前的解释有点瑕疵，容易误导对生成器的理解 <del>在执行<code>list(base)</code>的时候，开始检索，然后生成器开始运算了。关键是，这个循环次数是2,也就是说，有两次生成器表达式的过程。必须牢牢把握住这一点。 生成器返回去开始运算，<code>n = 10</code>而不是1没问题吧，这个在上面提到的文章中已经提到了，就是add(i+n)绑定的是<code>n</code>这个变量，而不是它当时的数值。 然后首先是第一次生成器表达式的执行过程:<code>base = (10 + 0, 10 + 1, 10 + 2, 10 +3)</code>,这是第一次循环的结果(形象表示，其实已经计算出来了(10,11,12,3))， 然后第二次，<code>base = (10 + 10, 11 + 10, 12 + 10, 13 + 10)</code> ,终于得到结果了<code>[20, 21, 22, 23]</code>.</del></p>
+<p>这个可以以管道的思路来理解，首先<code>gen()</code>函数是第一个生成器,下一个是第一次循环的<code>base = (add(i, n) for i in base)</code>,最后一个生成器是第二次循环的<code>base = (add(i, n) for i in base)</code>。 这样就相当于三个管道依次连接,但是水(数据)还没有流过，现在到了<code>list(base)</code>,就相当于驱动器，打开了水的开关，这时候，按照管道的顺序，由第一个产生一个数据，<code>yield 0</code>,然后第一个管道关闭。 之后传递给第二个管道就是第一次循环,此时执行了<code>add(0, 10)</code>,然后水继续流，到第二次循环，再执行<code>add(10, 10)</code>,此时到管道尾巴了，第一个数据20就产生了。此时第一个管道再开放<code>yield 1</code>,　流程跟上面的一样。依次产生21,22,23; 直到没有数据。 把代码改一下容易理解: <figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">def <span class="title">gen</span>(<span class="params"></span>):</span></span><br><span class="line"><span class="function">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="title">range</span>(<span class="params"><span class="number">4</span></span>):</span></span><br><span class="line"><span class="function">        <span class="keyword">yield</span> i  #  第一个管道</span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function"><span class="keyword">base</span></span> = (<span class="keyword">add</span>(i, <span class="number">10</span>) <span class="keyword">for</span> i <span class="keyword">in</span> <span class="keyword">base</span>) <span class="meta">#  第二个管道</span></span><br><span class="line"><span class="keyword">base</span> = (<span class="keyword">add</span>(i, <span class="number">10</span>) <span class="keyword">for</span> i <span class="keyword">in</span> <span class="keyword">base</span>) <span class="meta">#  第三个管道</span></span><br><span class="line"></span><br><span class="line">list(<span class="keyword">base</span>) <span class="meta">#  开关驱动器</span></span><br></pre></td></tr></table></figure></p>
+<p>具体执行过程可以在<a target="_blank" rel="noopener" href="http://pythontutor.com/visualize.html#mode=display">pythontutor</a>上看看. 之前的解释被误导的原因是，可能会误以为是在第二个管道就把<code>gen()</code>执行完毕了，其实不是这样的。 这种写法的好处显而易见：内存占用低。在数据量极大的时候，用<code>list</code>就只能爆内存，而用生成器模式则完全不用担心</p>
+<h1 id="小结">小结</h1>
+<h2 id="概括">概括</h2>
+<p>主要介绍了大概这样几点：</p>
+<ul>
+<li><code>iterable</code>,<code>iterator</code>与<code>itertion</code>的概念</li>
+<li>迭代器协议
+<ul>
+<li>自定义可迭代对象与迭代器分离，保证数据复用</li>
+</ul></li>
+<li>生成器: 特殊的迭代器,内部实现了迭代器协议</li>
+</ul>
+<p>其实这一块， 那几个概念搞清楚， ,这个很关键， 搞懂了后面就水到渠成了。而且对之前的知识也有很多加深。 比如常见<code>list</code>就是<code>iterator</code>与<code>iteable</code>分离实现的,本身是可迭代对象，但不是迭代器， 类似与<code>xrange</code>,但是又不同。 越来越明白，看源码的重要性了。</p>
+<h2 id="参考">参考</h2>
+<ul>
+<li>http://www.shutupandship.com/2012/01/understanding-python-iterables-and.html</li>
+<li>http://www.learningpython.com/2009/02/23/iterators-iterables-and-generators-oh-my/</li>
+<li>http://stackoverflow.com/questions/9884132/what-exactly-are-pythons-iterator-iterable-and-iteration-protocols</li>
+<li>http://python.jobbole.com/81881/</li>
+</ul>
+
+      
+    </div>
+
+
+    
+
+    
+	    <div class="article-footer-copyright">
+<!--<p>本文作者: shomy 发表于 <a href="http://shomy.top" target="_blank">个人博客</a></p> -->
+<p>
+本文标题: python迭代器与生成器小结<br/>
+</p>
+<p>
+发布时间: 2016-03-06, 15:50:39<br/>
+<p>
+<p>
+最后更新: 2021-12-16, 23:11:45<br/>
+<p>
+本文链接: <a href="/2016/03/06/python-generator-1/" target="_blank">http://shomy.top/2016/03/06/python-generator-1/</a>
+</p>
+<p>非商业转载请注明作者及出处。商业转载请联系<a href="mailto:shomyliu@gmail.com">作者</a>本人。</p>
+</div>
+
+    
+
+    <footer class="article-footer">
+      
+        <a href="http://shomy.top/2016/03/06/python-generator-1/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/generator/" rel="tag">generator</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/python/" rel="tag">python</a></li></ul>
+
+    </footer>
+    
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2016/03/11/ubuntu-python-pyv8/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          记录Ubuntu &amp; Windows下安装PyV8
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2016/03/03/hexo-in-coding-github/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">hexo同时部署到coding(gitcafe)和github</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+
+
+<section id="comments">
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+<script>
+  var disqus_shortname = 'shomy';
+  
+  var disqus_url = 'http://shomy.top/2016/03/06/python-generator-1/';
+  
+  (function(){
+    var dsq = document.createElement('script');
+    dsq.type = 'text/javascript';
+    dsq.async = true;
+    dsq.src = 'https://' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  }());
+</script>
+</section>
+
+
+
+
+</section>
+      </div>
+    </div>
+    
+    
+<a id="rocket" href="#top" ></a>
+
+<script src="https://cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <script src="http://cdn.htliu.cn/static/js/leancloud.js"></script>
+<script>AV.initialize("k883AKdzaz5jccQnH1eIrG2r-gzGzoHsz", "4HBQOmslEp3VdwK1SGL8vB9Y");</script>
+
+<script src="/js/Counter.js"></script>
+
+
+
+
+
+<script id="dsq-count-scr" src="//shomy.disqus.com/count.js" async></script>
+ 
+
+
+  <script src="https://cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.js"></script>
+  
+<script src="/js/fancybox.js"></script>
+
+
+
+
+  
+<script src="/js/search.js"></script>
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

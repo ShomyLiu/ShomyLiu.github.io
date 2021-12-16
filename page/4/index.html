@@ -1,0 +1,1308 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>天空的城</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta property="og:type" content="website">
+<meta property="og:title" content="天空的城">
+<meta property="og:url" content="http://shomy.top/page/4/index.html">
+<meta property="og:site_name" content="天空的城">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:author" content="ShomyLiu">
+<meta name="twitter:card" content="summary">
+  
+  
+    <link rel="icon" href="/image/favicon.ico">
+  
+
+  
+  <link href="https://cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.css" rel="stylesheet">
+  
+  <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  <link href="https://cdn.bootcss.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+<!-- Google Analytics -->
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-74368890-2', 'auto');
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+
+
+  
+
+  
+  <div class="site-search header-inner">
+    <div class="popup">
+        <span class="search-icon fa fa-search"></span>
+        <input type="text" id="local-search-input">
+        <div id="local-search-result"></div>
+        <span class="popup-btn-close">close</span>
+    </div>
+</div>
+
+
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      
+<header id="header">
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">天空的城</a>
+      </h1>
+      
+    </div>
+    <div id="header-menu">
+      <nav id="main-nav">
+        <ul>
+        
+          <li><a href="/"><i class="fa fa-home icon-setting"></i></a></li>
+        
+          <li><a href="/archives"><i class="fa fa-archive icon-setting"></i></a></li>
+        
+          <li><a href="/tags"><i class="fa fa-tag icon-setting"></i></a></li>
+        
+          <li><a href="/about"><i class="fa fa-user icon-setting"></i></a></li>
+        
+        
+          <li><a href="javascript:;" class="popup-trigger"><i class="fa fa-search > icon-setting"></i></a></li>
+        
+        </ul>
+      </nav>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main">
+  
+    <article id="post-focus-linear-regression" class="article article-type-post" itemscope itemprop="blogPost">
+  
+  <div class="article-meta">
+    <a href="/2016/11/12/focus-linear-regression/" class="article-date">
+  <time datetime="2016-11-12T08:54:49.000Z" itemprop="datePublished">2016-11-12</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/">读书笔记</a>
+  </div>
+
+
+    
+        <div class="counter-tag counter">
+    <!-- 别忘记这个类名... post-title-link -->
+    <span id="/2016/11/12/focus-linear-regression/" class="leancloud_visitors article-hits post-title-link"
+           data-flag-title="机器学习基石笔记(4)-线性回归">
+        次阅读
+    </span>
+
+  </div>
+
+    
+
+  </div>
+  
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/11/12/focus-linear-regression/">机器学习基石笔记(4)-线性回归</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <blockquote>
+<p>11.25日更新: <a target="_blank" rel="noopener" href="https://github.com/ShomyLiu/stat-learn/blob/master/linear-model/linear-regression/linear-regression.ipynb">Linear-Regression练习</a></p>
+</blockquote>
+<hr />
+<blockquote>
+<p>前面的学习基本都是介绍机器学习可以学习的原因。这里开始讲如何学习。也就是如何选择算法去找到最好的hypothesis.接下来几篇将会介绍线性模型，包括前面的PLA(感知机), 以及这一节的Linear Regression(线性回归)，还有下一节的Logistic Regression(逻辑回归)，以及它们的联系。
+        
+          <p class="article-more-link">
+            <a href="/2016/11/12/focus-linear-regression/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+
+
+    
+
+    
+
+    <footer class="article-footer">
+      
+        <a href="http://shomy.top/2016/11/12/focus-linear-regression/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/linear-regression/" rel="tag">linear regression</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/machine-learning/" rel="tag">machine learning</a></li></ul>
+
+    </footer>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+
+  
+    <article id="post-hexo-markdown-mathjax" class="article article-type-post" itemscope itemprop="blogPost">
+  
+  <div class="article-meta">
+    <a href="/2016/10/22/hexo-markdown-mathjax/" class="article-date">
+  <time datetime="2016-10-22T06:06:24.000Z" itemprop="datePublished">2016-10-22</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E5%B7%A5%E5%85%B7%E4%BD%BF%E7%94%A8/">工具使用</a>
+  </div>
+
+
+    
+        <div class="counter-tag counter">
+    <!-- 别忘记这个类名... post-title-link -->
+    <span id="/2016/10/22/hexo-markdown-mathjax/" class="leancloud_visitors article-hits post-title-link"
+           data-flag-title="Hexo下mathjax的转义问题">
+        次阅读
+    </span>
+
+  </div>
+
+    
+
+  </div>
+  
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/10/22/hexo-markdown-mathjax/">Hexo下mathjax的转义问题</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="问题">问题</h1>
+<p>我们平时使用markdown写文档的时候，免不了会碰到数学公式，好在有强大的<a target="_blank" rel="noopener" href="https://www.mathjax.org/">Mathjax</a>,可以解析网页上的数学公式，与hexo的结合也很简单，可以手动加入js，或者直接使用<a target="_blank" rel="noopener" href="https://github.com/akfish/hexo-math">hexo-math</a>插件.大部分情况下都是可以的，但是Markdwon本身的特殊符号与Latex中的符号会出现冲突的时候:
+        
+          <p class="article-more-link">
+            <a href="/2016/10/22/hexo-markdown-mathjax/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+
+
+    
+
+    
+
+    <footer class="article-footer">
+      
+        <a href="http://shomy.top/2016/10/22/hexo-markdown-mathjax/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hexo/" rel="tag">hexo</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/markdown/" rel="tag">markdown</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mathjax/" rel="tag">mathjax</a></li></ul>
+
+    </footer>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+
+  
+    <article id="post-feasibility-of-learning-3" class="article article-type-post" itemscope itemprop="blogPost">
+  
+  <div class="article-meta">
+    <a href="/2016/10/17/feasibility-of-learning-3/" class="article-date">
+  <time datetime="2016-10-17T09:59:49.000Z" itemprop="datePublished">2016-10-17</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/">读书笔记</a>
+  </div>
+
+
+    
+        <div class="counter-tag counter">
+    <!-- 别忘记这个类名... post-title-link -->
+    <span id="/2016/10/17/feasibility-of-learning-3/" class="leancloud_visitors article-hits post-title-link"
+           data-flag-title="机器学习基石笔记(3)">
+        次阅读
+    </span>
+
+  </div>
+
+    
+
+  </div>
+  
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/10/17/feasibility-of-learning-3/">机器学习基石笔记(3)</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <blockquote>
+<p>2016.11.30更新: VC维</p>
+</blockquote>
+<hr />
+<p>上一节，我们把 leaning问题归结到了我们提到需要证明dichotomies是多项式的，这样就可以保证在N比较大的时候，BAD DATA出现的概率是很小的，这样就说明我们的 learning学到了东西，可以用来预测。
+        
+          <p class="article-more-link">
+            <a href="/2016/10/17/feasibility-of-learning-3/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+
+
+    
+
+    
+
+    <footer class="article-footer">
+      
+        <a href="http://shomy.top/2016/10/17/feasibility-of-learning-3/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/machine-learning/" rel="tag">machine learning</a></li></ul>
+
+    </footer>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+
+  
+    <article id="post-feasibility-of-learning-2" class="article article-type-post" itemscope itemprop="blogPost">
+  
+  <div class="article-meta">
+    <a href="/2016/10/09/feasibility-of-learning-2/" class="article-date">
+  <time datetime="2016-10-09T05:39:08.000Z" itemprop="datePublished">2016-10-09</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/">读书笔记</a>
+  </div>
+
+
+    
+        <div class="counter-tag counter">
+    <!-- 别忘记这个类名... post-title-link -->
+    <span id="/2016/10/09/feasibility-of-learning-2/" class="leancloud_visitors article-hits post-title-link"
+           data-flag-title="机器学习基石笔记(2)">
+        次阅读
+    </span>
+
+  </div>
+
+    
+
+  </div>
+  
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/10/09/feasibility-of-learning-2/">机器学习基石笔记(2)</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h2 id="learning的两个问题">learning的两个问题</h2>
+<p>从上一讲我们知道，我们知道learning可以分为两个问题: 如下 其实，training过程就是解决第二个问题的过程。 testing的过程则是解决第一个问题的过程。
+        
+          <p class="article-more-link">
+            <a href="/2016/10/09/feasibility-of-learning-2/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+
+
+    
+
+    
+
+    <footer class="article-footer">
+      
+        <a href="http://shomy.top/2016/10/09/feasibility-of-learning-2/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/machine-learning/" rel="tag">machine learning</a></li></ul>
+
+    </footer>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+
+  
+    <article id="post-feasibility-of-learning-1" class="article article-type-post" itemscope itemprop="blogPost">
+  
+  <div class="article-meta">
+    <a href="/2016/10/06/feasibility-of-learning-1/" class="article-date">
+  <time datetime="2016-10-06T09:56:18.000Z" itemprop="datePublished">2016-10-06</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/">读书笔记</a>
+  </div>
+
+
+    
+        <div class="counter-tag counter">
+    <!-- 别忘记这个类名... post-title-link -->
+    <span id="/2016/10/06/feasibility-of-learning-1/" class="leancloud_visitors article-hits post-title-link"
+           data-flag-title="机器学习基石笔记(1)">
+        次阅读
+    </span>
+
+  </div>
+
+    
+
+  </div>
+  
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/10/06/feasibility-of-learning-1/">机器学习基石笔记(1)</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>整理自台大林轩田老师的<a target="_blank" rel="noopener" href="https://www.youtube.com/playlist?list=PLXVfgk9fNX2I7tB6oIINGBmW50rrmFTqf">机器学习基石</a>在线课程，以及参考了<a target="_blank" rel="noopener" href="http://beader.me/">beader</a>的文章，作为笔记。</p>
+<p>一些机器学习入门的书籍大部分都是直接讲模型，却没有来龙去脉，感觉很虚。而林老师的第一部分是机器学习的基石，就是背后的东西，并没有直接去讲各种模型, 在第二部分机器学习技法才开始介绍模型。</p>
+        
+          <p class="article-more-link">
+            <a href="/2016/10/06/feasibility-of-learning-1/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+
+
+    
+
+    
+
+    <footer class="article-footer">
+      
+        <a href="http://shomy.top/2016/10/06/feasibility-of-learning-1/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/machine-learning/" rel="tag">machine learning</a></li></ul>
+
+    </footer>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+
+  
+    <article id="post-flask-sqlalchemy-relation-lazy" class="article article-type-post" itemscope itemprop="blogPost">
+  
+  <div class="article-meta">
+    <a href="/2016/08/11/flask-sqlalchemy-relation-lazy/" class="article-date">
+  <time datetime="2016-08-11T08:37:01.000Z" itemprop="datePublished">2016-08-11</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">编程语言</a>
+  </div>
+
+
+    
+        <div class="counter-tag counter">
+    <!-- 别忘记这个类名... post-title-link -->
+    <span id="/2016/08/11/flask-sqlalchemy-relation-lazy/" class="leancloud_visitors article-hits post-title-link"
+           data-flag-title="flask-sqlalchemy中的lazy的解释">
+        次阅读
+    </span>
+
+  </div>
+
+    
+
+  </div>
+  
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/08/11/flask-sqlalchemy-relation-lazy/">flask-sqlalchemy中的lazy的解释</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>最近在学习到Flask中的Sqlalchemy, 不过在看到数据库关系<code>db.relations()</code>时对<code>lazy</code>这个参数一直很模糊。主要是看到<code>Flask Web开发</code>这本书中对<em>关注与被关注</em>的关系建模中，被lazy的使用绕晕了。
+        
+          <p class="article-more-link">
+            <a href="/2016/08/11/flask-sqlalchemy-relation-lazy/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+
+
+    
+
+    
+
+    <footer class="article-footer">
+      
+        <a href="http://shomy.top/2016/08/11/flask-sqlalchemy-relation-lazy/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/flask/" rel="tag">flask</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/lazy/" rel="tag">lazy</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/pyhton/" rel="tag">pyhton</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/sqlalchemy/" rel="tag">sqlalchemy</a></li></ul>
+
+    </footer>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+
+  
+    <article id="post-twilio-flask-slack" class="article article-type-post" itemscope itemprop="blogPost">
+  
+  <div class="article-meta">
+    <a href="/2016/07/09/twilio-flask-slack/" class="article-date">
+  <time datetime="2016-07-09T08:04:13.000Z" itemprop="datePublished">2016-07-09</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">编程语言</a>
+  </div>
+
+
+    
+        <div class="counter-tag counter">
+    <!-- 别忘记这个类名... post-title-link -->
+    <span id="/2016/07/09/twilio-flask-slack/" class="leancloud_visitors article-hits post-title-link"
+           data-flag-title="使用Twilio构建SlackBot">
+        次阅读
+    </span>
+
+  </div>
+
+    
+
+  </div>
+  
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/07/09/twilio-flask-slack/">使用Twilio构建SlackBot</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <blockquote>
+<p>前段时间学习了Python的一个Web框架:Flask, 感觉很简洁(相对于Django)。正巧有一篇关于Flask的推送，使用Flask建立一个Slack的bot，感觉很有意思。就开始按照文章搭建了一次，顺手练习Flask;按照文章基本可以搭建完成;下面记录学习到的几个地方，细节部分不再赘述，原文中很清晰。 推送原文链接:<a target="_blank" rel="noopener" href="https://www.twilio.com/blog/2016/05/build-sms-slack-bot-python.html">How to Build an SMS Slack Bot in Python</a></p>
+</blockquote>
+        
+          <p class="article-more-link">
+            <a href="/2016/07/09/twilio-flask-slack/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+
+
+    
+
+    
+
+    <footer class="article-footer">
+      
+        <a href="http://shomy.top/2016/07/09/twilio-flask-slack/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/flask/" rel="tag">flask</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/slack/" rel="tag">slack</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/twilio/" rel="tag">twilio</a></li></ul>
+
+    </footer>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+
+  
+    <article id="post-trans-8-powerful-awk-built-in-variables" class="article article-type-post" itemscope itemprop="blogPost">
+  
+  <div class="article-meta">
+    <a href="/2016/05/05/trans-8-powerful-awk-built-in-variables/" class="article-date">
+  <time datetime="2016-05-05T06:43:51.000Z" itemprop="datePublished">2016-05-05</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">编程语言</a>
+  </div>
+
+
+    
+        <div class="counter-tag counter">
+    <!-- 别忘记这个类名... post-title-link -->
+    <span id="/2016/05/05/trans-8-powerful-awk-built-in-variables/" class="leancloud_visitors article-hits post-title-link"
+           data-flag-title="&lt;译&gt;8个有力的Awk内建变量">
+        次阅读
+    </span>
+
+  </div>
+
+    
+
+  </div>
+  
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/05/05/trans-8-powerful-awk-built-in-variables/">&lt;译&gt;8个有力的Awk内建变量</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <blockquote>
+<p>翻译原文:<a target="_blank" rel="noopener" href="http://www.thegeekstuff.com/2010/01/8-powerful-awk-built-in-variables-fs-ofs-rs-ors-nr-nf-filename-fnr/">8 Powerful Awk Built-in Variables</a> <a target="_blank" rel="noopener" href="http://www.thegeekstuff.com/">http://www.thegeekstuff.com/</a>这个博客真是不错。</p>
+</blockquote>
+<p>这篇文章是<a target="_blank" rel="noopener" href="http://www.thegeekstuff.com/tag/awk-tutorial-examples/">Awk Tutorial Examples</a>系列的一部分。
+        
+          <p class="article-more-link">
+            <a href="/2016/05/05/trans-8-powerful-awk-built-in-variables/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+
+
+    
+
+    
+
+    <footer class="article-footer">
+      
+        <a href="http://shomy.top/2016/05/05/trans-8-powerful-awk-built-in-variables/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/AWK/" rel="tag">AWK</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/translate/" rel="tag">translate</a></li></ul>
+
+    </footer>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+
+  
+    <article id="post-git-server-hook" class="article article-type-post" itemscope itemprop="blogPost">
+  
+  <div class="article-meta">
+    <a href="/2016/04/14/git-server-hook/" class="article-date">
+  <time datetime="2016-04-14T08:23:49.000Z" itemprop="datePublished">2016-04-14</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E5%B7%A5%E5%85%B7%E4%BD%BF%E7%94%A8/">工具使用</a>
+  </div>
+
+
+    
+        <div class="counter-tag counter">
+    <!-- 别忘记这个类名... post-title-link -->
+    <span id="/2016/04/14/git-server-hook/" class="leancloud_visitors article-hits post-title-link"
+           data-flag-title="搭建git服务器以及web自动化部署">
+        次阅读
+    </span>
+
+  </div>
+
+    
+
+  </div>
+  
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/04/14/git-server-hook/">搭建git服务器以及web自动化部署</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <blockquote>
+<p>之前使用sae作为测试服务器，无奈云豆实在是消耗极快，于是就在阿里云上买了一个SEC, 还好当时是学生价。 因为之前用的sae提供的git作开发，迁移过来之后，也就想搭建一个git服务器，可以方便使用，并且还可以做到push上去代码，web页面可以自动更新了。 查了一些资料，大部分都一样，　不过也饶了一点弯路，最终搭建完成，记录于此。</p>
+</blockquote>
+        
+          <p class="article-more-link">
+            <a href="/2016/04/14/git-server-hook/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+
+
+    
+
+    
+
+    <footer class="article-footer">
+      
+        <a href="http://shomy.top/2016/04/14/git-server-hook/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/git-server/" rel="tag">git-server</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hook/" rel="tag">hook</a></li></ul>
+
+    </footer>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+
+  
+    <article id="post-chrome-http2https-google" class="article article-type-post" itemscope itemprop="blogPost">
+  
+  <div class="article-meta">
+    <a href="/2016/04/04/chrome-http2https-google/" class="article-date">
+  <time datetime="2016-04-04T14:01:33.000Z" itemprop="datePublished">2016-04-04</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E5%B7%A5%E5%85%B7%E4%BD%BF%E7%94%A8/">工具使用</a>
+  </div>
+
+
+    
+        <div class="counter-tag counter">
+    <!-- 别忘记这个类名... post-title-link -->
+    <span id="/2016/04/04/chrome-http2https-google/" class="leancloud_visitors article-hits post-title-link"
+           data-flag-title="利用chrome扩展使用HTTPS访问google">
+        次阅读
+    </span>
+
+  </div>
+
+    
+
+  </div>
+  
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/04/04/chrome-http2https-google/">利用chrome扩展使用HTTPS访问google</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>在国内访问<code>google</code>的时候，总是需要费一番周折，之前一直修改hosts,可以访问<code>https://google.com.hk</code>，后来发现总是出现连接被重置的情况，如下图：
+        
+          <p class="article-more-link">
+            <a href="/2016/04/04/chrome-http2https-google/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+
+
+    
+
+    
+
+    <footer class="article-footer">
+      
+        <a href="http://shomy.top/2016/04/04/chrome-http2https-google/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/chrome/" rel="tag">chrome</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/google/" rel="tag">google</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/https/" rel="tag">https</a></li></ul>
+
+    </footer>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+
+  
+    <article id="post-linux-bash-find" class="article article-type-post" itemscope itemprop="blogPost">
+  
+  <div class="article-meta">
+    <a href="/2016/03/29/linux-bash-find/" class="article-date">
+  <time datetime="2016-03-29T06:48:44.000Z" itemprop="datePublished">2016-03-29</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">编程语言</a>
+  </div>
+
+
+    
+        <div class="counter-tag counter">
+    <!-- 别忘记这个类名... post-title-link -->
+    <span id="/2016/03/29/linux-bash-find/" class="leancloud_visitors article-hits post-title-link"
+           data-flag-title="Linux命令-Find">
+        次阅读
+    </span>
+
+  </div>
+
+    
+
+  </div>
+  
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/03/29/linux-bash-find/">Linux命令-Find</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <blockquote>
+<p>在文本处理中，经常涉及到对文件或者目录的查找操作，<code>find</code>命令用的很多，每次用只会那些简单的用法，有时候还需要网上查，这次总结记录下吧。</p>
+</blockquote>
+        
+          <p class="article-more-link">
+            <a href="/2016/03/29/linux-bash-find/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+
+
+    
+
+    
+
+    <footer class="article-footer">
+      
+        <a href="http://shomy.top/2016/03/29/linux-bash-find/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/find/" rel="tag">find</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/linux/" rel="tag">linux</a></li></ul>
+
+    </footer>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+
+  
+    <article id="post-ubuntu-python-pyv8" class="article article-type-post" itemscope itemprop="blogPost">
+  
+  <div class="article-meta">
+    <a href="/2016/03/11/ubuntu-python-pyv8/" class="article-date">
+  <time datetime="2016-03-11T07:51:15.000Z" itemprop="datePublished">2016-03-11</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">编程语言</a>
+  </div>
+
+
+    
+        <div class="counter-tag counter">
+    <!-- 别忘记这个类名... post-title-link -->
+    <span id="/2016/03/11/ubuntu-python-pyv8/" class="leancloud_visitors article-hits post-title-link"
+           data-flag-title="记录Ubuntu &amp; Windows下安装PyV8">
+        次阅读
+    </span>
+
+  </div>
+
+    
+
+  </div>
+  
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/03/11/ubuntu-python-pyv8/">记录Ubuntu &amp; Windows下安装PyV8</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <blockquote>
+<p>2016.5.16更新: 提供PyV8 for python2.7 的window安装包网盘下载</p>
+</blockquote>
+<hr />
+<blockquote>
+<p>这几天需要在使用<code>PyV8</code>来进行<code>python</code>与<code>javascript</code>的交互。之前在<code>window</code>下安装过，也没有遇到什么问题。 结果这次在<code>Ubuntu</code>安装遇到了不少坑--主要是网上的办法都不可行，不知道为啥。最终折腾了一晚上，终于好了。</p>
+</blockquote>
+        
+          <p class="article-more-link">
+            <a href="/2016/03/11/ubuntu-python-pyv8/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+
+
+    
+
+    
+
+    <footer class="article-footer">
+      
+        <a href="http://shomy.top/2016/03/11/ubuntu-python-pyv8/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/PyV8/" rel="tag">PyV8</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Ubuntu/" rel="tag">Ubuntu</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/python/" rel="tag">python</a></li></ul>
+
+    </footer>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+
+  
+    <article id="post-python-generator-1" class="article article-type-post" itemscope itemprop="blogPost">
+  
+  <div class="article-meta">
+    <a href="/2016/03/06/python-generator-1/" class="article-date">
+  <time datetime="2016-03-06T07:50:39.000Z" itemprop="datePublished">2016-03-06</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">编程语言</a>
+  </div>
+
+
+    
+        <div class="counter-tag counter">
+    <!-- 别忘记这个类名... post-title-link -->
+    <span id="/2016/03/06/python-generator-1/" class="leancloud_visitors article-hits post-title-link"
+           data-flag-title="python迭代器与生成器小结">
+        次阅读
+    </span>
+
+  </div>
+
+    
+
+  </div>
+  
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/03/06/python-generator-1/">python迭代器与生成器小结</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <blockquote>
+<p>2016.3.10关于例子解释的补充更新</p>
+</blockquote>
+<h1 id="例子">例子</h1>
+<p>老规矩，先上一个代码:</p>
+        
+          <p class="article-more-link">
+            <a href="/2016/03/06/python-generator-1/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+
+
+    
+
+    
+
+    <footer class="article-footer">
+      
+        <a href="http://shomy.top/2016/03/06/python-generator-1/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/generator/" rel="tag">generator</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/python/" rel="tag">python</a></li></ul>
+
+    </footer>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+
+  
+    <article id="post-hexo-in-coding-github" class="article article-type-post" itemscope itemprop="blogPost">
+  
+  <div class="article-meta">
+    <a href="/2016/03/03/hexo-in-coding-github/" class="article-date">
+  <time datetime="2016-03-02T16:38:51.000Z" itemprop="datePublished">2016-03-03</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E5%B7%A5%E5%85%B7%E4%BD%BF%E7%94%A8/">工具使用</a>
+  </div>
+
+
+    
+        <div class="counter-tag counter">
+    <!-- 别忘记这个类名... post-title-link -->
+    <span id="/2016/03/03/hexo-in-coding-github/" class="leancloud_visitors article-hits post-title-link"
+           data-flag-title="hexo同时部署到coding(gitcafe)和github">
+        次阅读
+    </span>
+
+  </div>
+
+    
+
+  </div>
+  
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/03/03/hexo-in-coding-github/">hexo同时部署到coding(gitcafe)和github</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <blockquote>
+<p>2017.07.10更新: 注:目前部署到coding需要在网页上表明coding.net 或者开通会员,否则在首次访问时候, coding.net强加推广页面</p>
+</blockquote>
+<blockquote>
+<p>2016.03.07更新: 部署到coding时，如果使用pages的话，项目名称必须与coding的用户名一致，但是演示并没有这个要求。 而且目前为止：演示不能绑定自己的域名，而pages可以，所以说，为了以后方便，项目名称还是与用户名一致的好，不然部署pages会出现没有样式的bug.</p>
+</blockquote>
+        
+          <p class="article-more-link">
+            <a href="/2016/03/03/hexo-in-coding-github/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+
+
+    
+
+    
+
+    <footer class="article-footer">
+      
+        <a href="http://shomy.top/2016/03/03/hexo-in-coding-github/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/coding/" rel="tag">coding</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/github/" rel="tag">github</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hexo/" rel="tag">hexo</a></li></ul>
+
+    </footer>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+
+  
+    <article id="post-python-namespace-1" class="article article-type-post" itemscope itemprop="blogPost">
+  
+  <div class="article-meta">
+    <a href="/2016/03/01/python-namespace-1/" class="article-date">
+  <time datetime="2016-03-01T10:15:50.000Z" itemprop="datePublished">2016-03-01</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">编程语言</a>
+  </div>
+
+
+    
+        <div class="counter-tag counter">
+    <!-- 别忘记这个类名... post-title-link -->
+    <span id="/2016/03/01/python-namespace-1/" class="leancloud_visitors article-hits post-title-link"
+           data-flag-title="由一个例子到python的名字空间">
+        次阅读
+    </span>
+
+  </div>
+
+    
+
+  </div>
+  
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2016/03/01/python-namespace-1/">由一个例子到python的名字空间</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="前言">前言</h1>
+<blockquote>
+<p><code>python</code>里面最核心的内容就是:名字空间(namespace)</p>
+</blockquote>
+<hr />
+<h1 id="例子引入">例子引入</h1>
+        
+          <p class="article-more-link">
+            <a href="/2016/03/01/python-namespace-1/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+
+
+    
+
+    
+
+    <footer class="article-footer">
+      
+        <a href="http://shomy.top/2016/03/01/python-namespace-1/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/namepsace/" rel="tag">namepsace</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/python/" rel="tag">python</a></li></ul>
+
+    </footer>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+
+  
+  
+    <nav id="page-nav">
+      <a class="extend prev" rel="prev" href="/page/3/">&amp;laquo; Prev</a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/">5</a><a class="extend next" rel="next" href="/page/5/">Next &amp;raquo;</a>
+    </nav>
+  
+
+</section>
+      </div>
+    </div>
+    
+    
+<a id="rocket" href="#top" ></a>
+
+<script src="https://cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <script src="http://cdn.htliu.cn/static/js/leancloud.js"></script>
+<script>AV.initialize("k883AKdzaz5jccQnH1eIrG2r-gzGzoHsz", "4HBQOmslEp3VdwK1SGL8vB9Y");</script>
+
+<script src="/js/Counter.js"></script>
+
+
+
+
+
+<script id="dsq-count-scr" src="//shomy.disqus.com/count.js" async></script>
+ 
+
+
+  <script src="https://cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.js"></script>
+  
+<script src="/js/fancybox.js"></script>
+
+
+
+
+  
+<script src="/js/search.js"></script>
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

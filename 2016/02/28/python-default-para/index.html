@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>python默认参数问题及其简单应用 | 天空的城</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="python 里面一个常见的陷阱就是函数的默认参数问题。 文档中这样描述python的默认参数:  Default parameter values are evaluated when the function definition is executed. This means that the expression is evaluated once, when the function i">
+<meta property="og:type" content="article">
+<meta property="og:title" content="python默认参数问题及其简单应用">
+<meta property="og:url" content="http://shomy.top/2016/02/28/python-default-para/index.html">
+<meta property="og:site_name" content="天空的城">
+<meta property="og:description" content="python 里面一个常见的陷阱就是函数的默认参数问题。 文档中这样描述python的默认参数:  Default parameter values are evaluated when the function definition is executed. This means that the expression is evaluated once, when the function i">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2016-02-28T02:53:01.000Z">
+<meta property="article:modified_time" content="2021-12-16T15:11:45.667Z">
+<meta property="article:author" content="ShomyLiu">
+<meta property="article:tag" content="python">
+<meta property="article:tag" content="default-parameter">
+<meta name="twitter:card" content="summary">
+  
+  
+    <link rel="icon" href="/image/favicon.ico">
+  
+
+  
+  <link href="https://cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.css" rel="stylesheet">
+  
+  <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  <link href="https://cdn.bootcss.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+<!-- Google Analytics -->
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-74368890-2', 'auto');
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+
+
+  
+
+  
+  <div class="site-search header-inner">
+    <div class="popup">
+        <span class="search-icon fa fa-search"></span>
+        <input type="text" id="local-search-input">
+        <div id="local-search-result"></div>
+        <span class="popup-btn-close">close</span>
+    </div>
+</div>
+
+
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      
+<header id="header">
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">天空的城</a>
+      </h1>
+      
+    </div>
+    <div id="header-menu">
+      <nav id="main-nav">
+        <ul>
+        
+          <li><a href="/"><i class="fa fa-home icon-setting"></i></a></li>
+        
+          <li><a href="/archives"><i class="fa fa-archive icon-setting"></i></a></li>
+        
+          <li><a href="/tags"><i class="fa fa-tag icon-setting"></i></a></li>
+        
+          <li><a href="/about"><i class="fa fa-user icon-setting"></i></a></li>
+        
+        
+          <li><a href="javascript:;" class="popup-trigger"><i class="fa fa-search > icon-setting"></i></a></li>
+        
+        </ul>
+      </nav>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-python-default-para" class="article article-type-post" itemscope itemprop="blogPost">
+  
+  <div class="article-meta">
+    <a href="/2016/02/28/python-default-para/" class="article-date">
+  <time datetime="2016-02-28T02:53:01.000Z" itemprop="datePublished">2016-02-28</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">编程语言</a>
+  </div>
+
+
+    
+        <div class="counter-tag counter">
+    <!-- 别忘记这个类名... post-title-link -->
+    <span id="/2016/02/28/python-default-para/" class="leancloud_visitors article-hits post-title-link"
+           data-flag-title="python默认参数问题及其简单应用">
+        次阅读
+    </span>
+
+  </div>
+
+    
+
+  </div>
+  
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      python默认参数问题及其简单应用
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+            <div id="toc" class="toc-article">
+                <strong class="toc-title">文章目录</strong>
+                <ol class="post-toc"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E4%B8%BE%E4%B8%AA%E4%BE%8B%E5%AD%90"><span class="post-toc-text">举个例子</span></a></li></ol>
+            </div>
+        
+        
+        <p><code>python</code> 里面一个常见的陷阱就是函数的默认参数问题。 文档中这样描述python的默认参数:</p>
+<blockquote>
+<p>Default parameter values are evaluated when the function definition is executed. This means that the expression is evaluated once, when the function is defined, and that the same “pre-computed” value is used for each call.</p>
+</blockquote>
+<span id="more"></span>
+<h2 id="举个例子">举个例子</h2>
+<p>如下一个例子: <figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">def <span class="function"><span class="keyword">func</span><span class="params">(mylist = [])</span>:</span></span><br><span class="line">    mylist.<span class="built_in">append</span>(<span class="number">1</span>)</span><br><span class="line">    <span class="keyword">return</span> mylist</span><br></pre></td></tr></table></figure> 以下的执行结果如下: <figure class="highlight autoit"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">print <span class="function"><span class="keyword">func</span><span class="params">()</span></span></span><br><span class="line">print <span class="function"><span class="keyword">func</span><span class="params">()</span></span></span><br><span class="line">print <span class="function"><span class="keyword">func</span><span class="params">()</span></span></span><br><span class="line">print <span class="function"><span class="keyword">func</span><span class="params">([<span class="string">&#x27;a&#x27;</span>])</span></span></span><br><span class="line">print <span class="function"><span class="keyword">func</span><span class="params">()</span></span></span><br></pre></td></tr></table></figure> 结果如下:</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[<span class="number">1</span>]</span><br><span class="line">[<span class="number">1</span>, <span class="number">1</span>]</span><br><span class="line">[<span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>]</span><br><span class="line">[&#x27;a&#x27;, <span class="number">1</span>]</span><br><span class="line">[<span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>]</span><br></pre></td></tr></table></figure>
+<p>如此结果， 前面三个可以看出 如果没有指定参数的话， 每次调用函数时候， 调用的<code>mylist</code> 是同一个对象。这是因为函数的默认参数，是在代码编译成<code>PyCodeObject</code>的时候， 就已经创建了对象指针，并且存在该函数的<code>func_default</code>内。 以后在代码运行，调用函数的时候，如果没有指定参数的话， 每次调用的话， 该参数变量都是代码编译阶段的变量指针所指定的对象。 <figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">print</span> <span class="keyword">func</span>.func_default</span><br></pre></td></tr></table></figure> 此时结果就是： <figure class="highlight clojure"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">([<span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>, <span class="number">1</span>], )</span><br></pre></td></tr></table></figure> 默认参数分为两种情况: - 默认参数值是不可变对象 此时函数的 <code>func_default</code> 一直指向该不变对象， 如果函数内部修改了该变量， 那么该默认参数会指向一个新的不可变对象.<br />
+不过<code>func_default</code> 不变。 而每次调用函数都是读取<code>func_default</code>， 因此每次执行都一样。 <figure class="highlight inform7"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">In <span class="comment">[30]</span>: def func2(var = 1):</span><br><span class="line">   ....:     var += 1</span><br><span class="line">   ....:     return var</span><br><span class="line">In <span class="comment">[31]</span>: func2()</span><br><span class="line">Out<span class="comment">[31]</span>: 2</span><br><span class="line">In <span class="comment">[32]</span>: func2()</span><br><span class="line">Out<span class="comment">[32]</span>: 2</span><br><span class="line">In <span class="comment">[34]</span>: func2.func_defaults</span><br><span class="line">Out<span class="comment">[34]</span>: (1,)</span><br><span class="line"></span><br></pre></td></tr></table></figure> - 默认参数是可变对象，比如 <code>list, dict, class</code>等 这种情况下，如果在函数内修改了指针所指的对象（<strong>并未创建新的对象</strong>）， 那么 <code>func_default</code> 就会改变。这正是开始的<code>mylist</code>发生变化的原因。看下面的例子,： <figure class="highlight inform7"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">In <span class="comment">[35]</span>: def func(mylist = <span class="comment">[]</span>):</span><br><span class="line">   ....:     mylist = <span class="comment">[]</span>    #这里 创建了新的对象，</span><br><span class="line">             mylist.append(1)</span><br><span class="line">             return mylist</span><br><span class="line">In <span class="comment">[44]</span>: func()</span><br><span class="line">Out<span class="comment">[44]</span>: <span class="comment">[1]</span></span><br><span class="line"></span><br><span class="line">In <span class="comment">[45]</span>: func.func_defaults</span><br><span class="line">Out<span class="comment">[45]</span>: (<span class="comment">[]</span>,)   </span><br><span class="line">由于创建了对象， mylist 只是作为一个 新建对象的别名存在， 后面在修改已经与 func_default 无关了。  </span><br></pre></td></tr></table></figure> --- ## 一个应用 先看下面的一个经典的例子: <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">outer</span>():</span></span><br><span class="line">    res = []</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">4</span>):</span><br><span class="line">        <span class="function"><span class="keyword">def</span> <span class="title">inner</span>(<span class="params">j</span>):</span></span><br><span class="line">            <span class="keyword">return</span> j * i</span><br><span class="line">        res.append(inner)</span><br><span class="line">    <span class="keyword">return</span> res</span><br><span class="line"><span class="built_in">print</span> [m(<span class="number">2</span>) <span class="keyword">for</span> m <span class="keyword">in</span> outer()]</span><br><span class="line"><span class="comment">#简略版本:</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">multipliers</span>():</span></span><br><span class="line">    <span class="keyword">return</span> [<span class="keyword">lambda</span> x : i * x <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">4</span>)]</span><br><span class="line"><span class="built_in">print</span> [m(<span class="number">2</span>) <span class="keyword">for</span> m <span class="keyword">in</span> multipliers()]</span><br></pre></td></tr></table></figure> 结果是 <code>[6, 6, 6, 6]</code> , 而不是 <code>[0, 2, 4, 6]</code>， 原因就是闭包的延迟绑定。另外函数绑定的是变量而不是绑定数值。当循环结束了，<code>i</code>的值已经是<code>3</code>, 此时结果都是<code>6</code>. 一个解决方法便是，使用默认参数绑定数值。如下改动:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">outer</span>():</span></span><br><span class="line">    res = []</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">4</span>):</span><br><span class="line">        <span class="function"><span class="keyword">def</span> <span class="title">inner</span>(<span class="params">j, i = i</span>):</span></span><br><span class="line">            <span class="keyword">return</span> j * i</span><br><span class="line">        res.append(inner)</span><br><span class="line">    <span class="keyword">return</span> res</span><br><span class="line"><span class="built_in">print</span> [m(<span class="number">2</span>) <span class="keyword">for</span> m <span class="keyword">in</span> outer()]</span><br><span class="line"><span class="comment">#简略版本:</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">multipliers</span>():</span></span><br><span class="line">    <span class="keyword">return</span> [<span class="keyword">lambda</span> x, i = i : i * x <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">4</span>)]</span><br><span class="line"><span class="built_in">print</span> [m(<span class="number">2</span>) <span class="keyword">for</span> m <span class="keyword">in</span> multipliers()]</span><br></pre></td></tr></table></figure>
+<p>这样的话， 利用默认参数在代码编译的时候，便把参数写到函数的<code>func_default</code>中， 就可以绑定<code>0,1,2,3</code>了。结果自然就是 <figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[<span class="number">0</span>, <span class="number">2</span>, <span class="number">4</span>, <span class="number">6</span>]</span><br></pre></td></tr></table></figure> 这就是默认参数的一个应用。 &gt;上述还有一个生成器修改的方式 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">multipliers</span>():</span></span><br><span class="line">    <span class="keyword">return</span> (<span class="keyword">lambda</span> x : i * x <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">4</span>))  <span class="comment">#修改成生成器</span></span><br><span class="line"><span class="built_in">print</span> [m(<span class="number">2</span>) <span class="keyword">for</span> m <span class="keyword">in</span> multipliers()]</span><br></pre></td></tr></table></figure></p>
+
+      
+    </div>
+
+
+    
+
+    
+	    <div class="article-footer-copyright">
+<!--<p>本文作者: shomy 发表于 <a href="http://shomy.top" target="_blank">个人博客</a></p> -->
+<p>
+本文标题: python默认参数问题及其简单应用<br/>
+</p>
+<p>
+发布时间: 2016-02-28, 10:53:01<br/>
+<p>
+<p>
+最后更新: 2021-12-16, 23:11:45<br/>
+<p>
+本文链接: <a href="/2016/02/28/python-default-para/" target="_blank">http://shomy.top/2016/02/28/python-default-para/</a>
+</p>
+<p>非商业转载请注明作者及出处。商业转载请联系<a href="mailto:shomyliu@gmail.com">作者</a>本人。</p>
+</div>
+
+    
+
+    <footer class="article-footer">
+      
+        <a href="http://shomy.top/2016/02/28/python-default-para/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/default-parameter/" rel="tag">default-parameter</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/python/" rel="tag">python</a></li></ul>
+
+    </footer>
+    
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2016/03/01/python-namespace-1/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          由一个例子到python的名字空间
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2015/12/30/linux-login-windows/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">Ubuntu登录windows远程主机</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+
+
+<section id="comments">
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+<script>
+  var disqus_shortname = 'shomy';
+  
+  var disqus_url = 'http://shomy.top/2016/02/28/python-default-para/';
+  
+  (function(){
+    var dsq = document.createElement('script');
+    dsq.type = 'text/javascript';
+    dsq.async = true;
+    dsq.src = 'https://' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  }());
+</script>
+</section>
+
+
+
+
+</section>
+      </div>
+    </div>
+    
+    
+<a id="rocket" href="#top" ></a>
+
+<script src="https://cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <script src="http://cdn.htliu.cn/static/js/leancloud.js"></script>
+<script>AV.initialize("k883AKdzaz5jccQnH1eIrG2r-gzGzoHsz", "4HBQOmslEp3VdwK1SGL8vB9Y");</script>
+
+<script src="/js/Counter.js"></script>
+
+
+
+
+
+<script id="dsq-count-scr" src="//shomy.disqus.com/count.js" async></script>
+ 
+
+
+  <script src="https://cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.js"></script>
+  
+<script src="/js/fancybox.js"></script>
+
+
+
+
+  
+<script src="/js/search.js"></script>
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

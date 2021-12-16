@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>机器学习技法笔记(6)-RBF Network(径向基函数网络) | 天空的城</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="2017.3.3更新: TensorFlow版本KMeans与RBFNet   2017.2.28更新：Python实现RBFNet   这一节利用上节SVM中的高斯核(RBF Kernel)来介绍一个新的模型，RBF Network，属于神经网络(Neural Network)的一种，可以以任意精度来逼近任意的连续函数。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="机器学习技法笔记(6)-RBF Network(径向基函数网络)">
+<meta property="og:url" content="http://shomy.top/2017/02/26/rbf-network/index.html">
+<meta property="og:site_name" content="天空的城">
+<meta property="og:description" content="2017.3.3更新: TensorFlow版本KMeans与RBFNet   2017.2.28更新：Python实现RBFNet   这一节利用上节SVM中的高斯核(RBF Kernel)来介绍一个新的模型，RBF Network，属于神经网络(Neural Network)的一种，可以以任意精度来逼近任意的连续函数。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://cdn.htliu.cn/rbf-1.png">
+<meta property="og:image" content="http://cdn.htliu.cn/rbf-2.png">
+<meta property="og:image" content="http://cdn.htliu.cn/rbf-3.png">
+<meta property="og:image" content="http://cdn.htliu.cn/rbf-4.png">
+<meta property="og:image" content="http://cdn.htliu.cn/rbf-5.png">
+<meta property="article:published_time" content="2017-02-26T14:18:37.000Z">
+<meta property="article:modified_time" content="2021-12-16T15:11:45.670Z">
+<meta property="article:author" content="ShomyLiu">
+<meta property="article:tag" content="machine learning">
+<meta property="article:tag" content="rbf">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://cdn.htliu.cn/rbf-1.png">
+  
+  
+    <link rel="icon" href="/image/favicon.ico">
+  
+
+  
+  <link href="https://cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.css" rel="stylesheet">
+  
+  <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  <link href="https://cdn.bootcss.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+<!-- Google Analytics -->
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-74368890-2', 'auto');
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+
+
+  
+
+  
+  <div class="site-search header-inner">
+    <div class="popup">
+        <span class="search-icon fa fa-search"></span>
+        <input type="text" id="local-search-input">
+        <div id="local-search-result"></div>
+        <span class="popup-btn-close">close</span>
+    </div>
+</div>
+
+
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      
+<header id="header">
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">天空的城</a>
+      </h1>
+      
+    </div>
+    <div id="header-menu">
+      <nav id="main-nav">
+        <ul>
+        
+          <li><a href="/"><i class="fa fa-home icon-setting"></i></a></li>
+        
+          <li><a href="/archives"><i class="fa fa-archive icon-setting"></i></a></li>
+        
+          <li><a href="/tags"><i class="fa fa-tag icon-setting"></i></a></li>
+        
+          <li><a href="/about"><i class="fa fa-user icon-setting"></i></a></li>
+        
+        
+          <li><a href="javascript:;" class="popup-trigger"><i class="fa fa-search > icon-setting"></i></a></li>
+        
+        </ul>
+      </nav>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-rbf-network" class="article article-type-post" itemscope itemprop="blogPost">
+  
+  <div class="article-meta">
+    <a href="/2017/02/26/rbf-network/" class="article-date">
+  <time datetime="2017-02-26T14:18:37.000Z" itemprop="datePublished">2017-02-26</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/">读书笔记</a>
+  </div>
+
+
+    
+        <div class="counter-tag counter">
+    <!-- 别忘记这个类名... post-title-link -->
+    <span id="/2017/02/26/rbf-network/" class="leancloud_visitors article-hits post-title-link"
+           data-flag-title="机器学习技法笔记(6)-RBF Network(径向基函数网络)">
+        次阅读
+    </span>
+
+  </div>
+
+    
+
+  </div>
+  
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      机器学习技法笔记(6)-RBF Network(径向基函数网络)
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+            <div id="toc" class="toc-article">
+                <strong class="toc-title">文章目录</strong>
+                <ol class="post-toc"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#radial-basis-function-%E4%BB%8B%E7%BB%8D"><span class="post-toc-text">Radial Basis Function 介绍</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#rbf-network"><span class="post-toc-text">RBF Network</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E5%87%A0%E7%A7%8D%E5%BD%A2%E5%BC%8F"><span class="post-toc-text">几种形式</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#full-rbf-network"><span class="post-toc-text">Full RBF Network</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#k-nearest-neighborknn"><span class="post-toc-text">K Nearest Neighbor(KNN)</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#%E7%A9%BA%E9%97%B4%E8%BD%AC%E6%8D%A2"><span class="post-toc-text">空间转换</span></a></li></ol></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#k-means"><span class="post-toc-text">K-Means</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#rbf-net-with-k-means"><span class="post-toc-text">RBF Net With K-Means</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E5%AE%9E%E7%8E%B0"><span class="post-toc-text">实现</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#%E6%95%B0%E6%8D%AE"><span class="post-toc-text">数据</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#k-means-1"><span class="post-toc-text">K-Means</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#rbfnet"><span class="post-toc-text">RBFNet</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#%E7%BB%93%E6%9E%9C"><span class="post-toc-text">结果</span></a></li></ol></li></ol>
+            </div>
+        
+        
+        <blockquote>
+<p>2017.3.3更新: TensorFlow版本KMeans与RBFNet</p>
+</blockquote>
+<blockquote>
+<p>2017.2.28更新：Python实现RBFNet</p>
+</blockquote>
+<blockquote>
+<p>这一节利用上节SVM中的高斯核(RBF Kernel)来介绍一个新的模型，RBF Network，属于神经网络(Neural Network)的一种，可以以任意精度来逼近任意的连续函数。</p>
+</blockquote>
+<span id="more"></span>
+<h2 id="radial-basis-function-介绍">Radial Basis Function 介绍</h2>
+<p>在SVM中，我们只是提到了RBF(径向基函数)可以作为Kernel Function，并且实现了数据到无穷维度的转化，十分Powerful。这里介绍一下RBF的原本含义，这里参考<a target="_blank" rel="noopener" href="http://blog.csdn.net/zouxy09/article/details/13297881"><strong>径向基网络（RBF network）之BP监督训练</strong></a> 中的对RBF的说明，写的十分清楚，这里直接引用:</p>
+<blockquote>
+<p>径向基函数（Radical Basis Function，RBF）方法是Powell在1985年提出的。所谓径向基函数，其实就是某种沿径向对称的标量函数。通常定义为空间中任一点x到某一中心c之间欧氏距离的单调函数，可记作k(||x-c||)，其作用往往是局部的，即当x远离c时函数取值很小。例如高斯径向基函数：</p>
+<p><span class="math inline">\(RBF(x,c)=exp\left( - \frac{(x-c)^2}{r^2}\right)\)</span></p>
+<p>当年径向基函数的诞生主要是为了解决多变量插值的问题。可以看下面的图。具体的话是先在每个样本上面放一个基函数，图中每个蓝色的点是一个样本，然后中间那个图中绿色虚线对应的，就表示的是每个训练样本对应一个高斯函数（高斯函数中心就是样本点）。然后假设真实的拟合这些训练数据的曲线是蓝色的那根（最右边的图），如果我们有一个新的数据x1，我们想知道它对应的f(x1)是多少，也就是a点的纵坐标是多少。那么由图可以看到，a点的纵坐标等于b点的纵坐标加上c点的纵坐标。而b的纵坐标是第一个样本点的高斯函数的值乘以一个大点权值得到的，c的纵坐标是第二个样本点的高斯函数的值乘以另一个小点的权值得到。而其他样本点的权值全是0，因为我们要插值的点x1在第一和第二个样本点之间，远离其他的样本点，那么插值影响最大的就是离得近的点，离的远的就没什么贡献了。所以x1点的函数值由附近的b和c两个点就可以确定了。拓展到任意的新的x，这些红色的高斯函数乘以一个权值后再在对应的x地方加起来，就可以完美的拟合真实的函数曲线了。</p>
+</blockquote>
+<p><img src="http://cdn.htliu.cn/rbf-1.png" /></p>
+<p>一句话总结就是，RBF(径向基函数)根据某种距离来描述点与某个center点的的相似度。</p>
+<h2 id="rbf-network">RBF Network</h2>
+<p>有了上述RBF的概念，以及插值问题的介绍，下面直接引入RBF Network:</p>
+<p><span class="math display">\[h(\mathbf{x}) = Output\left( \sum\limits_{m=1}^M\beta_mRBF(\mathbf{x}, \mu_m)\right)\]</span></p>
+<p>其中<span class="math inline">\(\mu_m​\)</span>是第<span class="math inline">\(m​\)</span>个center，就是上图中的红色图像的峰值对应的<span class="math inline">\(x​\)</span>, <span class="math inline">\(\beta_m​\)</span>则是对应的权重，最外层的<span class="math inline">\(Output()​\)</span> 则是根据目的选择不同的函数，比如想分类的话，那就可以使用一个softmax或者sign等函数，如果打算做回归，或者做函数逼近，这时候就可以不需要用Output函数了，RBF Network可以逼近任意连续的函数。</p>
+<p>RBF Network与普通神经网络有什么联系区别呢？如下:</p>
+<p><img src="http://cdn.htliu.cn/rbf-2.png" /></p>
+<p>首先网络结构很类似，都是输入层, 隐藏层，输出层构成，此外最后一层的输出层基本类似类似，均是对隐层的输出线性组合(权重控制)然后得到求和的结果。</p>
+<p>不过一般情况RBF Network只有三层，其中从输入层到隐层之间并没有权重连接，而是直接将用隐层的RBF计算与不同的中心(隐层神经元)的距离或者相似度，距离越远，相似度越低，神经元的激活程度就越小，作用也就越不明显，此外这个过程也可以以Kernel SVM的角度理解: 把原始低维的数据进行转换到高维空间中(高斯核对应无穷维)的特征转换。因而RBF Network的隐层激活函数可以说就是径向基函数，而一般Neural Network的激活函数则是一些如sigmod, tanh等非线性函数。当然很明显，RBF Network由于只有隐层到输出层的权重连接，因而训练速度会大大加快。</p>
+<p>这里多说一点，假设输入数据的维度为<span class="math inline">\((d,1)\)</span>,隐藏层神经元个数为<span class="math inline">\(h_n\)</span>, BP神经网络的隐藏层的每一个神经元对应的维度与输入层的每一个神经元维度相同，都是1维，即就是一个数，那么整个隐藏层的维度就是<span class="math inline">\([h_n,1]\)</span>。而RBFNet 虽然整个隐层维度也是<span class="math inline">\((h_n,1)\)</span>，但是实现不同，RBF的输入层同BP一样，都是一个数据点的所有维度，而隐藏层的每一个神经元则是，整个输入数据与当前隐层神经元也就是那个中心计算RBF函数的结果，代表了相似度，计算完相似度之后，再结合隐含层到输出层的权重，得到最后的结果。</p>
+<blockquote>
+<p>计算两个点的距离，除了用高斯距离之外，还有一些其他的选择，只要包含<span class="math inline">\(||x-c||^2\)</span>项即可。</p>
+</blockquote>
+<h2 id="几种形式">几种形式</h2>
+<p>RBF的隐层神经元也就是center的选择是个很关键的问题，因为只有中心确定了之后，RBF函数才能够确定。下面基于不同的中心介绍两种类型的RBF。</p>
+<h3 id="full-rbf-network">Full RBF Network</h3>
+<p>Full RBF Network，顾名思义便是所有的数据节点都作为中心。</p>
+<p><span class="math display">\[h(\mathbf{x}) = Output\left( \sum\limits_{m=1}^M\beta_mRBF(\mathbf{x}, \mu_m)\right)\]</span></p>
+<p>即<span class="math inline">\(M=N, \mu_m=\mathbf{x}_m\)</span>, 这样的话，预测新的数据点，需要计算该点与所有训练数据点的距离，也就是相似度，然后结合权重<span class="math inline">\(\beta\)</span>进行线性组合，此过程就是将所有的训练数据点对预测点的影响聚集到一起，距离越近，影响越大，这样得到最终的结果。比如用均匀影响做分类的话，即<span class="math inline">\(\beta_m =1 \cdot y_m\)</span>,即:</p>
+<p><span class="math display">\[g(\mathbf{x}) = sign \left( \sum\limits_{m=1}^Ny_m \exp\left( -\gamma ||\mathbf{x}-\mathbf{x}_m||^2\right)\right)\]</span></p>
+<p>就相当于每个训练数据给新数据投票，通过RBF，可以使得距离远的票数大，近的票数小，同时，<span class="math inline">\(y_m\)</span>可以控制投票的类别，这样通过aggregate所有点的opinion，就可以得到新数据的类别了。</p>
+<p>但是很显然， 这种Full RBF Network是一种偷懒的方式，因为直接将所有的点作为了center，因此如果样本量很大的话，那么计算量就太大了，在实际中，很少使用。</p>
+<h3 id="k-nearest-neighborknn">K Nearest Neighbor(KNN)</h3>
+<p>将上面的方法稍微改变一下，就可以得到另外一种很常见的机器学习方法-KNN(K近邻)。在Full RBF中，我们计算所有的训练数据与新数据的距离，距离最小的与新数据的相似度最高，而且高斯函数衰减很快，距离新数据远的点对它的影响很小，因此我们可以忽略那些，只需要找到几个最靠近新数据的点，然后只计算它们的贡献即可，假设我们找最近的K个点的话， 那就是K近邻算法。这种类型的算法在训练的时候，不用花力气，但是再做测试或者预测的时候，需要对比全部的数据，然后找到几个最近的，计算这几个的贡献得到最后结果，这个过程跟上面的Full RBF 一样，计算量很大。 因此这种方式经常在样本数据较少的时候使用。</p>
+<h3 id="空间转换">空间转换</h3>
+<p>再看回归问题:</p>
+<p><span class="math display">\[h(\mathbf{x}) = \sum\limits_{m=1}^M\beta_mRBF(\mathbf{x}, \mathbf{x}_m)\]</span></p>
+<p>如果我们令:</p>
+<p><span class="math display">\[\mathbf{z}_n = [RBF(\mathbf{x}_n, \mu_1), RBF(\mu_n, \mathbf{x}_2), \cdots, RBF(\mathbf{x}_n, \mu_M)]\]</span></p>
+<p>将相当于前面所说的将<span class="math inline">\(x_n\)</span> 利用RBF转换到<span class="math inline">\(\mathbf{z}\)</span>空间，每一项都是两个点的相似度，将所有的数据这样我们的问题，就是简单的Linear Regression了:</p>
+<p><span class="math display">\[h(\mathbf{z}) = \sum\beta_m\mathbf{z}_m\]</span></p>
+<p>然后直接得到最优解<span class="math inline">\(\beta=(\mathbf{Z}^T\mathbf{Z})^{-1}\mathbf{Z}^T\mathbf{y}\)</span>，当然这里使用的是伪逆矩阵。如果其中矩阵<span class="math inline">\(\mathbf{Z}\)</span>是由所有的<span class="math inline">\(\mathbf{z_n}, \ n=1,\cdots,N\)</span>组成，维度为: <span class="math inline">\((N,M)\)</span>。</p>
+<p>还有一种特殊情况，比如所有的训练数据作为中心的话，那么<span class="math inline">\(N=M\)</span>，此时<span class="math inline">\(\mathbf{Z}\)</span>矩阵为对称矩阵 再加上如下一个定理:</p>
+<blockquote>
+<p>如果所有的<span class="math inline">\(\mathbf{x}_n\)</span>互不相同，那么Gaussian RBF形成的<span class="math inline">\(\mathbf{Z}\)</span>矩阵一定是可逆的</p>
+</blockquote>
+<p>这样，如果满足条件的话，<span class="math inline">\(\mathbf{Z}\)</span>可逆并且对称的话，那么经过对<span class="math inline">\(\beta\)</span>的化简，最优的<span class="math inline">\(\beta =\mathbf{Z}^{-1}\mathbf{y}\)</span>,计算量大大减少。(此处暂时省略Regularized Full RBF Netework)</p>
+<h2 id="k-means">K-Means</h2>
+<p>上述的几种形式基本都属于偷懒的方式，因为我们没有花费力气去找一些好的中心，都是使用所有的数据作为RBF的center, 一旦样本量变大，一则计算量变大，二则更容易过拟合，降低泛化性能，因此我们很有必要花点力气去找一些更加靠谱数量更少的center。其实回想RBF Kernel SVM:</p>
+<p><span class="math display">\[g_{svm}(\mathbf{x})= sign\left( \sum\limits_{SV}\alpha_n y_n\exp(-\gamma||\mathbf{x}-\mathbf{x}_n||^2)\right)\]</span></p>
+<p>中心点其实就是那些Support Vectors，而非所有的数据。如何去选择中心点，实际就是要将训练点分为几簇，给每一簇要找一个代表，并且簇与簇之间不能有交集，类似与离散数学中的划分的概念，假设所有的数据划分为<span class="math inline">\(M\)</span>个簇:<span class="math inline">\(S_1, S_2,\cdots,S_M\)</span>,其中<span class="math inline">\(\mu_m\)</span>为<span class="math inline">\(S_m\)</span>的中心(prototype)，那么我们就希望：</p>
+<p>​ <span class="math display">\[\mathbf{x}_1,\mathbf{x}_2 \in S_m \Leftrightarrow \mu_m \approx \mathbf{x_1} \approx \mathbf{x_2}\]</span></p>
+<p>也就是在同一簇中的点，都应该是最相似的。这样我们的问题成为找到这样的簇，以及簇的中心，一个很典型的聚类(Cluster)问题，同时也是无监督的，利用相似度，很容易写出损失函数:</p>
+<p><img src="http://cdn.htliu.cn/rbf-3.png" /></p>
+<p>其中 <span class="math inline">\(S_1,\cdots,S_m\)</span>是训练数据集合<span class="math inline">\(\{\mathbf{x}_n \}\)</span>的的一个划分。</p>
+<p>除了离散项之外，还需要对<span class="math inline">\(S,\mu\)</span>两个变量同时优化，因此原式很难直接求最优解。下面使用一种<strong>alternating optimization</strong>(交替优化)的方法求解，原理就是先固定某一个变量，然后更新优化另一个，然后反过来，继续交替更新，直到收敛。</p>
+<p>首先固定中心点，即<span class="math inline">\(\mu_1,\cdots,\mu_M\)</span>确定，更新<span class="math inline">\(S_1,\cdots,S_M\)</span>的元素，我们需要对每个<span class="math inline">\(x_n\)</span>找到它最应该划分到哪个<span class="math inline">\(S\)</span>内，很简单，我们需要找到距离<span class="math inline">\(\mathbf{x}_n\)</span>最近的那个中心<span class="math inline">\(\mu_m\)</span>即可，这样<span class="math inline">\(\mathbf{x}_n\)</span>划到<span class="math inline">\(S_m\)</span>内，即:</p>
+<p><span class="math display">\[\arg\min\limits_{m}||\mathbf{x}_n - \mu_m||^2\]</span></p>
+<p>然后固定簇，即<span class="math inline">\(S_1,S_2,...,S_M\)</span>确定，更新簇的中心:<span class="math inline">\(\mu_1, \mu_2...\mu_M\)</span>。一旦簇确定了，那么<span class="math inline">\(\mathbf{x}_n \in S_m\)</span>这一项已经确定，要么1要么0，单独考虑其中一项<span class="math inline">\(\mu_m\)</span>,问题就简化如下:</p>
+<p><span class="math display">\[E_{in} = \min\limits_{u_m}  \sum\limits_{\mathbf{x}_n \in S_m}||\mathbf{x}_n-\mu_m||^2\]</span></p>
+<p>很显然，这是一个无约束的单变量优化问题，直接求一阶微分:</p>
+<p><span class="math display">\[\begin{align}\frac{\partial E_{in}}{\partial \mu_m} &amp;= -2\left( \sum\limits_{\mathbf{x}_n \in S_m}\mathbf{x}_n - \mu_m\right)\\&amp;=-2\left(\left( \sum\limits_{\mathbf{x}_n \in S_m}\mathbf{x}_n\right) - |S_m|\mu_m\right)=0 \\  \mu_m &amp;=\frac{\sum\limits_{\mathbf{x}_n \in S_M} \mathbf{x}_n}{|S_m|}\end{align} \]</span></p>
+<p>也就是说, <span class="math inline">\(S_m\)</span>的中心等于簇内所有点的平均值。</p>
+<p>交替更新完一轮<span class="math inline">\(S,\mu\)</span>之后，重复这个过程直到收敛，整个聚类的算法就是著名的<strong>K-Means</strong>，下面给出基本流程:</p>
+<p><img src="http://cdn.htliu.cn/rbf-4.png" /></p>
+<p>注:</p>
+<ul>
+<li>K的选择，一般需要一些先验知识，影响很大</li>
+<li><span class="math inline">\(\mu\)</span> 初始化很关键，对整个收敛速度与质量影响很大，需要多测试</li>
+<li>收敛性，K-Means可以一定收敛，因为交替更新的两个过程都是在使得<span class="math inline">\(E_{in}\)</span>下降。不过由于<span class="math inline">\(E_{in}\)</span> 并不是凸函数，因此我们得到可能不是全局最优解。</li>
+<li>K-Means属于无监督的特征转换过程，类似与AutoEncoder。</li>
+</ul>
+<h2 id="rbf-net-with-k-means">RBF Net With K-Means</h2>
+<p>有了K-Means来聚类，那我们就可以用确定RBFNet的中心了，下面重新给出使用K-Means的RBF Net用来做预测回归的流程:</p>
+<p><img src="http://cdn.htliu.cn/rbf-5.png" /></p>
+<p>这个过程与上面唯一不同的地方就是，开始先使用K-Means得到了中心，然后再计算特征转换的<span class="math inline">\(Z\)</span>矩阵，其余步骤完全相同。</p>
+<p>RBF Net的超参数只有三种: <span class="math inline">\(M\)</span>(中心个数)，RBF函数中的，比如高斯里面的<span class="math inline">\(\gamma\)</span>，以及权重。因此RBFNet是一种简单，快速的逼近算法，可以用于回归，分类，其中做函数逼近更多一些，下一节重点介绍训练以及实现。</p>
+<h2 id="实现">实现</h2>
+<p>借助上述的理论，使用Python实现了简单的基于K-Means的RBFNet，以及用tensorflow实现了GPU版本的K-Means以及RBFNet，速度明显提升。</p>
+<h3 id="数据">数据</h3>
+<p>手动生成数据，目的是做函数逼近，提供了两种类型的数据: y = 2x 与 y=sum(x)，生成的数据量以及数据维度都是设定。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">getData</span>(<span class="params">n=<span class="number">100</span>, d=<span class="number">5</span>, method=<span class="string">&#x27;sum&#x27;</span></span>):</span></span><br><span class="line">    <span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"><span class="string">    生成数据</span></span><br><span class="line"><span class="string">    &#x27;&#x27;&#x27;</span></span><br><span class="line">    X = np.random.uniform(<span class="number">1.</span>, <span class="number">3.0</span>,(n,d))</span><br><span class="line">    <span class="keyword">if</span> method == <span class="string">&#x27;sum&#x27;</span>:</span><br><span class="line">        y = np.<span class="built_in">sum</span>(X, axis=<span class="number">1</span>)</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        y = <span class="number">2</span>*X</span><br><span class="line">    <span class="keyword">return</span> X,y</span><br></pre></td></tr></table></figure>
+<h3 id="k-means-1">K-Means</h3>
+<p>核心就是两步交替更新，首先更新簇元素，再更新簇内中心。</p>
+<h3 id="rbfnet">RBFNet</h3>
+<p>模型如下:</p>
+<p><span class="math display">\[\begin{align}h(\mathbf{x}) &amp;= \sum\limits_{m=1}^M\beta_mRBF(\mathbf{x}, \mu_m)  \\ &amp;=\sum\limits_{m=1}^M\beta_m * \exp(-\gamma_m * ||\mathbf{x}-\mathbf{c}||^2) \end{align}\]</span></p>
+<p>首先有三个参数需要确定:权重参数<span class="math inline">\(\beta\)</span>， 高斯函数扩展参数<span class="math inline">\(\gamma\)</span>, 另外就是隐层的神经元个数，即K-Means的k。首先看<span class="math inline">\(\gamma\)</span>, 不同的神经元对应的扩展参数理论上可以不一样，可以用下面的方式计算:</p>
+<ul>
+<li>计算出每个簇内的发散平均程度，即距离中心的平均距离: <span class="math inline">\(\sigma = \frac{1}{m}\sum||\mathbf{x}-\mu_m||\)</span></li>
+<li><span class="math inline">\(\gamma_m = \frac{1}{2\sigma^2}\)</span></li>
+</ul>
+<p>上述方式是一种比较合理的方式计算<span class="math inline">\(\gamma\)</span>,不过也可以直接将所有的<span class="math inline">\(\gamma\)</span>设定为同一个固定值，效果也类似，一般是一个比较小的值，如0.1。</p>
+<p>再看隐层神经元个数，在某个层面上说，RBFNet的核心在于将原始数据经过特征转化，因此一般神经元个数要高于原始数据的维度，从而达到升高维度的目的。</p>
+<p>最后权重参数<span class="math inline">\(\beta\)</span>。在实验中，函数逼近属于回归问题，这里提供两种求解方式，</p>
+<ul>
+<li>使用Linear Regression就可以直接解出<span class="math inline">\(\beta\)</span>:<span class="math inline">\(\beta = (\mathbf{Z^TZ})^{-1}\mathbf{Z}^T\mathbf{y}\)</span>，其中<span class="math inline">\(\mathbf{Z}\)</span>是所有训练数据的rbf的结果，<span class="math inline">\(\mathbf{y}\)</span>是所有训练数据的y。</li>
+<li>按照梯度下降的方式来训练参数(只在TensorFlow版本实现)</li>
+</ul>
+<h3 id="结果">结果</h3>
+<p>CPU版本：</p>
+<ol type="1">
+<li>使用<span class="math inline">\(y=sum(x)\)</span>的3000条数据，逼近结果如下:</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">$ python run.py</span><br><span class="line">X: [ 2.76801352  2.09847071  1.26193386  1.24845461  1.40333726]</span><br><span class="line">real      : 8.78020996497</span><br><span class="line">prediction: 8.71215929411</span><br><span class="line">******************************</span><br><span class="line">X: [ 1.00621598  1.81564319  1.59844746  2.52523288  1.27452441]</span><br><span class="line">real      : 8.22006392064</span><br><span class="line">prediction: 8.24858828932</span><br><span class="line">******************************</span><br><span class="line">X: [ 2.90835704  2.22760245  1.80146849  1.37866698  1.21111461]</span><br><span class="line">real      : 9.52720958234</span><br><span class="line">prediction: 9.40142232908</span><br><span class="line">******************************</span><br><span class="line">X: [ 1.93636418  2.54609154  1.80642139  2.33747451  1.25772174]</span><br><span class="line">real      : 9.88407335723</span><br><span class="line">prediction: 10.1683670115</span><br><span class="line">******************************</span><br><span class="line">X: [ 2.80741503  1.35740491  2.26844426  2.62627921  1.73952771]</span><br><span class="line">real      : 10.7990711232</span><br><span class="line">prediction: 10.8892856428</span><br><span class="line">******************************</span><br><span class="line">python run.py  9.02s user 0.50s system 106% cpu 8.947 total</span><br></pre></td></tr></table></figure>
+<ol start="2" type="1">
+<li>使用<span class="math inline">\(y=2x\)</span>的3000条数据，逼近效果如下:</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">$ python run.py </span><br><span class="line">X: [ 2.64225429  1.16385274  2.69488719  2.58292883  2.31537922]</span><br><span class="line">real      : [ 5.28450858  2.32770548  5.38977438  5.16585766  4.63075843]</span><br><span class="line">prediction: [ 5.11075705  2.36091391  5.29326006  5.02440494  4.63639069]</span><br><span class="line">******************************</span><br><span class="line">X: [ 2.79241969  2.69607337  2.07437327  2.73446838  1.19582012]</span><br><span class="line">real      : [ 5.58483938  5.39214674  4.14874654  5.46893677  2.39164025]</span><br><span class="line">prediction: [ 5.21027141  5.08792887  4.06967137  5.14665798  2.53483961]</span><br><span class="line">******************************</span><br><span class="line">X: [ 2.60551718  2.97657156  2.80778824  2.47291552  2.84918172]</span><br><span class="line">real      : [ 5.21103436  5.95314312  5.61557648  4.94583105  5.69836345]</span><br><span class="line">prediction: [ 4.84442944  5.35447225  5.0674437   4.57218657  5.18815626]</span><br><span class="line">******************************</span><br><span class="line">X: [ 2.44505957  1.70038561  1.99612367  1.1245514   1.18954801]</span><br><span class="line">real      : [ 4.89011913  3.40077121  3.99224733  2.2491028   2.37909603]</span><br><span class="line">prediction: [ 4.8029322   3.39746125  3.94098729  2.30900805  2.52864718]</span><br><span class="line">******************************</span><br><span class="line">X: [ 1.85397812  2.83347041  1.31929703  1.35131915  2.29165357]</span><br><span class="line">real      : [ 3.70795624  5.66694081  2.63859405  2.7026383   4.58330715]</span><br><span class="line">prediction: [ 3.66509186  5.63858479  2.65371075  2.73222885  4.53157419]</span><br><span class="line">******************************</span><br><span class="line">python run.py  6.84s user 0.58s system 114% cpu 4.751 total</span><br></pre></td></tr></table></figure>
+<p>GPU版本结果:</p>
+<ol type="1">
+<li><p>使用<span class="math inline">\(y=sum(x)\)</span>的3000数据:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">X: [ 1.62451696  1.02659273  2.81655526  1.12427032  2.43579245]</span><br><span class="line">real      : [ 9.02772713]</span><br><span class="line">prediction: [ 8.7921114]</span><br><span class="line">******************************</span><br><span class="line">X: [ 2.53124356  1.34387374  1.38431156  1.20624399  2.59180689]</span><br><span class="line">real      : [ 9.05747986]</span><br><span class="line">prediction: [ 8.99416161]</span><br><span class="line">******************************</span><br><span class="line">X: [ 1.70616233  2.51688766  1.07848394  1.27796292  1.98958588]</span><br><span class="line">real      : [ 8.56908321]</span><br><span class="line">prediction: [ 8.56313705]</span><br><span class="line">******************************</span><br><span class="line">X: [ 2.03224301  2.65368748  1.41390944  2.04034257  1.04631364]</span><br><span class="line">real      : [ 9.18649578]</span><br><span class="line">prediction: [ 9.23960781]</span><br><span class="line">******************************</span><br><span class="line">X: [ 2.16495895  1.28095651  1.34778249  2.75269151  1.90516138]</span><br><span class="line">real      : [ 9.45155144]</span><br><span class="line">prediction: [ 9.43926144]</span><br><span class="line">******************************</span><br><span class="line">python tf_run.py  3.53s user 0.85s system 166% cpu 2.630 total</span><br></pre></td></tr></table></figure>
+<p>​</p></li>
+<li><p>使用<span class="math inline">\(y=2x\)</span>的3000条训练数据:</p>
+<figure class="highlight dns"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">X: [ <span class="number">1.06009257</span>  <span class="number">1.647856</span>    <span class="number">1.8015914</span>   <span class="number">1.13952839</span>  <span class="number">2.74504972</span>]</span><br><span class="line">real      : [ <span class="number">2.12018514</span>  <span class="number">3.29571199</span>  <span class="number">3.60318279</span>  <span class="number">2.27905679</span>  <span class="number">5.49009943</span>]</span><br><span class="line">prediction: [ <span class="number">2.36333179</span>  <span class="number">3.43519783</span>  <span class="number">3.55674648</span>  <span class="number">2.42750287</span>  <span class="number">5.14753294</span>]</span><br><span class="line">******************************</span><br><span class="line">X: [ <span class="number">2.94805002</span>  <span class="number">1.19944155</span>  <span class="number">1.2205795</span>   <span class="number">2.25700951</span>  <span class="number">2.18170953</span>]</span><br><span class="line">real      : [ <span class="number">5.89610004</span>  <span class="number">2.3988831</span>   <span class="number">2.44115901</span>  <span class="number">4.51401901</span>  <span class="number">4.36341906</span>]</span><br><span class="line">prediction: [ <span class="number">5.56341791</span>  <span class="number">2.54713631</span>  <span class="number">2.6267767</span>   <span class="number">4.27490234</span>  <span class="number">4.30334949</span>]</span><br><span class="line">******************************</span><br><span class="line">X: [ <span class="number">1.93198025</span>  <span class="number">1.48437035</span>  <span class="number">2.22421408</span>  <span class="number">1.9887476</span>   <span class="number">2.1166265</span> ]</span><br><span class="line">real      : [ <span class="number">3.8639605</span>   <span class="number">2.9687407</span>   <span class="number">4.44842815</span>  <span class="number">3.97749519</span>  <span class="number">4.233253</span>  ]</span><br><span class="line">prediction: [ <span class="number">4.06275845</span>  <span class="number">2.60474968</span>  <span class="number">4.85847521</span>  <span class="number">4.15260172</span>  <span class="number">4.46441317</span>]</span><br><span class="line">******************************</span><br><span class="line">X: [ <span class="number">1.86214089</span>  <span class="number">2.13927388</span>  <span class="number">2.89492273</span>  <span class="number">2.43535662</span>  <span class="number">1.00828433</span>]</span><br><span class="line">real      : [ <span class="number">3.72428179</span>  <span class="number">4.27854776</span>  <span class="number">5.78984547</span>  <span class="number">4.87071323</span>  <span class="number">2.01656866</span>]</span><br><span class="line">prediction: [ <span class="number">3.73180866</span>  <span class="number">4.23187256</span>  <span class="number">5.57253933</span>  <span class="number">4.6572423</span>   <span class="number">2.15151691</span>]</span><br><span class="line">******************************</span><br><span class="line">X: [ <span class="number">1.35404587</span>  <span class="number">2.86987972</span>  <span class="number">2.46327639</span>  <span class="number">2.51390696</span>  <span class="number">1.88503158</span>]</span><br><span class="line">real      : [ <span class="number">2.70809174</span>  <span class="number">5.73975945</span>  <span class="number">4.92655277</span>  <span class="number">5.02781391</span>  <span class="number">3.77006316</span>]</span><br><span class="line">prediction: [ <span class="number">2.71249247</span>  <span class="number">5.52877426</span>  <span class="number">4.94359541</span>  <span class="number">4.8839283</span>   <span class="number">3.81015444</span>]</span><br><span class="line">******************************</span><br><span class="line">python tf_run.py  <span class="number">4</span>.<span class="number">70</span>s user <span class="number">0</span>.<span class="number">86</span>s system <span class="number">165</span>% cpu <span class="number">3</span>.<span class="number">363</span> total</span><br></pre></td></tr></table></figure></li>
+</ol>
+<p>首先是时间，tensorflow版的RBFNet要少很多，尤其是在聚类阶段，如果数据量变大， 优势会更加明显。</p>
+<p>此外二者在sum数据上拟合效果很好，误差较小。在y=2x上，误差略大，不过这也跟训练数据有关系，通过调整参数，效果还可以提升很多。</p>
+<p>此外，又对TensorFlow版的两种实现方式做了对比，数据集采用的是sum的形式:</p>
+<ol type="1">
+<li><p>Linear Regression方式:</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">X: [ 2.71186709  1.1967051   1.31952727  2.1717248   2.57859206]</span><br><span class="line">real      : [ 9.97841644]</span><br><span class="line">prediction: [ 9.96531868]</span><br><span class="line">******************************</span><br><span class="line">X: [ 2.73147416  1.85858846  1.61863422  2.991575    2.25436425]</span><br><span class="line">real      : [ 11.45463562]</span><br><span class="line">prediction: [ 11.45114994]</span><br><span class="line">******************************</span><br><span class="line">X: [ 1.70037389  1.58699119  1.53201306  2.21282601  1.39819622]</span><br><span class="line">real      : [ 8.43039989]</span><br><span class="line">prediction: [ 8.39311886]</span><br><span class="line">******************************</span><br><span class="line">X: [ 2.01777792  1.22136164  1.52503204  2.9318645   1.15536594]</span><br><span class="line">real      : [ 8.85140228]</span><br><span class="line">prediction: [ 8.84553528]</span><br><span class="line">******************************</span><br><span class="line">X: [ 2.70246601  2.19741511  1.7523278   2.72755265  1.09670925]</span><br><span class="line">real      : [ 10.47647095]</span><br><span class="line">prediction: [ 10.4424572]</span><br><span class="line">******************************</span><br></pre></td></tr></table></figure></li>
+<li><p>梯度下降训练方式:</p>
+<figure class="highlight dns"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">X: [ <span class="number">2.3670311</span>   <span class="number">2.37218928</span>  <span class="number">1.41229916</span>  <span class="number">2.26609325</span>  <span class="number">1.49073756</span>]</span><br><span class="line">real      : [ <span class="number">9.90835094</span>]</span><br><span class="line">prediction: [ <span class="number">10.1823082</span>]</span><br><span class="line">******************************</span><br><span class="line">X: [ <span class="number">2.30584574</span>  <span class="number">1.68435013</span>  <span class="number">1.76450276</span>  <span class="number">2.61775756</span>  <span class="number">2.94909477</span>]</span><br><span class="line">real      : [ <span class="number">11.32155132</span>]</span><br><span class="line">prediction: [ <span class="number">11.11611843</span>]</span><br><span class="line">******************************</span><br><span class="line">X: [ <span class="number">2.48293662</span>  <span class="number">1.83565235</span>  <span class="number">1.58969617</span>  <span class="number">1.05468404</span>  <span class="number">2.01141191</span>]</span><br><span class="line">real      : [ <span class="number">8.97438145</span>]</span><br><span class="line">prediction: [ <span class="number">9.28915977</span>]</span><br><span class="line">******************************</span><br><span class="line">X: [ <span class="number">2.92746592</span>  <span class="number">1.39118993</span>  <span class="number">2.33665395</span>  <span class="number">1.11171508</span>  <span class="number">2.27592731</span>]</span><br><span class="line">real      : [ <span class="number">10.04295254</span>]</span><br><span class="line">prediction: [ <span class="number">9.89380741</span>]</span><br><span class="line">******************************</span><br><span class="line">X: [ <span class="number">1.08498883</span>  <span class="number">1.48899996</span>  <span class="number">1.32145357</span>  <span class="number">2.53989029</span>  <span class="number">2.54879212</span>]</span><br><span class="line">real      : [ <span class="number">8.98412514</span>]</span><br><span class="line">prediction: [ <span class="number">9.06929016</span>]</span><br></pre></td></tr></table></figure></li>
+</ol>
+<p>从结果可以看出，梯度下降方式误差相对大一些，这个也符合原理，LinearRegression直接使用所有数据解线性方程，得到的结果应该是很准确的。而梯度下降方式则跟训练数据大小，学习率等关系很大，如果调整不好，自然误差就会变大。</p>
+<p>Numpy版KMeans+RBFNet 与 TensorFlow版KMeans+RBFNet的完整代码: <a target="_blank" rel="noopener" href="https://github.com/ShomyLiu/stat-learn/tree/master/RBFNet">RBFNet With K-Means</a></p>
+
+      
+    </div>
+
+
+    
+
+    
+	    <div class="article-footer-copyright">
+<!--<p>本文作者: shomy 发表于 <a href="http://shomy.top" target="_blank">个人博客</a></p> -->
+<p>
+本文标题: 机器学习技法笔记(6)-RBF Network(径向基函数网络)<br/>
+</p>
+<p>
+发布时间: 2017-02-26, 22:18:37<br/>
+<p>
+<p>
+最后更新: 2021-12-16, 23:11:45<br/>
+<p>
+本文链接: <a href="/2017/02/26/rbf-network/" target="_blank">http://shomy.top/2017/02/26/rbf-network/</a>
+</p>
+<p>非商业转载请注明作者及出处。商业转载请联系<a href="mailto:shomyliu@gmail.com">作者</a>本人。</p>
+</div>
+
+    
+
+    <footer class="article-footer">
+      
+        <a href="http://shomy.top/2017/02/26/rbf-network/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/machine-learning/" rel="tag">machine learning</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/rbf/" rel="tag">rbf</a></li></ul>
+
+    </footer>
+    
+	    <script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+    
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2017/03/07/kernel-lr/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          机器学习技法笔记(7)-Kernel LR(核逻辑回归)
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2017/02/20/svm04-soft-margin/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">机器学习技法笔记(5)-Soft Margin SVM</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+
+
+<section id="comments">
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+<script>
+  var disqus_shortname = 'shomy';
+  
+  var disqus_url = 'http://shomy.top/2017/02/26/rbf-network/';
+  
+  (function(){
+    var dsq = document.createElement('script');
+    dsq.type = 'text/javascript';
+    dsq.async = true;
+    dsq.src = 'https://' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  }());
+</script>
+</section>
+
+
+
+
+</section>
+      </div>
+    </div>
+    
+    
+<a id="rocket" href="#top" ></a>
+
+<script src="https://cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <script src="http://cdn.htliu.cn/static/js/leancloud.js"></script>
+<script>AV.initialize("k883AKdzaz5jccQnH1eIrG2r-gzGzoHsz", "4HBQOmslEp3VdwK1SGL8vB9Y");</script>
+
+<script src="/js/Counter.js"></script>
+
+
+
+
+
+<script id="dsq-count-scr" src="//shomy.disqus.com/count.js" async></script>
+ 
+
+
+  <script src="https://cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.js"></script>
+  
+<script src="/js/fancybox.js"></script>
+
+
+
+
+  
+<script src="/js/search.js"></script>
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

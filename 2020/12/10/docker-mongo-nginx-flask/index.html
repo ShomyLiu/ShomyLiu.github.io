@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>docker部署Flask+MongoDB+Nginx | 天空的城</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="近期需要将一个Flask+MongoDB+Nginx 小系统打包部署，之前只用过docker对简单的代码进行打包，这次使用docker-compose踩了很多坑，特此记录下。主要参考这篇详细的指南How To Set Up Flask with MongoDB and Docker {建议细看}。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="docker部署Flask+MongoDB+Nginx">
+<meta property="og:url" content="http://shomy.top/2020/12/10/docker-mongo-nginx-flask/index.html">
+<meta property="og:site_name" content="天空的城">
+<meta property="og:description" content="近期需要将一个Flask+MongoDB+Nginx 小系统打包部署，之前只用过docker对简单的代码进行打包，这次使用docker-compose踩了很多坑，特此记录下。主要参考这篇详细的指南How To Set Up Flask with MongoDB and Docker {建议细看}。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-12-10T03:49:57.000Z">
+<meta property="article:modified_time" content="2021-12-16T15:11:45.655Z">
+<meta property="article:author" content="ShomyLiu">
+<meta property="article:tag" content="docker">
+<meta property="article:tag" content="flask">
+<meta name="twitter:card" content="summary">
+  
+  
+    <link rel="icon" href="/image/favicon.ico">
+  
+
+  
+  <link href="https://cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.css" rel="stylesheet">
+  
+  <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  <link href="https://cdn.bootcss.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+<!-- Google Analytics -->
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-74368890-2', 'auto');
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+
+
+  
+
+  
+  <div class="site-search header-inner">
+    <div class="popup">
+        <span class="search-icon fa fa-search"></span>
+        <input type="text" id="local-search-input">
+        <div id="local-search-result"></div>
+        <span class="popup-btn-close">close</span>
+    </div>
+</div>
+
+
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      
+<header id="header">
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">天空的城</a>
+      </h1>
+      
+    </div>
+    <div id="header-menu">
+      <nav id="main-nav">
+        <ul>
+        
+          <li><a href="/"><i class="fa fa-home icon-setting"></i></a></li>
+        
+          <li><a href="/archives"><i class="fa fa-archive icon-setting"></i></a></li>
+        
+          <li><a href="/tags"><i class="fa fa-tag icon-setting"></i></a></li>
+        
+          <li><a href="/about"><i class="fa fa-user icon-setting"></i></a></li>
+        
+        
+          <li><a href="javascript:;" class="popup-trigger"><i class="fa fa-search > icon-setting"></i></a></li>
+        
+        </ul>
+      </nav>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-docker-mongo-nginx-flask" class="article article-type-post" itemscope itemprop="blogPost">
+  
+  <div class="article-meta">
+    <a href="/2020/12/10/docker-mongo-nginx-flask/" class="article-date">
+  <time datetime="2020-12-10T03:49:57.000Z" itemprop="datePublished">2020-12-10</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E5%B7%A5%E5%85%B7%E4%BD%BF%E7%94%A8/">工具使用</a>
+  </div>
+
+
+    
+        <div class="counter-tag counter">
+    <!-- 别忘记这个类名... post-title-link -->
+    <span id="/2020/12/10/docker-mongo-nginx-flask/" class="leancloud_visitors article-hits post-title-link"
+           data-flag-title="docker部署Flask+MongoDB+Nginx">
+        次阅读
+    </span>
+
+  </div>
+
+    
+
+  </div>
+  
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      docker部署Flask+MongoDB+Nginx
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+            <div id="toc" class="toc-article">
+                <strong class="toc-title">文章目录</strong>
+                <ol class="post-toc"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E7%B3%BB%E7%BB%9F%E7%8E%AF%E5%A2%83"><span class="post-toc-text">系统环境</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E6%96%B9%E6%B3%95"><span class="post-toc-text">方法</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#flask"><span class="post-toc-text">Flask</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#mongodb"><span class="post-toc-text">MongoDB</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#nginx"><span class="post-toc-text">Nginx</span></a></li></ol></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E6%80%BB%E7%BB%93"><span class="post-toc-text">总结</span></a></li></ol>
+            </div>
+        
+        
+        <p>近期需要将一个Flask+MongoDB+Nginx 小系统打包部署，之前只用过docker对简单的代码进行打包，这次使用docker-compose踩了很多坑，特此记录下。主要参考这篇详细的指南<a target="_blank" rel="noopener" href="https://www.digitalocean.com/community/tutorials/how-to-set-up-flask-with-mongodb-and-docker">How To Set Up Flask with MongoDB and Docker</a> {建议细看}。</p>
+<span id="more"></span>
+<h2 id="系统环境">系统环境</h2>
+<p>开始直接在原生机器上进行系统开发，采用前后端分离的设计方便协作，主要环境如下:</p>
+<ul>
+<li>web后端：Python Flask</li>
+<li>数据库: MongoDB，约10G数据</li>
+<li>前端静态资源: Nginx</li>
+</ul>
+<p>其中除了Flask之外，还有一些其他Python库，比如pandas, numpy等。最终要将系统利用docker部署到内部无网络机器上。</p>
+<p>最终实现目录结果如下：</p>
+<figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">├── <span class="keyword">app</span></span><br><span class="line">│   ├── Dockerfile</span><br><span class="line">│   ├── requirements.txt</span><br><span class="line">│   ├── <span class="keyword">run</span>.py</span><br><span class="line">│   ├── application/</span><br><span class="line">├── docker-compose.yml</span><br><span class="line">├── images.tar</span><br><span class="line">├── mongodb/</span><br><span class="line">├── nginx/</span><br><span class="line">│   ├── Dockerfile</span><br><span class="line">│   ├── <span class="keyword">conf</span>.<span class="keyword">d</span>/</span><br><span class="line">│   ├── resource/</span><br><span class="line">│   ├── <span class="keyword">log</span>/</span><br></pre></td></tr></table></figure>
+<p>其中app目录里面存关于Flask的文件; mongodb目录为数据文件，直接将本机的mongodb数据库拷贝过去; nginx目录存储了静态资源，相关配置; docker-compose.yml为核心启动文件。下面先介绍下最终的配置，再一一记录遇到的坑。</p>
+<h2 id="方法">方法</h2>
+<p>最终的<code>docker-cmpose.yml</code> 如下, 基本是参考上面的教程来的:</p>
+<figure class="highlight dts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line"><span class="symbol">version:</span> <span class="string">&#x27;3&#x27;</span></span><br><span class="line"><span class="symbol">services:</span></span><br><span class="line"><span class="symbol">    flask:</span></span><br><span class="line"><span class="symbol">        build:</span></span><br><span class="line"><span class="symbol">            context:</span> app</span><br><span class="line"><span class="symbol">            dockerfile:</span> Dockerfile</span><br><span class="line"><span class="symbol">        container_name:</span> flask</span><br><span class="line"><span class="symbol">        image:</span> digitalocean.com/flask-python:<span class="number">3.6</span></span><br><span class="line"><span class="symbol">        restart:</span> unless-stopped</span><br><span class="line"><span class="symbol">        environment:</span></span><br><span class="line"><span class="symbol">            APP_PORT:</span> <span class="number">5000</span></span><br><span class="line"><span class="symbol">            MONGODB_DATABASE:</span> mydata</span><br><span class="line"><span class="symbol">            MONGODB_HOSTNAME:</span> mongodb</span><br><span class="line"><span class="symbol">        volumes:</span></span><br><span class="line">            - ./app:<span class="meta-keyword">/var/</span>www</span><br><span class="line"><span class="symbol">        depends_on:</span></span><br><span class="line">            - mongodb</span><br><span class="line"><span class="symbol">        networks:</span></span><br><span class="line">            - frontend</span><br><span class="line">            - backend</span><br><span class="line"><span class="symbol"></span></span><br><span class="line"><span class="symbol">    mongodb:</span></span><br><span class="line"><span class="symbol">        image:</span> mongo:<span class="number">3.6</span><span class="number">.19</span></span><br><span class="line"><span class="symbol">        container_name:</span> mongodb</span><br><span class="line"><span class="symbol">        restart:</span> unless-stopped</span><br><span class="line"><span class="symbol">        environment:</span></span><br><span class="line"><span class="symbol">            MONGODB_DATA_DIR:</span> <span class="meta-keyword">/data/</span>db</span><br><span class="line"><span class="symbol">            MONDODB_LOG_DIR:</span> <span class="meta-keyword">/dev/</span>null</span><br><span class="line"><span class="symbol">        volumes:</span></span><br><span class="line">            - ./mongodb:<span class="meta-keyword">/data/</span>db</span><br><span class="line"><span class="symbol">        networks:</span></span><br><span class="line">            - backend</span><br><span class="line"><span class="symbol"></span></span><br><span class="line"><span class="symbol">    webserver:</span></span><br><span class="line"><span class="symbol">        build:</span></span><br><span class="line"><span class="symbol">            context:</span> nginx</span><br><span class="line"><span class="symbol">            dockerfile:</span> Dockerfile</span><br><span class="line"><span class="symbol">        image:</span> digitalocean.com/webserver:latest</span><br><span class="line"><span class="symbol">        container_name:</span> webserver</span><br><span class="line"><span class="symbol">        restart:</span> unless-stopped</span><br><span class="line"><span class="symbol">        ports:</span></span><br><span class="line">            - <span class="string">&quot;85:80&quot;</span></span><br><span class="line"><span class="symbol">        volumes:</span></span><br><span class="line">            - .<span class="meta-keyword">/nginx/</span>log:<span class="meta-keyword">/var/</span>log/nginx</span><br><span class="line">            - .<span class="meta-keyword">/nginx/</span>resource:<span class="meta-keyword">/var/</span>www/</span><br><span class="line"><span class="symbol">        depends_on:</span></span><br><span class="line">            - flask</span><br><span class="line"><span class="symbol">        networks:</span></span><br><span class="line">            - frontend</span><br><span class="line"><span class="symbol">networks:</span></span><br><span class="line"><span class="symbol">    frontend:</span></span><br><span class="line"><span class="symbol">        driver:</span> bridge</span><br><span class="line"><span class="symbol">    backend:</span></span><br><span class="line"><span class="symbol">        driver:</span> bridge</span><br></pre></td></tr></table></figure>
+<p>一共包含三个主要的container:</p>
+<ul>
+<li>flask: 主要是web后端flask程序。</li>
+<li>mongodb: 数据库服务</li>
+<li>webserver: 基于nginx的静态资源访问</li>
+</ul>
+<p>下面记录下每一部分。</p>
+<h3 id="flask">Flask</h3>
+<p><code>build</code>的<code>context</code>表明Dockerfile在app目录下。另外就是挂载 将<code>./app</code> 挂载到容器中的<code>/var/www</code>中。 其中app目录中包含了flask程序(即application目录)。这里用挂载的好处就是方便外部修改程序，并可以直接同步到镜像内。</p>
+<p>这部分的<code>Dockerfile</code> 核心如下:</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">FROM</span> nickgryg/alpine-pandas:3.8.5</span><br><span class="line"></span><br><span class="line">ENV <span class="attribute">GROUP_ID</span>=1000 \</span><br><span class="line">    <span class="attribute">USER_ID</span>=1000</span><br><span class="line">WORKDIR /var/www/</span><br><span class="line"></span><br><span class="line"><span class="builtin-name">ADD</span> . /var/www/</span><br><span class="line"><span class="builtin-name">RUN</span> pip install -r requirements.txt</span><br><span class="line"><span class="builtin-name">RUN</span> pip install gunicorn</span><br><span class="line"></span><br><span class="line"><span class="builtin-name">RUN</span> addgroup -g <span class="variable">$GROUP_ID</span> www</span><br><span class="line"><span class="builtin-name">RUN</span> adduser -D -u <span class="variable">$USER_ID</span> -G www www -s /bin/sh</span><br><span class="line"><span class="built_in"></span></span><br><span class="line"><span class="built_in">USER </span>www</span><br><span class="line">EXPOSE 5000</span><br><span class="line">CMD [ <span class="string">&quot;gunicorn&quot;</span>, <span class="string">&quot;-w&quot;</span>, <span class="string">&quot;4&quot;</span>, <span class="string">&quot;--bind&quot;</span>, <span class="string">&quot;0.0.0.0:5000&quot;</span>, <span class="string">&quot;run:app&quot;</span>]</span><br></pre></td></tr></table></figure>
+<p>这里面大部分命令都比较容易理解，暴露5000端口作为接口，比一般的多了一些用户配置。</p>
+<p><strong>坑：docker的alpine系镜像利用pip安装pandas安装失败，或者编译耗时非常长</strong></p>
+<p>原因：因为alpine系python或者linux是基于MUSL，而不是原生的glibc，因此对whl支持不太好。</p>
+<p>解决方法：尝试了多种方法，最后如下的两种方法可以；</p>
+<ul>
+<li>使用Debian的官方Python镜像，比如<code>python:3.8-slim-buster</code></li>
+<li>使用第三方将pandas编译好的Alpine镜像，如 <code>nickgryg/alpine-pandas:3.8.5</code></li>
+</ul>
+<p>后续python应用docker化时候，建议镜像直接使用Debian的镜像(python:3.8-slim-buster)，而非Alpine Linux的镜像(python:3.8-alpine), 不过有时候需要一些linux bash命令，还是得用alpine版的Python镜像。</p>
+<p>参考：</p>
+<ul>
+<li>https://stackoverflow.com/questions/49037742/why-does-it-take-ages-to-install-pandas-on-alpine-linux</li>
+<li>https://pythonspeed.com/articles/alpine-docker-python/ {mark}</li>
+<li>https://pythonspeed.com/articles/base-image-python-docker-images/ {mark}</li>
+</ul>
+<h3 id="mongodb">MongoDB</h3>
+<p>从docker-compose.yml里面的mongodb部分看，没有特别需要注意的地方，将本地数据目录挂载即可, mongodb的默认数据存储在 <code>/data/db</code> , 因此只需要将本地的mongodb的数据目录挂载映射过去即可，如果需要指定额外的数据目录，可以在<code>command</code> 中指定<code>-dpath</code>即可，比如:</p>
+<figure class="highlight dts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="symbol">mongodb:</span></span><br><span class="line"><span class="symbol">        image:</span> mongo:<span class="number">3.6</span><span class="number">.19</span></span><br><span class="line"><span class="symbol">        container_name:</span> mongodb</span><br><span class="line"><span class="symbol">        restart:</span> unless-stopped</span><br><span class="line"><span class="symbol">        command:</span> mongod --auth -dpath=<span class="meta-keyword">/data/</span>other_path</span><br><span class="line"><span class="symbol">        environment:</span></span><br><span class="line"><span class="symbol">        	MONGO_INITDB_ROOT_USERNAME:</span> mongodbuser</span><br><span class="line"><span class="symbol">      		MONGO_INITDB_ROOT_PASSWORD:</span> password</span><br><span class="line"><span class="symbol">            MONGODB_DATA_DIR:</span> <span class="meta-keyword">/data/</span>db</span><br><span class="line"><span class="symbol">            MONDODB_LOG_DIR:</span> <span class="meta-keyword">/dev/</span>null</span><br><span class="line"><span class="symbol">        volumes:</span></span><br><span class="line">            - ./mongodb:<span class="meta-keyword">/data/</span>other_path</span><br><span class="line"><span class="symbol">        networks:</span></span><br><span class="line">            - backend</span><br></pre></td></tr></table></figure>
+<p><strong>坑: Mongo版本问题导致：mongodb exited with code 14</strong></p>
+<p>这个bug查了很多地方，最终发现是版本问题，mongodb貌似不能向下兼容，我们主机用的3.6.19，latest的已经到了4.x了，数据格式有不兼容的地方，将镜像切换为3.6.19之后就正常了。</p>
+<h3 id="nginx">Nginx</h3>
+<p>因为我们主要采用前后端分离进行开发，因此前端资源可以直接使用Nginx作为静态资源存储服务器，这个体现在<code>docker-compose.yml</code>的两处挂载映射，一个是挂载nginx配置文件，另外就是静态资源(Html, JS, CSS等)。</p>
+<p>首先Nginx的Dockerfile 如下：</p>
+<figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">FROM</span> alpine:latest</span><br><span class="line">RUN apk --update add nginx &amp;&amp; \</span><br><span class="line">    ln -sf <span class="regexp">/dev/</span>stdout <span class="regexp">/var/</span>log<span class="regexp">/nginx/</span>access.log &amp;&amp; \</span><br><span class="line">    ln -sf <span class="regexp">/dev/</span>stderr <span class="regexp">/var/</span>log<span class="regexp">/nginx/</span>error.log &amp;&amp; \</span><br><span class="line">    mkdir <span class="regexp">/etc/</span>nginx<span class="regexp">/sites-enabled/</span> &amp;&amp; \</span><br><span class="line">    mkdir -p <span class="regexp">/run/</span>nginx &amp;&amp; \</span><br><span class="line">    rm -rf <span class="regexp">/etc/</span>nginx<span class="regexp">/conf.d/</span><span class="keyword">default</span>.conf &amp;&amp; \</span><br><span class="line">    rm -rf <span class="regexp">/var/</span>cache<span class="regexp">/apk/</span>*</span><br><span class="line"></span><br><span class="line"><span class="keyword">COPY</span> conf.d<span class="regexp">/app.conf /</span>etc<span class="regexp">/nginx/</span>conf.d/app.conf</span><br><span class="line">EXPOSE <span class="number">80</span> <span class="number">443</span></span><br><span class="line">CMD [<span class="string">&quot;nginx&quot;</span>, <span class="string">&quot;-g&quot;</span>, <span class="string">&quot;daemon off;&quot;</span>]</span><br></pre></td></tr></table></figure>
+<p>还是用alpine 镜像，这里没有特别需要注意的。 下面就是如何配置nginx了，主要有两点需要考虑：</p>
+<ul>
+<li>静态资源</li>
+<li>flask的后端api访问</li>
+</ul>
+<p>首先静态资源，这个比较简单：</p>
+<figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">server</span> &#123;</span><br><span class="line">    <span class="attribute">listen</span> <span class="number">80</span>;</span><br><span class="line">    <span class="attribute">location</span> / &#123;</span><br><span class="line">        <span class="attribute">index</span> index.html;</span><br><span class="line">        <span class="attribute">root</span> /var/www/;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>坑：不同域下前端ajax请求后端flask API</strong></p>
+<p>之前在本机开发时，ajax访问的domain就是一个固定的ip, 现在在docker中，肯定不能直接使用ip来访问，因为不同部署的ip是不同的， 在<code>docker-compose</code>中已经将nginx的80映射到外部的85端口，因此从外部直接访问flask后端api肯定是不行的，因此需要用nginx再加一个location配置，将api访问转到flask:</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">location <span class="regexp">/api/</span> &#123;</span><br><span class="line">    proxy_pass http:<span class="regexp">//</span>flask:<span class="number">5000</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>因为docker中的nginx容器是可以直接访问flask容器的，因此可以直接使用<code>flask:5000</code>。 这样就可以达到，比如在外部访问 <code>ip:85/api/login</code> 会转到<code>http://flask:5000/api/login</code> 就可以实现ajax访问flask 的API。</p>
+<p>Nginx完整的app.conf:</p>
+<figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">server</span> &#123;</span><br><span class="line">    <span class="attribute">listen</span> <span class="number">80</span>;</span><br><span class="line">    <span class="attribute">location</span> / &#123;</span><br><span class="line">        <span class="attribute">index</span> index.html;</span><br><span class="line">        <span class="attribute">root</span> /var/www/;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="attribute">location</span> /api/ &#123;</span><br><span class="line">        <span class="attribute">proxy_pass</span> http://flask:5000;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>最终的镜像打包使用<code>docker save</code></p>
+<h2 id="总结">总结</h2>
+<p>之前没有用docker完整的进行打包和部署，这次完整的走一遍，又将docker恶补了一遍，上面的记录更多是根据本次项目的需求做的时候遇到的问题，写的比较杂乱，单纯作为记录吧。</p>
+
+      
+    </div>
+
+
+    
+
+    
+	    <div class="article-footer-copyright">
+<!--<p>本文作者: shomy 发表于 <a href="http://shomy.top" target="_blank">个人博客</a></p> -->
+<p>
+本文标题: docker部署Flask+MongoDB+Nginx<br/>
+</p>
+<p>
+发布时间: 2020-12-10, 11:49:57<br/>
+<p>
+<p>
+最后更新: 2021-12-16, 23:11:45<br/>
+<p>
+本文链接: <a href="/2020/12/10/docker-mongo-nginx-flask/" target="_blank">http://shomy.top/2020/12/10/docker-mongo-nginx-flask/</a>
+</p>
+<p>非商业转载请注明作者及出处。商业转载请联系<a href="mailto:shomyliu@gmail.com">作者</a>本人。</p>
+</div>
+
+    
+
+    <footer class="article-footer">
+      
+        <a href="http://shomy.top/2020/12/10/docker-mongo-nginx-flask/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/docker/" rel="tag">docker</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/flask/" rel="tag">flask</a></li></ul>
+
+    </footer>
+    
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2021/05/15/2020-review/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          2020
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2020/07/29/cqa1-rmrn/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">CQA-1：社区问答中的深度关联推理模型</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+
+
+<section id="comments">
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+<script>
+  var disqus_shortname = 'shomy';
+  
+  var disqus_url = 'http://shomy.top/2020/12/10/docker-mongo-nginx-flask/';
+  
+  (function(){
+    var dsq = document.createElement('script');
+    dsq.type = 'text/javascript';
+    dsq.async = true;
+    dsq.src = 'https://' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  }());
+</script>
+</section>
+
+
+
+
+</section>
+      </div>
+    </div>
+    
+    
+<a id="rocket" href="#top" ></a>
+
+<script src="https://cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <script src="http://cdn.htliu.cn/static/js/leancloud.js"></script>
+<script>AV.initialize("k883AKdzaz5jccQnH1eIrG2r-gzGzoHsz", "4HBQOmslEp3VdwK1SGL8vB9Y");</script>
+
+<script src="/js/Counter.js"></script>
+
+
+
+
+
+<script id="dsq-count-scr" src="//shomy.disqus.com/count.js" async></script>
+ 
+
+
+  <script src="https://cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.js"></script>
+  
+<script src="/js/fancybox.js"></script>
+
+
+
+
+  
+<script src="/js/search.js"></script>
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

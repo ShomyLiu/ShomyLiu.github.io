@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Hexo-admin后台管理博客 | 天空的城</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="需求 像Hexo这种静态博客用起来很方便，但是硬伤就是没有后台管理，每次想写博客或者说想要修改原博客的话，都需要在本机上找markdown文件，修改之后发布，尤其是如果机器上没有安装hexo,git等工具的时候，就无法修改了。因此hexo可不可以以像wp,ghost这种有后台管理, 随时随地编辑博客呢?">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Hexo-admin后台管理博客">
+<meta property="og:url" content="http://shomy.top/2017/07/29/Hexo-admin-for-blogs/index.html">
+<meta property="og:site_name" content="天空的城">
+<meta property="og:description" content="需求 像Hexo这种静态博客用起来很方便，但是硬伤就是没有后台管理，每次想写博客或者说想要修改原博客的话，都需要在本机上找markdown文件，修改之后发布，尤其是如果机器上没有安装hexo,git等工具的时候，就无法修改了。因此hexo可不可以以像wp,ghost这种有后台管理, 随时随地编辑博客呢?">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://cdn.htliu.cn/blog/hexo-admin/hexo-admin.png">
+<meta property="article:published_time" content="2017-07-29T07:38:00.000Z">
+<meta property="article:modified_time" content="2021-12-16T15:11:45.649Z">
+<meta property="article:author" content="ShomyLiu">
+<meta property="article:tag" content="hexo">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://cdn.htliu.cn/blog/hexo-admin/hexo-admin.png">
+  
+  
+    <link rel="icon" href="/image/favicon.ico">
+  
+
+  
+  <link href="https://cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.css" rel="stylesheet">
+  
+  <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  <link href="https://cdn.bootcss.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+<!-- Google Analytics -->
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-74368890-2', 'auto');
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+
+
+  
+
+  
+  <div class="site-search header-inner">
+    <div class="popup">
+        <span class="search-icon fa fa-search"></span>
+        <input type="text" id="local-search-input">
+        <div id="local-search-result"></div>
+        <span class="popup-btn-close">close</span>
+    </div>
+</div>
+
+
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      
+<header id="header">
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">天空的城</a>
+      </h1>
+      
+    </div>
+    <div id="header-menu">
+      <nav id="main-nav">
+        <ul>
+        
+          <li><a href="/"><i class="fa fa-home icon-setting"></i></a></li>
+        
+          <li><a href="/archives"><i class="fa fa-archive icon-setting"></i></a></li>
+        
+          <li><a href="/tags"><i class="fa fa-tag icon-setting"></i></a></li>
+        
+          <li><a href="/about"><i class="fa fa-user icon-setting"></i></a></li>
+        
+        
+          <li><a href="javascript:;" class="popup-trigger"><i class="fa fa-search > icon-setting"></i></a></li>
+        
+        </ul>
+      </nav>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-Hexo-admin-for-blogs" class="article article-type-post" itemscope itemprop="blogPost">
+  
+  <div class="article-meta">
+    <a href="/2017/07/29/Hexo-admin-for-blogs/" class="article-date">
+  <time datetime="2017-07-29T07:38:00.000Z" itemprop="datePublished">2017-07-29</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E5%B7%A5%E5%85%B7%E4%BD%BF%E7%94%A8/">工具使用</a>
+  </div>
+
+
+    
+        <div class="counter-tag counter">
+    <!-- 别忘记这个类名... post-title-link -->
+    <span id="/2017/07/29/Hexo-admin-for-blogs/" class="leancloud_visitors article-hits post-title-link"
+           data-flag-title="Hexo-admin后台管理博客">
+        次阅读
+    </span>
+
+  </div>
+
+    
+
+  </div>
+  
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Hexo-admin后台管理博客
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+            <div id="toc" class="toc-article">
+                <strong class="toc-title">文章目录</strong>
+                <ol class="post-toc"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E9%9C%80%E6%B1%82"><span class="post-toc-text">需求</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E8%A7%A3%E5%86%B3%E6%96%B9%E6%B3%95"><span class="post-toc-text">解决方法</span></a></li></ol>
+            </div>
+        
+        
+        <h2 id="需求">需求</h2>
+<p>像Hexo这种静态博客用起来很方便，但是硬伤就是没有后台管理，每次想写博客或者说想要修改原博客的话，都需要在本机上找markdown文件，修改之后发布，尤其是如果机器上没有安装hexo,git等工具的时候，就无法修改了。因此hexo可不可以以像wp,ghost这种有后台管理, 随时随地编辑博客呢? <span id="more"></span></p>
+<p>正巧hexo专门有一个插件<a target="_blank" rel="noopener" href="https://jaredforsyth.com/hexo-admin/">hexo-admin</a> 提供了在web UI下增删改查博客的功能，我也正好有一个VPS, 于是就有了下面的一种方法.</p>
+<h2 id="解决方法">解决方法</h2>
+<p>首先说一下条件与需求。 我自己有一个的VPS，本来是可以直接将hexo部署到VPS的，但是考虑到自己维护的VPS的稳定性等问题，最后决定将hexo的静态页面部署github-pages上。</p>
+<p>我的目的有两个:</p>
+<ul>
+<li>拥有在线编辑博客的后台</li>
+<li>本地机器同时也可以编辑发布博客</li>
+<li>二者需要保持同步</li>
+</ul>
+<p>基于这样的需求，仅仅靠github pages显然不可行了,必须借助VPS了.保持同步的意思是VPS的内容与本地机器上的博客的资源要保持一致。就是说我在线修改了某篇博客，然后之后如果可以很简单的同步到本地，使得两端保持同步，反过来一样。</p>
+<p>我的做法是:</p>
+<ul>
+<li>将hexo目录下的相关文件包括_config.yml,source/等文件建立一个私人repo(个人使用coding.net)</li>
+<li>VPS上安装好hexo,具体过程与换台机器安装同理, 可参考这篇博客<a href="http://shomy.top/2017/01/27/hexo-migrate-solution/">hexo迁移重装</a>。</li>
+<li>VPS上安装hexo-admin插件，这样可以在线编辑了. 在这一步的时候, 为了方便,我用了一个子域名以及在VPS上用nginx做前段端口转发.</li>
+</ul>
+<p>到这里后台管理基本没有问题了. 接下来就是在线发布了. 正巧的是hexo-admin提供了这个功能, 有一个Deploy的功能,具体实现是使用nodejs的<code>spawn</code>函数来执行发布脚本的. 一开始不太懂<code>spawn</code>这个函数的使用, 就直接在deploy中随便输入了东西,结果各种 spawn err. 后来查过资料,才知道deploy的输入的位置其实是对<code>hexo-admin</code>的配置里面<code>deployCommand</code>的选项,可以为空. 打个比方,如果我在<code>deployCommand</code>写的是<code>./hexo-deploy</code>, 然后点击deploy按钮之后, 后台就可以执行<code>hexo-deploy</code>脚本的内容了. 有了这个接口就非常灵活了. 因为基于此, 我们不但来发布博客,甚至可以把同步的脚本加进去.具体参考 https://github.com/jaredly/hexo-admin/issues/70</p>
+<p>下面说一下发布以及同步的操作:</p>
+<ul>
+<li>在博客目录写一个有关git同步的小脚本:<code>server-upload.sh</code> 用来同步VPS目录下的变化，主要代码其实就是先<code>git pull</code> 拉取repo最新, 之后在push. 具体脚本代码不再赘述.</li>
+<li>建一个<code>hexo-deploy</code>的脚本,内容: <figure class="highlight 1c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">hexo g <span class="meta">&amp;&amp; hexo d</span></span><br><span class="line">./server-upload.sh</span><br></pre></td></tr></table></figure></li>
+<li>利用hexo-admin的deploy功能，可以在线发布，注意修改<code>_config.yml</code>: 加上hexo-admin的admin选项, 加一个<code>deployCommand: ./hexo-deploy</code>的字段,如下: <figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">admin</span>:<span class="string"></span></span><br><span class="line">	<span class="attr">username</span>: <span class="string">XXX</span></span><br><span class="line">    <span class="attr">password</span>: <span class="string">XXXXX</span></span><br><span class="line">    <span class="attr">deployCommand</span>: <span class="string">&#x27;./hexo-deploy&#x27;</span></span><br></pre></td></tr></table></figure></li>
+<li>编辑完博客时候，发布的时候，需要点击hexo-admin的deploy。这样在后台就可以执行前面定义的<code>hexo-deloy</code>脚本了</li>
+<li>本地机器也需要有一个<code>upload.sh</code>的脚本, 每次同样需要先git pull 在git push 到私人repo. 其实就是版本控制那一套.</li>
+</ul>
+<p>到现在基本完成了自己可以随时随地编辑博客并且多端同步的需求了. 之前也考虑过CI持续集成,但是大部分都是再建立一个分支, 需要把博客的source公开, 不太合适. 所以就选择了hexo-admin这种方法.</p>
+<p>这篇博客便是在线完成的. <img src="http://cdn.htliu.cn/blog/hexo-admin/hexo-admin.png" /></p>
+<p>其实这里面的坑还是蛮多的(主要不熟悉node). 此外开始使用supervisor做后台运行监控, 结果不知为何, 在<code>hexo d</code>包括git的pull或者push等操作,都会报错,提示让我确认git用户, 但是我已经设置了<code>git config</code>的email和name. 查了很多资料也没有解决, 后来直接抛弃supervisor, 直接使用<code>nohup</code>来放后台运行了.每个人的需求肯定都不同，这里只是个人的一个思路。大概是这样了, 有什么问题可以留言或者邮件.</p>
+
+      
+    </div>
+
+
+    
+
+    
+	    <div class="article-footer-copyright">
+<!--<p>本文作者: shomy 发表于 <a href="http://shomy.top" target="_blank">个人博客</a></p> -->
+<p>
+本文标题: Hexo-admin后台管理博客<br/>
+</p>
+<p>
+发布时间: 2017-07-29, 15:38:00<br/>
+<p>
+<p>
+最后更新: 2021-12-16, 23:11:45<br/>
+<p>
+本文链接: <a href="/2017/07/29/Hexo-admin-for-blogs/" target="_blank">http://shomy.top/2017/07/29/Hexo-admin-for-blogs/</a>
+</p>
+<p>非商业转载请注明作者及出处。商业转载请联系<a href="mailto:shomyliu@gmail.com">作者</a>本人。</p>
+</div>
+
+    
+
+    <footer class="article-footer">
+      
+        <a href="http://shomy.top/2017/07/29/Hexo-admin-for-blogs/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hexo/" rel="tag">hexo</a></li></ul>
+
+    </footer>
+    
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2017/08/17/python-tuple-assign/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          Python中tuple+=赋值的四个问题
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2017/07/28/word2vec-all/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">Word2vec数学原理全家桶</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+
+
+<section id="comments">
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+<script>
+  var disqus_shortname = 'shomy';
+  
+  var disqus_url = 'http://shomy.top/2017/07/29/Hexo-admin-for-blogs/';
+  
+  (function(){
+    var dsq = document.createElement('script');
+    dsq.type = 'text/javascript';
+    dsq.async = true;
+    dsq.src = 'https://' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  }());
+</script>
+</section>
+
+
+
+
+</section>
+      </div>
+    </div>
+    
+    
+<a id="rocket" href="#top" ></a>
+
+<script src="https://cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <script src="http://cdn.htliu.cn/static/js/leancloud.js"></script>
+<script>AV.initialize("k883AKdzaz5jccQnH1eIrG2r-gzGzoHsz", "4HBQOmslEp3VdwK1SGL8vB9Y");</script>
+
+<script src="/js/Counter.js"></script>
+
+
+
+
+
+<script id="dsq-count-scr" src="//shomy.disqus.com/count.js" async></script>
+ 
+
+
+  <script src="https://cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.js"></script>
+  
+<script src="/js/fancybox.js"></script>
+
+
+
+
+  
+<script src="/js/search.js"></script>
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

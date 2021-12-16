@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Ubuntu安装GPU版TensorFlow | 天空的城</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="2017.12.5 CUDA 与 cuDNN的最新版本均已经有所变化，不过安装方式相同。   当前环境如下:   Ubuntu 16.04.1 LTS GeForce GTX 960M CUDA 8.0 cuDNN V5.1 Library">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Ubuntu安装GPU版TensorFlow">
+<meta property="og:url" content="http://shomy.top/2016/12/29/gpu-tensorflow-install/index.html">
+<meta property="og:site_name" content="天空的城">
+<meta property="og:description" content="2017.12.5 CUDA 与 cuDNN的最新版本均已经有所变化，不过安装方式相同。   当前环境如下:   Ubuntu 16.04.1 LTS GeForce GTX 960M CUDA 8.0 cuDNN V5.1 Library">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://cdn.htliu.cn/nvidia-1.jpg">
+<meta property="og:image" content="http://cdn.htliu.cn/nvidia-2.png">
+<meta property="og:image" content="http://cdn.htliu.cn/nvidia-3.png">
+<meta property="og:image" content="http://cdn.htliu.cn/nvidia-4.png">
+<meta property="og:image" content="http://cdn.htliu.cn/nvidia-5.png">
+<meta property="article:published_time" content="2016-12-29T06:39:40.000Z">
+<meta property="article:modified_time" content="2021-12-16T15:11:45.659Z">
+<meta property="article:author" content="ShomyLiu">
+<meta property="article:tag" content="TensorFlow">
+<meta property="article:tag" content="GPU">
+<meta property="article:tag" content="DeepLearning">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://cdn.htliu.cn/nvidia-1.jpg">
+  
+  
+    <link rel="icon" href="/image/favicon.ico">
+  
+
+  
+  <link href="https://cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.css" rel="stylesheet">
+  
+  <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  <link href="https://cdn.bootcss.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+<!-- Google Analytics -->
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-74368890-2', 'auto');
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+
+
+  
+
+  
+  <div class="site-search header-inner">
+    <div class="popup">
+        <span class="search-icon fa fa-search"></span>
+        <input type="text" id="local-search-input">
+        <div id="local-search-result"></div>
+        <span class="popup-btn-close">close</span>
+    </div>
+</div>
+
+
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      
+<header id="header">
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">天空的城</a>
+      </h1>
+      
+    </div>
+    <div id="header-menu">
+      <nav id="main-nav">
+        <ul>
+        
+          <li><a href="/"><i class="fa fa-home icon-setting"></i></a></li>
+        
+          <li><a href="/archives"><i class="fa fa-archive icon-setting"></i></a></li>
+        
+          <li><a href="/tags"><i class="fa fa-tag icon-setting"></i></a></li>
+        
+          <li><a href="/about"><i class="fa fa-user icon-setting"></i></a></li>
+        
+        
+          <li><a href="javascript:;" class="popup-trigger"><i class="fa fa-search > icon-setting"></i></a></li>
+        
+        </ul>
+      </nav>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-gpu-tensorflow-install" class="article article-type-post" itemscope itemprop="blogPost">
+  
+  <div class="article-meta">
+    <a href="/2016/12/29/gpu-tensorflow-install/" class="article-date">
+  <time datetime="2016-12-29T06:39:40.000Z" itemprop="datePublished">2016-12-29</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E5%B7%A5%E5%85%B7%E4%BD%BF%E7%94%A8/">工具使用</a>
+  </div>
+
+
+    
+        <div class="counter-tag counter">
+    <!-- 别忘记这个类名... post-title-link -->
+    <span id="/2016/12/29/gpu-tensorflow-install/" class="leancloud_visitors article-hits post-title-link"
+           data-flag-title="Ubuntu安装GPU版TensorFlow">
+        次阅读
+    </span>
+
+  </div>
+
+    
+
+  </div>
+  
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Ubuntu安装GPU版TensorFlow
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+            <div id="toc" class="toc-article">
+                <strong class="toc-title">文章目录</strong>
+                <ol class="post-toc"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E7%8E%AF%E5%A2%83%E5%87%86%E5%A4%87"><span class="post-toc-text">环境准备</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E5%AE%89%E8%A3%85cuda%E5%92%8Ccudnn"><span class="post-toc-text">安装CUDA和cuDNN</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E5%AE%89%E8%A3%85tensorflow"><span class="post-toc-text">安装TensorFlow</span></a></li></ol>
+            </div>
+        
+        
+        <blockquote>
+<p>2017.12.5 CUDA 与 cuDNN的最新版本均已经有所变化，不过安装方式相同。</p>
+</blockquote>
+<blockquote>
+<p>当前环境如下:</p>
+</blockquote>
+<ul>
+<li>Ubuntu 16.04.1 LTS</li>
+<li>GeForce GTX 960M</li>
+<li>CUDA 8.0</li>
+<li>cuDNN V5.1 Library</li>
+</ul>
+<span id="more"></span>
+<h2 id="环境准备">环境准备</h2>
+<p>首先检查自己的GPU是否支持CUDA， <figure class="highlight 1c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#查看显卡类型</span></span><br><span class="line">$ lspci <span class="string">| grep -i nvidia</span></span><br></pre></td></tr></table></figure> 在输出中找到自己的的显卡类型，然后到http://developer.nvidia.com/cuda-gpu 找到自己的型号： <img src="http://cdn.htliu.cn/nvidia-1.jpg" /> <img src="http://cdn.htliu.cn/nvidia-2.png" /></p>
+<p>我本机的环境如下:</p>
+<ul>
+<li>Ubuntu 16.04.1 LTS</li>
+<li>GeForce GTX 960M</li>
+</ul>
+<p>下面开始安装。</p>
+<h2 id="安装cuda和cudnn">安装CUDA和cuDNN</h2>
+<ol type="1">
+<li><p>下载CUDA: https://developer.nvidia.com/cuda-downloads，下载对应版本的cuda安装包，下载对应版本的cuda安装包，推荐下载最新版本的8.0版本，deb版的本地安装比较方便。</p>
+<p><img src="http://cdn.htliu.cn/nvidia-3.png" /></p></li>
+<li><p>下载完成之后，直接执行如下的命令进行安装即可: <figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">sudo</span> dpkg -i cuda-repo-ubuntu<span class="number">1604</span>-<span class="number">8</span>-<span class="number">0</span>-local_<span class="number">8</span>.<span class="number">0</span>.<span class="number">44</span>-<span class="number">1</span>_amd<span class="number">64</span>.deb</span><br><span class="line"><span class="attribute">sudo</span> apt update</span><br><span class="line"><span class="attribute">sudo</span> apt install cuda</span><br></pre></td></tr></table></figure> 注: 下载完成之后，deb的名称可能有一个oauth的后缀，直接重命令删掉就好了。如果报错<strong>由于没有公钥，无法验证下列签名： NO_PUBKEY FAF69C646FF2377B的问题</strong>, 则添加下公钥即可: <figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">sudo</span> apt-key adv --keyserver keyserver.ubuntu.com --recv-keys FAF<span class="number">69</span>C<span class="number">646</span>FF<span class="number">2377</span>B</span><br></pre></td></tr></table></figure> 之后再<code>sudo apt update</code> 即可</p></li>
+<li><p>下载cuDDN：https://developer.nvidia.com/rdp/cudnn-download ， 这里需要注册个帐号，然后才可以下载。</p>
+<p><img src="http://cdn.htliu.cn/nvidia-4.png" /></p>
+<p><strong>这里有个版本需要注意，最好下载 <code>cuDNNv5.1 Library</code>版本的。 虽然V5.0也支持 CUDA 8.0，但是在后续跑TensorFlow的时候，会报错，后来才重新下载了V5.1的，才能正常运行。 </strong></p></li>
+<li><p>拷贝库文件 将下载下的cuDNN压缩包执行如下命令: <figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">tar -zxvf cudnn-<span class="number">8.0</span>-linux-x64-v5.<span class="number">1</span>.tgz</span><br><span class="line">cd cuda</span><br><span class="line">sudo cp lib64<span class="regexp">/* /u</span>sr<span class="regexp">/local/</span>cuda<span class="regexp">/lib64/</span> -d</span><br><span class="line">sudo cp include<span class="regexp">/cudnn.h /u</span>sr<span class="regexp">/local/</span>cuda<span class="regexp">/include/</span></span><br></pre></td></tr></table></figure></p></li>
+<li><p>修改环境变量 修改<code>.bashrc</code>或者<code>/etc/profile</code>等，加入如下的环境变量: <figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">## CUDA</span></span><br><span class="line"><span class="builtin-name">export</span> <span class="attribute">CUDA_HOME</span>=/usr/local/cuda</span><br><span class="line"><span class="builtin-name">export</span> <span class="attribute">PATH</span>=<span class="variable">$&#123;CUDA_HOME&#125;</span>/bin/:$PATH</span><br><span class="line"><span class="builtin-name">export</span> <span class="attribute">LD_LIBRARY_PATH</span>=<span class="variable">$LD_LIBRARY_PATH</span>:$CUDA_HOME/lib64:$CUDA_HOME/extras/CUPTI/lib64</span><br></pre></td></tr></table></figure> 之后执行<code>source .bashrc</code>立即生效</p></li>
+<li><p>测试是否成功 进入<code>/usr/local/cuda/samples</code>，编译运行某个sample: <figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">sudo</span> make <span class="literal">all</span> -j<span class="number">4</span></span><br></pre></td></tr></table></figure> 全部编译完成后，进入 <code>samples/bin/x86_64/linux/release</code>，运行<code>deviceQuery</code>： <figure class="highlight jboss-cli"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">./deviceQuery</span></span><br></pre></td></tr></table></figure> 显示有可用的GPU，即可成功: <img src="http://cdn.htliu.cn/nvidia-5.png" /></p></li>
+</ol>
+<h2 id="安装tensorflow">安装TensorFlow</h2>
+<p>直接使用<code>pip</code>安装即可：当前版本为1.4: <figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo  pip <span class="keyword">install</span> tensorflow-gpu</span><br></pre></td></tr></table></figure></p>
+<p>安装完成之后，尝试<code>import tensorflow</code>:显示如下即可成功（最新版tf显示信息有所差异） <figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">In <span class="selector-attr">[1]</span>: import tensorflow</span><br><span class="line">I tensorflow/stream_executor/dso_loader<span class="selector-class">.cc</span>:<span class="number">128</span>] successfully opened CUDA library libcublas<span class="selector-class">.so</span> locally</span><br><span class="line">I tensorflow/stream_executor/dso_loader<span class="selector-class">.cc</span>:<span class="number">128</span>] successfully opened CUDA library libcudnn<span class="selector-class">.so</span> locally</span><br><span class="line">I tensorflow/stream_executor/dso_loader<span class="selector-class">.cc</span>:<span class="number">128</span>] successfully opened CUDA library libcufft<span class="selector-class">.so</span> locally</span><br><span class="line">I tensorflow/stream_executor/dso_loader<span class="selector-class">.cc</span>:<span class="number">128</span>] successfully opened CUDA library libcuda<span class="selector-class">.so</span>.<span class="number">1</span> locally</span><br><span class="line">I tensorflow/stream_executor/dso_loader<span class="selector-class">.cc</span>:<span class="number">128</span>] successfully opened CUDA library libcurand<span class="selector-class">.so</span> locally</span><br><span class="line">In <span class="selector-attr">[2]</span>:</span><br></pre></td></tr></table></figure></p>
+<p>在代码使用的时候，只需要指定<code>GPU</code>即可(当然tf也会默认使用GPU): <figure class="highlight actionscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">with</span> tf.device(<span class="string">&#x27;/gpu:0&#x27;</span>):</span><br></pre></td></tr></table></figure> 即可使用GPU运行TensorFlow程序。速度比CPU快很多，跑一个CNN文本分类的程序，CPU版本，用8核i7处理器几乎保持600%的利用率，训练半小时还未结束，换为GPU版本，10分钟结束！ 另外提供一个使用<code>watch</code>实时查看nvidia显卡状态的命令，每隔1s显示状态: <figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">watch</span> -n <span class="number">1</span> nvidia-smi</span><br></pre></td></tr></table></figure></p>
+
+      
+    </div>
+
+
+    
+
+    
+	    <div class="article-footer-copyright">
+<!--<p>本文作者: shomy 发表于 <a href="http://shomy.top" target="_blank">个人博客</a></p> -->
+<p>
+本文标题: Ubuntu安装GPU版TensorFlow<br/>
+</p>
+<p>
+发布时间: 2016-12-29, 14:39:40<br/>
+<p>
+<p>
+最后更新: 2021-12-16, 23:11:45<br/>
+<p>
+本文链接: <a href="/2016/12/29/gpu-tensorflow-install/" target="_blank">http://shomy.top/2016/12/29/gpu-tensorflow-install/</a>
+</p>
+<p>非商业转载请注明作者及出处。商业转载请联系<a href="mailto:shomyliu@gmail.com">作者</a>本人。</p>
+</div>
+
+    
+
+    <footer class="article-footer">
+      
+        <a href="http://shomy.top/2016/12/29/gpu-tensorflow-install/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/DeepLearning/" rel="tag">DeepLearning</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/GPU/" rel="tag">GPU</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/TensorFlow/" rel="tag">TensorFlow</a></li></ul>
+
+    </footer>
+    
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2017/01/01/tensorflow-fnn-example-1/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          TensorFlow练习1-前馈神经网络实现分类
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2016/12/07/basic-neural-network/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">机器学习技法笔记(1)-神经网络</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+
+
+<section id="comments">
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+<script>
+  var disqus_shortname = 'shomy';
+  
+  var disqus_url = 'http://shomy.top/2016/12/29/gpu-tensorflow-install/';
+  
+  (function(){
+    var dsq = document.createElement('script');
+    dsq.type = 'text/javascript';
+    dsq.async = true;
+    dsq.src = 'https://' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  }());
+</script>
+</section>
+
+
+
+
+</section>
+      </div>
+    </div>
+    
+    
+<a id="rocket" href="#top" ></a>
+
+<script src="https://cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <script src="http://cdn.htliu.cn/static/js/leancloud.js"></script>
+<script>AV.initialize("k883AKdzaz5jccQnH1eIrG2r-gzGzoHsz", "4HBQOmslEp3VdwK1SGL8vB9Y");</script>
+
+<script src="/js/Counter.js"></script>
+
+
+
+
+
+<script id="dsq-count-scr" src="//shomy.disqus.com/count.js" async></script>
+ 
+
+
+  <script src="https://cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.js"></script>
+  
+<script src="/js/fancybox.js"></script>
+
+
+
+
+  
+<script src="/js/search.js"></script>
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

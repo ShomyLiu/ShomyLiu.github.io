@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>搭建git服务器以及web自动化部署 | 天空的城</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="之前使用sae作为测试服务器，无奈云豆实在是消耗极快，于是就在阿里云上买了一个SEC, 还好当时是学生价。 因为之前用的sae提供的git作开发，迁移过来之后，也就想搭建一个git服务器，可以方便使用，并且还可以做到push上去代码，web页面可以自动更新了。 查了一些资料，大部分都一样，　不过也饶了一点弯路，最终搭建完成，记录于此。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="搭建git服务器以及web自动化部署">
+<meta property="og:url" content="http://shomy.top/2016/04/14/git-server-hook/index.html">
+<meta property="og:site_name" content="天空的城">
+<meta property="og:description" content="之前使用sae作为测试服务器，无奈云豆实在是消耗极快，于是就在阿里云上买了一个SEC, 还好当时是学生价。 因为之前用的sae提供的git作开发，迁移过来之后，也就想搭建一个git服务器，可以方便使用，并且还可以做到push上去代码，web页面可以自动更新了。 查了一些资料，大部分都一样，　不过也饶了一点弯路，最终搭建完成，记录于此。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2016-04-14T08:23:49.000Z">
+<meta property="article:modified_time" content="2021-12-16T15:11:45.659Z">
+<meta property="article:author" content="ShomyLiu">
+<meta property="article:tag" content="hook">
+<meta property="article:tag" content="git-server">
+<meta name="twitter:card" content="summary">
+  
+  
+    <link rel="icon" href="/image/favicon.ico">
+  
+
+  
+  <link href="https://cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.css" rel="stylesheet">
+  
+  <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  <link href="https://cdn.bootcss.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+<!-- Google Analytics -->
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-74368890-2', 'auto');
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+
+
+  
+
+  
+  <div class="site-search header-inner">
+    <div class="popup">
+        <span class="search-icon fa fa-search"></span>
+        <input type="text" id="local-search-input">
+        <div id="local-search-result"></div>
+        <span class="popup-btn-close">close</span>
+    </div>
+</div>
+
+
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      
+<header id="header">
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">天空的城</a>
+      </h1>
+      
+    </div>
+    <div id="header-menu">
+      <nav id="main-nav">
+        <ul>
+        
+          <li><a href="/"><i class="fa fa-home icon-setting"></i></a></li>
+        
+          <li><a href="/archives"><i class="fa fa-archive icon-setting"></i></a></li>
+        
+          <li><a href="/tags"><i class="fa fa-tag icon-setting"></i></a></li>
+        
+          <li><a href="/about"><i class="fa fa-user icon-setting"></i></a></li>
+        
+        
+          <li><a href="javascript:;" class="popup-trigger"><i class="fa fa-search > icon-setting"></i></a></li>
+        
+        </ul>
+      </nav>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-git-server-hook" class="article article-type-post" itemscope itemprop="blogPost">
+  
+  <div class="article-meta">
+    <a href="/2016/04/14/git-server-hook/" class="article-date">
+  <time datetime="2016-04-14T08:23:49.000Z" itemprop="datePublished">2016-04-14</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E5%B7%A5%E5%85%B7%E4%BD%BF%E7%94%A8/">工具使用</a>
+  </div>
+
+
+    
+        <div class="counter-tag counter">
+    <!-- 别忘记这个类名... post-title-link -->
+    <span id="/2016/04/14/git-server-hook/" class="leancloud_visitors article-hits post-title-link"
+           data-flag-title="搭建git服务器以及web自动化部署">
+        次阅读
+    </span>
+
+  </div>
+
+    
+
+  </div>
+  
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      搭建git服务器以及web自动化部署
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+            <div id="toc" class="toc-article">
+                <strong class="toc-title">文章目录</strong>
+                <ol class="post-toc"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E5%89%8D%E6%9C%9F%E5%87%86%E5%A4%87"><span class="post-toc-text">前期准备</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E5%88%9B%E5%BB%BA%E8%A3%B8%E4%BB%93%E5%BA%93"><span class="post-toc-text">创建裸仓库</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E6%9C%AC%E5%9C%B0%E5%AE%A2%E6%88%B7%E7%AB%AF%E6%8E%A8%E9%80%81"><span class="post-toc-text">本地客户端推送</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#%E6%B7%BB%E5%8A%A0ssh%E5%88%B0%E6%9C%8D%E5%8A%A1%E5%99%A8"><span class="post-toc-text">添加ssh到服务器</span></a></li></ol></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E6%B7%BB%E5%8A%A0hooks%E8%87%AA%E5%8A%A8%E9%83%A8%E7%BD%B2"><span class="post-toc-text">添加hooks自动部署</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E5%8F%82%E8%80%83"><span class="post-toc-text">参考</span></a></li></ol>
+            </div>
+        
+        
+        <blockquote>
+<p>之前使用sae作为测试服务器，无奈云豆实在是消耗极快，于是就在阿里云上买了一个SEC, 还好当时是学生价。 因为之前用的sae提供的git作开发，迁移过来之后，也就想搭建一个git服务器，可以方便使用，并且还可以做到push上去代码，web页面可以自动更新了。 查了一些资料，大部分都一样，　不过也饶了一点弯路，最终搭建完成，记录于此。</p>
+</blockquote>
+<span id="more"></span>
+<h2 id="前期准备">前期准备</h2>
+<p>假设你已经有了一个sudo权限的用户或者直接root用户也可以.(root无需sudo)</p>
+<ul>
+<li>安装git <figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-<span class="builtin-name">get</span> install git</span><br></pre></td></tr></table></figure></li>
+<li>建立git用户,最好有一个单独的git用户。输入密码，后面直接回车就好了 <figure class="highlight ebnf"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">sudo adduser git</span></span><br></pre></td></tr></table></figure> 如果想要<code>git</code>用户拥有<code>sudo</code>，直接在<code>/etc/sudoers</code>的<code>root   ALL=(ALL:ALL) ALL</code>下面加一行:<code>git    ALL=(ALL:ALL) ALL</code></li>
+</ul>
+<h2 id="创建裸仓库">创建裸仓库</h2>
+<p>我们需要知道远程仓库与本地仓库其实没有区别，因此也需要一个仓库，不过这里建立的是裸仓库与普通仓库的差别就是，裸仓库不保存原文件，只是保存git的历史提交记录。 这里我们需要切换到上面创建的git用户了。 <figure class="highlight jboss-cli"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">su git</span><br><span class="line"><span class="keyword">cd</span></span><br><span class="line">mkdir myrepo</span><br><span class="line"><span class="keyword">cd</span> myrepo</span><br><span class="line"><span class="comment"># 建立裸仓库</span></span><br><span class="line">git init <span class="params">--bare</span> myrepo.git</span><br></pre></td></tr></table></figure> 上面把repo的目录放在<code>/home/git/myrepo</code>目录下了，　这个可以根据自己情况来修改，但是　需要注意目录的owner必须是<code>git</code>(sudo chown -R git:git myrepo)</p>
+<h2 id="本地客户端推送">本地客户端推送</h2>
+<h3 id="添加ssh到服务器">添加ssh到服务器</h3>
+<ul>
+<li>如果已经生成了ssh-key,则跳过此步,没有的话，直接<code>ssh-keygen</code>即可</li>
+<li>将公钥保存到主机上: <figure class="highlight applescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh-<span class="keyword">copy</span>-<span class="built_in">id</span> git@server</span><br></pre></td></tr></table></figure> ### 本地测试 在本地仓库，建立测试push <figure class="highlight elixir"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">cd</span><br><span class="line">mkdir testgit &amp;&amp; cd testgit</span><br><span class="line">git init</span><br><span class="line">touch readme | echo <span class="string">&#x27;hello&#x27;</span> &gt; readm</span><br><span class="line"></span><br><span class="line">git add readme</span><br><span class="line">git commit -m <span class="string">&#x27;inti&#x27;</span></span><br><span class="line"><span class="comment"># 后面的.git路径就是上面建立的裸仓库</span></span><br><span class="line">git remote add origin git<span class="variable">@yourserver</span><span class="symbol">:/home/git/myrepo/myrepo</span>.git</span><br><span class="line">git push origin master</span><br></pre></td></tr></table></figure> 如果去服务器的<code>myrepo</code>目录下看看，啥都没有; 这就对了，因为上面建立的就是裸仓库,是不应该看到文件的。下面就说一下怎么看见文件，这个一个很常见的应用便是部署web应用，我们需要的是push上代码之后，页面可以自动刷新,git的<code>hooks</code>就可以完成这个任务。</li>
+</ul>
+<h2 id="添加hooks自动部署">添加hooks自动部署</h2>
+<p>我们把代码push到git服务器上之后，如果可以立即更新nginx目录下的web源码，不就省了很大力气了去手动修改了吗.</p>
+<blockquote>
+<p>Git 能在特定的重要动作发生时触发自定义脚本。 有两组这样的钩子：客户端的和服务器端的。 客户端钩子由诸如提交和合并这样的操作所调用，而服务器端钩子作用于诸如接收被推送的提交这样的联网操作。</p>
+</blockquote>
+<p>有多种<code>hook</code>可以使用，具体可以看这个介绍:<a target="_blank" rel="noopener" href="https://git-scm.com/book/zh/v2/%E8%87%AA%E5%AE%9A%E4%B9%89-Git-Git-%E9%92%A9%E5%AD%90">hook</a> 这里我们需要的是<code>post-receive</code>:在整个过程完结以后运行，可以用来更新其他系统服务或者通知用户. 下面开始编写这个小脚本,首先该脚本在<code>myrepo.git</code>目录里面的hooks目录里面。 <figure class="highlight arcade"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cd ~<span class="regexp">/myrepo/my</span>repo.git/hooks</span><br><span class="line">vim post-receive</span><br></pre></td></tr></table></figure> 文件的内容如下: <figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">#<span class="regexp">/bin/</span>sh</span><br><span class="line">GIT_WORK_TREE=<span class="regexp">/usr/</span>share<span class="regexp">/nginx/</span>html/ git checkout -f</span><br></pre></td></tr></table></figure> 需要修改<code>GTI_WORK_TREE</code> 为你的web工程的目录,<strong>需要注意的是，该目录的own必须是git.</strong> 之后需要给该脚本加入执行权限: <figure class="highlight erlang"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">chmod +x post-<span class="keyword">receive</span></span><br></pre></td></tr></table></figure></p>
+<p>到此就全部完成了,可以测试一下页面有没有变化.不过还有一个地方可以做一下:就是取消<code>git</code>用户的bash登录，这个是为了安全起见: 打开<code>/etc/passwd</code>,找到 <figure class="highlight elixir"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="symbol">git:</span><span class="symbol">x:</span><span class="number">1001</span><span class="symbol">:</span><span class="number">1001</span><span class="symbol">:</span>,,,<span class="symbol">:/home/git</span><span class="symbol">:/bin/bash</span></span><br></pre></td></tr></table></figure> 改为: <figure class="highlight elixir"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="symbol">git:</span><span class="symbol">x:</span><span class="number">1001</span><span class="symbol">:</span><span class="number">1001</span><span class="symbol">:</span>,,,<span class="symbol">:/home/git</span><span class="symbol">:/usr/bin/git-shell</span></span><br></pre></td></tr></table></figure> 注: 此处的<code>/usr/bin/git-shell</code>为<code>git-shell</code>的位置，可以使用<code>which git-shell</code>确认。 这样设置好了之后，git用户就不能登录shell,　专门负责git.</p>
+<h2 id="参考">参考</h2>
+<p><a target="_blank" rel="noopener" href="http://zhangyumin.github.io/blog/2015/09/28/git-server-config.html">1</a> <a target="_blank" rel="noopener" href="http://rmingwang.com/using-git-to-deploy-a-web-site.html">2</a></p>
+
+      
+    </div>
+
+
+    
+
+    
+	    <div class="article-footer-copyright">
+<!--<p>本文作者: shomy 发表于 <a href="http://shomy.top" target="_blank">个人博客</a></p> -->
+<p>
+本文标题: 搭建git服务器以及web自动化部署<br/>
+</p>
+<p>
+发布时间: 2016-04-14, 16:23:49<br/>
+<p>
+<p>
+最后更新: 2021-12-16, 23:11:45<br/>
+<p>
+本文链接: <a href="/2016/04/14/git-server-hook/" target="_blank">http://shomy.top/2016/04/14/git-server-hook/</a>
+</p>
+<p>非商业转载请注明作者及出处。商业转载请联系<a href="mailto:shomyliu@gmail.com">作者</a>本人。</p>
+</div>
+
+    
+
+    <footer class="article-footer">
+      
+        <a href="http://shomy.top/2016/04/14/git-server-hook/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/git-server/" rel="tag">git-server</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hook/" rel="tag">hook</a></li></ul>
+
+    </footer>
+    
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2016/05/05/trans-8-powerful-awk-built-in-variables/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          &lt;译&gt;8个有力的Awk内建变量
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2016/04/04/chrome-http2https-google/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">利用chrome扩展使用HTTPS访问google</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+
+
+<section id="comments">
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+<script>
+  var disqus_shortname = 'shomy';
+  
+  var disqus_url = 'http://shomy.top/2016/04/14/git-server-hook/';
+  
+  (function(){
+    var dsq = document.createElement('script');
+    dsq.type = 'text/javascript';
+    dsq.async = true;
+    dsq.src = 'https://' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  }());
+</script>
+</section>
+
+
+
+
+</section>
+      </div>
+    </div>
+    
+    
+<a id="rocket" href="#top" ></a>
+
+<script src="https://cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <script src="http://cdn.htliu.cn/static/js/leancloud.js"></script>
+<script>AV.initialize("k883AKdzaz5jccQnH1eIrG2r-gzGzoHsz", "4HBQOmslEp3VdwK1SGL8vB9Y");</script>
+
+<script src="/js/Counter.js"></script>
+
+
+
+
+
+<script id="dsq-count-scr" src="//shomy.disqus.com/count.js" async></script>
+ 
+
+
+  <script src="https://cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.js"></script>
+  
+<script src="/js/fancybox.js"></script>
+
+
+
+
+  
+<script src="/js/search.js"></script>
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

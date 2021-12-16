@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>机器学习技法笔记(7)-Kernel LR(核逻辑回归) | 天空的城</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="Kernel Logistic Regression  这一节主要介绍如何将Kernel Trick引入到Logistic Regression，以及LR与SVM的结合  SVM 与 正则化">
+<meta property="og:type" content="article">
+<meta property="og:title" content="机器学习技法笔记(7)-Kernel LR(核逻辑回归)">
+<meta property="og:url" content="http://shomy.top/2017/03/07/kernel-lr/index.html">
+<meta property="og:site_name" content="天空的城">
+<meta property="og:description" content="Kernel Logistic Regression  这一节主要介绍如何将Kernel Trick引入到Logistic Regression，以及LR与SVM的结合  SVM 与 正则化">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://cdn.htliu.cn/klr-1.png">
+<meta property="og:image" content="http://cdn.htliu.cn/klr-2.png">
+<meta property="og:image" content="http://cdn.htliu.cn/klr-3.png">
+<meta property="og:image" content="http://cdn.htliu.cn/klr-4.png">
+<meta property="article:published_time" content="2017-03-07T14:29:33.000Z">
+<meta property="article:modified_time" content="2021-12-16T15:11:45.662Z">
+<meta property="article:author" content="ShomyLiu">
+<meta property="article:tag" content="machine learning">
+<meta property="article:tag" content="kernel">
+<meta property="article:tag" content="logistic regression">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://cdn.htliu.cn/klr-1.png">
+  
+  
+    <link rel="icon" href="/image/favicon.ico">
+  
+
+  
+  <link href="https://cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.css" rel="stylesheet">
+  
+  <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  <link href="https://cdn.bootcss.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+<!-- Google Analytics -->
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-74368890-2', 'auto');
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+
+
+  
+
+  
+  <div class="site-search header-inner">
+    <div class="popup">
+        <span class="search-icon fa fa-search"></span>
+        <input type="text" id="local-search-input">
+        <div id="local-search-result"></div>
+        <span class="popup-btn-close">close</span>
+    </div>
+</div>
+
+
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      
+<header id="header">
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">天空的城</a>
+      </h1>
+      
+    </div>
+    <div id="header-menu">
+      <nav id="main-nav">
+        <ul>
+        
+          <li><a href="/"><i class="fa fa-home icon-setting"></i></a></li>
+        
+          <li><a href="/archives"><i class="fa fa-archive icon-setting"></i></a></li>
+        
+          <li><a href="/tags"><i class="fa fa-tag icon-setting"></i></a></li>
+        
+          <li><a href="/about"><i class="fa fa-user icon-setting"></i></a></li>
+        
+        
+          <li><a href="javascript:;" class="popup-trigger"><i class="fa fa-search > icon-setting"></i></a></li>
+        
+        </ul>
+      </nav>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-kernel-lr" class="article article-type-post" itemscope itemprop="blogPost">
+  
+  <div class="article-meta">
+    <a href="/2017/03/07/kernel-lr/" class="article-date">
+  <time datetime="2017-03-07T14:29:33.000Z" itemprop="datePublished">2017-03-07</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/">读书笔记</a>
+  </div>
+
+
+    
+        <div class="counter-tag counter">
+    <!-- 别忘记这个类名... post-title-link -->
+    <span id="/2017/03/07/kernel-lr/" class="leancloud_visitors article-hits post-title-link"
+           data-flag-title="机器学习技法笔记(7)-Kernel LR(核逻辑回归)">
+        次阅读
+    </span>
+
+  </div>
+
+    
+
+  </div>
+  
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      机器学习技法笔记(7)-Kernel LR(核逻辑回归)
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+            <div id="toc" class="toc-article">
+                <strong class="toc-title">文章目录</strong>
+                <ol class="post-toc"><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#kernel-logistic-regression"><span class="post-toc-text">Kernel Logistic Regression</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#svm-%E4%B8%8E-%E6%AD%A3%E5%88%99%E5%8C%96"><span class="post-toc-text">SVM 与 正则化</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#svm-with-soft-binary-classification"><span class="post-toc-text">SVM With Soft Binary Classification</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#kernel-logistic-regression%E6%A0%B8%E9%80%BB%E8%BE%91%E5%9B%9E%E5%BD%92"><span class="post-toc-text">Kernel Logistic Regression(核逻辑回归)</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E6%80%BB%E7%BB%93"><span class="post-toc-text">总结</span></a></li></ol></li></ol>
+            </div>
+        
+        
+        <h1 id="kernel-logistic-regression">Kernel Logistic Regression</h1>
+<blockquote>
+<p>这一节主要介绍如何将Kernel Trick引入到Logistic Regression，以及LR与SVM的结合</p>
+</blockquote>
+<h2 id="svm-与-正则化">SVM 与 正则化</h2>
+<span id="more"></span>
+<p>首先回顾Soft-Margin SVM的原始问题:</p>
+<p><span class="math display">\[\begin{align}\min\limits_{b,\mathbf{w}, \xi}  \quad &amp;\frac{1}{2} \mathbf{w}^T\mathbf{w} + C \cdot \sum\limits_{n=1}^{N}\xi_n \\ s.t. \quad &amp; y_n(\mathbf{w}^T\mathbf{z}^n+b) \geq 1-\xi_n, for \ all\ n \end{align}\]</span></p>
+<p>其中<span class="math inline">\(\xi_n\)</span>是训练数据违反边界的多少，没有违反的话，<span class="math inline">\(\xi_n =0\)</span>，反之<span class="math inline">\(\xi_n &gt; 0\)</span>，换句话说，目标函数的第二项就可以表示模型的损失。现在换一种方式来写，将二者结合起来: <span class="math inline">\(\xi_n = \max(1- y_n(\mathbf{w}^T\mathbf{z}^n+b),0)\)</span>，这一个等式就代表了上面的约束条件，这样上述问题，就与下面的无约束问题等价:</p>
+<p><span class="math display">\[\begin{align} &amp; \min\limits_{b,\mathbf w}\left({1\over 2}\mathbf w^T\mathbf w + C\sum_{n=1}^N\max\left(1-y_n\left(\mathbf w^T\mathbf z_n + b\right), 0\right)\right) \\ \Leftrightarrow &amp;\min\limits_{b,w}\left({1\over 2}\mathbf w^T\mathbf w + C \cdot \sum \widehat{err} \right) \end{align}\]</span></p>
+<p>这种形式与之前的<span class="math inline">\(L_2\)</span> 正则项很类似:</p>
+<p><span class="math display">\[\min\limits_{b,\mathbf w}\left({\lambda\over N}\mathbf w^T\mathbf w + {1\over N}\sum\mbox{err}\right)\]</span></p>
+<p>在<span class="math inline">\(L_2\)</span>中，通过最小化<span class="math inline">\(E_{in}\)</span>的同时控制<span class="math inline">\(\mathbf{w}\)</span>的大小，防止模型过度复杂。从正则化的角度来看的话，Soft-Margin 的SVM其实就属于一种正则化模型，如下的对比:</p>
+<p><img src="http://cdn.htliu.cn/klr-1.png" /></p>
+<p>其中SVM中的<span class="math inline">\(C\)</span>与<span class="math inline">\(L_2\)</span>中的<span class="math inline">\(\lambda\)</span>对应，<span class="math inline">\(C\)</span>越大，表示注重<span class="math inline">\(E_{in}\)</span>，那么<span class="math inline">\(\lambda\)</span>就越小，正则化的效果相对就弱。</p>
+<p>不过从正则化角度考虑Soft-Margin SVM的话，因为错误函数<span class="math inline">\(\widehat{err}\)</span>不是可微分的，因此不容易求解，因此我们采用的是二次规划来求解的。</p>
+<h2 id="svm-with-soft-binary-classification">SVM With Soft Binary Classification</h2>
+<p>上面我们定义了<span class="math inline">\(\widehat{err}\)</span>作为SVM的一种特殊的误差函数，也被叫做<strong>hinge error mesure</strong>，下面对比一下几种常见二分类的损失函数: PLA, Logistic Regression, Soft-Margin SVM，令<span class="math inline">\(s=\mathbf W^T \mathbf z_n + b\)</span>:</p>
+<p><span class="math display">\[\begin{align} PLA: \quad &amp; err_{0/1}(s, y) = [[ys \leq 0]] \\ LR: \quad &amp; err_{SCE}(s,y) = \log_{2}(1+\exp(-ys)) \\ SVM: \quad &amp; \widehat{err}_{SVM}(y,s) = \max(1-ys,0)\end{align}\]</span></p>
+<p>然后把三者的图像绘出来，如下:</p>
+<p><img src="http://cdn.htliu.cn/klr-2.png" /></p>
+<p>我们可以看出来SVM与LR的误差函数很类似，都表示0/1误差的上限，我们知道误差函数对于一个模型来说是至关重要的，那么从这个角度看的话，再结合第一部分Soft-Margin SVM与<span class="math inline">\(L_2\)</span>的正则项的形式很相似，那我们可以在一定程度上认为:Soft margin SVM $ L_2 $ Regulared LR。 不过二者各有优点，比如SVM可以通过Kernel Trick 分类非线性的数据，而LR通过最大似然的方式则可以得到属于某类的概率值。</p>
+<p>那我们可以将二者结合起来，也就是说使用SVM来做"软分类"，最终得到某类的概率值，有两种很直接的方式如下:</p>
+<ul>
+<li>第一种: 首先使用SVM得到<span class="math inline">\((b_{SVM}, \mathbf w_{SVM})\)</span>，然后直接使用sigmod函数计算概率，得到模型: $g(x) = (W^T_{SVM} x + b_{SVM}) $</li>
+<li>第二种: 使用SVM得到<span class="math inline">\((b_{SVM}, \mathbf w_{SVM})\)</span>，然后作为LR的初始<span class="math inline">\(\mathbf w_0\)</span>,再运行LR得到最终的模型</li>
+</ul>
+<p>第一种方式最直接，也可以得到概率，但是没有用到LR的优点，比如最大似然。而第二种则更没有用到Kernel Trick，充其量只是加快了LR的收敛速度。那么我们应该如何融合两者的优势呢？下面给出一个可能的模型，如下:</p>
+<p><span class="math display">\[g(\mathbf x) = \theta(A \cdot (\mathbf w^T_{SVM}\phi(\mathbf x)+b_{SVM}) + B)\]</span></p>
+<p>首先使用Kernel SVM得到<span class="math inline">\((\mathbf w_{SVM}, b_{SVM})\)</span>, 对数据做变换，如果令<span class="math inline">\(z_n=\mathbf w^T_{SVM}\phi(\mathbf x)+b_{SVM}\)</span>, 那么后面就是一个很简单的LR模型:<span class="math inline">\(g(x)=\theta(A\cdot z_n + B)\)</span>这样来看，第一个阶段其实就属于一种基于SVM的特征转换，或者说某种映射，将数据映射到了<span class="math inline">\(z\)</span>-space,，得到新的数据:<span class="math inline">\(\{ z_n, y_n\}\)</span>。然后在新数据上跑一个LR模型，得到最终的结果，这里需要注意的是，得到的<span class="math inline">\(z_n\)</span>是一个一维的实数，这样大大减少了LR的计算复杂度。LR的两个参数<span class="math inline">\(A,B\)</span>的作用则是fine-tune(微调)，平移或者放缩。一般情况下，如果SVM的效果好的话，<span class="math inline">\(A&gt;0, B \approx 0\)</span>。</p>
+<p>这样一来，新的模型就可以结合了SVM与LR二者的优势，这种模型最早是由Platt提出的，因此也叫作<strong>Platt's Model of Probabilisitc SVM</strong>(概率模型)，具体步骤总结如下:</p>
+<p><img src="http://cdn.htliu.cn/klr-3.png" /></p>
+<p>如果把Kernel体现到模型的话，直接展开即可，最后的模型就是:</p>
+<p><span class="math display">\[\theta\left( \sum\limits_{SV}A \alpha_ny_nK(\mathbf x_n, \mathbf x) + Ab_{SVM} +B\right)\]</span></p>
+<p>需要说明的是，这种模型是利用SVM的解，然后将其作为了LR的在Z-Space的近似解，实质上并没有真正的在Z-Space求解LR(A,B只是起到了微调作用)，它的主要贡献是得到了概率SVM模型。</p>
+<h2 id="kernel-logistic-regression核逻辑回归">Kernel Logistic Regression(核逻辑回归)</h2>
+<p>这一部分则是介绍如何真正的在Z-Space使用Log-Reg模型，而非使用SVM的近似解，说到空间映射，Kernel Trick(核技巧)不得不提，那我们如何将Kernel运用到LR中呢？核到底是如何起作用的，回想SVM，我们从SVM的标准问题，转到对偶问题，然后因为对偶问题涉及到了Z-Space的内积，计算量很大，由此引出了Kernel Trick，<span class="math inline">\(\mathbf z_n \mathbf z = K(\mathbf x_n , \mathbf x)\)</span>，进而求出<span class="math inline">\(\mathbf w_{*} = \sum\beta_n \mathbf z_n\)</span>，实际上，只有将最优解<span class="math inline">\(\mathbf w\)</span>表示为<span class="math inline">\(\mathbf z_n\)</span>的线性组合，才能够利用核函数<span class="math inline">\(K\)</span>，因为模型中需要计算<span class="math inline">\(\mathbf w_{*}^{T} \mathbf z\)</span>:</p>
+<p><span class="math display">\[\mathbf w_{*}^{T} \mathbf z = \sum\beta_n\mathbf z_n \mathbf z = \sum \beta_n K(\mathbf x_n, \mathbf x)\]</span></p>
+<p>试想如果最优解<span class="math inline">\(\mathbf w_{*}\)</span>不是<span class="math inline">\(\mathbf z\)</span>的线性组合，那模型中的<span class="math inline">\(\mathbf w_{*}^{T} \mathbf z\)</span>就无法转为核函数的表达式了，那么核就无用武之地了(反过来想想，我们将数据从X-space转换到Z-Space的一个目的就是可以线性可分)。 因此，我们就可以得到一个结论，<strong>如果模型最优的<span class="math inline">\(\mathbf w_{*}\)</span>是Z-Space的线性组合，那么我们就可以把Kernel Trick运用到该模型中</strong>。举几个前面的例子:</p>
+<ul>
+<li>SVM: <span class="math inline">\(\mathbf w_{svm} = \sum (\alpha_ny_n)\mathbf z_n\)</span>，其中<span class="math inline">\(\alpha\)</span>是对偶问题中的拉格朗日乘子</li>
+<li>PLA: <span class="math inline">\(\mathbf w_{PLA} = \sum (\alpha_ny_n)\mathbf z_n\)</span>，这里的<span class="math inline">\(\alpha\)</span>则是在修正<span class="math inline">\(\mathbf w\)</span>的过程中，<span class="math inline">\(\mathbf z_n\)</span>这个点被分错误的次数</li>
+<li>LR: <span class="math inline">\(\mathbf w_{LR} = \sum (\alpha_ny_n)\mathbf z_n\)</span>，这里的<span class="math inline">\(\alpha_n\)</span>可以理解为在用梯度下降法更新<span class="math inline">\(\mathbf w\)</span>的步长</li>
+<li>...</li>
+</ul>
+<p>上面的三种模型中的<span class="math inline">\(\mathbf w\)</span>可以被数据表示，也就是说，我们都可以把Kernel Trick加到模型中(可以用来解决非线性可分)，那到底有什么特征的模型，才满足条件呢？下面给出一个很重要的定理: <strong>Representer Theorem</strong>：</p>
+<blockquote>
+<p>对于任意的<span class="math inline">\(L_2\)</span>正则化的线性模型，目标函数如下:</p>
+<p><span class="math display">\[\min\limits_{\mathbf w}  \quad  {\lambda \over N}\mathbf  w^T \mathbf w + {1 \over N}\sum\limits_{n=1}^{N}err(y_n, \mathbf w^T \mathbf z_n)\]</span></p>
+<p>均有最优的参数<span class="math inline">\(\mathbf w_{*} = \sum \beta_n\mathbf z_n\)</span></p>
+</blockquote>
+<p>简单证明如下:</p>
+<blockquote>
+<p>设最优解<span class="math inline">\(\mathbf w_{*} = \mathbf w_{||} + \mathbf w_{\perp}\)</span>，其中<span class="math inline">\(\mathbf w_{||} \in span(\mathbf z_n), \mathbf w_{\perp} \perp span(\mathbf z_n)\)</span></p>
+<p>反证法，假设<span class="math inline">\(\mathbf w_{\perp} \neq \mathbf 0\)</span>,将上述的<span class="math inline">\(E_{in}\)</span>分为两部分，先看第二部分的err，<span class="math inline">\(err(y_n, \mathbf w_{*}^T\mathbf z_n) = err(y_n, (\mathbf w_{||}+\mathbf w_{\perp})\mathbf z_{n}) = err(y_n, \mathbf w_{||}\mathbf z_n)\)</span>, 这部分与<span class="math inline">\(\mathbf w_{\perp}\)</span> 无关，看第一部分的正则项: <span class="math inline">\(\mathbf w_{*}^T \mathbf w_{*} = \mathbf w_{||}^T \mathbf w_{||} + 2\mathbf {w_{||}^T w_{\perp} } + \mathbf{w_{\perp}^T w_{\perp}} &gt; \mathbf w_{||}^T \mathbf w_{||}\)</span> ,矛盾产生，因为<span class="math inline">\(\mathbf w_{||}\)</span>比<span class="math inline">\(\mathbf w_{*}\)</span>有更小的误差。从而最优解与<span class="math inline">\(\mathbf z\)</span>在同一个超平面，定理得证。</p>
+</blockquote>
+<p>而前面介绍的<span class="math inline">\(L_2\)</span>正则化的Logistic Regression的目标函数:</p>
+<p><span class="math display">\[\min_{\mathbf w} \quad {\lambda\over N}\mathbf w^T\mathbf w+{1\over N}\sum_{n=1}^N\log\left(1+\exp\left(-y_n\mathbf w^T\mathbf z_n\right)\right)\]</span></p>
+<p>很显然，LR的最优解: <span class="math inline">\(\mathbf w_{*} = \sum \beta_n\mathbf z_n = \beta^T\mathbf Z\)</span>，既然这样，那么我们就直接不再求<span class="math inline">\(\mathbf w\)</span>,直接求解<span class="math inline">\(\beta\)</span>，然后加入Kernel Function，这样目标函数如下:</p>
+<p><img src="http://cdn.htliu.cn/klr-4.png" /></p>
+<p>这是一个无约束的优化问题，可以使用梯度下降等方式来来得到最优解。</p>
+<p>到此，我们成功将Kernel 加入到了Logistic Regression，得到的模型一般叫做<strong>Kernel Logistics Regression(KLR)</strong>，这样就可以很好地解决非线性问题了。</p>
+<p>最后说一句KLR其实相当于<span class="math inline">\(\beta\)</span>的线性模型了，核函数<span class="math inline">\(K\)</span> 就相当于特征转换，左侧的<span class="math inline">\(\sum\sum\)</span>写成矩阵形式就是: <span class="math inline">\(\beta^TK\beta\)</span>相当于正则项。此外，在Kernel SVM中<span class="math inline">\(\alpha\)</span>很稀疏，有很多项为0，Kernel LR中的<span class="math inline">\(\beta\)</span>则大部分都不为0。</p>
+<h2 id="总结">总结</h2>
+<p>这一讲主要讲了SVM与LR的相互交叉，得到两个新的模型，有概率的SVM以及带核的LR。Kernel Trick并不是SVM专有，在线性模型中，只需要满足表示定理就可以加入核，下一节我们就会在一般的Linear Regression中引入核。一般来说，引入Kernel，效果会好，不过计算量自然也就大了。</p>
+
+      
+    </div>
+
+
+    
+
+    
+	    <div class="article-footer-copyright">
+<!--<p>本文作者: shomy 发表于 <a href="http://shomy.top" target="_blank">个人博客</a></p> -->
+<p>
+本文标题: 机器学习技法笔记(7)-Kernel LR(核逻辑回归)<br/>
+</p>
+<p>
+发布时间: 2017-03-07, 22:29:33<br/>
+<p>
+<p>
+最后更新: 2021-12-16, 23:11:45<br/>
+<p>
+本文链接: <a href="/2017/03/07/kernel-lr/" target="_blank">http://shomy.top/2017/03/07/kernel-lr/</a>
+</p>
+<p>非商业转载请注明作者及出处。商业转载请联系<a href="mailto:shomyliu@gmail.com">作者</a>本人。</p>
+</div>
+
+    
+
+    <footer class="article-footer">
+      
+        <a href="http://shomy.top/2017/03/07/kernel-lr/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/kernel/" rel="tag">kernel</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/logistic-regression/" rel="tag">logistic regression</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/machine-learning/" rel="tag">machine learning</a></li></ul>
+
+    </footer>
+    
+	    <script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+    
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2017/03/09/support-vector-regression/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          机器学习技法笔记(8)-SVR(支持向量回归)
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2017/02/26/rbf-network/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">机器学习技法笔记(6)-RBF Network(径向基函数网络)</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+
+
+<section id="comments">
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+<script>
+  var disqus_shortname = 'shomy';
+  
+  var disqus_url = 'http://shomy.top/2017/03/07/kernel-lr/';
+  
+  (function(){
+    var dsq = document.createElement('script');
+    dsq.type = 'text/javascript';
+    dsq.async = true;
+    dsq.src = 'https://' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  }());
+</script>
+</section>
+
+
+
+
+</section>
+      </div>
+    </div>
+    
+    
+<a id="rocket" href="#top" ></a>
+
+<script src="https://cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <script src="http://cdn.htliu.cn/static/js/leancloud.js"></script>
+<script>AV.initialize("k883AKdzaz5jccQnH1eIrG2r-gzGzoHsz", "4HBQOmslEp3VdwK1SGL8vB9Y");</script>
+
+<script src="/js/Counter.js"></script>
+
+
+
+
+
+<script id="dsq-count-scr" src="//shomy.disqus.com/count.js" async></script>
+ 
+
+
+  <script src="https://cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.js"></script>
+  
+<script src="/js/fancybox.js"></script>
+
+
+
+
+  
+<script src="/js/search.js"></script>
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

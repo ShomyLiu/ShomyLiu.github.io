@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>机器学习基石笔记(7)-非线性转换 | 天空的城</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="引入 前面介绍了PLA，Linear Regression 和 Logistic Regression 这三种线性分类(回归)模型，已经知道可以很好地用来处理线性可分的数据集或者说大概可以线性可分，然而现实世界中很多数据并不是线性可分的，起码很难找到一个超平面去分开两类数据，而Linean Model的限制也就是无法很好地处理无法用超平面区分的数据，这种数据很常见，如下图的一个2维数据集:">
+<meta property="og:type" content="article">
+<meta property="og:title" content="机器学习基石笔记(7)-非线性转换">
+<meta property="og:url" content="http://shomy.top/2016/12/02/nonlinera-transformation/index.html">
+<meta property="og:site_name" content="天空的城">
+<meta property="og:description" content="引入 前面介绍了PLA，Linear Regression 和 Logistic Regression 这三种线性分类(回归)模型，已经知道可以很好地用来处理线性可分的数据集或者说大概可以线性可分，然而现实世界中很多数据并不是线性可分的，起码很难找到一个超平面去分开两类数据，而Linean Model的限制也就是无法很好地处理无法用超平面区分的数据，这种数据很常见，如下图的一个2维数据集:">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://cdn.htliu.cn/ml07-1.png">
+<meta property="og:image" content="http://cdn.htliu.cn/ml07-2.png">
+<meta property="og:image" content="http://cdn.htliu.cn/ml07-3.png">
+<meta property="og:image" content="http://cdn.htliu.cn/ml07-4.png">
+<meta property="og:image" content="http://cdn.htliu.cn/ml03-5.png">
+<meta property="og:image" content="http://cdn.htliu.cn/ml07-5.png">
+<meta property="og:image" content="http://cdn.htliu.cn/ml07-6.png">
+<meta property="og:image" content="http://cdn.htliu.cn/ml07-7.png">
+<meta property="article:published_time" content="2016-12-02T02:16:05.000Z">
+<meta property="article:modified_time" content="2021-12-16T15:11:45.666Z">
+<meta property="article:author" content="ShomyLiu">
+<meta property="article:tag" content="machine learning">
+<meta property="article:tag" content="nonlinear transformation">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://cdn.htliu.cn/ml07-1.png">
+  
+  
+    <link rel="icon" href="/image/favicon.ico">
+  
+
+  
+  <link href="https://cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.css" rel="stylesheet">
+  
+  <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  <link href="https://cdn.bootcss.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+<!-- Google Analytics -->
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-74368890-2', 'auto');
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+
+
+  
+
+  
+  <div class="site-search header-inner">
+    <div class="popup">
+        <span class="search-icon fa fa-search"></span>
+        <input type="text" id="local-search-input">
+        <div id="local-search-result"></div>
+        <span class="popup-btn-close">close</span>
+    </div>
+</div>
+
+
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      
+<header id="header">
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">天空的城</a>
+      </h1>
+      
+    </div>
+    <div id="header-menu">
+      <nav id="main-nav">
+        <ul>
+        
+          <li><a href="/"><i class="fa fa-home icon-setting"></i></a></li>
+        
+          <li><a href="/archives"><i class="fa fa-archive icon-setting"></i></a></li>
+        
+          <li><a href="/tags"><i class="fa fa-tag icon-setting"></i></a></li>
+        
+          <li><a href="/about"><i class="fa fa-user icon-setting"></i></a></li>
+        
+        
+          <li><a href="javascript:;" class="popup-trigger"><i class="fa fa-search > icon-setting"></i></a></li>
+        
+        </ul>
+      </nav>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-nonlinera-transformation" class="article article-type-post" itemscope itemprop="blogPost">
+  
+  <div class="article-meta">
+    <a href="/2016/12/02/nonlinera-transformation/" class="article-date">
+  <time datetime="2016-12-02T02:16:05.000Z" itemprop="datePublished">2016-12-02</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/">读书笔记</a>
+  </div>
+
+
+    
+        <div class="counter-tag counter">
+    <!-- 别忘记这个类名... post-title-link -->
+    <span id="/2016/12/02/nonlinera-transformation/" class="leancloud_visitors article-hits post-title-link"
+           data-flag-title="机器学习基石笔记(7)-非线性转换">
+        次阅读
+    </span>
+
+  </div>
+
+    
+
+  </div>
+  
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      机器学习基石笔记(7)-非线性转换
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+            <div id="toc" class="toc-article">
+                <strong class="toc-title">文章目录</strong>
+                <ol class="post-toc"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E5%BC%95%E5%85%A5"><span class="post-toc-text">引入</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E9%9D%9E%E7%BA%BF%E6%80%A7%E8%BD%AC%E6%8D%A2"><span class="post-toc-text">非线性转换</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E8%BD%AC%E6%8D%A2%E6%A8%A1%E5%9E%8B%E5%A4%8D%E6%9D%82%E5%BA%A6"><span class="post-toc-text">转换模型复杂度</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#%E9%A2%9D%E5%A4%96%E7%9A%84%E4%BB%A3%E4%BB%B7"><span class="post-toc-text">额外的代价</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#%E5%A6%82%E4%BD%95%E9%80%89%E6%8B%A9%E5%8F%82%E6%95%B0-%E4%B8%8D%E8%83%BD%E5%81%B7%E7%9C%8B%E6%95%B0%E6%8D%AE"><span class="post-toc-text">如何选择参数-不能偷看数据</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#%E5%81%87%E8%AE%BE%E7%A9%BA%E9%97%B4%E7%9A%84%E5%8F%98%E5%8C%96"><span class="post-toc-text">假设空间的变化</span></a></li></ol></li></ol>
+            </div>
+        
+        
+        <h2 id="引入">引入</h2>
+<p>前面介绍了PLA，Linear Regression 和 Logistic Regression 这三种线性分类(回归)模型，已经知道可以很好地用来处理线性可分的数据集或者说大概可以线性可分，然而现实世界中很多数据并不是线性可分的，起码很难找到一个超平面去分开两类数据，而Linean Model的限制也就是无法很好地处理无法用超平面区分的数据，这种数据很常见，如下图的一个2维数据集: <span id="more"></span> <img src="http://cdn.htliu.cn/ml07-1.png" /></p>
+<p>不过，我们可以发现，虽然它不是线性可分，但是貌似可以曲线可分，比如下面的分类方式: <img src="http://cdn.htliu.cn/ml07-2.png" /></p>
+<p>我们可以把圆内的数据划分为o，圆外的数据归为x，看起来很不错，再进一步抽象出如下的模型，<span class="math inline">\(h_{SEP}=sign(r^2-x_1^2-x^2_2)\)</span> 用来解决上述的问题:其中<span class="math inline">\(r\)</span>为上述的圆的半径，这并不是线性的，而是高阶多项式的，在优化求解的时候，会相对麻烦，这就引出了这节的非线性转换，将非线性的hypothese转为线性，这样我们才可以用我们之前学得线性知识去求解。</p>
+<h2 id="非线性转换">非线性转换</h2>
+<p>上述我们得到了<span class="math inline">\(h_{SEP}=sign(r^2-x_1^2-x^2_2)\)</span>，我们做如下的转换： <span class="math display">\[\begin{aligned}
+\color{orange}{h}(x) &amp;=
+(\;
+\underbrace{\color{orange}{r^2}}_{\color{orange}{\tilde{w}_0}}\cdot\underbrace{\color{purple}{1}}_{\color{purple}{z_0}} + \underbrace{(\color{orange}{-1})}_{\color{orange}{\tilde{w}_1}}\cdot\underbrace{\color{purple}{x_1^2}}_{\color{purple}{z_1}}+
+\underbrace{(\color{orange}{-1})}_{\color{orange}{\tilde{w}_2}}\cdot\underbrace{\color{purple}{x_2^2}}_{\color{purple}{z_2}}
+\;)
+\\
+&amp;= sign(\color{orange}{\tilde{w_0}}+\color{orange}{\tilde{w_1}}\color{purple}{z_1}+\color{orange}{\tilde{w_2}}\color{purple}{z_2})
+\\
+&amp;=sign(\color{orange}{\tilde{w}^T}\color{purple}{z})
+\end{aligned}\]</span> 这样就变成线性的Hypothese。这里面其实将 X-Space转换到了Z-Space，或者说换了坐标系(基)，X下的一个圆就对应了Z下的一条直线。如下图，左边是X-Space的数据点，右边是一一对应的Z-Space的数据点:</p>
+<p><img src="http://cdn.htliu.cn/ml07-3.png" /></p>
+<p>作了上述转换之后，我们只需要对<span class="math inline">\(\mathcal{D}^{&#39;}_{z} = \{ (z_n, y_n)\}\)</span>，其中<span class="math inline">\(z = \phi(x)=(1, x_1^2, x_2^2)\)</span>作为样本数据，然后使用之前学过的线性分类模型来求就可以了。</p>
+<p>上述的2D分类问题，我们使用一个标准圆作为区分面，但是有时候可能是一个圆心不在原点的圆，再或者是一个椭圆，双曲线等等，这时候，我们可以使用一般的二次曲面即: <span class="math inline">\(\textbf{z} = \phi_2(\textbf{x})=(1, x_1, x_2, x_1^2, x_2^2, x_1x_2)\)</span>，然后<span class="math inline">\(\textbf{w}=(w_0, w_1, w_2, w_3,w_4, w_5)\)</span>。这样我们就将X-Space的非线性数据点，转换为Z-Space的线性数据点来分类，转换函数为<span class="math inline">\(\phi(\textbf{x})\)</span>，总结主要步骤如下:</p>
+<ul>
+<li>将原始X数据<span class="math inline">\(\{(\textbf{x}_n, y_n)\}\)</span> 转换为Z数据:<span class="math inline">\(\{(\textbf{z}_n=\phi(\textbf{x}_n), y_n)\}\)</span></li>
+<li>使用线性分类方法: PLA/Pocket，Linear Regression, Logistic Regression等求解 <span class="math inline">\(\textbf{w}\)</span></li>
+<li>返回假设函数: <span class="math inline">\(g(\textbf{x}) = sign(\textbf{w}^T \phi(\textbf{x}))\)</span> 用来分类新的点。</li>
+</ul>
+<h2 id="转换模型复杂度">转换模型复杂度</h2>
+<h3 id="额外的代价">额外的代价</h3>
+<p>看起来问题解决的很好了，所有的分类问题都可以做了，因为我们不止可以做二次阶转换，还可以做三阶转换等等， 只要数据集可分，那么我们一定可以通过转换函数<span class="math inline">\(\phi(x)\)</span>来转换到我们已经知道的线性分类上！ 但是真的有这么好的事情吗？ 现在我们只知道通过非线性转为线性，是一定可以解决分类的，但是我们有没有付出额外的代价呢？</p>
+<p>一个最直接的代价就是存储空间变大了，比如开头的2D例子里面，本来只有<span class="math inline">\((1, x_1, x_2)\)</span>三维数据，结果映射之后，变成了<span class="math inline">\(1, x_1,x_2, x_1^2, x_1x_2, x_1^2,x_2^2\)</span>，变成了6维！求解的参数也就是6维，因此需要一倍的空间去存储。</p>
+<p>其次在考虑模型复杂度，假设原始数据 <span class="math inline">\(\textbf{x} \in R^d\)</span>，经过<span class="math inline">\(Q\)</span> 阶的转换(上述例子中Q=2)，首先看看我们的<span class="math inline">\(\phi_{Q}(\textbf{x})\)</span>为:</p>
+<p><img src="http://cdn.htliu.cn/ml07-4.png" /></p>
+<p>一共有<span class="math inline">\(1+\widetilde{d}\)</span>种，其中1是<span class="math inline">\(x_0\)</span>，剩下的<span class="math inline">\(\widetilde{d}\)</span>是剩下的数量。总的数量其实就相当与从<span class="math inline">\(Q+d\)</span>中找Q个元素，即:<span class="math inline">\(C_{d}^{(Q+d)} = O(Q^d)\)</span>，因此模型的自由度也就是<span class="math inline">\(O(Q^d)\)</span>，前面介绍VC维的时候，我们知道模型自由度，可以近似为VC维：<span class="math inline">\(1+\widetilde{d} = d_{vc}(\mathcal{H}_{\phi_Q})\)</span>，因此阶数Q越大，VC维就越大，模型复杂度就越大，而且这个增长是指数级的，这样并不好，因为根据:</p>
+<p><img src="http://cdn.htliu.cn/ml03-5.png" /></p>
+<p><span class="math inline">\(d_{vc}\)</span>越大，虽然<span class="math inline">\(E_{in}\)</span>会变小，不过<span class="math inline">\(E_{out}\)</span>会变大，也就是说容易发生后面讲的过拟合。</p>
+<h3 id="如何选择参数-不能偷看数据">如何选择参数-不能偷看数据</h3>
+<p>既然这样，那我们应该如何选择阶数Q呢？用眼看吗？ 比如前面的2维例子，我们看原始数据，感觉用个二维曲线可以很好的分类，于是首先选择如下的二阶转换:<span class="math display">\[\phi_2(x)=1,x_1,x_2,x_1^2,x_1x_2,x_2^2),d_{vc}=6\]</span>后来你又觉得我用个圆就好了呀，于是又改为如下的转换：<span class="math display">\[\phi_2(x)=(1,x_1^2,x_2^2),d_{vc}=3\]</span>这样模型复杂度降低了。然后呢你多多观察了数据，又发现我就直接使用一个标准圆就好了: <span class="math display">\[z=(1,x_1^2+x_2^2)\;,d_{vc}=2\]</span>不错，你又降低了复杂度，只需要两个参数就好了，然后开心的算出来一个<span class="math inline">\(E_{in}\)</span>很低的参数，结果计算发现<span class="math inline">\(E_{out}\)</span>很糟糕，问题出在了哪里了？我的复杂度这么低，怎么会发生过拟合呢？泛化错误这么高？问题就出在你不该去偷看你已有的数据！原因有二:</p>
+<ul>
+<li><p>你根据自己看原始数据的结论，去选择模型，这时候你的大脑已经替计算机承担了相当部分的复杂度，因此模型复杂度并不是你看到的<span class="math inline">\(d_{vc}=2\)</span></p></li>
+<li><p>你偷看了现在这份数据，然后选择了标准圆，<span class="math inline">\(E_{in}\)</span>很小，但是如果再来一个新的数据集<span class="math inline">\(\mathcal{D}\)</span>呢？你看了之后，可能就不会用标准圆去刻画了！</p></li>
+</ul>
+<p>因此，为了不发生过拟合，不要去事先偷看数据，或者说不要太信赖自己已有的那很少的数据。再者说了，现在是二维数据，可以画个图来参考参考，那10维呢？ 也就很难去想象了。</p>
+<h3 id="假设空间的变化">假设空间的变化</h3>
+<p>再看不同阶的转换函数：</p>
+<p><img src="http://cdn.htliu.cn/ml07-5.png" /></p>
+<p>我们可以发现，其实有递推的关系，<span class="math inline">\(\pgi_{Q}(\textbf{x})\)</span>包含着，<span class="math inline">\(\pgi_{Q-1}(\textbf{x})\)</span>阶的所有项与Q阶部分组成的。也就是说，阶数大的可以表示的空间肯定包含阶数小的空间，即他们的<span class="math inline">\(\mathcal{H}\)</span>有如下的关系:</p>
+<p><img src="http://cdn.htliu.cn/ml07-6.png" /></p>
+<p>我们也知道了Q越大， <span class="math inline">\(d_{vc}\)</span>就越大， 因此又有如下的关系:</p>
+<p><img src="http://cdn.htliu.cn/ml07-7.png" /></p>
+<p>这个跟我们前面提到的很吻合。阶数越高越容易发生过拟合，泛化误差越高，因此原则是<strong>Linear Model First</strong>，如果我们可以用线性模型就可以得到<span class="math inline">\(E_{in}\)</span>很低的结果，那就不要考虑高维的非线性转化了，代价很大！</p>
+
+      
+    </div>
+
+
+    
+
+    
+	    <div class="article-footer-copyright">
+<!--<p>本文作者: shomy 发表于 <a href="http://shomy.top" target="_blank">个人博客</a></p> -->
+<p>
+本文标题: 机器学习基石笔记(7)-非线性转换<br/>
+</p>
+<p>
+发布时间: 2016-12-02, 10:16:05<br/>
+<p>
+<p>
+最后更新: 2021-12-16, 23:11:45<br/>
+<p>
+本文链接: <a href="/2016/12/02/nonlinera-transformation/" target="_blank">http://shomy.top/2016/12/02/nonlinera-transformation/</a>
+</p>
+<p>非商业转载请注明作者及出处。商业转载请联系<a href="mailto:shomyliu@gmail.com">作者</a>本人。</p>
+</div>
+
+    
+
+    <footer class="article-footer">
+      
+        <a href="http://shomy.top/2016/12/02/nonlinera-transformation/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/machine-learning/" rel="tag">machine learning</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/nonlinear-transformation/" rel="tag">nonlinear transformation</a></li></ul>
+
+    </footer>
+    
+	    <script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+    
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2016/12/07/basic-neural-network/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          机器学习技法笔记(1)-神经网络
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2016/11/17/linear-models-summary/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">机器学习基石笔记(6)-线性模型总结</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+
+
+<section id="comments">
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+<script>
+  var disqus_shortname = 'shomy';
+  
+  var disqus_url = 'http://shomy.top/2016/12/02/nonlinera-transformation/';
+  
+  (function(){
+    var dsq = document.createElement('script');
+    dsq.type = 'text/javascript';
+    dsq.async = true;
+    dsq.src = 'https://' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  }());
+</script>
+</section>
+
+
+
+
+</section>
+      </div>
+    </div>
+    
+    
+<a id="rocket" href="#top" ></a>
+
+<script src="https://cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <script src="http://cdn.htliu.cn/static/js/leancloud.js"></script>
+<script>AV.initialize("k883AKdzaz5jccQnH1eIrG2r-gzGzoHsz", "4HBQOmslEp3VdwK1SGL8vB9Y");</script>
+
+<script src="/js/Counter.js"></script>
+
+
+
+
+
+<script id="dsq-count-scr" src="//shomy.disqus.com/count.js" async></script>
+ 
+
+
+  <script src="https://cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.js"></script>
+  
+<script src="/js/fancybox.js"></script>
+
+
+
+
+  
+<script src="/js/search.js"></script>
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>hexo同时部署到coding(gitcafe)和github | 天空的城</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="2017.07.10更新: 注:目前部署到coding需要在网页上表明coding.net 或者开通会员,否则在首次访问时候, coding.net强加推广页面   2016.03.07更新: 部署到coding时，如果使用pages的话，项目名称必须与coding的用户名一致，但是演示并没有这个要求。 而且目前为止：演示不能绑定自己的域名，而pages可以，所以说，为了以后方便，项目名称还是与">
+<meta property="og:type" content="article">
+<meta property="og:title" content="hexo同时部署到coding(gitcafe)和github">
+<meta property="og:url" content="http://shomy.top/2016/03/03/hexo-in-coding-github/index.html">
+<meta property="og:site_name" content="天空的城">
+<meta property="og:description" content="2017.07.10更新: 注:目前部署到coding需要在网页上表明coding.net 或者开通会员,否则在首次访问时候, coding.net强加推广页面   2016.03.07更新: 部署到coding时，如果使用pages的话，项目名称必须与coding的用户名一致，但是演示并没有这个要求。 而且目前为止：演示不能绑定自己的域名，而pages可以，所以说，为了以后方便，项目名称还是与">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://cdn.htliu.cn/coding6.png">
+<meta property="og:image" content="http://cdn.htliu.cn/coding1.png">
+<meta property="og:image" content="http://cdn.htliu.cn/coding5.png">
+<meta property="og:image" content="http://cdn.htliu.cn/coding2.png">
+<meta property="og:image" content="http://cdn.htliu.cn/coding3.png">
+<meta property="og:image" content="http://cdn.htliu.cn/coding4.png">
+<meta property="og:image" content="http://cdn.htliu.cn/coding9.png">
+<meta property="og:image" content="http://cdn.htliu.cn/coding10.png">
+<meta property="article:published_time" content="2016-03-02T16:38:51.000Z">
+<meta property="article:modified_time" content="2021-12-16T15:11:45.660Z">
+<meta property="article:author" content="ShomyLiu">
+<meta property="article:tag" content="hexo">
+<meta property="article:tag" content="coding">
+<meta property="article:tag" content="github">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://cdn.htliu.cn/coding6.png">
+  
+  
+    <link rel="icon" href="/image/favicon.ico">
+  
+
+  
+  <link href="https://cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.css" rel="stylesheet">
+  
+  <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  <link href="https://cdn.bootcss.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+<!-- Google Analytics -->
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-74368890-2', 'auto');
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+
+
+  
+
+  
+  <div class="site-search header-inner">
+    <div class="popup">
+        <span class="search-icon fa fa-search"></span>
+        <input type="text" id="local-search-input">
+        <div id="local-search-result"></div>
+        <span class="popup-btn-close">close</span>
+    </div>
+</div>
+
+
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      
+<header id="header">
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">天空的城</a>
+      </h1>
+      
+    </div>
+    <div id="header-menu">
+      <nav id="main-nav">
+        <ul>
+        
+          <li><a href="/"><i class="fa fa-home icon-setting"></i></a></li>
+        
+          <li><a href="/archives"><i class="fa fa-archive icon-setting"></i></a></li>
+        
+          <li><a href="/tags"><i class="fa fa-tag icon-setting"></i></a></li>
+        
+          <li><a href="/about"><i class="fa fa-user icon-setting"></i></a></li>
+        
+        
+          <li><a href="javascript:;" class="popup-trigger"><i class="fa fa-search > icon-setting"></i></a></li>
+        
+        </ul>
+      </nav>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-hexo-in-coding-github" class="article article-type-post" itemscope itemprop="blogPost">
+  
+  <div class="article-meta">
+    <a href="/2016/03/03/hexo-in-coding-github/" class="article-date">
+  <time datetime="2016-03-02T16:38:51.000Z" itemprop="datePublished">2016-03-03</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E5%B7%A5%E5%85%B7%E4%BD%BF%E7%94%A8/">工具使用</a>
+  </div>
+
+
+    
+        <div class="counter-tag counter">
+    <!-- 别忘记这个类名... post-title-link -->
+    <span id="/2016/03/03/hexo-in-coding-github/" class="leancloud_visitors article-hits post-title-link"
+           data-flag-title="hexo同时部署到coding(gitcafe)和github">
+        次阅读
+    </span>
+
+  </div>
+
+    
+
+  </div>
+  
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      hexo同时部署到coding(gitcafe)和github
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+            <div id="toc" class="toc-article">
+                <strong class="toc-title">文章目录</strong>
+                <ol class="post-toc"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#coding%E9%85%8D%E7%BD%AE"><span class="post-toc-text">coding配置</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#ssh%E5%AF%B9%E6%8E%A5"><span class="post-toc-text">ssh对接</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#%E6%96%B0%E5%BB%BA%E9%A1%B9%E7%9B%AE"><span class="post-toc-text">新建项目</span></a></li></ol></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#hexo%E9%85%8D%E7%BD%AE"><span class="post-toc-text">hexo配置</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E9%83%A8%E7%BD%B2"><span class="post-toc-text">部署</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#%E4%BD%BF%E7%94%A8pages%E9%83%A8%E7%BD%B2"><span class="post-toc-text">使用Pages部署</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#%E4%BD%BF%E7%94%A8%E6%BC%94%E7%A4%BA"><span class="post-toc-text">使用演示</span></a></li></ol></li></ol>
+            </div>
+        
+        
+        <blockquote>
+<p>2017.07.10更新: 注:目前部署到coding需要在网页上表明coding.net 或者开通会员,否则在首次访问时候, coding.net强加推广页面</p>
+</blockquote>
+<blockquote>
+<p>2016.03.07更新: 部署到coding时，如果使用pages的话，项目名称必须与coding的用户名一致，但是演示并没有这个要求。 而且目前为止：演示不能绑定自己的域名，而pages可以，所以说，为了以后方便，项目名称还是与用户名一致的好，不然部署pages会出现没有样式的bug.</p>
+</blockquote>
+<span id="more"></span>
+<p>之前已经把<code>hexo</code>部署到<code>github</code>，但是有时候挺慢的，于是就像跟大家一样搞到国内的<code>gitcafe</code>上，岂料，上到<code>gitcafe</code>官网才发现它已经被<code>coding.net</code>收购了,看下图，而且<strong>2016.5.31之后停止服务</strong>, 就直接去了<code>coding</code>上部署了。结果有一点问题，耽误了好长时间。。。记录一下吧。 <img src="http://cdn.htliu.cn/coding6.png" /></p>
+<h2 id="coding配置">coding配置</h2>
+<p>基本流程跟<code>github</code>一样，都是先申请帐号。这里需要说一下的是，申请<code>coding</code>的邮箱尽量与<code>github</code>使用同一个邮箱，这样配置<code>ssh</code>就省了事情，不用配置两个ssh了。</p>
+<h3 id="ssh对接">ssh对接</h3>
+<p>基本一样，如果之前生成过<code>ssh</code>的话，就可以直接使用，一般存放在<code>~/.ssh/id_rsa.pub</code>。如果没有的话，那就下面几步就可以了</p>
+<figure class="highlight armasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ ssh-keygen -t rsa -<span class="keyword">b</span> <span class="number">4096</span> -C <span class="string">&quot;你的邮箱&quot;</span></span><br></pre></td></tr></table></figure>
+<p>后面就直接默认，按回车就好。 然后就是: <figure class="highlight avrasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ ssh-<span class="keyword">add</span></span><br></pre></td></tr></table></figure></p>
+<p>然后在<code>coding</code>的个人页面，如下 <img src="http://cdn.htliu.cn/coding1.png" /></p>
+<blockquote>
+<p>注意这是在个人账户下添加了<code>ssh</code>,以后新建了项目，项目也有个<code>ssh</code>，但是那个是只读的，不要加到那里去。只需要在个人账户下，加入了即可。</p>
+</blockquote>
+<p>加入了之后，执行验证:</p>
+<figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh -T <span class="symbol">git@</span>git.coding.net</span><br></pre></td></tr></table></figure>
+<p>提示如下即可：</p>
+<figure class="highlight reasonml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Hello shomyliu You&#x27;ve connected <span class="keyword">to</span> <span class="module-access"><span class="module"><span class="identifier">Coding</span>.</span></span>net by SSH successfully!</span><br></pre></td></tr></table></figure>
+<p>如果失败了，则检查一下是不是在<code>coding</code>那里对了，基本流程跟<code>github</code>一样。这一步ok了。</p>
+<h3 id="新建项目">新建项目</h3>
+<p>这一步也很简单，直接新建一个项目就好了，这里需要注意就是：<strong>项目名尽量与用户名一样</strong>，这样可以省去好多麻烦.另外网上有人说得是最好是公有的，所以就搞了一个公有的。其余的都不用动，直接默认就行了。</p>
+<h2 id="hexo配置">hexo配置</h2>
+<p>新建好了<code>coding</code>的项目之后，修改一下站点的配置文件，<code>_config.yml</code>如下:</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">deploy:</span><br><span class="line">  type: git</span><br><span class="line">  repository:</span><br><span class="line">      github: git@github<span class="selector-class">.com</span>:ShomyLiu/ShomyLiu<span class="selector-class">.github</span><span class="selector-class">.io</span><span class="selector-class">.git</span></span><br><span class="line">      coding: git@git<span class="selector-class">.coding</span><span class="selector-class">.net</span>:shomyliu/shomyliu<span class="selector-class">.git</span></span><br><span class="line">  branch: master</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>由于的都是master分支，所以两个写到一起了，如果不是同一个分支的话，可以如下的写法： <figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">deploy:</span><br><span class="line">  type: git</span><br><span class="line">  repository:</span><br><span class="line">      github: git@github<span class="selector-class">.com</span>:ShomyLiu/ShomyLiu<span class="selector-class">.github</span><span class="selector-class">.io</span><span class="selector-class">.git</span>,分支名称</span><br><span class="line">      coding: git@git<span class="selector-class">.coding</span><span class="selector-class">.net</span>:shomyliu/shomyliu<span class="selector-class">.git</span>,分支名称</span><br></pre></td></tr></table></figure></p>
+</blockquote>
+<p>其实就是在原来的基础再加一个就好了。只需要把repo的地址改成自己对应项目的就好。 还有一步，就是在博客的<code>source/</code>目录下需要创建一个空白文件,至于原因，是因为 <code>coding.net</code>需要这个文件来作为以静态文件部署的标志。就是说看到这个<code>Staticfile</code>就知道按照静态文件来发布。 ，</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> <span class="built_in">source</span>/</span><br><span class="line">touch Staticfile  <span class="comment">#名字必须是Staticfile</span></span><br></pre></td></tr></table></figure>
+<p>现在可以<code>deploy</code>了。</p>
+<figure class="highlight elixir"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$ </span>hexo clean</span><br><span class="line"><span class="variable">$ </span>hexo g</span><br><span class="line"><span class="variable">$ </span>hexo d</span><br></pre></td></tr></table></figure>
+<p>会看到有两个发布。发布完成之后，还需要托管<code>coding.net</code>上。</p>
+<h2 id="部署">部署</h2>
+<p>然后下面开始部署:有两种方式</p>
+<h3 id="使用pages部署">使用<code>Pages</code>部署</h3>
+<p>这种方式的话，可以绑定自己的域名。就跟<code>Github Pages</code>一样。<strong>项目名字必须与coding的用户名一致!!!</strong>只需要在如下: <img src="http://cdn.htliu.cn/coding5.png" /> 因为前面配置的分支是<code>master</code>,因此开启之后，也需要是<code>master</code>。然后看起之后就可访问了,下面两个链接都可以访问</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">http:<span class="regexp">//</span>shomyliu.coding.me/shomyliu</span><br><span class="line">http:<span class="regexp">//</span>shomyliu.coding.me/</span><br></pre></td></tr></table></figure>
+<h3 id="使用演示">使用<code>演示</code></h3>
+<p>这种方式类似与使用<code>coding.net</code>的主机了。注意此方式不可以绑定自己的域名。 如图，打开自己的新建的项目，在代码区域，可以看到已经<code>push</code>上去了。现在打开<code>演示一栏</code>： <img src="http://cdn.htliu.cn/coding2.png" /> 直接 <code>开始检测</code>, 一般情况，如果按照上面的步骤来的话，尤其是创建了<code>Staticfile</code>这个空文件的话，这里是可以正常开启的。如果不行的话，就强制开始，然后在进去如下: <img src="http://cdn.htliu.cn/coding3.png" /> 如果是正常开启的话，　系统会自动检测运行环境，这时候，就没有必要修改高级选项了，如果是强制开启的话，那就需要修改了，指定运行环境是<code>html</code>. 然后运行内存　可以改小一点，毕竟静态博客也就占用几M内存。 之后在一键部署，稍等一会（时间有长有短），部署成功如下显示: <img src="http://cdn.htliu.cn/coding4.png" /> 这时候，访问你的网页就可以了，与<code>github.io</code>一模一样！ 此时还有一步，就是为了可以每次更新都可以立刻部署到线上，这里就需要配置一下<code>webhook</code>,这里参考了<a target="_blank" rel="noopener" href="http://tengj.coding.io/2016/03/06/hexo%E5%B9%B2%E8%B4%A7%E7%B3%BB%E5%88%97%EF%BC%9A%EF%BC%88%E5%9B%9B%EF%BC%89%E5%B0%86hexo%E5%8D%9A%E5%AE%A2%E5%90%8C%E6%97%B6%E6%89%98%E7%AE%A1%E5%88%B0github%E5%92%8Ccoding/">这篇</a> 首先在项目设置里面找到<code>webhook</code>:然后新建一个webhook,域名后面记得加上<code>/_</code> <img src="http://cdn.htliu.cn/coding9.png" /> 如图，　tooken可以随意写。之后添加了之后，回到演示页面，找到环境变量:如下：添加即可webhook: <img src="http://cdn.htliu.cn/coding10.png" /> 之后再终止掉演示，重新部署，再次开启虚拟机，就最终完成了.</p>
+<p>可以看出第一种方式使用pages比较方便，建议使用。</p>
+
+      
+    </div>
+
+
+    
+
+    
+	    <div class="article-footer-copyright">
+<!--<p>本文作者: shomy 发表于 <a href="http://shomy.top" target="_blank">个人博客</a></p> -->
+<p>
+本文标题: hexo同时部署到coding(gitcafe)和github<br/>
+</p>
+<p>
+发布时间: 2016-03-03, 00:38:51<br/>
+<p>
+<p>
+最后更新: 2021-12-16, 23:11:45<br/>
+<p>
+本文链接: <a href="/2016/03/03/hexo-in-coding-github/" target="_blank">http://shomy.top/2016/03/03/hexo-in-coding-github/</a>
+</p>
+<p>非商业转载请注明作者及出处。商业转载请联系<a href="mailto:shomyliu@gmail.com">作者</a>本人。</p>
+</div>
+
+    
+
+    <footer class="article-footer">
+      
+        <a href="http://shomy.top/2016/03/03/hexo-in-coding-github/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/coding/" rel="tag">coding</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/github/" rel="tag">github</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hexo/" rel="tag">hexo</a></li></ul>
+
+    </footer>
+    
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2016/03/06/python-generator-1/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          python迭代器与生成器小结
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2016/03/01/python-namespace-1/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">由一个例子到python的名字空间</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+
+
+<section id="comments">
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+<script>
+  var disqus_shortname = 'shomy';
+  
+  var disqus_url = 'http://shomy.top/2016/03/03/hexo-in-coding-github/';
+  
+  (function(){
+    var dsq = document.createElement('script');
+    dsq.type = 'text/javascript';
+    dsq.async = true;
+    dsq.src = 'https://' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  }());
+</script>
+</section>
+
+
+
+
+</section>
+      </div>
+    </div>
+    
+    
+<a id="rocket" href="#top" ></a>
+
+<script src="https://cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <script src="http://cdn.htliu.cn/static/js/leancloud.js"></script>
+<script>AV.initialize("k883AKdzaz5jccQnH1eIrG2r-gzGzoHsz", "4HBQOmslEp3VdwK1SGL8vB9Y");</script>
+
+<script src="/js/Counter.js"></script>
+
+
+
+
+
+<script id="dsq-count-scr" src="//shomy.disqus.com/count.js" async></script>
+ 
+
+
+  <script src="https://cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.js"></script>
+  
+<script src="/js/fancybox.js"></script>
+
+
+
+
+  
+<script src="/js/search.js"></script>
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

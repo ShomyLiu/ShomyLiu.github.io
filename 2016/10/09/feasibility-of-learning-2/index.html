@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>机器学习基石笔记(2) | 天空的城</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="learning的两个问题 从上一讲我们知道，我们知道learning可以分为两个问题: 如下 其实，training过程就是解决第二个问题的过程。 testing的过程则是解决第一个问题的过程。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="机器学习基石笔记(2)">
+<meta property="og:url" content="http://shomy.top/2016/10/09/feasibility-of-learning-2/index.html">
+<meta property="og:site_name" content="天空的城">
+<meta property="og:description" content="learning的两个问题 从上一讲我们知道，我们知道learning可以分为两个问题: 如下 其实，training过程就是解决第二个问题的过程。 testing的过程则是解决第一个问题的过程。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://cdn.htliu.cn/ml02-1.png">
+<meta property="og:image" content="http://cdn.htliu.cn/ml02-2.png">
+<meta property="og:image" content="http://cdn.htliu.cn/ml02-3.png">
+<meta property="og:image" content="http://cdn.htliu.cn/ml02-4.png">
+<meta property="og:image" content="http://cdn.htliu.cn/ml02-5.png">
+<meta property="og:image" content="http://cdn.htliu.cn/ml02-6.png">
+<meta property="og:image" content="http://cdn.htliu.cn/ml02-7.png">
+<meta property="og:image" content="http://cdn.htliu.cn/ml02-8.png">
+<meta property="og:image" content="http://cdn.htliu.cn/ml02-9.png">
+<meta property="og:image" content="http://cdn.htliu.cn/ml02-10.png">
+<meta property="og:image" content="http://cdn.htliu.cn/ml02-11.png">
+<meta property="article:published_time" content="2016-10-09T05:39:08.000Z">
+<meta property="article:modified_time" content="2021-12-16T15:11:45.657Z">
+<meta property="article:author" content="ShomyLiu">
+<meta property="article:tag" content="machine learning">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://cdn.htliu.cn/ml02-1.png">
+  
+  
+    <link rel="icon" href="/image/favicon.ico">
+  
+
+  
+  <link href="https://cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.css" rel="stylesheet">
+  
+  <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  <link href="https://cdn.bootcss.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+<!-- Google Analytics -->
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-74368890-2', 'auto');
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+
+
+  
+
+  
+  <div class="site-search header-inner">
+    <div class="popup">
+        <span class="search-icon fa fa-search"></span>
+        <input type="text" id="local-search-input">
+        <div id="local-search-result"></div>
+        <span class="popup-btn-close">close</span>
+    </div>
+</div>
+
+
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      
+<header id="header">
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">天空的城</a>
+      </h1>
+      
+    </div>
+    <div id="header-menu">
+      <nav id="main-nav">
+        <ul>
+        
+          <li><a href="/"><i class="fa fa-home icon-setting"></i></a></li>
+        
+          <li><a href="/archives"><i class="fa fa-archive icon-setting"></i></a></li>
+        
+          <li><a href="/tags"><i class="fa fa-tag icon-setting"></i></a></li>
+        
+          <li><a href="/about"><i class="fa fa-user icon-setting"></i></a></li>
+        
+        
+          <li><a href="javascript:;" class="popup-trigger"><i class="fa fa-search > icon-setting"></i></a></li>
+        
+        </ul>
+      </nav>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-feasibility-of-learning-2" class="article article-type-post" itemscope itemprop="blogPost">
+  
+  <div class="article-meta">
+    <a href="/2016/10/09/feasibility-of-learning-2/" class="article-date">
+  <time datetime="2016-10-09T05:39:08.000Z" itemprop="datePublished">2016-10-09</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/">读书笔记</a>
+  </div>
+
+
+    
+        <div class="counter-tag counter">
+    <!-- 别忘记这个类名... post-title-link -->
+    <span id="/2016/10/09/feasibility-of-learning-2/" class="leancloud_visitors article-hits post-title-link"
+           data-flag-title="机器学习基石笔记(2)">
+        次阅读
+    </span>
+
+  </div>
+
+    
+
+  </div>
+  
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      机器学习基石笔记(2)
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+            <div id="toc" class="toc-article">
+                <strong class="toc-title">文章目录</strong>
+                <ol class="post-toc"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#learning%E7%9A%84%E4%B8%A4%E4%B8%AA%E9%97%AE%E9%A2%98"><span class="post-toc-text">learning的两个问题</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#m%E7%9A%84%E5%AE%9E%E9%99%85%E6%9C%89%E6%95%88%E5%80%BC"><span class="post-toc-text">M的实际有效值</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#pal%E6%84%9F%E7%9F%A5%E6%9C%BA"><span class="post-toc-text">PAL感知机</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#dichotomies"><span class="post-toc-text">Dichotomies:</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#growth-funciton-%E6%88%90%E9%95%BF%E5%87%BD%E6%95%B0"><span class="post-toc-text">Growth Funciton 成长函数</span></a></li></ol></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#break-point-shatter"><span class="post-toc-text">break point &amp; shatter</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E6%80%BB%E7%BB%93"><span class="post-toc-text">总结</span></a></li></ol>
+            </div>
+        
+        
+        <h2 id="learning的两个问题">learning的两个问题</h2>
+<p>从上一讲我们知道，我们知道learning可以分为两个问题: 如下 其实，training过程就是解决第二个问题的过程。 testing的过程则是解决第一个问题的过程。 <span id="more"></span></p>
+<ul>
+<li>能否保证<span class="math inline">\(E_{in} \thickapprox E_{out}\)</span></li>
+<li>能否保证<span class="math inline">\(E_{in} \thickapprox 0\)</span></li>
+</ul>
+<p>首先把Learning的框架摆上来: <img src="http://cdn.htliu.cn/ml02-1.png" alt="learning" /> 在上一节，我们把问题归结到了 <strong>BAD DATA</strong>的概率问题上，如果我们可以知道坏数据出现的概率很小的话，那我们就可以保证第一个问题，那么再次选择最小的<span class="math inline">\(E_{in}\)</span>这样我们就完成了Learning的目标了。</p>
+<h2 id="m的实际有效值">M的实际有效值</h2>
+<h3 id="pal感知机">PAL感知机</h3>
+<p><span class="math display">\[
+P[ | E_{in} - E_{out} | &gt; \epsilon ] \leq 2 \cdot M \cdot exp \lgroup -2 \epsilon^2N\rgroup
+\]</span> 从式子中，可以看出当M比较小的时候，即假设空间<span class="math inline">\(\mathcal{H}\)</span>中可以选择的函数比较少，这样就很容易保证坏数据出现的概率很小，但是因为选择性太少了，我们无法保证<span class="math inline">\(E_{in}\)</span>尽可能小。但是M比较大的时候，选择多了， 但是却让坏数据概率大了。 现在，我们考虑一下， BAD DATA的推导公式: <span class="math display">\[
+P[ BAD | \mathcal{H}]  \leq_{union bound}  P(BAD | h_1) + P(BAD | h_2) + ... + P(BAD | h_M)
+\]</span> 这里面有个问题，在计算右边时，直接对每一个<span class="math inline">\(h\)</span>求和，这个是上界，也就是当每一项都独立时，该等号才成立，但是实际情况下，并非这样，比如<span class="math inline">\(h_1, h_2\)</span>两个很相似的<span class="math inline">\(hypothsis\)</span>, 也就是说，满足如下两个要求: - <span class="math inline">\(E_{out}(h_1) \thickapprox E_{out}(h_2)\)</span> - <span class="math inline">\(E_{in}(h_1) \thickapprox E_{in}(h_2)\)</span></p>
+<p>也就是说，对于大部分的<span class="math inline">\(\mathcal{D}\)</span>来说，<span class="math inline">\(h_1\)</span>和<span class="math inline">\(h_2\)</span>的输出是很类似的，或者说，可以把它们两个当作一类。也就是说， 当<span class="math inline">\(h_1\)</span>遇到 BAD DATA时，<span class="math inline">\(h_2\)</span>会遇到。这样<span class="math inline">\((BAD|h_1)\)</span> 与<span class="math inline">\((BAD|h_2)\)</span>并不是独立事件，而是很多<span class="math inline">\(\mathcal{D}\)</span>造成重复。如下: 我们记 <span class="math inline">\(h_i\)</span>遇到 BAD DATA为事件<span class="math inline">\(\mathcal{B}_i\)</span>, 这样实际情况就会如下: <img src="http://cdn.htliu.cn/ml02-2.png" /></p>
+<p>也就是说我们上面的 <span class="math inline">\(unionbound\)</span> 是 over-estimating的，过大估计了。这样好像就看到了曙光，即使<span class="math inline">\(M\)</span>无穷大，但是实际上很多的重复部分，因此我们只需要知道类别的数目是不是就可以代替无穷大的<span class="math inline">\(M\)</span>了，先看几个简单的例子.</p>
+<p>在PAL中，<span class="math inline">\(\mathcal{H} = \{ all \ lines \ in \ \mathcal{R}^2 \}\)</span>, 首先有无穷多条直线，但是看看对不同的输入,看看有几类呢？</p>
+<figure>
+<img src="http://cdn.htliu.cn/ml02-3.png" alt="learning" /><figcaption>learning</figcaption>
+</figure>
+<p>当输入只有一个点的时候，我们可以发现，只有两类点:</p>
+<ul>
+<li><span class="math inline">\(h_1-like(x_1) = o\)</span> 与 <span class="math inline">\(h_1\)</span>类似，将<span class="math inline">\(x_1\)</span>归为 o</li>
+<li><span class="math inline">\(h_2-like(x_2) = x\)</span> 与 <span class="math inline">\(h_1\)</span>类似，将<span class="math inline">\(x_1\)</span>归为 x</li>
+</ul>
+<p>再看看输入有两个点的情况: <img src="http://cdn.htliu.cn/ml02-4.png" alt="learning" /></p>
+<p>我们发现有如下四类直线: 得到如下的结果:</p>
+<figure>
+<img src="http://cdn.htliu.cn/ml02-5.png" alt="learning" /><figcaption>learning</figcaption>
+</figure>
+<p>输入有三个的时候，画画可以最多有8种:(当三个输入点在一条直线上，只有6种）</p>
+<figure>
+<img src="http://cdn.htliu.cn/ml02-6.png" alt="learning" /><figcaption>learning</figcaption>
+</figure>
+<p>输入有4个点的时候，不一样了，不是<span class="math inline">\(2^4\)</span>种了，而是只有14种,下面的两种无法用二维直线得到:</p>
+<figure>
+<img src="http://cdn.htliu.cn/ml02-7.png" alt="learning" /><figcaption>learning</figcaption>
+</figure>
+<p>以及其对称图形 那么问题来了，对于N个输入的input,到底有多少类直线呢，首先肯定不会超过<span class="math inline">\(2^N\)</span>，因为每个点要么被分到O，要么被分到X。综合上面说的，我们把M可以替换为实际有的类别数目，这样我们的之前的公式就可以改写为： <span class="math display">\[
+P[ | E_{in} - E_{out} | &gt; \epsilon ] \leq 2 \cdot effective(N) \cdot exp \lgroup -2 \epsilon^2N\rgroup
+\]</span></p>
+<p>下面就是如何求这个<span class="math inline">\(effective N\)</span>了</p>
+<h3 id="dichotomies">Dichotomies:</h3>
+<p>我们想要的是<span class="math inline">\(\mathcal{H}\)</span>里面的所有的<span class="math inline">\(h\)</span>可以在<span class="math inline">\(\mathcal{D}\)</span>上产生多少种结果，也就是上面的 <span class="math inline">\(effective N\)</span>。每一种结果我们称为一个<strong>Dichotomies</strong>,比如上述<span class="math inline">\(\{ OOXX\}\)</span> 就是一个dichotomies,很明显，对于输入<span class="math inline">\((x_1, x_2...x_N)\)</span>, 最多有<span class="math inline">\(2^N\)</span>个dictomies。每一个dictomies都是一类<span class="math inline">\(h\)</span>产生的。称<span class="math inline">\(\mathcal{H}(x_1, x_2,..,x_N) = \{ dichotomies\}\)</span>。 比如上面举的例子中，三个输入情况下: <span class="math inline">\(\mathcal{H}(x_1, x_2, x_3) = \{ ooo, oox, oxo, oxx, xxx, xxo, xox, xoo\}\)</span> 。</p>
+<h3 id="growth-funciton-成长函数">Growth Funciton 成长函数</h3>
+<p>我们发现<span class="math inline">\(\mathcal{H}(x_1, x_2,..,x_N)\)</span>是跟<span class="math inline">\(x_1, x_2, ..x_N\)</span>相关的，因此为了去掉这一个影响因素，基于Dichotomies, 我们定义成长函数: <span class="math display">\[ m_{\mathcal{H}} = max(| \mathcal{H}(x_1, x_2, ..., )|), x_1, x_2...x_N \in \chi\]</span></p>
+<p>很明显，它是关于<span class="math inline">\(N, \mathcal{H}\)</span>的函数，我们计算下在上述的例子中的成长函数的值:</p>
+<table>
+<thead>
+<tr class="header">
+<th>N</th>
+<th style="text-align: center;"><span class="math inline">\(m_{\mathcal{H}}(N)\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td style="text-align: center;">2</td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td style="text-align: center;">4</td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td style="text-align: center;">max(6,8) = 8</td>
+</tr>
+<tr class="even">
+<td>4</td>
+<td style="text-align: center;">14 &lt; <span class="math inline">\(2^4\)</span></td>
+</tr>
+</tbody>
+</table>
+<p>下面举几个不同的<span class="math inline">\(\mathcal{H}\)</span>的成长函数。</p>
+<p>1.<strong>Positive Rays</strong>: <span class="math inline">\(h(x) = sign(x-a)\)</span>, 输入空间为一维向量， 当<span class="math inline">\(x_i \geq a\)</span>, 输出 +1, 当<span class="math inline">\(x_i &lt; a\)</span> 时， 输出 -1. 如下: <img src="http://cdn.htliu.cn/ml02-8.png" alt="learning" /> 可以发现，对于N个的输入，一共可以产生N+1个dichotomies, 就相当在N个位置中找一个位置作为a,然后加上一个边界，所以一共有N+1种.即: <span class="math inline">\(m_{\mathcal{H}}(N) = N + 1\)</span></p>
+<p>2.<strong>Positive Intervals</strong>: 其实就是上一个的双向版， 输入空间仍为一维向量，当 <span class="math inline">\(x_i \in [l ,r] , y_i = 1; x_i \in [l, r], y_i = -1\)</span>, 如下: <img src="http://cdn.htliu.cn/ml02-9.png" alt="learning" /></p>
+<p>根据1,可以很容易发现，这个的实质就是在N+1个位置，找两个位置，作为左右边界。所以<span class="math inline">\(m_{\mathcal{H}} (N) = \lgroup \begin{matrix} N+1 \\ 2 \end{matrix} \rgroup+ 1 = \frac{1}{2}N_2 + \frac{1}{2}N+1\)</span>,最后仍然会多一个dichotomies,就是l,r重合。</p>
+<p>3.<strong>Convex Sets</strong>: 凸集合，如下图，其中 $R^2 $, 当 <span class="math inline">\(x_i\)</span>在凸形内，<span class="math inline">\(h(x_i) = +1\)</span>, 反之则<span class="math inline">\(h(x_i) = -1\)</span>, 如下: <img src="http://cdn.htliu.cn/ml02-10.png" alt="learning" /></p>
+<p>这个<span class="math inline">\(\mathcal{H}\)</span>的成长函数，也就是说最多有多少个dic，下面可以这样构造一<span class="math inline">\(\mathcal{D}\)</span>, 可以使得<span class="math inline">\(m_{\mathcal{H}}(N) = 2^N\)</span>,将所有的输入点在一个圆上，如下所示， <img src="http://cdn.htliu.cn/ml02-11.png" alt="learning" /></p>
+<p>这样我们可以随机选择k个点，然后这k个点组成的图形一定是凸的，在里面的点标为+1, 外面的标为-1。这样对于<span class="math inline">\(N\)</span>个输入来说，任何一个组合都会是一个dictomies, 所以: <span class="math inline">\(m_{\mathcal{H}} = 2^N\)</span>.</p>
+<h2 id="break-point-shatter">break point &amp; shatter</h2>
+<p>前面说了几个常见的成长函数:</p>
+<ul>
+<li><span class="math inline">\(m_{\mathcal{H}}(N) = N+1\)</span>, Postive Rays</li>
+<li><span class="math inline">\(m_{\mathcal{H}}(N) = \frac{1}{2}N_2 + \frac{1}{2}N+1\)</span>,Postive Inteervals</li>
+<li><span class="math inline">\(m_{\mathcal{H}}(N) = 2^N\)</span>,convex sets</li>
+<li><span class="math inline">\(m_{\mathcal{H}}(N) = 未知,\ 2D\ perceptron.\ m_{\mathcal{H}}(4) = 14 &lt; 2^4\)</span></li>
+</ul>
+<p>我们发现，除了 convex sets,其余的成长函数随着N的增大，都会小于<span class="math inline">\(2^N\)</span>,于是我们会猜想是不是会是多项式级别的呢？如果这样的话，用这个多项式替代最开始的M, 那么整个learning就解决了。</p>
+<p>下面我们开始探讨成长函数的增长速度。随着N的增大，成长函数的值<span class="math inline">\(m_{\mathcal{H}}(N)\)</span>第一次小于<span class="math inline">\(2^N\)</span>的N的取值，我们称为 <strong>break point</strong>: 即 <span class="math display">\[
+\begin{align}
+m_{\mathcal{H}}(K-1) &amp; = 2^N \\
+m_{\mathcal{H}}(K) &amp; &lt; 2^K \\
+\end{align}
+\]</span></p>
+<p>我们称K为<span class="math inline">\(\mathcal{H}\)</span>的<strong>break point</strong>.为什么要找K呢，因为我们想证明成长函数服从一个多项式的增长，而不是<span class="math inline">\(2^N\)</span>, 而第一个开始小于<span class="math inline">\(2^N\)</span>的那个N，肯定需要着重考察。比如上面的几个例子里面:</p>
+<ul>
+<li>postive rays: $m_{}(N) = N + 1 = O(N),  break-point: 2 $</li>
+<li>postive intervals: <span class="math inline">\(m_{\mathcal{H}}(N) = \frac{1}{2}N_2 + \frac{1}{2}N+1=O(N^2),\ break-point: 3\)</span></li>
+<li>convex sets: $m_{}(N) = 2^N, no  break-point $</li>
+<li>2D perceptrons: <span class="math inline">\(break-point : 4\)</span></li>
+</ul>
+<p>基于break point,如果<span class="math inline">\(m_{\mathcal{H}}(N) = 2^N\)</span>,即当<span class="math inline">\(N &lt; K\)</span>时，我们称，<span class="math inline">\(\mathcal{H}\)</span>把<span class="math inline">\(\mathcal{D}_N\)</span>这N个input，shatter了。或者说，这N个输入被<span class="math inline">\(\mathcal{H}\)</span> shatter 了，通俗一点就是说，我们的<span class="math inline">\(\mathcal{H}\)</span>可以产生所有可能的输出。这几个概念在后续会一直用到。</p>
+<h2 id="总结">总结</h2>
+<p>本节的主要提出了在M无穷的情况下，我们该如何处理，首先提出了使用<span class="math inline">\(h\)</span>的类别来代替M, 然后只需要计算learning的<span class="math inline">\(h\)</span>能够对<span class="math inline">\(\mathcal{D}\)</span>分为有限类，那就开始的两个问题就明了了。比如如果我们证明，在 2D perceptrons中， <span class="math inline">\(m_{\mathcal{H}} = O(N-1)\)</span>, 那么根据 Hoeffdiing’s inequality:</p>
+<p><span class="math display">\[P[ | E_{in} - E_{out} | &gt; \epsilon ] \leq 2 \cdot effective(N) \cdot exp \lgroup -2 \epsilon^2N\rgroup\]</span></p>
+<p>这里面的<span class="math inline">\(effective(N) = m_{\mathcal{H}} = O(N^{k-1})\)</span> , 就说明我们的PLA 是正确的。后面开始证明<span class="math display">\[m_{\mathcal{H}} = O(N^{k-1})\]</span></p>
+
+      
+    </div>
+
+
+    
+
+    
+	    <div class="article-footer-copyright">
+<!--<p>本文作者: shomy 发表于 <a href="http://shomy.top" target="_blank">个人博客</a></p> -->
+<p>
+本文标题: 机器学习基石笔记(2)<br/>
+</p>
+<p>
+发布时间: 2016-10-09, 13:39:08<br/>
+<p>
+<p>
+最后更新: 2021-12-16, 23:11:45<br/>
+<p>
+本文链接: <a href="/2016/10/09/feasibility-of-learning-2/" target="_blank">http://shomy.top/2016/10/09/feasibility-of-learning-2/</a>
+</p>
+<p>非商业转载请注明作者及出处。商业转载请联系<a href="mailto:shomyliu@gmail.com">作者</a>本人。</p>
+</div>
+
+    
+
+    <footer class="article-footer">
+      
+        <a href="http://shomy.top/2016/10/09/feasibility-of-learning-2/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/machine-learning/" rel="tag">machine learning</a></li></ul>
+
+    </footer>
+    
+	    <script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+    
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2016/10/17/feasibility-of-learning-3/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          机器学习基石笔记(3)
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2016/10/06/feasibility-of-learning-1/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">机器学习基石笔记(1)</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+
+
+<section id="comments">
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+<script>
+  var disqus_shortname = 'shomy';
+  
+  var disqus_url = 'http://shomy.top/2016/10/09/feasibility-of-learning-2/';
+  
+  (function(){
+    var dsq = document.createElement('script');
+    dsq.type = 'text/javascript';
+    dsq.async = true;
+    dsq.src = 'https://' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  }());
+</script>
+</section>
+
+
+
+
+</section>
+      </div>
+    </div>
+    
+    
+<a id="rocket" href="#top" ></a>
+
+<script src="https://cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <script src="http://cdn.htliu.cn/static/js/leancloud.js"></script>
+<script>AV.initialize("k883AKdzaz5jccQnH1eIrG2r-gzGzoHsz", "4HBQOmslEp3VdwK1SGL8vB9Y");</script>
+
+<script src="/js/Counter.js"></script>
+
+
+
+
+
+<script id="dsq-count-scr" src="//shomy.disqus.com/count.js" async></script>
+ 
+
+
+  <script src="https://cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.js"></script>
+  
+<script src="/js/fancybox.js"></script>
+
+
+
+
+  
+<script src="/js/search.js"></script>
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

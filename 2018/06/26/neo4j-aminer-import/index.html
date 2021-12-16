@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Neo4j导入Aminer论文数据 | 天空的城</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="2018.12.2更新：使用neo-admin import 导入全量的Aminer数据到Neo4j.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Neo4j导入Aminer论文数据">
+<meta property="og:url" content="http://shomy.top/2018/06/26/neo4j-aminer-import/index.html">
+<meta property="og:site_name" content="天空的城">
+<meta property="og:description" content="2018.12.2更新：使用neo-admin import 导入全量的Aminer数据到Neo4j.">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://cdn.htliu.cn/blog/neo4j-aminer-import/neo-aminer.png">
+<meta property="article:published_time" content="2018-06-26T00:49:46.000Z">
+<meta property="article:modified_time" content="2021-12-16T15:11:45.664Z">
+<meta property="article:author" content="ShomyLiu">
+<meta property="article:tag" content="neo4j">
+<meta property="article:tag" content="graph">
+<meta property="article:tag" content="aminer">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://cdn.htliu.cn/blog/neo4j-aminer-import/neo-aminer.png">
+  
+  
+    <link rel="icon" href="/image/favicon.ico">
+  
+
+  
+  <link href="https://cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.css" rel="stylesheet">
+  
+  <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  <link href="https://cdn.bootcss.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+<!-- Google Analytics -->
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-74368890-2', 'auto');
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+
+
+  
+
+  
+  <div class="site-search header-inner">
+    <div class="popup">
+        <span class="search-icon fa fa-search"></span>
+        <input type="text" id="local-search-input">
+        <div id="local-search-result"></div>
+        <span class="popup-btn-close">close</span>
+    </div>
+</div>
+
+
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      
+<header id="header">
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">天空的城</a>
+      </h1>
+      
+    </div>
+    <div id="header-menu">
+      <nav id="main-nav">
+        <ul>
+        
+          <li><a href="/"><i class="fa fa-home icon-setting"></i></a></li>
+        
+          <li><a href="/archives"><i class="fa fa-archive icon-setting"></i></a></li>
+        
+          <li><a href="/tags"><i class="fa fa-tag icon-setting"></i></a></li>
+        
+          <li><a href="/about"><i class="fa fa-user icon-setting"></i></a></li>
+        
+        
+          <li><a href="javascript:;" class="popup-trigger"><i class="fa fa-search > icon-setting"></i></a></li>
+        
+        </ul>
+      </nav>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-neo4j-aminer-import" class="article article-type-post" itemscope itemprop="blogPost">
+  
+  <div class="article-meta">
+    <a href="/2018/06/26/neo4j-aminer-import/" class="article-date">
+  <time datetime="2018-06-26T00:49:46.000Z" itemprop="datePublished">2018-06-26</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E5%B7%A5%E5%85%B7%E4%BD%BF%E7%94%A8/">工具使用</a>
+  </div>
+
+
+    
+        <div class="counter-tag counter">
+    <!-- 别忘记这个类名... post-title-link -->
+    <span id="/2018/06/26/neo4j-aminer-import/" class="leancloud_visitors article-hits post-title-link"
+           data-flag-title="Neo4j导入Aminer论文数据">
+        次阅读
+    </span>
+
+  </div>
+
+    
+
+  </div>
+  
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Neo4j导入Aminer论文数据
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+            <div id="toc" class="toc-article">
+                <strong class="toc-title">文章目录</strong>
+                <ol class="post-toc"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E6%95%B0%E6%8D%AE%E9%9B%86%E4%BB%8B%E7%BB%8D"><span class="post-toc-text">数据集介绍</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E5%AF%BC%E5%85%A5neo4j"><span class="post-toc-text">导入Neo4j</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E6%80%BB%E7%BB%93"><span class="post-toc-text">总结</span></a></li></ol>
+            </div>
+        
+        
+        <blockquote>
+<p>2018.12.2更新：使用<code>neo-admin import</code> 导入全量的Aminer数据到Neo4j.</p>
+</blockquote>
+<span id="more"></span>
+<ul>
+<li>首先用<a target="_blank" rel="noopener" href="https://gist.github.com/ShomyLiu/5e2eaf33c96c30347fa2851bb345b212">这个脚本</a>从原始的154个txt中提取出字段，保存为<code>neo-admin import</code>所需要的格式.<a target="_blank" rel="noopener" href="https://neo4j.com/docs/operations-manual/current/tools/import/">格式要求</a>,</li>
+<li>脚本会对每个txt文件，均产生parper,org,author, p-o,p-a, a-o六个csv文件，然后归类成如下目录: <figure class="highlight gams"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="symbol">$</span> tree   | grep -v <span class="string">&#x27;csv&#x27;</span></span><br><span class="line"> .</span><br><span class="line"> ├── nodes</span><br><span class="line"> │   ├── author</span><br><span class="line"> │   ├── org</span><br><span class="line"> │   └── paper</span><br><span class="line"> └── rels</span><br><span class="line">     ├── author_org</span><br><span class="line">     ├── cite_relation</span><br><span class="line">     └── paper_author</span><br><span class="line"> </span><br><span class="line"> <span class="number">8</span> directories, <span class="number">930</span> <span class="keyword">files</span> </span><br></pre></td></tr></table></figure></li>
+<li>使用<code>neo-admin import</code>导入： <figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">bin/neo4j-admin <span class="keyword">import</span> </span><br><span class="line">--ignore-duplicate-nodes=<span class="keyword">true</span> --ignore-extra-columns=<span class="keyword">true</span> \</span><br><span class="line">--ignore-missing-nodes=<span class="keyword">true</span> --high-io=<span class="keyword">true</span> \</span><br><span class="line">--nodes <span class="regexp">/data/</span>out<span class="regexp">/nodes/</span>org/.*.csv \</span><br><span class="line">--nodes <span class="regexp">/data/</span>out<span class="regexp">/nodes/</span>author/.*.csv \</span><br><span class="line">--nodes <span class="regexp">/data/</span>out<span class="regexp">/nodes/</span>paper/.*.csv \</span><br><span class="line">--relationships <span class="regexp">/data/</span>out<span class="regexp">/rels/</span>author_org/.*.csv \</span><br><span class="line">--relationships <span class="regexp">/data/</span>out<span class="regexp">/rels/</span>cite_relation/.*.csv \</span><br><span class="line">--relationships <span class="regexp">/data/</span>out<span class="regexp">/rels/</span>paper_author/.*.csv</span><br></pre></td></tr></table></figure></li>
+</ul>
+<p>最终导入输出: <figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">IMPORT</span> DONE in <span class="number">1</span>h <span class="number">25</span>m <span class="number">39</span>s <span class="number">635</span>ms.</span><br><span class="line"><span class="attribute">Imported</span>:</span><br><span class="line">  <span class="attribute">257487502</span> nodes</span><br><span class="line">  <span class="attribute">1054515383</span> relationships</span><br><span class="line">  <span class="attribute">1497110211</span> properties</span><br><span class="line"><span class="attribute">Peak</span> memory usage: <span class="number">17</span>.<span class="number">12</span> GB</span><br></pre></td></tr></table></figure> 截图: <img src="http://cdn.htliu.cn/blog/neo4j-aminer-import/neo-aminer.png" /></p>
+<p>机器配置:</p>
+<ul>
+<li>CPU:E5-2650 v4</li>
+<li>内存: 128G</li>
+</ul>
+<hr />
+<p>前面一篇介绍了Neo4j一些比较基础的用法。这一篇笔记主要记录下在导入一个大数据集Aminer中MAG论文数据所遇到的一些问题。</p>
+<h2 id="数据集介绍">数据集介绍</h2>
+<p>首先关于论文数据集的描述可以在 <a target="_blank" rel="noopener" href="https://www.aminer.cn/open-academic-graph">Aminer_Open_Academic</a>中查看，这里简单介绍一下。 有两套数据，一个是Aminer Papers, 是清华大学整理发布的论文集，MAG Papers是微软学术发布的论文数据集。 我们这里选取了MAG的部分数据集来测试导入到Neo4j中。 MAG数据集一共有9个压缩包，其中每一个压缩包里面有20个txt文件，每个txt文件中每行代表一篇论文，用json表示，<code>mid</code> 为论文唯一id，可以作为主键使用。除了论文的基本属性比如发表时间，摘要，doi号等，需要注意的两个属性为:</p>
+<ul>
+<li>作者列表：<code>&#123;"name":  "org":&#125;</code> 给出了作者的姓名及所在机构。</li>
+<li>参考文献列表: <code>[mid]</code> 给出了引文的id号</li>
+</ul>
+<p>数据示例如下： <figure class="highlight clojure"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line"><span class="string">&quot;title&quot;</span>: <span class="string">&quot;Activation of Protein Kinase C (PKC) by 3,4-Methylenedioxymethamphetamine (MDMA) Occurs Through the Stimulation of Serotonin Receptors and Transporter&quot;</span>, <span class="string">&quot;lang&quot;</span>: <span class="string">&quot;en&quot;</span>, <span class="string">&quot;n_citation&quot;</span>: <span class="number">50</span>, <span class="string">&quot;year&quot;</span>: <span class="number">1997</span>,</span><br><span class="line"><span class="string">&quot;authors&quot;</span>: [&#123;<span class="string">&quot;name&quot;</span>: <span class="string">&quot;M.D. H.Kenneth Kramer&quot;</span>, <span class="string">&quot;org&quot;</span>: <span class="string">&quot;Department of Psychiatry, New York University, New York, New York USA&quot;</span>&#125;, &#123;<span class="string">&quot;name&quot;</span>: <span class="string">&quot;Jose Conrado Poblete&quot;</span>, <span class="string">&quot;org&quot;</span>: <span class="string">&quot;New York University Medical Center and Department of Biology, New York University, New York, New York USA&quot;</span>&#125;...],</span><br><span class="line"><span class="string">&quot;references&quot;</span>: [<span class="string">&quot;02a308b0-c362-41b3-94ac-8385992a77a3&quot;</span>, <span class="string">&quot;057af91d-eb27-449c-bc2a-ce1ba41b60c8&quot;</span>, <span class="string">&quot;0b97d99a-4f4e-4ed6-b0e0-594367443594&quot;</span>, <span class="string">&quot;0e62c328-9944-4cac-bff9-12f310c829b1&quot;</span>],</span><br><span class="line"> <span class="string">&quot;abstract&quot;</span>: <span class="string">&quot;...&quot;</span>, <span class="string">&quot;issue&quot;</span>: <span class="string">&quot;3&quot;</span>, <span class="string">&quot;page_end&quot;</span>: <span class="string">&quot;129&quot;</span>, <span class="string">&quot;publisher&quot;</span>: <span class="string">&quot;Nature Publishing Group&quot;</span>, <span class="string">&quot;url&quot;</span>: [<span class="string">&quot;http://www.nature.com/doifinder/10.1016/S0893-133X(97)00026-2&quot;</span>, <span class="string">&quot;http://cat.inist.fr/?aModele=afficheN&amp;cpsidt=2795397&quot;</span>..], <span class="string">&quot;doi&quot;</span>: <span class="string">&quot;10.1016/S0893-133X(97)00026-2&quot;</span>, <span class="string">&quot;id&quot;</span>: <span class="string">&quot;0000017a-4ca6-4860-87fa-2f8d742267dd&quot;</span>, <span class="string">&quot;keywords&quot;</span>: [<span class="string">&quot;second messenger&quot;</span>, <span class="string">&quot;transporter&quot;</span>, <span class="string">&quot;voie intraperitoneale&quot;</span><span class="string">&quot;, &quot;</span>fos<span class="string">&quot;: [&quot;</span>Biology<span class="string">&quot;, &quot;</span>Endocrinology<span class="string">&quot;]</span></span><br><span class="line"><span class="string">&#125;</span></span><br></pre></td></tr></table></figure> 我们的目的是将论文的数据集导入到Neo4j中来做分析，需要的节点和边类型有: <figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="section"># 节点</span></span><br><span class="line"><span class="bullet">-</span> Paper： 论文及其字段属性</span><br><span class="line"><span class="bullet">-</span> Author： 作者：姓名</span><br><span class="line"><span class="bullet">-</span> Org： 组织：名字</span><br><span class="line"></span><br><span class="line"><span class="section"># 边</span></span><br><span class="line"><span class="bullet">-</span> 引文关系: Paper-Paper</span><br><span class="line"><span class="bullet">-</span> 写作关系: Author-Paper</span><br><span class="line"><span class="bullet">-</span> 隶属关系: Author-Org</span><br></pre></td></tr></table></figure></p>
+<h2 id="导入neo4j">导入Neo4j</h2>
+<p>这里我们作为测试,只用了一部分数据集，使用了10个txt文件的论文数据集，即1000万篇论文，数据量大概18G，时间可以接受，在尝试过几种方法之后，基本上可以20分钟左右导入完成。 下面这个遇到的问题及解决方案等记录一下。</p>
+<p>最开始利用上篇博客的导入Json的方法来直接导入:(事先均建立节点Label索引) <figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">call apoc<span class="selector-class">.load</span><span class="selector-class">.json</span>(<span class="string">&quot;file:/mag_papers_0.txt&quot;</span>) yield value as paper</span><br><span class="line">CREATE (<span class="selector-tag">p</span>:Paper&#123;id:paper.id&#125;)</span><br><span class="line">set <span class="selector-tag">p</span>.lang=paper<span class="selector-class">.lang</span>,<span class="selector-tag">p</span>.doc_type=paper<span class="selector-class">.doc_type</span>,<span class="selector-tag">p</span>.doi=paper<span class="selector-class">.doi</span>,<span class="selector-tag">p</span>.isbn=paper<span class="selector-class">.isbn</span>,<span class="selector-tag">p</span>.fos=paper<span class="selector-class">.fos</span>,<span class="selector-tag">p</span>.url=paper<span class="selector-class">.url</span>,</span><br><span class="line"><span class="selector-tag">p</span>.abstract=paper<span class="selector-class">.abstract</span>,<span class="selector-tag">p</span>.year=paper<span class="selector-class">.year</span>,<span class="selector-tag">p</span>.publisher=paper<span class="selector-class">.publisher</span>,<span class="selector-tag">p</span>.references=paper<span class="selector-class">.references</span>,</span><br><span class="line"><span class="selector-tag">p</span>.keywords=paper<span class="selector-class">.keywords</span>,<span class="selector-tag">p</span>.title=paper<span class="selector-class">.title</span>,<span class="selector-tag">p</span>.pdf=paper<span class="selector-class">.pdf</span>,</span><br><span class="line"><span class="selector-tag">p</span>.n_citation=paper<span class="selector-class">.n_citation</span>,<span class="selector-tag">p</span>.venue=paper<span class="selector-class">.venue</span>,<span class="selector-tag">p</span>.page_start=paper<span class="selector-class">.page_start</span>,</span><br><span class="line"><span class="selector-tag">p</span>.page_end=paper<span class="selector-class">.page_end</span>,<span class="selector-tag">p</span>.volume=paper<span class="selector-class">.volume</span>,<span class="selector-tag">p</span>.issue=paper<span class="selector-class">.issue</span>,<span class="selector-tag">p</span>.issn=paper.issn</span><br></pre></td></tr></table></figure> 注意这里没有导入Author，原因是在作者属性中，还有组织信息，但是我们仍需要建立作者和组织节点，因此我们选择单独抽取出组织和作者信息，以及边关系。 其实也可以同时建立作者与组织信息，导入如下: <figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">call apoc<span class="selector-class">.load</span><span class="selector-class">.json</span>(<span class="string">&quot;file:/mag_papers_0.txt&quot;</span>) yield value as paper</span><br><span class="line">CREATE (<span class="selector-tag">p</span>:Paper&#123;id:paper.id&#125;)</span><br><span class="line">set <span class="selector-tag">p</span>.lang=paper<span class="selector-class">.lang</span>,<span class="selector-tag">p</span>.doc_type=paper<span class="selector-class">.doc_type</span>,<span class="selector-tag">p</span>.doi=paper<span class="selector-class">.doi</span>,<span class="selector-tag">p</span>.isbn=paper<span class="selector-class">.isbn</span>,<span class="selector-tag">p</span>.fos=paper<span class="selector-class">.fos</span>,<span class="selector-tag">p</span>.url=paper<span class="selector-class">.url</span>,</span><br><span class="line">...</span><br><span class="line">with paper</span><br><span class="line">UNWIND paper<span class="selector-class">.author</span> as author <span class="comment">// 展开Authorlists</span></span><br><span class="line">MERGE (<span class="selector-tag">a</span>:Author&#123;name:author.name&#125;  <span class="comment">// 创建作者节点</span></span><br><span class="line">MERGE (o:Org&#123;name: author.org&#125;  <span class="comment">// 创建组织节点</span></span><br><span class="line">MERGE (a)-<span class="selector-attr">[WORK_IN]</span>-&gt;(o)  <span class="comment">//创建 隶属关系</span></span><br></pre></td></tr></table></figure> 我们当时没有这么处理的原因是，后续的作者和机构需要Merge相对消耗时间较多，因此单独做了数据预处理。</p>
+<p>然而...</p>
+<p>不过即使这样， 跑着1000万的节点数据， 运行几分钟后，就会crash掉... 连不上服务器，CPU也不再并行，仅仅100%运行，初步猜想可能是因为数据集太大，一次向导入可能会超内存，因为我们使用100万的节点 是可以很快导入的。 于是换了策略，使用apoc的分批导入<code>call apoc.periodic.iterate</code>: <figure class="highlight roboconf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">call apoc.periodic.iterate(</span><br><span class="line">&#x27;</span><br><span class="line">call apoc.load.json(&quot;mag_papers_0.txt&quot;) yield value as paper return paper&#x27;,</span><br><span class="line">&#x27;</span><br><span class="line">CREATE (p:Paper&#123;<span class="attribute">id</span>:paper<span class="variable">.id</span>&#125;)</span><br><span class="line">set p<span class="variable">.lang</span>=paper<span class="variable">.lang</span>,p<span class="variable">.doc_type</span>=paper<span class="variable">.doc_type</span>,p<span class="variable">.doi</span>=paper<span class="variable">.doi</span>,p<span class="variable">.isbn</span>=paper<span class="variable">.isbn</span>,p<span class="variable">.fos</span>=paper<span class="variable">.fos</span>,p<span class="variable">.url</span>=paper<span class="variable">.url</span>,</span><br><span class="line">....//略写</span><br><span class="line">&#x27;,</span><br><span class="line"> &#123;batchSize:50000, iterateList:true, parallel:true&#125;);</span><br></pre></td></tr></table></figure> 使用这种方法，结果不仅不会crash, 而且很快就导入了所有数据，大概在3分钟左右。</p>
+<p>下面开始考虑导入论文的引文关系, 同样遇到了问题。 开始直接从paper.references属性中导入: <figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">MATCH</span> (<span class="attribute">n</span>:Paper)</span><br><span class="line"><span class="selector-tag">UNWIND</span> <span class="selector-tag">n</span><span class="selector-class">.references</span> <span class="selector-tag">as</span> <span class="selector-tag">F</span></span><br><span class="line"><span class="selector-tag">MATCH</span> (<span class="attribute">m</span>:Paper &#123;id: F&#125;)</span><br><span class="line"><span class="selector-tag">MERGE</span> (n)<span class="selector-tag">-</span><span class="selector-attr">[r:CITES]</span><span class="selector-tag">-</span>&gt;(m)</span><br></pre></td></tr></table></figure> 同样遇到了运行一段时间就会crash，即neo4j的服务器连不上的问题，即使 使用上面的<code>apoc.periodic.iterate</code> 同样遇到了问题， 百思不得其解。</p>
+<p>后来的解决方法是，单独写了脚本文件，将引文关系，作者和结构信息，及隶属关系均提取出来，直接用Python处理千万级别的文件，速度很快，最后导成csv文件，如引用关系: <figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">paper1id</span>, paper<span class="number">2</span>id</span><br></pre></td></tr></table></figure> 然后使用下面的导入代码: <figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">call</span> apoc.periodic.iterate(<span class="comment">&quot;</span></span><br><span class="line"><span class="keyword">call</span> apoc.load.csv(<span class="string">&#x27;paper_cite_relation.csv&#x27;</span>) yield <span class="keyword">list</span> <span class="keyword">as</span> <span class="built_in">line</span></span><br><span class="line">MATCH (p1:Paper&#123;id:<span class="built_in">line</span>[<span class="number">0</span>]&#125;), (p2:Paper&#123;id:<span class="built_in">line</span>[<span class="number">1</span>]&#125;) <span class="keyword">return</span> p1, p2</span><br><span class="line"><span class="comment">&quot;,</span></span><br><span class="line"><span class="comment">&quot;</span></span><br><span class="line">CREATE (p1)-[:CITE]-&gt;(p2)</span><br><span class="line"><span class="comment">&quot;,</span></span><br><span class="line">&#123;batchSize:<span class="number">50000</span>, iterateLis<span class="variable">t:true</span>, paralle<span class="variable">l:true</span>&#125;)</span><br></pre></td></tr></table></figure> 不过还是导入失败，大概10分钟之后，仍然会crash... 最后的解决方法是以大化小..将整个文件，大概有2000多万行，分割为8个小文件，每个大概有400万行关系。 然后使用上面的代码，即可大概2分钟-3分钟即可导入一个文件。 总的时间大概15分钟左右即可，其实这里还可以划分更大一些， 更加节省时间。</p>
+<p>最后导入作者和机构信息，基本上照猫画虎即可，这里举一个<code>paper-author</code>的例子: <figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">load</span> csv <span class="keyword">with</span> headers <span class="keyword">from</span> &quot;file:/p_a.csv&quot; <span class="keyword">as</span> <span class="type">line</span></span><br><span class="line">FIELDTERMINATOR &quot;,&quot;</span><br><span class="line">match (a:Author&#123;<span class="type">name</span>:<span class="type">line</span>.name&#125;), (p:Paper&#123;id:<span class="type">line</span>.pid&#125;)</span><br><span class="line"><span class="keyword">CREATE</span> (a)-[:<span class="keyword">WRITE</span>]-&gt;(p)</span><br></pre></td></tr></table></figure></p>
+<p>这样总体下来在十几分钟的可接受时间内，导入了1000万论文数据，最后的详细如下: <figure class="highlight dns"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">节点</span><br><span class="line">Paper: <span class="number">10000000</span></span><br><span class="line">Author: <span class="number">11233099</span></span><br><span class="line">Org: <span class="number">3569072</span></span><br><span class="line">关系</span><br><span class="line">Paper-Author: <span class="number">25722519</span></span><br><span class="line">Author-Org: <span class="number">8368895</span></span><br><span class="line">Paper-Paper: <span class="number">3632542</span></span><br></pre></td></tr></table></figure> 这里需要注意的是关于Paper-Paper仅仅3百万，是因为有一些paper并没有出现在这1000万中，因此直接忽略了。</p>
+<p>最后折腾来折腾去， 发现我们直接可以对压缩包里面的每一个txt(100万)分别导入，这样就不会crash，只是需要多次导入，不过省了额外的预处理步骤。 这就算一个折腾的记录吧。</p>
+<h2 id="总结">总结</h2>
+<p>初次使用Neo4j, 遇到的坑很多，还有很多问题需要解决，比如直接导入全部边会crash, 即使使用batch(猜想Neo4j图数据很吃内存)； 虽然Neo4j提供了一些批导入工具比如<code>neo4j-admin import</code>等，但是更多是针对csv数据，json的暂时还没有调查到。不过一个经验就是将大数据切成小数据来导入，这样肯定没问题。 因为是刚入门Neo4j, 很多优化细节还没掌握，可能很多方法还有优化的地方，恳请指出。</p>
+
+      
+    </div>
+
+
+    
+
+    
+	    <div class="article-footer-copyright">
+<!--<p>本文作者: shomy 发表于 <a href="http://shomy.top" target="_blank">个人博客</a></p> -->
+<p>
+本文标题: Neo4j导入Aminer论文数据<br/>
+</p>
+<p>
+发布时间: 2018-06-26, 08:49:46<br/>
+<p>
+<p>
+最后更新: 2021-12-16, 23:11:45<br/>
+<p>
+本文链接: <a href="/2018/06/26/neo4j-aminer-import/" target="_blank">http://shomy.top/2018/06/26/neo4j-aminer-import/</a>
+</p>
+<p>非商业转载请注明作者及出处。商业转载请联系<a href="mailto:shomyliu@gmail.com">作者</a>本人。</p>
+</div>
+
+    
+
+    <footer class="article-footer">
+      
+        <a href="http://shomy.top/2018/06/26/neo4j-aminer-import/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/aminer/" rel="tag">aminer</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/graph/" rel="tag">graph</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/neo4j/" rel="tag">neo4j</a></li></ul>
+
+    </footer>
+    
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2018/07/05/pytorch-relation-extraction/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          pytorch关系抽取实验
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/06/08/neo4j-start/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">Neo4j初探</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+
+
+<section id="comments">
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+<script>
+  var disqus_shortname = 'shomy';
+  
+  var disqus_url = 'http://shomy.top/2018/06/26/neo4j-aminer-import/';
+  
+  (function(){
+    var dsq = document.createElement('script');
+    dsq.type = 'text/javascript';
+    dsq.async = true;
+    dsq.src = 'https://' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  }());
+</script>
+</section>
+
+
+
+
+</section>
+      </div>
+    </div>
+    
+    
+<a id="rocket" href="#top" ></a>
+
+<script src="https://cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <script src="http://cdn.htliu.cn/static/js/leancloud.js"></script>
+<script>AV.initialize("k883AKdzaz5jccQnH1eIrG2r-gzGzoHsz", "4HBQOmslEp3VdwK1SGL8vB9Y");</script>
+
+<script src="/js/Counter.js"></script>
+
+
+
+
+
+<script id="dsq-count-scr" src="//shomy.disqus.com/count.js" async></script>
+ 
+
+
+  <script src="https://cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.js"></script>
+  
+<script src="/js/fancybox.js"></script>
+
+
+
+
+  
+<script src="/js/search.js"></script>
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>CQA-1：社区问答中的深度关联推理模型 | 天空的城</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="近期打算分享一些论文笔记，先从社区问答开始吧  论文信息  paper_infor">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CQA-1：社区问答中的深度关联推理模型">
+<meta property="og:url" content="http://shomy.top/2020/07/29/cqa1-rmrn/index.html">
+<meta property="og:site_name" content="天空的城">
+<meta property="og:description" content="近期打算分享一些论文笔记，先从社区问答开始吧  论文信息  paper_infor">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://cdn.htliu.cn/blog/cqa1-rmrn/RMRN-1.png">
+<meta property="og:image" content="http://cdn.htliu.cn/blog/cqa1-rmrn/RMRN-2.png">
+<meta property="og:image" content="http://cdn.htliu.cn/blog/cqa1-rmrn/RMRN-3.png">
+<meta property="og:image" content="http://cdn.htliu.cn/blog/cqa1-rmrn/RMRN-4.png">
+<meta property="og:image" content="http://cdn.htliu.cn/blog/cqa1-rmrn/RMRN-5.png">
+<meta property="og:image" content="http://cdn.htliu.cn/blog/cqa1-rmrn/RMRN-6.png">
+<meta property="og:image" content="http://cdn.htliu.cn/blog/cqa1-rmrn/RMRN-7.png">
+<meta property="og:image" content="http://cdn.htliu.cn/blog/cqa1-rmrn/RMRN-8.png">
+<meta property="article:published_time" content="2020-07-29T08:57:28.000Z">
+<meta property="article:modified_time" content="2021-12-16T15:11:45.654Z">
+<meta property="article:author" content="ShomyLiu">
+<meta property="article:tag" content="CQA">
+<meta property="article:tag" content="Paper">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://cdn.htliu.cn/blog/cqa1-rmrn/RMRN-1.png">
+  
+  
+    <link rel="icon" href="/image/favicon.ico">
+  
+
+  
+  <link href="https://cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.css" rel="stylesheet">
+  
+  <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  <link href="https://cdn.bootcss.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+<!-- Google Analytics -->
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-74368890-2', 'auto');
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+
+
+  
+
+  
+  <div class="site-search header-inner">
+    <div class="popup">
+        <span class="search-icon fa fa-search"></span>
+        <input type="text" id="local-search-input">
+        <div id="local-search-result"></div>
+        <span class="popup-btn-close">close</span>
+    </div>
+</div>
+
+
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      
+<header id="header">
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">天空的城</a>
+      </h1>
+      
+    </div>
+    <div id="header-menu">
+      <nav id="main-nav">
+        <ul>
+        
+          <li><a href="/"><i class="fa fa-home icon-setting"></i></a></li>
+        
+          <li><a href="/archives"><i class="fa fa-archive icon-setting"></i></a></li>
+        
+          <li><a href="/tags"><i class="fa fa-tag icon-setting"></i></a></li>
+        
+          <li><a href="/about"><i class="fa fa-user icon-setting"></i></a></li>
+        
+        
+          <li><a href="javascript:;" class="popup-trigger"><i class="fa fa-search > icon-setting"></i></a></li>
+        
+        </ul>
+      </nav>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-cqa1-rmrn" class="article article-type-post" itemscope itemprop="blogPost">
+  
+  <div class="article-meta">
+    <a href="/2020/07/29/cqa1-rmrn/" class="article-date">
+  <time datetime="2020-07-29T08:57:28.000Z" itemprop="datePublished">2020-07-29</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/">读书笔记</a>
+  </div>
+
+
+    
+        <div class="counter-tag counter">
+    <!-- 别忘记这个类名... post-title-link -->
+    <span id="/2020/07/29/cqa1-rmrn/" class="leancloud_visitors article-hits post-title-link"
+           data-flag-title="CQA-1：社区问答中的深度关联推理模型">
+        次阅读
+    </span>
+
+  </div>
+
+    
+
+  </div>
+  
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      CQA-1：社区问答中的深度关联推理模型
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+            <div id="toc" class="toc-article">
+                <strong class="toc-title">文章目录</strong>
+                <ol class="post-toc"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E8%AE%BA%E6%96%87%E4%BF%A1%E6%81%AF"><span class="post-toc-text">论文信息</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E9%97%AE%E9%A2%98%E7%AE%80%E4%BB%8B"><span class="post-toc-text">问题简介</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E6%8C%91%E6%88%98%E4%B8%8E%E5%8A%A8%E6%9C%BA"><span class="post-toc-text">挑战与动机</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E6%96%B9%E6%B3%95"><span class="post-toc-text">方法</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#%E7%BC%96%E7%A0%81%E5%B1%82"><span class="post-toc-text">编码层</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#rmcs-%E6%8E%A8%E7%90%86%E8%AE%B0%E5%BF%86%E5%8D%95%E5%85%83"><span class="post-toc-text">RMCs 推理记忆单元</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#%E9%A2%84%E6%B5%8B%E6%A8%A1%E5%9D%97"><span class="post-toc-text">预测模块</span></a></li></ol></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E5%AE%9E%E9%AA%8C"><span class="post-toc-text">实验</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E6%80%BB%E7%BB%93"><span class="post-toc-text">总结</span></a></li></ol>
+            </div>
+        
+        
+        <blockquote>
+<p>近期打算分享一些论文笔记，先从社区问答开始吧</p>
+</blockquote>
+<h2 id="论文信息">论文信息</h2>
+<figure>
+<img src="http://cdn.htliu.cn/blog/cqa1-rmrn/RMRN-1.png" alt="paper_infor" /><figcaption>paper_infor</figcaption>
+</figure>
+<span id="more"></span>
+<h2 id="问题简介">问题简介</h2>
+<p>本文拟解决的问题为<strong>社区问答</strong>(Community Question Answering), 或者叫Expert Finding。虽然名字中带有QA，但是跟NLP中的问答系统不一样，CQA是在一些问答社区网站上比如Stackoverflow, 知乎等上面，把用户提出的问题推荐给潜在熟悉该问题的回答者(answerer)，从而能够使得用户快速地获得更专业的答案。</p>
+<p>拿知乎举个例子，如下图：</p>
+<figure>
+<img src="http://cdn.htliu.cn/blog/cqa1-rmrn/RMRN-2.png" alt="zhihu-sample" /><figcaption>zhihu-sample</figcaption>
+</figure>
+<p>知乎会给用户推荐一些相关问题去回答，逛知乎的同学应该很了解。因此CQA问题本质上就是一个question与answerer的匹配问题，为问题寻找回答者。</p>
+<h2 id="挑战与动机">挑战与动机</h2>
+<p>之前大多数CQA的工作均基于文本内容相关性，即将问题与回答者回答过的历史问题集合进行相似度进行简单匹配，但是这样的方法存在一个弊端，即<strong>当一个回答者的回答过的问题与提问的问题没有直接显式联系，却包含隐式相关性，那么当前已有的模型就无法做出很好的推荐</strong>。</p>
+<p>比如下图中Yahoo! Answer的例子：</p>
+<figure>
+<img src="http://cdn.htliu.cn/blog/cqa1-rmrn/RMRN-3.png" alt="sample" /><figcaption>sample</figcaption>
+</figure>
+<p>提问者的问题是关于如何写一篇学术论文，下面的一个候选用户并没有直接回答过类似写论文的问题。 然而从该用户的历史回答问题集合中可以看出该用户其实在撰写学术论文方面还是有足够的专业知识的，因此是有能力回答该问题的。</p>
+<p>因此已有的CQA的工作仅仅从单纯文本的表层相似度匹配上来看，很难将该问题推送给上面的用户，这里面需要模型有一定的Reasoning能力，能够挖掘问题与用户历史记录之间的深度关联。</p>
+<h2 id="方法">方法</h2>
+<p>为了解决上面的挑战，本文受到MAC(Memory, Attention, Control)门控机制的启发， 设计了一种推理记忆单元RMC(Reasoning Memory Cells) 来从建模问题文本，进而与候选用户的历史回答进行多方面推理，能够挖掘问题与用户的深度联系。</p>
+<p>首先给出CQA的形式化表示：</p>
+<ul>
+<li>提问的问题q，即:包含多个单词的句子<span class="math inline">\(q=\{qw_1, qw_2, ..qw_{n_q}\}\)</span> 其中<span class="math inline">\(n_q\)</span> 是问题的长度。</li>
+<li>候选用户的历史回答记录集合<span class="math inline">\(H=[H_1, H_2, ..., H_{n_H}]\)</span> 其中每个回答也是一个包含多个单词的句子： <span class="math inline">\(H_j = \{hw_1^j, hw_2^j, ..., hw^j_{n_h}\}\)</span>。</li>
+<li>根据问题q和候选用户的历史回答记录H，判断该用户是否适合回答当前问题。</li>
+</ul>
+<p>整体流程如下：</p>
+<ul>
+<li>使用BiGRU建模question文本Q以及用户的历史回答问题的文本集H，其中word embedding 部分还是结合了subword-level和character-level 的emebdding。</li>
+<li>利用RMC(Reasoning Memory Cell) 来计算Q与H的各种交互，选出H中与Q更相关的部分
+<ul>
+<li>控制单元(Control Unit): 这部分主要是挖掘question的不同方面，用来与回答者的问题集合在读入单元与写入单元中进行交互。</li>
+<li>读入单元(Read Unit): 主要是提取H的相关信息，这里使用Gumbel-softmax 对集合进行了离散化，获得one-hot向量，能够point重要的相关回答。</li>
+<li>写入单元(Write Unit)：更新memory，可以理解为交互层(问题与用户回答的问题集合中重要的部分)。</li>
+</ul></li>
+<li>预测模块：作为二分类问题， 根据学到的问题表示以及用户候选集合表示进行01预测，类似CTR</li>
+</ul>
+<p>下面具体展开介绍，原文框架图如下：</p>
+<figure>
+<img src="http://cdn.htliu.cn/blog/cqa1-rmrn/RMRN-4.png" alt="overview" /><figcaption>overview</figcaption>
+</figure>
+<h3 id="编码层">编码层</h3>
+<ul>
+<li>word embedding: 对q与H中的所有的词，均使用多粒度的word embedding技术来缓解OOV的问题，毕竟社区问答语料口语化比较严重。将每个词的<code>word-level</code>, <code>subword-level</code> 和 <code>character-level</code>进行concatenate作为word最终的特征表示: <span class="math inline">\(e_j = [e^w_j; e^s_j; e^c_j]\)</span> 其中subword使用BPE进行编码，character-level直接使用ELMo的预训练词向量。</li>
+<li>使用Bi-GRU对问题q进行编码:<span class="math inline">\(Q=[q_1, q_2, ..., q_{n_q}]\)</span> 其中<span class="math inline">\(q_i=BiGRU(qw_i)\)</span>，需要说明的这里面的<span class="math inline">\(q_i\)</span> 是一维向量，表示问题中第i个词的特征，<span class="math inline">\(Q \in R^{q_{n_q} \times d}\)</span> 其中d为BiGRU的输出维度。</li>
+<li>使用Bi-GRU对候选用户的问题集合H进行编码: <span class="math inline">\(y_j=BiGRU(H_j)\)</span>, <span class="math inline">\(H=[y_1, y_2, ..., y_j, ..., y_{n_{H}}]\)</span>。 其中<span class="math inline">\(y_j\)</span>表示第j条回答记录的表示，这里需要注意的是，此处做了pooling操作，保留的是sentence-level的特征，因此<span class="math inline">\(y_j\)</span>是一个向量，而不是词特征矩阵，因此<span class="math inline">\(H\in R^{n_{H} \times d}\)</span>，<span class="math inline">\(n_H\)</span> 为候选用户的历史回答问题数目。</li>
+</ul>
+<p>后续的RMCs的输入就是 <span class="math inline">\(Q\)</span> 与 <span class="math inline">\(H\)</span> ， 学习二者的交互。</p>
+<h3 id="rmcs-推理记忆单元">RMCs 推理记忆单元</h3>
+<p>类似RNN/GRU/LSTM等，包含基本cell，然后进行多步循环。 其中每个基本单元RMC包含三个unit，分别是control unit，read unit与write unit，三个变量分别是控制向量<span class="math inline">\(c\)</span>,记忆向量<span class="math inline">\(m\)</span>, 以及状态输出向量<span class="math inline">\(r\)</span> 。</p>
+<p>1.<strong>Control Unit</strong> 。 从图中可以看出来，输入是Q和上一时刻的控制向量<span class="math inline">\(c_{i-1}\)</span>, 使用多个MLP层，选出Q中当前重要的词，进一步更新下一时刻的控制向量<span class="math inline">\(c_i\)</span>(这部分的符号的下标均指的是第时刻，或者迭代)。</p>
+<p>首先将Q中最后一个词的隐状态向量<span class="math inline">\(q_{n_q}\)</span>作为句子的初始表示，之后通过一个MLP层进行线性转化，然后串联<span class="math inline">\(c_{i-1}\)</span>:</p>
+<p><span class="math display">\[
+q_i = W_i{q_{n_q}} + b_i \\
+cq_i = W_{cq}[q_i,c_{i-1}]+b_{cq}
+\]</span></p>
+<p>后面开始计算词分布：</p>
+<p><span class="math display">\[
+\alpha_i = softmax(W_\alpha(cq_i\otimes Q)+b_{\alpha}) \\
+c_i = \sum_{j=1}^{n_q} \alpha_i Q
+\]</span></p>
+<p>其中<span class="math inline">\(cq_i \otimes Q\)</span> 表示向量与矩阵的列进行element-wise product，得到一个新的矩阵。<span class="math inline">\(w_\alpha\in R^{d*1}\)</span>， <span class="math inline">\(\alpha_i \in R^{n_q}\)</span>表示问题中<span class="math inline">\(n_q\)</span>个词的权重系数， 最后与Q中对应词的特征加权求和，得到第<span class="math inline">\(i\)</span>时刻的控制向量<span class="math inline">\(c_i \in R^{d}\)</span>。</p>
+<p>其实本质上就是一个Attention的过程，其中<span class="math inline">\(c_{i-1}\)</span>是查询向量，计算Q中词的important weight分布，只是文中计算方法相对复杂一些，按说可以直接用 dot-product能达到类似效果，这样<span class="math inline">\(c_i\)</span> 中就可以捕获到当前时刻应该关注问题中哪些词。</p>
+<p>2.<strong>Read Unit</strong> 。这部分主要是来衡量候选用户的历史记录中， 哪些记录与当前问题更加相关，其实类似从H中retrieve有用的信息。输入就是根据控制向量<span class="math inline">\(c_i\)</span> ，上一时刻的记忆向量<span class="math inline">\(m_i\)</span>与 历史记录集合<span class="math inline">\(H\)</span>。</p>
+<p>首先使用MLP计算H与<span class="math inline">\(c_i\)</span>和<span class="math inline">\(m_{i-1}\)</span>的交互特征矩阵:</p>
+<p><span class="math display">\[
+mr_i = H \otimes m_{i-1} \\
+cr_i = H \otimes c_{i}
+\]</span></p>
+<p>得到的<span class="math inline">\(mr_i\)</span> 与 <span class="math inline">\(cr_i\)</span>均是与H同维度的矩阵，之后在使用Attention机制，来计算H中历史回答的weight，直接使用MLP的计算方法:<span class="math inline">\(\pi_{i} = W_e[mr_i, cr_i, H]+b_e\)</span>, 其中<span class="math inline">\(w_e \in R^{3d*1}\)</span>, 因此最终得到候选用户的历史回答问题记录的score: <span class="math inline">\(\pi_{i} \in R^{n_{H} * 1}\)</span>。</p>
+<p>这里需要注意的是后面并没有使用softmax 来score 求归一化后的weight，而是使用<code>Gumbel-softmax</code> 来得到one-hot的离散化的weight。这样做的目的是为了能够找出在当前时刻，<strong>某一个</strong>历史记录与当前问题最相关，直接将该历史记录拿出来进行后续计算。但是一次Gumbel-softmax只能point 一个相关的历史记录，因此一般情况，都会执行多次Gumbel-Softmax (应该是多组计算weight的MLP参数)，这样可以得到多个历史记录，如下：<span class="math inline">\(\tilde{H}^i = [\tilde{y_1}^i, \tilde{y_2}^2,...., \tilde{y_k}]\)</span></p>
+<p>其中，k表示执行次数，<span class="math inline">\(\tilde{y}^i_j\)</span>表示在当前i时刻, 第j次Gumbel-softmax所挑出的那个历史记录的表示向量。 这里类似self-attention中的multi-head。</p>
+<p>之后再利用一个Attention机制，利用<span class="math inline">\(m_{i-1}\)</span>和<span class="math inline">\(c_i\)</span>作为query vectors, 来对这k个选出的历史记录做一个re-weight如下:</p>
+<figure>
+<img src="http://cdn.htliu.cn/blog/cqa1-rmrn/RMRN-5.png" alt="attention" /><figcaption>attention</figcaption>
+</figure>
+<p>这样得到的向量<span class="math inline">\(r_i\)</span>包含了在当前控制向量与记忆向量参与下，候选用户的历史记录信息最相关的部分， 为了将前面时刻的信息包含进来，这里又做了一种类似残差的操作, 经过p个step之后，最后的信息将所有的r聚合起来: <span class="math inline">\(R=[r_1, r_2, ..., r_i, ...,r_p]\)</span>。 这里的<span class="math inline">\(R\)</span> 就可以作为候选用户的表示了。</p>
+<p>3.<strong>Write Unit</strong> 这部分自然就是更新记忆向量<span class="math inline">\(m_i\)</span>了， 利用<span class="math inline">\(m_{i-1},c_i, r_i\)</span>各自几个MLP进行融合，最后利用一个简单的gate门控，来判断保留多少旧信息，和新加入多少新信息: <span class="math inline">\(m_i = g_im_{i_1}+(1-g_i)r_i\)</span>。</p>
+<p>这样整个RMC就完成了一次更新。 很多细节的内容，不过回头看，本质上，control unit与 read unit 就是两个Attention模块，其中control unit的attention为了选出当前应该关注问题中的哪些词，read unit中的attention则是为了找出候选用户的历史记录中哪些与问题更相关。 而memory则代表一种全局信息，可以连接<span class="math inline">\(c_i\)</span>和<span class="math inline">\(r_i\)</span>。 这是本文计算Attention的方法比较复杂，使用了非常多的MLP。</p>
+<h3 id="预测模块">预测模块</h3>
+<p>这部分额就是预测候选用户是否会回答这个问题，作为二分类问题，最后的特征向量，包含memory信息<span class="math inline">\(m_i\)</span>，问题向量<span class="math inline">\(q_{n_q}\)</span>和RMC的输出用户向量<span class="math inline">\(\hat{r}=MEAN(R)\)</span>, 直接将所有step的r取平均作为最终的候选用户的特征。</p>
+<p>继续使用MLP计算预测logits: <span class="math inline">\(f=W_f[m_i, q_{n_q}, \hat{r}] + b_r\)</span>。模型使用cross-entropy 来训练。</p>
+<h2 id="实验">实验</h2>
+<p>本文使用两个CQA数据集如下:</p>
+<figure>
+<img src="http://cdn.htliu.cn/blog/cqa1-rmrn/RMRN-6.png" alt="dataset" /><figcaption>dataset</figcaption>
+</figure>
+<p>在CQA中模型可以给出一个候选用户list，因此实验使用S@N (Successfule@N) 也就是recall@N作为评价指标,即预测出的TopN中出现了best answerer 即可。</p>
+<p>首先看与baselines的对比实验结果，前面提到文中使用了多种的word embedding, 因此根据使用的Embedding类型，设置了四种模型，其中基本模型为RMRN,表示仅仅使用了word embedding. <img src="http://cdn.htliu.cn/blog/cqa1-rmrn/RMRN-7.png" alt="result" /></p>
+<p>从实验结果可以看出来：</p>
+<ul>
+<li>标准的RMRN在一些数据集上无法取得最优结果，或者与baseline差距非常小。</li>
+<li>加上多粒度的word embedding的RMRN+sub/ELMo/Enhanced 效果就明显提高， 这个说明了模型的基本输入很重要，原因应该是在CQA语料中，非常多的口语化用语或者专业用语，导致OOV现象严重。 另一方面也说明模型本身效果或许不是十分优越。</li>
+</ul>
+<p>另外一个有意思的消融实验结果如下：</p>
+<figure>
+<img src="http://cdn.htliu.cn/blog/cqa1-rmrn/RMRN-8.png" alt="ablation" /><figcaption>ablation</figcaption>
+</figure>
+<p>主要对control unit, read unit和 write unit以及predict 部分进行了ablation study</p>
+<p>从实验中可以看出：</p>
+<ul>
+<li>每个模块对模型的性能都有一定影响。</li>
+<li>对模型影响最大的还是预测层使用特征，三类特征都对模型有用。</li>
+<li>read unit中的Gumbel-softmax的作用也很明显，换成softmax attention效果下降较多。</li>
+</ul>
+<h2 id="总结">总结</h2>
+<p>这篇文章使用的RMC模块能够在一定程度上刻画问题与候选用户的深度联系。RMC的每个Step中，control unit可以学习到问题中的一个词重要性分布，read unit 可以根据当前的词重要分布，学习(Reasoning)出候选用户的哪些历史回答更相关。write unit 更新全局信息。 这样多个step进行recurrent，模型就可以学到更多的关联信息。本文的模型描述非常详细，完全可以根据模型复现。 此外，本文使用多粒度的词特征，缓解OOV的问题，实验证明效果得到了显著提升。不过稍显不足的是，作为核心的RMC带来的效果提升并没有那么明显，另一方面就是缺少Case Study，来直观的表明RMC的几个地方，是否匹配到了真正相关的词和历史记录，不同step是否有递进的reasoning能力。</p>
+
+      
+    </div>
+
+
+    
+
+    
+	    <div class="article-footer-copyright">
+<!--<p>本文作者: shomy 发表于 <a href="http://shomy.top" target="_blank">个人博客</a></p> -->
+<p>
+本文标题: CQA-1：社区问答中的深度关联推理模型<br/>
+</p>
+<p>
+发布时间: 2020-07-29, 16:57:28<br/>
+<p>
+<p>
+最后更新: 2021-12-16, 23:11:45<br/>
+<p>
+本文链接: <a href="/2020/07/29/cqa1-rmrn/" target="_blank">http://shomy.top/2020/07/29/cqa1-rmrn/</a>
+</p>
+<p>非商业转载请注明作者及出处。商业转载请联系<a href="mailto:shomyliu@gmail.com">作者</a>本人。</p>
+</div>
+
+    
+
+    <footer class="article-footer">
+      
+        <a href="http://shomy.top/2020/07/29/cqa1-rmrn/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/CQA/" rel="tag">CQA</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Paper/" rel="tag">Paper</a></li></ul>
+
+    </footer>
+    
+	    <script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+    
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2020/12/10/docker-mongo-nginx-flask/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          docker部署Flask+MongoDB+Nginx
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2020/07/06/bert-elmo-cls/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">Bert/ELMo文本分类小实验</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+
+
+<section id="comments">
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+<script>
+  var disqus_shortname = 'shomy';
+  
+  var disqus_url = 'http://shomy.top/2020/07/29/cqa1-rmrn/';
+  
+  (function(){
+    var dsq = document.createElement('script');
+    dsq.type = 'text/javascript';
+    dsq.async = true;
+    dsq.src = 'https://' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  }());
+</script>
+</section>
+
+
+
+
+</section>
+      </div>
+    </div>
+    
+    
+<a id="rocket" href="#top" ></a>
+
+<script src="https://cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <script src="http://cdn.htliu.cn/static/js/leancloud.js"></script>
+<script>AV.initialize("k883AKdzaz5jccQnH1eIrG2r-gzGzoHsz", "4HBQOmslEp3VdwK1SGL8vB9Y");</script>
+
+<script src="/js/Counter.js"></script>
+
+
+
+
+
+<script id="dsq-count-scr" src="//shomy.disqus.com/count.js" async></script>
+ 
+
+
+  <script src="https://cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.js"></script>
+  
+<script src="/js/fancybox.js"></script>
+
+
+
+
+  
+<script src="/js/search.js"></script>
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

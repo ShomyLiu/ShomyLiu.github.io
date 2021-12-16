@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Alias Method离散分布随机取样 | 天空的城</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="在图的随机游走中，有一块需要随机取样， 比如当前到达v节点，那么下一次随机会到达哪个节点。这种问题其实就是离散分布的随机变量的取样问题。 查了一些资料， 发现Alias Method 是一种很高效的方式。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Alias Method离散分布随机取样">
+<meta property="og:url" content="http://shomy.top/2017/05/09/alias-method-sampling/index.html">
+<meta property="og:site_name" content="天空的城">
+<meta property="og:description" content="在图的随机游走中，有一块需要随机取样， 比如当前到达v节点，那么下一次随机会到达哪个节点。这种问题其实就是离散分布的随机变量的取样问题。 查了一些资料， 发现Alias Method 是一种很高效的方式。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://cdn.htliu.cn/alias-method-1.png">
+<meta property="og:image" content="http://cdn.htliu.cn/alias-method-2.png">
+<meta property="og:image" content="http://cdn.htliu.cn/alias-method-3.png">
+<meta property="og:image" content="http://cdn.htliu.cn/alias-method-4.png">
+<meta property="og:image" content="http://cdn.htliu.cn/alias-method-5.png">
+<meta property="og:image" content="http://cdn.htliu.cn/alias-method-6.png">
+<meta property="article:published_time" content="2017-05-08T16:04:32.000Z">
+<meta property="article:modified_time" content="2021-12-16T15:11:45.650Z">
+<meta property="article:author" content="ShomyLiu">
+<meta property="article:tag" content="alias method">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://cdn.htliu.cn/alias-method-1.png">
+  
+  
+    <link rel="icon" href="/image/favicon.ico">
+  
+
+  
+  <link href="https://cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.css" rel="stylesheet">
+  
+  <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  <link href="https://cdn.bootcss.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+<!-- Google Analytics -->
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-74368890-2', 'auto');
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+
+
+  
+
+  
+  <div class="site-search header-inner">
+    <div class="popup">
+        <span class="search-icon fa fa-search"></span>
+        <input type="text" id="local-search-input">
+        <div id="local-search-result"></div>
+        <span class="popup-btn-close">close</span>
+    </div>
+</div>
+
+
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      
+<header id="header">
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">天空的城</a>
+      </h1>
+      
+    </div>
+    <div id="header-menu">
+      <nav id="main-nav">
+        <ul>
+        
+          <li><a href="/"><i class="fa fa-home icon-setting"></i></a></li>
+        
+          <li><a href="/archives"><i class="fa fa-archive icon-setting"></i></a></li>
+        
+          <li><a href="/tags"><i class="fa fa-tag icon-setting"></i></a></li>
+        
+          <li><a href="/about"><i class="fa fa-user icon-setting"></i></a></li>
+        
+        
+          <li><a href="javascript:;" class="popup-trigger"><i class="fa fa-search > icon-setting"></i></a></li>
+        
+        </ul>
+      </nav>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-alias-method-sampling" class="article article-type-post" itemscope itemprop="blogPost">
+  
+  <div class="article-meta">
+    <a href="/2017/05/09/alias-method-sampling/" class="article-date">
+  <time datetime="2017-05-08T16:04:32.000Z" itemprop="datePublished">2017-05-09</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/">读书笔记</a>
+  </div>
+
+
+    
+        <div class="counter-tag counter">
+    <!-- 别忘记这个类名... post-title-link -->
+    <span id="/2017/05/09/alias-method-sampling/" class="leancloud_visitors article-hits post-title-link"
+           data-flag-title="Alias Method离散分布随机取样">
+        次阅读
+    </span>
+
+  </div>
+
+    
+
+  </div>
+  
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Alias Method离散分布随机取样
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+            <div id="toc" class="toc-article">
+                <strong class="toc-title">文章目录</strong>
+                <ol class="post-toc"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#alias-method-%E5%8E%9F%E7%90%86"><span class="post-toc-text">Alias-Method 原理</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E4%BB%A3%E7%A0%81"><span class="post-toc-text">代码</span></a></li></ol>
+            </div>
+        
+        
+        <blockquote>
+<p>在图的随机游走中，有一块需要随机取样， 比如当前到达v节点，那么下一次随机会到达哪个节点。这种问题其实就是离散分布的随机变量的取样问题。 查了一些资料， 发现<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Alias_method">Alias Method</a> 是一种很高效的方式。<span id="more"></span>在初始好之后，每次取样的复杂度为<span class="math inline">\(O(1)\)</span>。 下面介绍下这种方法的使用，具体原理暂时没有深究，有兴趣转<a target="_blank" rel="noopener" href="http://www.keithschwarz.com/darts-dice-coins/">Darts,Dice, and coids</a>。</p>
+</blockquote>
+<h2 id="alias-method-原理">Alias-Method 原理</h2>
+<p>大部分资料都会以这个例子讲解：游戏中经常遇到按一定的掉落概率来随机掉落指定物品的情况，例如掉落 银币25%，金币20%, 钻石10%，装备5%，饰品40%。现在要求下一个掉落的物品类型，或者说一个掉落的随机序列，要求符合上述概率。</p>
+<p>其实方法很简单，最直接的方法就是直接取样，先构建一个<strong>累加</strong>概率分布列表:<code>[0.25,0.45,0.55, 0.60, 1.0]</code>，之后产生一个随机数(0-1)，假设为0.7，那么在列表中找到第一个大于0.7的数为1.0,对应的类别是第5类。 这种方法很简单直接，但是每次取样复杂度为<span class="math inline">\(O(K)​\)</span>，使用二分搜索之后，降为<span class="math inline">\(O(logK)​\)</span>。</p>
+<p>论文中经常使用的是另一种很巧妙的方法: Alias Method，它在初始化之后每次随机取样的复杂度为<span class="math inline">\(O(1)\)</span>。 下面以<a target="_blank" rel="noopener" href="http://www.keithschwarz.com/darts-dice-coins/">Darts,Dice, and coids</a>文中例子用图示说明整个步骤，原理太繁杂，不做介绍，参考博客即可:</p>
+<p>假设概率分布为: <span class="math inline">\(\frac{1}{2}, \frac{1}{3}, \frac{1}{12}. \frac{1}{12}\)</span>。</p>
+<ol type="1">
+<li><p>初始概率分布: 类别数目<span class="math inline">\(K=4\)</span>，以颜色表示不同的类别<img src="http://cdn.htliu.cn/alias-method-1.png" /></p></li>
+<li><p>每个类别概率乘以K=4,使得总和为4. 这样分为两类，大于1:第一列与第二列; 小于1: 第三列与第四列。<img src="http://cdn.htliu.cn/alias-method-2.png" /></p></li>
+<li>下面通过拼凑，使得每一列的和都为1，但是每一列中，最多只能是两种类型的拼凑，就是<strong>每一列最多两种颜色存在</strong>。
+<ul>
+<li>将第一列拿出<span class="math inline">\(\frac{2}{3}\)</span>给最后一列，使其变为1，如下:(棕色表示空缺)<img src="http://cdn.htliu.cn/alias-method-3.png" /></li>
+<li>将第一列拿出<span class="math inline">\(\frac{2}{3}\)</span>给第三列，使之变为1，如下:<img src="http://cdn.htliu.cn/alias-method-4.png" /></li>
+<li>最后一次,第二列给第一列<span class="math inline">\(\frac{1}{3}\)</span>, 最后每一列都是1，且每一列最多两种类型，其中下面一层表示原类的概率，上面层表示另外一种类型的概率，如只有一种比如第二列，那么第二层就是NULL:<img src="http://cdn.htliu.cn/alias-method-5.png" /></li>
+</ul></li>
+<li><p>写出两个数组:</p>
+<ul>
+<li><strong>Probability table</strong> <span class="math inline">\(Prob\)</span>: 落在原类型的概率，每一列第一层的概率，即:<span class="math inline">\([\frac{2}{3}, 1, \frac{1}{3}, \frac{1}{3}]\)</span></li>
+<li><strong>Alias table</strong> <span class="math inline">\(Alias\)</span> : 每一列第二层的类型(颜色)，这里用下标表示: <span class="math inline">\([2, null, 1, ,1]\)</span></li>
+</ul>
+<p>用图表示如下:<img src="http://cdn.htliu.cn/alias-method-6.png" /></p>
+<p>到此为止，得到<span class="math inline">\(Prob, Alias\)</span> 表示初始化完成。</p></li>
+<li><p>采样过程: 随机取某一列k(即[1,4]的随机整数)，再随机产生一个[0-1]的小数c，如果<span class="math inline">\(Prob[k]\)</span> 大于 c，那么采样结果就是k，反之则为<span class="math inline">\(Alias[k]\)</span>。</p></li>
+</ol>
+<p>需要说明的是，该过程一定可以结束(原文有证明)。此外在初始化完成之后每次采样的复杂度为<span class="math inline">\(O(1)\)</span>，因此应用很广。</p>
+<p>举个例子说明采样过程，比如随机取得第1列， 随机产生的小数为<span class="math inline">\(0.5&lt; \frac{2}{3}\)</span>，那么采样的结果就是第一类。 如果随机产生的小数为<span class="math inline">\(0.8 &gt; \frac{2}{3}\)</span>，那么采样结果就是第一列的第二层的类别，也就是<span class="math inline">\(Alias[1] = 2\)</span>(紫色对应的类别: 第二列)。</p>
+<p>再简单验证下，看看该方法的采样是不是满足原始的概率分布<span class="math inline">\(\frac{1}{2}, \frac{1}{3}, \frac{1}{12}. \frac{1}{12}\)</span></p>
+<p>对于采到第一种的概率，采到第一种有三部分组成，第一列，第三，四列分别求概率求和: <span class="math inline">\(\frac{2}{3} * \frac{1}{4} + (1-\frac{1}{3}) * \frac{1}{4} + ({1-\frac{1}{3}}) * \frac{1}{4} = \frac{1}{2}\)</span> ，因此满足原始概率的分布，其余同理。</p>
+<h2 id="代码">代码</h2>
+<p>代码官网给了Java版本，不过网上有很多其他语言的版本，下面参考<a target="_blank" rel="noopener" href="https://hips.seas.harvard.edu/blog/2013/03/03/the-alias-method-efficient-sampling-with-many-discrete-outcomes/">1</a> 做了注释如下:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> numpy        <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> numpy.random <span class="keyword">as</span> npr</span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">alias_setup</span>(<span class="params">probs</span>):</span></span><br><span class="line">    <span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"><span class="string">    probs： 某个概率分布</span></span><br><span class="line"><span class="string">    返回: Alias数组与Prob数组</span></span><br><span class="line"><span class="string">    &#x27;&#x27;&#x27;</span></span><br><span class="line">    K       = <span class="built_in">len</span>(probs)</span><br><span class="line">    q       = np.zeros(K) <span class="comment"># 对应Prob数组</span></span><br><span class="line">    J       = np.zeros(K, dtype=np.<span class="built_in">int</span>) <span class="comment"># 对应Alias数组</span></span><br><span class="line">    <span class="comment"># Sort the data into the outcomes with probabilities</span></span><br><span class="line">    <span class="comment"># that are larger and smaller than 1/K.</span></span><br><span class="line">    smaller = [] <span class="comment"># 存储比1小的列</span></span><br><span class="line">    larger  = [] <span class="comment"># 存储比1大的列</span></span><br><span class="line">    <span class="keyword">for</span> kk, prob <span class="keyword">in</span> <span class="built_in">enumerate</span>(probs):</span><br><span class="line">        q[kk] = K*prob <span class="comment"># 概率</span></span><br><span class="line">        <span class="keyword">if</span> q[kk] &lt; <span class="number">1.0</span>:</span><br><span class="line">            smaller.append(kk)</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            larger.append(kk)</span><br><span class="line"> </span><br><span class="line">    <span class="comment"># Loop though and create little binary mixtures that</span></span><br><span class="line">    <span class="comment"># appropriately allocate the larger outcomes over the</span></span><br><span class="line">    <span class="comment"># overall uniform mixture.</span></span><br><span class="line">    </span><br><span class="line">    <span class="comment"># 通过拼凑，将各个类别都凑为1</span></span><br><span class="line">    <span class="keyword">while</span> <span class="built_in">len</span>(smaller) &gt; <span class="number">0</span> <span class="keyword">and</span> <span class="built_in">len</span>(larger) &gt; <span class="number">0</span>:</span><br><span class="line">        small = smaller.pop()</span><br><span class="line">        large = larger.pop()</span><br><span class="line"> </span><br><span class="line">        J[small] = large <span class="comment"># 填充Alias数组</span></span><br><span class="line">        q[large] = q[large] - (<span class="number">1.0</span> - q[small]) <span class="comment"># 将大的分到小的上</span></span><br><span class="line"> </span><br><span class="line">        <span class="keyword">if</span> q[large] &lt; <span class="number">1.0</span>:</span><br><span class="line">            smaller.append(large)</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            larger.append(large)</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">return</span> J, q</span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">alias_draw</span>(<span class="params">J, q</span>):</span></span><br><span class="line">    <span class="string">&#x27;&#x27;&#x27;</span></span><br><span class="line"><span class="string">    输入: Prob数组和Alias数组</span></span><br><span class="line"><span class="string">    输出: 一次采样结果</span></span><br><span class="line"><span class="string">    &#x27;&#x27;&#x27;</span></span><br><span class="line">    K  = <span class="built_in">len</span>(J)</span><br><span class="line">    <span class="comment"># Draw from the overall uniform mixture.</span></span><br><span class="line">    kk = <span class="built_in">int</span>(np.floor(npr.rand()*K)) <span class="comment"># 随机取一列</span></span><br><span class="line"> </span><br><span class="line">    <span class="comment"># Draw from the binary mixture, either keeping the</span></span><br><span class="line">    <span class="comment"># small one, or choosing the associated larger one.</span></span><br><span class="line">    <span class="keyword">if</span> npr.rand() &lt; q[kk]: <span class="comment"># 比较</span></span><br><span class="line">        <span class="keyword">return</span> kk</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        <span class="keyword">return</span> J[kk]</span><br><span class="line"> </span><br><span class="line">K = <span class="number">5</span></span><br><span class="line">N = <span class="number">100</span></span><br><span class="line"> </span><br><span class="line"><span class="comment"># Get a random probability vector.</span></span><br><span class="line">probs = npr.dirichlet(np.ones(K), <span class="number">1</span>).ravel()</span><br><span class="line"> </span><br><span class="line"><span class="comment"># Construct the table.</span></span><br><span class="line">J, q = alias_setup(probs)</span><br><span class="line"> </span><br><span class="line"><span class="comment"># Generate variates.</span></span><br><span class="line">X = np.zeros(N)</span><br><span class="line"><span class="keyword">for</span> nn <span class="keyword">in</span> xrange(N):</span><br><span class="line">    X[nn] = alias_draw(J, q)</span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+
+
+    
+
+    
+	    <div class="article-footer-copyright">
+<!--<p>本文作者: shomy 发表于 <a href="http://shomy.top" target="_blank">个人博客</a></p> -->
+<p>
+本文标题: Alias Method离散分布随机取样<br/>
+</p>
+<p>
+发布时间: 2017-05-09, 00:04:32<br/>
+<p>
+<p>
+最后更新: 2021-12-16, 23:11:45<br/>
+<p>
+本文链接: <a href="/2017/05/09/alias-method-sampling/" target="_blank">http://shomy.top/2017/05/09/alias-method-sampling/</a>
+</p>
+<p>非商业转载请注明作者及出处。商业转载请联系<a href="mailto:shomyliu@gmail.com">作者</a>本人。</p>
+</div>
+
+    
+
+    <footer class="article-footer">
+      
+        <a href="http://shomy.top/2017/05/09/alias-method-sampling/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/alias-method/" rel="tag">alias method</a></li></ul>
+
+    </footer>
+    
+	    <script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+    
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2017/07/28/word2vec-all/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          Word2vec数学原理全家桶
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2017/03/16/adaptive-boosting/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">机器学习技法笔记(10)-AdaBoost(提升算法)</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+
+
+<section id="comments">
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+<script>
+  var disqus_shortname = 'shomy';
+  
+  var disqus_url = 'http://shomy.top/2017/05/09/alias-method-sampling/';
+  
+  (function(){
+    var dsq = document.createElement('script');
+    dsq.type = 'text/javascript';
+    dsq.async = true;
+    dsq.src = 'https://' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  }());
+</script>
+</section>
+
+
+
+
+</section>
+      </div>
+    </div>
+    
+    
+<a id="rocket" href="#top" ></a>
+
+<script src="https://cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <script src="http://cdn.htliu.cn/static/js/leancloud.js"></script>
+<script>AV.initialize("k883AKdzaz5jccQnH1eIrG2r-gzGzoHsz", "4HBQOmslEp3VdwK1SGL8vB9Y");</script>
+
+<script src="/js/Counter.js"></script>
+
+
+
+
+
+<script id="dsq-count-scr" src="//shomy.disqus.com/count.js" async></script>
+ 
+
+
+  <script src="https://cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.js"></script>
+  
+<script src="/js/fancybox.js"></script>
+
+
+
+
+  
+<script src="/js/search.js"></script>
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

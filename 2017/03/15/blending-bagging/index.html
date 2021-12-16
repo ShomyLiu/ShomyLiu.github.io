@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>机器学习技法笔记(9)-Blending and Bagging(模型融合) | 天空的城</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="前面的课程着重介绍某单一模型，比如逻辑回归，SVM等，从这一节开始以及接下来的3,4节的课程都是在介绍多个模型之间的融合得到一个新的模型的问题。 为什么要进行模型融合">
+<meta property="og:type" content="article">
+<meta property="og:title" content="机器学习技法笔记(9)-Blending and Bagging(模型融合)">
+<meta property="og:url" content="http://shomy.top/2017/03/15/blending-bagging/index.html">
+<meta property="og:site_name" content="天空的城">
+<meta property="og:description" content="前面的课程着重介绍某单一模型，比如逻辑回归，SVM等，从这一节开始以及接下来的3,4节的课程都是在介绍多个模型之间的融合得到一个新的模型的问题。 为什么要进行模型融合">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://cdn.htliu.cn/blending-1.png">
+<meta property="og:image" content="http://cdn.htliu.cn/blending-2.png">
+<meta property="og:image" content="http://cdn.htliu.cn/blending-3.png">
+<meta property="og:image" content="http://cdn.htliu.cn/blending-4.png">
+<meta property="og:image" content="http://cdn.htliu.cn/blending-5.png">
+<meta property="og:image" content="http://cdn.htliu.cn/blending-6.png">
+<meta property="og:image" content="http://cdn.htliu.cn/blending-7.png">
+<meta property="article:published_time" content="2017-03-15T04:56:38.000Z">
+<meta property="article:modified_time" content="2021-12-16T15:11:45.652Z">
+<meta property="article:author" content="ShomyLiu">
+<meta property="article:tag" content="machine learning">
+<meta property="article:tag" content="blending bagging">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://cdn.htliu.cn/blending-1.png">
+  
+  
+    <link rel="icon" href="/image/favicon.ico">
+  
+
+  
+  <link href="https://cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.css" rel="stylesheet">
+  
+  <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  <link href="https://cdn.bootcss.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+<!-- Google Analytics -->
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-74368890-2', 'auto');
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+
+
+  
+
+  
+  <div class="site-search header-inner">
+    <div class="popup">
+        <span class="search-icon fa fa-search"></span>
+        <input type="text" id="local-search-input">
+        <div id="local-search-result"></div>
+        <span class="popup-btn-close">close</span>
+    </div>
+</div>
+
+
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      
+<header id="header">
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">天空的城</a>
+      </h1>
+      
+    </div>
+    <div id="header-menu">
+      <nav id="main-nav">
+        <ul>
+        
+          <li><a href="/"><i class="fa fa-home icon-setting"></i></a></li>
+        
+          <li><a href="/archives"><i class="fa fa-archive icon-setting"></i></a></li>
+        
+          <li><a href="/tags"><i class="fa fa-tag icon-setting"></i></a></li>
+        
+          <li><a href="/about"><i class="fa fa-user icon-setting"></i></a></li>
+        
+        
+          <li><a href="javascript:;" class="popup-trigger"><i class="fa fa-search > icon-setting"></i></a></li>
+        
+        </ul>
+      </nav>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-blending-bagging" class="article article-type-post" itemscope itemprop="blogPost">
+  
+  <div class="article-meta">
+    <a href="/2017/03/15/blending-bagging/" class="article-date">
+  <time datetime="2017-03-15T04:56:38.000Z" itemprop="datePublished">2017-03-15</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/">读书笔记</a>
+  </div>
+
+
+    
+        <div class="counter-tag counter">
+    <!-- 别忘记这个类名... post-title-link -->
+    <span id="/2017/03/15/blending-bagging/" class="leancloud_visitors article-hits post-title-link"
+           data-flag-title="机器学习技法笔记(9)-Blending and Bagging(模型融合)">
+        次阅读
+    </span>
+
+  </div>
+
+    
+
+  </div>
+  
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      机器学习技法笔记(9)-Blending and Bagging(模型融合)
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+            <div id="toc" class="toc-article">
+                <strong class="toc-title">文章目录</strong>
+                <ol class="post-toc"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E8%BF%9B%E8%A1%8C%E6%A8%A1%E5%9E%8B%E8%9E%8D%E5%90%88"><span class="post-toc-text">为什么要进行模型融合</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#uniform-blending%E5%9D%87%E5%8C%80%E8%9E%8D%E5%90%88"><span class="post-toc-text">Uniform Blending(均匀融合)</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#linear-blending%E7%BA%BF%E6%80%A7%E8%9E%8D%E5%90%88"><span class="post-toc-text">Linear Blending(线性融合)</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#bootstrap-aggregationbagging"><span class="post-toc-text">Bootstrap Aggregation(Bagging)</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E9%99%84"><span class="post-toc-text">附</span></a></li></ol>
+            </div>
+        
+        
+        <p>前面的课程着重介绍某单一模型，比如逻辑回归，SVM等，从这一节开始以及接下来的3,4节的课程都是在介绍多个模型之间的融合得到一个新的模型的问题。</p>
+<h2 id="为什么要进行模型融合">为什么要进行模型融合</h2>
+<span id="more"></span>
+<p>我们针对某个问题，使用不同的演算法得到了很多模型g，个模型都会有自己擅长的部分，也有不擅长的部分，如果能够可以把它们混合起来，那新模型的效果就可能很好。假设我们已经得到了<span class="math inline">\(g_1,g_2,...,g_T\)</span>等T个model，那我们怎么把它们混合为一个新的模型呢<span class="math inline">\(G(x)\)</span>？方法很多，例如:</p>
+<ul>
+<li>最简单的，直接在所有的模型里面，选择验证误差最小的作为最后的模型: <span class="math inline">\(G(\mathbf x)=\arg\min\limits_{t \in {1,2,..T}} E_{val}(g_t^{-})\)</span></li>
+<li>直接采取所有<span class="math inline">\(g_t\)</span>的意见，对它们同等信任，比如分类问题: <span class="math inline">\(G(\mathbf x) = sign(\sum\limits_{t=1}^{T}1 \cdot g_t(\mathbf x))\)</span></li>
+<li>比上一种情况，再更近一层，给每个<span class="math inline">\(g\)</span>不同的投票数目，也就是说它们权重不再相同<span class="math inline">\(G(\mathbf x)=sign(\sum\limits_{t=1}^T\alpha_t \cdot g_t(\mathbf x))\)</span>，这个权重<span class="math inline">\(\alpha_t \geq 0\)</span>可以通过训练得到。</li>
+<li>再特殊一点，根据不同的数据的特点，来赋予不同的权重: <span class="math inline">\(G(\mathbf x)=sign(\sum\limits_{t=1}^Tq_t(\mathbf x) \cdot g_t(\mathbf x))\)</span>, 其中<span class="math inline">\(q_t \geq 0\)</span>。</li>
+</ul>
+<p>除了上面的四种融合之外，还有很多其它的没有列举出来。其中第一种就是前面基石课程中的模型选择的做法，此外这里的<span class="math inline">\(g_{t}^{-}(\mathbf x)\)</span>是指在减去了验证数据集之后的数据作为训练数据得到的模型。</p>
+<p>换句话说，有几个很weak的假设空间，通过融合等手段，得到一个更加powerful的假设空间，从而得到效果更好的模型，如下:</p>
+<p><img src="http://cdn.htliu.cn/blending-1.png" /></p>
+<p>比如我们有一些只能划分水平与竖直方向的分界线的假设空间，如上图中的灰色的线，分类效果肯定很差，但是如果将这些弱的分类器组合起来，就可以得到一个不错的边界，如上图的黑色的线。因此看起来如果对多个模型进行一个合适的融合(aggregaton)，或许就可以得到效果更好的模型。</p>
+<h2 id="uniform-blending均匀融合">Uniform Blending(均匀融合)</h2>
+<p>这一部分从误差的角度介绍最基本的Uniform Blending(均匀融合)的一些理论依据，Uniform Blending的分类的模型如下，实际上就是少数服从多数的原则:</p>
+<p><span class="math display">\[G(\mathbf x)=sign \left( \sum\limits_{t=1}^{T}1 \cdot g_t(\mathbf x)\right)\]</span></p>
+<p>回归模型如下，直接求T个模型g的结果的平均值:</p>
+<p><span class="math display">\[G(\mathbf x)= {1\over T}\sum\limits_{t=1}^{T}1 \cdot g_t(\mathbf x)\]</span></p>
+<p>下面以回归问题分析误差。</p>
+<p>预期<span class="math inline">\(g_1,g_2,\cdots,g_T\)</span>的效果应该参差不齐，比如一些<span class="math inline">\(g(\mathbf x)&lt;f(\mathbf x)\)</span>，还有一些<span class="math inline">\(g(\mathbf x) &gt; f(\mathbf x)\)</span>，这里的<span class="math inline">\(f(\mathbf x)\)</span>是理想的未知的函数，这样通过融合平均下来得到的结果会更加准确。反过来，如果每个<span class="math inline">\(g\)</span>的结果都差不多，那就没有必要做融合了。下面来分析融合前后的误差比较。</p>
+<p>比较<span class="math inline">\(g_t\)</span>与<span class="math inline">\(f\)</span>的均方误差与融合之后的<span class="math inline">\(G\)</span>与<span class="math inline">\(f\)</span>的均方误差：</p>
+<p><img src="http://cdn.htliu.cn/blending-2.png" /></p>
+<p>关于上述式子的展开有几个细节需要注意:</p>
+<ul>
+<li><span class="math inline">\(avg(g_t) = {1\over T}\sum g_t = G\)</span></li>
+<li>f与avg无关</li>
+</ul>
+<p>这样我们就可以得到下面的结论，(如果没有看过基石课程的话，这里的<span class="math inline">\(E_{out}\)</span>可以理解为g与f的差距平方):</p>
+<p><span class="math display">\[avg(E_{out}(g_t)) \geq E_{out}(G)\]</span></p>
+<p>可以看出<span class="math inline">\(g_t\)</span>的平均误差比融合之后的<span class="math inline">\(G\)</span>要大，也就是说融合模型效果应该会更好。</p>
+<p>基于上述的证明，现在考虑一个假想的极限情况，假设我们每次从数据分布中拿出N个数据<span class="math inline">\(\mathcal{D}_t\)</span>，然后通过演算法<span class="math inline">\(\mathcal {A(D_t)}\)</span>得到<span class="math inline">\(g_t\)</span>,(因为每次的数据<span class="math inline">\(D_t\)</span>都不一样，因此每个<span class="math inline">\(g\)</span>的差别也就会变大，这也正是我们所期望的，得到不同给的模型)。如果数量T趋向于无穷大，我们就可以得到一个理想的<span class="math inline">\(\overline{g}\)</span>，它可以被认为在所有的数据得到的模型，可以体现出演算法<span class="math inline">\(\mathcal A\)</span>的在所有的<span class="math inline">\(\mathcal D\)</span>中的表现了</p>
+<p><img src="http://cdn.htliu.cn/blending-3.png" /></p>
+<p>应用上面的结论，有:</p>
+<p><img src="http://cdn.htliu.cn/blending-4.png" /></p>
+<p>其中<span class="math inline">\(\overline{g}\)</span>可以代表一堆<span class="math inline">\(g_t\)</span>的达成的共识(consensus)。式子的第一部分称为我们的演算法<span class="math inline">\(\mathcal A\)</span>的在不同的数据集上<span class="math inline">\(D_1,...D_T\)</span>的平均表现，右边式子<span class="math inline">\(E_{out}(\overline g)\)</span>的第二部分就是共识的误差，一般称为 <strong>bias</strong>，描述的是共识与理想函数f的差距；第一部分<span class="math inline">\(avg\)</span>则描述的是一种方差，<span class="math inline">\(g_t\)</span>与<span class="math inline">\(\overline g\)</span>的平均差别，一般叫做<strong>variance</strong>， 因此衡量一个演算法的表现，就是bias+varience。 那么我们的Uniform Blending其实就是减少varience的过程。</p>
+<p>关于这部分<span class="math inline">\(\mathcal {A,D},g\)</span>等概念，请见<a href="http://shomy.top/2016/10/06/feasibility-of-learning-1/">机器学习基石笔记</a></p>
+<h2 id="linear-blending线性融合">Linear Blending(线性融合)</h2>
+<p>上面的均匀融合每个g的作用相同，最后的模型可能会变得中庸一些，稍加改变，如果每个g都一个不同的投票权重，效果应该就会更好，这就是线性融合(Linear Blending):</p>
+<p><img src="http://cdn.htliu.cn/blending-5.png" /></p>
+<p>假设我们已经得到了T个<span class="math inline">\(g_t\)</span>，那么应该如何确定<span class="math inline">\(\alpha_t\)</span>呢，思路就是<span class="math inline">\(\min E_{in}\)</span>，这个式子之前其实遇到过，回想在Linear Regression+Transformation的情况，使用均方误差:</p>
+<p><img src="http://cdn.htliu.cn/blending-6.png" /></p>
+<p>再看看Linear Blending的做回归时候的目标函数:</p>
+<p><img src="http://cdn.htliu.cn/blending-7.png" /></p>
+<p>二者其实是很类似的，我们也可以将<span class="math inline">\(g_t(\mathbf x)\)</span>作为一种feature transform，这样我们将原始数据转换为: <span class="math inline">\((\mathbf z_n, y_n), \mathbf z_n=(g_1(\mathbf x_n),...,\mathbf g_T(\mathbf x_n))\)</span>，从这个角度来看与Linear Regression就完全一样了，这时候就可以直接用线性回归的方式来求解<span class="math inline">\(\alpha\)</span></p>
+<p>然而有一点需要注意的是，Linear Blending有一个约束<span class="math inline">\(\alpha_t \geq 0\)</span>，因为每个模型的投票数不能为负数，而Linear Regression则没有这个约束。其实可以从这角度考虑，来去掉这个限制。对于那些<span class="math inline">\(\alpha_t &lt; 0\)</span>，我们可以认为是<span class="math inline">\(\alpha_t g_t = |\alpha_t|(-g_t)\)</span>，这样就没有问题了，在物理意义上也可以解释，比如在一个分类问题中，对于那些效果很差的g,我们取其相反数，那么就可以得到一个好的g。到此，Linear Blending 与 Linear Regression + Feature Transform 等价了。</p>
+<p>求出了<span class="math inline">\(\alpha\)</span>，我们还需要注意下如何选择一堆的<span class="math inline">\(g_t\)</span>:</p>
+<p><span class="math display">\[g_1 \in \mathcal H_1, g_2 \in \mathcal H_2...g_T \in \mathcal{H}_T\]</span></p>
+<p>一种思路是求出每个<span class="math inline">\(\mathcal H_t\)</span>中<span class="math inline">\(E_{in}\)</span>最小的<span class="math inline">\(g\)</span>，第二种则是<span class="math inline">\(E_{val}\)</span>最小的<span class="math inline">\(g^{-}\)</span>，显然为了防止过拟合，应该使用<span class="math inline">\(g^{-}\)</span>。</p>
+<p>注: <span class="math inline">\(g^{}-\)</span>就是使用总数据的N-K个数据做训练，然后用K个数据做验证，选择验证中err最小的g，而非训练误差最小的g。</p>
+<p>简单总结下Linear Blending的流程:</p>
+<ul>
+<li>通过<span class="math inline">\(\min E_{val}\)</span>的方式训练得到T个<span class="math inline">\(g^{-}\)</span></li>
+<li>"特征转化": <span class="math inline">\(\mathbf z_n = \phi^{-}(\mathbf x_n) = (g_1^{-}(\mathbf x_n), g_2^{-}(\mathbf x_n)...g_{T}^{-}(\mathbf x_n))\)</span>，数据变为<span class="math inline">\((z_n, y_n)\)</span></li>
+<li>Blengding: 计算<span class="math inline">\(\alpha\)</span>, 现在是一个很简单的线性问题了，通过之前的线性回归，逻辑回归等方法得到投票权重</li>
+<li>最终的模型: <span class="math inline">\(G(\mathbf x)=LinearModel(\sum\limits_{n=1}^{N}\alpha^T \phi(\mathbf x))\)</span></li>
+</ul>
+<p>注: 最后的<span class="math inline">\(\phi=(g_1,g_2....)\)</span>而非<span class="math inline">\(g^{-}\)</span>，因为通常，使用N-K个数据训练得到<span class="math inline">\(\min E_{val}\)</span>得到最好的<span class="math inline">\(g^{-}\)</span>，之后，一般再用全部的N个数据重新训练一遍，得到<span class="math inline">\(g\)</span>，因为一般数据量越大，模型泛化性能就好.</p>
+<p>其实除了Linear Blending之外，在得到<span class="math inline">\((z_n, y_n)\)</span>之后，完全可以用一些其它的非线性的模型去解决这个分类或者回归问题，这样可能更加Powerful，但是也就更容易过拟合，因此还是那句话: Linear First。</p>
+<p>模型融合在实际数据挖掘中，还是很常用的。在2011的KDDCup上，林老师的台大队伍最后加了使用测试数据的linear blending在比赛封榜最后一个小时，成功逆袭，从第二成为第一，夺得冠军。</p>
+<h2 id="bootstrap-aggregationbagging">Bootstrap Aggregation(Bagging)</h2>
+<p>前面的一堆的<span class="math inline">\(g\)</span>是通过很多份数据来得到的，但是如果我们只有一份数据呢，也就是只有N个样例，怎么来得到区分度更好的<span class="math inline">\(g\)</span>呢，下面利用一种叫<strong>Bootstrap</strong>的采样方式来利用已有的数据来采样得到新的数据集。</p>
+<blockquote>
+<p>Bootstrapping: 在已有的<span class="math inline">\(\mathcal D\)</span>中每次有放回的取样，重复N次，得到一组数据<span class="math inline">\(D_t^{t}\)</span>, 包含N个样例，这个采样过程便叫做Bootstrap</p>
+</blockquote>
+<p>上面的原理很简单，这样得到的每个<span class="math inline">\(D_t\)</span>中有很大的可能出现重复数据，不过这个不影响，反正我们有很多的<span class="math inline">\(g\)</span>,之后再用上面的Blending的方式进行Aggregation,这种方式一般叫做 Bootstrap Aggregation，通常简称<strong>Bagging</strong>。 这种方式在实际中应用很多，尤其是数据不足的情况下。</p>
+<h2 id="附">附</h2>
+<p>这部分与机器学习基石课程中的一些基础的理论有很大的关系，包括算法，模型，假设空间, <span class="math inline">\(E_{in}, E_{out}\)</span>等概念，还有validation的过程等。 可能是因为这部分还没有写代码实践，因此理解的可能还不到位，整理的有点乱，希望能看到这里的同学多指正。</p>
+
+      
+    </div>
+
+
+    
+
+    
+	    <div class="article-footer-copyright">
+<!--<p>本文作者: shomy 发表于 <a href="http://shomy.top" target="_blank">个人博客</a></p> -->
+<p>
+本文标题: 机器学习技法笔记(9)-Blending and Bagging(模型融合)<br/>
+</p>
+<p>
+发布时间: 2017-03-15, 12:56:38<br/>
+<p>
+<p>
+最后更新: 2021-12-16, 23:11:45<br/>
+<p>
+本文链接: <a href="/2017/03/15/blending-bagging/" target="_blank">http://shomy.top/2017/03/15/blending-bagging/</a>
+</p>
+<p>非商业转载请注明作者及出处。商业转载请联系<a href="mailto:shomyliu@gmail.com">作者</a>本人。</p>
+</div>
+
+    
+
+    <footer class="article-footer">
+      
+        <a href="http://shomy.top/2017/03/15/blending-bagging/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/blending-bagging/" rel="tag">blending bagging</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/machine-learning/" rel="tag">machine learning</a></li></ul>
+
+    </footer>
+    
+	    <script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+    
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2017/03/16/adaptive-boosting/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          机器学习技法笔记(10)-AdaBoost(提升算法)
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2017/03/11/tensorflow-basic-api/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">TensorFlow常用API</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+
+
+<section id="comments">
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+<script>
+  var disqus_shortname = 'shomy';
+  
+  var disqus_url = 'http://shomy.top/2017/03/15/blending-bagging/';
+  
+  (function(){
+    var dsq = document.createElement('script');
+    dsq.type = 'text/javascript';
+    dsq.async = true;
+    dsq.src = 'https://' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  }());
+</script>
+</section>
+
+
+
+
+</section>
+      </div>
+    </div>
+    
+    
+<a id="rocket" href="#top" ></a>
+
+<script src="https://cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <script src="http://cdn.htliu.cn/static/js/leancloud.js"></script>
+<script>AV.initialize("k883AKdzaz5jccQnH1eIrG2r-gzGzoHsz", "4HBQOmslEp3VdwK1SGL8vB9Y");</script>
+
+<script src="/js/Counter.js"></script>
+
+
+
+
+
+<script id="dsq-count-scr" src="//shomy.disqus.com/count.js" async></script>
+ 
+
+
+  <script src="https://cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.js"></script>
+  
+<script src="/js/fancybox.js"></script>
+
+
+
+
+  
+<script src="/js/search.js"></script>
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

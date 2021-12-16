@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>TensorFlow练习2-CNNs实现分类 | 天空的城</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="上一次主要是使用最简单的前馈神经网络，来对mnist数据进行了分类，测试正确率可以达到94-95%，这一节主要使用TensorFlow来实现卷积神经网络(CNN), 正确率可以到99%了，这已经接近最高了。 另外这一篇不记录CNN的原理以及训练方式，等段时间在整理。  同前一篇NN，首先定义几个参数:">
+<meta property="og:type" content="article">
+<meta property="og:title" content="TensorFlow练习2-CNNs实现分类">
+<meta property="og:url" content="http://shomy.top/2017/01/01/tensorflow-cnn-example-2/index.html">
+<meta property="og:site_name" content="天空的城">
+<meta property="og:description" content="上一次主要是使用最简单的前馈神经网络，来对mnist数据进行了分类，测试正确率可以达到94-95%，这一节主要使用TensorFlow来实现卷积神经网络(CNN), 正确率可以到99%了，这已经接近最高了。 另外这一篇不记录CNN的原理以及训练方式，等段时间在整理。  同前一篇NN，首先定义几个参数:">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2017-01-01T14:10:12.000Z">
+<meta property="article:modified_time" content="2021-12-16T15:11:45.673Z">
+<meta property="article:author" content="ShomyLiu">
+<meta property="article:tag" content="TensorFlow">
+<meta property="article:tag" content="DeepLearning">
+<meta property="article:tag" content="NN">
+<meta name="twitter:card" content="summary">
+  
+  
+    <link rel="icon" href="/image/favicon.ico">
+  
+
+  
+  <link href="https://cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.css" rel="stylesheet">
+  
+  <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  <link href="https://cdn.bootcss.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+<!-- Google Analytics -->
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-74368890-2', 'auto');
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+
+
+  
+
+  
+  <div class="site-search header-inner">
+    <div class="popup">
+        <span class="search-icon fa fa-search"></span>
+        <input type="text" id="local-search-input">
+        <div id="local-search-result"></div>
+        <span class="popup-btn-close">close</span>
+    </div>
+</div>
+
+
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      
+<header id="header">
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">天空的城</a>
+      </h1>
+      
+    </div>
+    <div id="header-menu">
+      <nav id="main-nav">
+        <ul>
+        
+          <li><a href="/"><i class="fa fa-home icon-setting"></i></a></li>
+        
+          <li><a href="/archives"><i class="fa fa-archive icon-setting"></i></a></li>
+        
+          <li><a href="/tags"><i class="fa fa-tag icon-setting"></i></a></li>
+        
+          <li><a href="/about"><i class="fa fa-user icon-setting"></i></a></li>
+        
+        
+          <li><a href="javascript:;" class="popup-trigger"><i class="fa fa-search > icon-setting"></i></a></li>
+        
+        </ul>
+      </nav>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-tensorflow-cnn-example-2" class="article article-type-post" itemscope itemprop="blogPost">
+  
+  <div class="article-meta">
+    <a href="/2017/01/01/tensorflow-cnn-example-2/" class="article-date">
+  <time datetime="2017-01-01T14:10:12.000Z" itemprop="datePublished">2017-01-01</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E5%B7%A5%E5%85%B7%E4%BD%BF%E7%94%A8/">工具使用</a>
+  </div>
+
+
+    
+        <div class="counter-tag counter">
+    <!-- 别忘记这个类名... post-title-link -->
+    <span id="/2017/01/01/tensorflow-cnn-example-2/" class="leancloud_visitors article-hits post-title-link"
+           data-flag-title="TensorFlow练习2-CNNs实现分类">
+        次阅读
+    </span>
+
+  </div>
+
+    
+
+  </div>
+  
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      TensorFlow练习2-CNNs实现分类
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+        
+        <blockquote>
+<p>上一次主要是使用最简单的前馈神经网络，来对mnist数据进行了分类，测试正确率可以达到94-95%，这一节主要使用TensorFlow来实现卷积神经网络(CNN), 正确率可以到99%了，这已经接近最高了。 另外这一篇不记录CNN的原理以及训练方式，等段时间在整理。</p>
+</blockquote>
+<p>同前一篇NN，首先定义几个参数:</p>
+<span id="more"></span>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 图像的维度 28*28 -&gt;784</span></span><br><span class="line"><span class="attr">x_img</span> = <span class="number">28</span></span><br><span class="line"><span class="attr">y_img</span> = <span class="number">28</span></span><br><span class="line"><span class="attr">n_classes</span> = <span class="number">10</span></span><br></pre></td></tr></table></figure>
+<p>接下来定义几个函数，方便使用，一些注释说明，在代码中说明:</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">def</span> weight_variable(shape):</span><br><span class="line">    <span class="comment"># 初始化卷积核的权重参数，一般使用高斯正太分布随机值</span></span><br><span class="line">    <span class="attribute">initial</span> = tf.truncated_normal(shape, stddev=<span class="number">0</span>.<span class="number">1</span>)</span><br><span class="line">    <span class="attribute">return</span> tf.Variable(initial, name=<span class="string">&quot;W&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="attribute">def</span> bias_variable(shape):</span><br><span class="line">    <span class="comment"># 定义卷积操作之后的偏置项，初始化为一个常数即可</span></span><br><span class="line">    <span class="attribute">initial</span> = tf.constant(<span class="number">0</span>.<span class="number">1</span>, shape=shape)</span><br><span class="line">    <span class="attribute">return</span> tf.Variable(initial, name=<span class="string">&quot;bias&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="attribute">def</span> conv<span class="number">2</span>d(x, W):</span><br><span class="line">    <span class="comment"># 定义卷积操作,直接使用tf的函数即可</span></span><br><span class="line">    <span class="comment"># x和W的参数都要求是4维的tensor</span></span><br><span class="line">    <span class="comment"># strides是卷积滑动的窗口的跨度，其中strides[0],与strides[3]一般为1, strides[1],strides[2]为每次滑动的height和width</span></span><br><span class="line">    <span class="comment"># padding 有两个取值: SAME:表示卷积之后结果的维度与X相同，是宽卷积，VALID则表示窄卷积，结果维度比X小。</span></span><br><span class="line"></span><br><span class="line">    <span class="attribute">return</span> tf.nn.conv<span class="number">2</span>d(x, W, strides=[<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>], padding=<span class="string">&quot;SAME&quot;</span>, name=<span class="string">&quot;conv2d&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="attribute">def</span> max_pool(x):</span><br><span class="line">    <span class="comment"># 对卷积之后结果进行pool的层</span></span><br><span class="line">    <span class="comment"># ksize 是取多大的块作为pool的单元，一般ksize[0] = ksize[3] =1, 中间两项为表示pool单元为2X2,就是取这四个值的最大值</span></span><br><span class="line">    <span class="comment"># strides 和 padding 与上述卷积操作含义相同</span></span><br><span class="line"></span><br><span class="line">    <span class="attribute">return</span> tf.nn.max_pool(x, ksize=[<span class="number">1</span>,<span class="number">2</span>,<span class="number">2</span>,<span class="number">1</span>], strides=[<span class="number">1</span>,<span class="number">2</span>,<span class="number">2</span>,<span class="number">1</span>], padding=<span class="string">&quot;SAME&quot;</span>, name=<span class="string">&quot;pooled&quot;</span>)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>然后开始构造CNN的输入输出:</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">xs</span> = tf.placeholder(tf.float32, [None, x_img * y_img]) <span class="comment"># shape: 784</span></span><br><span class="line"><span class="attr">ys</span> = tf.placeholder(tf.float32, [None, n_classes]) <span class="comment"># 10</span></span><br><span class="line"><span class="attr">keep_prob</span> = tf.placeholder(tf.float32)</span><br></pre></td></tr></table></figure>
+<p>这里需要注意的是是<code>tf.nn.conv2d</code>的参数，先看看它的文档:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Signature: tf.nn.conv2d(<span class="built_in">input</span>, <span class="built_in">filter</span>, strides, padding, use_cudnn_on_gpu=<span class="literal">None</span>, data_format=<span class="literal">None</span>, name=<span class="literal">None</span>)</span><br><span class="line">Docstring:</span><br><span class="line">Computes a <span class="number">2</span>-D convolution given <span class="number">4</span>-D `<span class="built_in">input</span>` <span class="keyword">and</span> `<span class="built_in">filter</span>` tensors.</span><br><span class="line">Given an <span class="built_in">input</span> tensor of shape `[batch, in_height, in_width, in_channels]`</span><br><span class="line"><span class="keyword">and</span> a <span class="built_in">filter</span> / kernel tensor of shape</span><br><span class="line">`[filter_height, filter_width, in_channels, out_channels]`</span><br></pre></td></tr></table></figure>
+<p>也就说，<code>conv2d</code>的Input的输入是4维的，分别是:</p>
+<ul>
+<li>batch_size: 数据量，这里表示有几张图片</li>
+<li>in_height: 输入矩阵的height</li>
+<li>in_width: 输入矩阵的width</li>
+<li>in_channels: 输入数据的厚度，也叫通道，在黑白图片里面只有为1, RGB图片里面为3。表示一个data的厚度，卷积的时候，需要一层一层操作。</li>
+</ul>
+<p>同样的，卷积核也是4维数据:</p>
+<ul>
+<li>filter_height: 卷积核的维度-height</li>
+<li>filter_width: 卷积核的维度-width</li>
+<li>in_channels: 表示输入数据的通道或者厚度，与input的in_channels保持一致</li>
+<li>out_channels: 卷积之后的输出的通道数或者厚度，可以理解为 每个卷积单元对输入数据卷积一次，得到一层。out_channels就代表有多少个卷积单元。</li>
+</ul>
+<p>卷积层之后，是池化层，主要是对特征进行降维，函数max_pool的参数相对于卷积理解简单些，下面代码中也会给出具体的维度。 因为原始数据是28×28的向量，我们需要reshape之后为[28,28]的矩阵，以便进行卷积乘法:</p>
+<figure class="highlight vala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">x_image = tf.reshape(xs, [<span class="number">-1</span>, <span class="number">28</span>,<span class="number">28</span>, <span class="number">1</span>])</span><br><span class="line"><span class="meta"># 第一项的-1,表示任意维度，可以理解为，将原始748的向量转化的时候，优先考虑后面的参数，最后剩下多少就是-1这一项的数值</span></span><br><span class="line"><span class="meta"># 比如在这里在-1这一项就是:  batch_size * 748 / 28 /28 /1 = batch_size, 因此这里表示就为batch_size,</span></span><br><span class="line"><span class="meta"># 第二项的与第三项的表示28 × 28，为图片的矩阵。最后一项的1表示通道数目，用1即可。</span></span><br></pre></td></tr></table></figure>
+<p>下面我们开始构造网络，这里我们构造两个卷积层，以及池化，提取到特征之后，之后再加含有一个隐层的普通前馈神经网络进行分类。 先用TensorFlow构造两个卷积层：</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># conv_1 layer</span></span><br><span class="line"><span class="attribute">with</span> tf.name_scope(&#x27;conv-layer-<span class="number">1</span>&#x27;):</span><br><span class="line">    <span class="attribute">W_conv1</span> = weight_variable([<span class="number">5</span>,<span class="number">5</span>,<span class="number">1</span>,<span class="number">32</span>]) # 卷积核为<span class="number">5</span>X<span class="number">5</span>，in_size=<span class="number">1</span>, outsize=<span class="number">32</span> :  convolutions units</span><br><span class="line">    <span class="attribute">b_conv1</span> = bias_variable([<span class="number">32</span>]) # 卷积之后加入偏置，因为输出的通道或者厚度是<span class="number">32</span>,因此偏置也是<span class="number">32</span></span><br><span class="line">    <span class="attribute">h_conv1</span> = tf.nn.relu(conv<span class="number">2</span>d(x_image, W_conv<span class="number">1</span>) + b_conv<span class="number">1</span>) # image是<span class="number">28</span>*<span class="number">28</span>*<span class="number">1</span>, 经过卷积之后，变为: <span class="number">28</span> * <span class="number">28</span> * <span class="number">32</span></span><br><span class="line">    <span class="attribute">h_pooled_1</span> = max_pool(h_conv<span class="number">1</span>) # 池化层取得<span class="number">2</span>X<span class="number">2</span>的矩阵，因此池化之后，height和weight各缩小一半，变为<span class="number">14</span>*<span class="number">14</span>*<span class="number">32</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># conv_2 layer</span></span><br><span class="line"><span class="attribute">with</span> tf.name_scope(&#x27;conv-layer-<span class="number">2</span>&#x27;):</span><br><span class="line">    <span class="attribute">W_conv2</span> = weight_variable([<span class="number">5</span>,<span class="number">5</span>,<span class="number">32</span>,<span class="number">64</span>]) # 接conv_<span class="number">1</span>layer的h_pooled_<span class="number">1</span>: in_size=<span class="number">32</span>, 这一卷积层继续抽取特征: outsize=<span class="number">64</span></span><br><span class="line">    <span class="attribute">b_conv2</span> = bias_variable([<span class="number">64</span>])</span><br><span class="line">    <span class="attribute">h_conv2</span> = tf.nn.relu(conv<span class="number">2</span>d(h_pooled_<span class="number">1</span>, W_conv<span class="number">2</span>) + b_conv<span class="number">2</span>) # h_pool_<span class="number">1</span>维度为: <span class="number">14</span> * <span class="number">14</span> *<span class="number">32</span>, 卷积之后变为<span class="number">64</span>通道，因此为:<span class="number">14</span> * <span class="number">14</span> *<span class="number">64</span></span><br><span class="line">    <span class="attribute">h_pooled_2</span> = max_pool(h_conv<span class="number">2</span>) # 池化层仍为: <span class="number">2</span>X<span class="number">2</span>的矩阵，得到的为<span class="number">7</span> * <span class="number">7</span> * <span class="number">64</span>三维特征</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>两个卷积-池化结束之后，后面就是加一个普通的前馈神经网络进行分类，有一点需要注意的就是FNN的输入是向量，因此还需要reshape:</p>
+<figure class="highlight nix"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="comment"># fnn layer</span></span><br><span class="line"><span class="keyword">with</span> tf.name_scope(&#x27;nn-layer-<span class="number">1</span>&#x27;):</span><br><span class="line">    <span class="attr">W_fun1</span> = weight_variable([<span class="number">7</span>*<span class="number">7</span>*<span class="number">64</span>, <span class="number">1024</span>]) <span class="comment"># 1024是hidden units,</span></span><br><span class="line">    <span class="attr">b_fun1</span> = bias_variable([<span class="number">1024</span>])</span><br><span class="line">    <span class="attr">h_pool2_flat</span> = tf.reshape(h_pooled_2, [-<span class="number">1</span>, <span class="number">7</span>*<span class="number">7</span>*<span class="number">64</span>]) <span class="comment"># 将[7,7,64]的三维特征，转为一维向量 7*7*64,就相当于 flat的过程</span></span><br><span class="line">    <span class="attr">h_fun2</span> = tf.nn.relu(tf.matmul(h_pool2_flat, W_fun1) + b_fun1) <span class="comment">#激活函数</span></span><br><span class="line">    <span class="attr">h_fun2_drop</span> = tf.nn.dropout(h_fun2, keep_prob) <span class="comment"># 这里加了drop_out,防止过拟合</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># fnn layer</span></span><br><span class="line"><span class="keyword">with</span> tf.name_scope(&#x27;nn-layer-<span class="number">2</span>&#x27;):</span><br><span class="line">    <span class="attr">W_fun2</span> = weight_variable([<span class="number">1024</span>, <span class="number">10</span>])  <span class="comment"># 隐层-输出层</span></span><br><span class="line">    <span class="attr">b_fun2</span> = bias_variable([<span class="number">10</span>])</span><br><span class="line">    <span class="attr">prediction</span> = tf.nn.softmax(tf.matmul(h_fun2_drop, W_fun2) + b_fun2) <span class="comment"># softmax分类</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>到此，CNN基本构造完成，剩下的cost, train, accuracy与普通的fnn一样了，有一点不同的是，这里的优化方式不再使用SGD而是Adam，速度要快一些。 完整代码如下:</p>
+<figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br></pre></td><td class="code"><pre><span class="line">#!/usr/bin/env <span class="keyword">python</span></span><br><span class="line"># encodin<span class="variable">g:</span> utf-<span class="number">8</span></span><br><span class="line"></span><br><span class="line">import tensorflow <span class="keyword">as</span> <span class="keyword">tf</span></span><br><span class="line">from tensorflow.examples.tutorials.mnist import input_data</span><br><span class="line"></span><br><span class="line">mnist = input_data.read_data_sets(<span class="string">&#x27;MNIST_data&#x27;</span>, one_hot=True)</span><br><span class="line"></span><br><span class="line">def weight_variable(shape):</span><br><span class="line">    initial = <span class="keyword">tf</span>.truncated_normal(shape, stddev=<span class="number">0.1</span>)</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">tf</span>.Variable(initial, name=<span class="string">&quot;W&quot;</span>)</span><br><span class="line"></span><br><span class="line">def bias_variable(shape):</span><br><span class="line">    initial = <span class="keyword">tf</span>.constant(<span class="number">0.1</span>, shape=shape)</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">tf</span>.Variable(initial, name=<span class="string">&quot;bias&quot;</span>)</span><br><span class="line"></span><br><span class="line">def conv2d(<span class="keyword">x</span>, W):</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">tf</span>.<span class="keyword">nn</span>.conv2d(<span class="keyword">x</span>, W, strides=[<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>], padding=<span class="string">&quot;SAME&quot;</span>, name=<span class="string">&quot;conv2d&quot;</span>)</span><br><span class="line"></span><br><span class="line">def max_pool(<span class="keyword">x</span>):</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">tf</span>.<span class="keyword">nn</span>.max_pool(<span class="keyword">x</span>, ksize=[<span class="number">1</span>,<span class="number">2</span>,<span class="number">2</span>,<span class="number">1</span>], strides=[<span class="number">1</span>,<span class="number">2</span>,<span class="number">2</span>,<span class="number">1</span>], padding=<span class="string">&quot;SAME&quot;</span>, name=<span class="string">&quot;pooled&quot;</span>)</span><br><span class="line"></span><br><span class="line">xs = <span class="keyword">tf</span>.placeholder(<span class="keyword">tf</span>.float32, [None, <span class="number">784</span>])</span><br><span class="line">ys = <span class="keyword">tf</span>.placeholder(<span class="keyword">tf</span>.float32, [None, <span class="number">10</span>])</span><br><span class="line">keep_prob = <span class="keyword">tf</span>.placeholder(<span class="keyword">tf</span>.float32)</span><br><span class="line">x_image = <span class="keyword">tf</span>.reshape(xs, [-<span class="number">1</span>, <span class="number">28</span>,<span class="number">28</span>, <span class="number">1</span>])</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"># conv_1 layer</span><br><span class="line">with <span class="keyword">tf</span>.name_scope(<span class="string">&#x27;conv-layer-1&#x27;</span>):</span><br><span class="line">    W_conv1 = weight_variable([<span class="number">5</span>,<span class="number">5</span>,<span class="number">1</span>,<span class="number">32</span>]) # outsize=<span class="number">32</span> :  convolutions units</span><br><span class="line">    b_conv1 = bias_variable([<span class="number">32</span>])</span><br><span class="line">    h_conv1 = <span class="keyword">tf</span>.<span class="keyword">nn</span>.relu(conv2d(x_image, W_conv1) + b_conv1) # <span class="number">28</span> * <span class="number">28</span> * <span class="number">32</span></span><br><span class="line">    h_pooled_1 = max_pool(h_conv1) # <span class="number">14</span>*<span class="number">14</span>*<span class="number">32</span></span><br><span class="line"></span><br><span class="line"># conv_2 layer</span><br><span class="line">with <span class="keyword">tf</span>.name_scope(<span class="string">&#x27;conv-layer-2&#x27;</span>):</span><br><span class="line">    W_conv2 = weight_variable([<span class="number">5</span>,<span class="number">5</span>,<span class="number">32</span>,<span class="number">64</span>]) # outsize=<span class="number">64</span></span><br><span class="line">    b_conv2 = bias_variable([<span class="number">64</span>])</span><br><span class="line">    h_conv2 = <span class="keyword">tf</span>.<span class="keyword">nn</span>.relu(conv2d(h_pooled_1, W_conv2) + b_conv2) # <span class="number">14</span> * <span class="number">14</span> *<span class="number">64</span></span><br><span class="line">    h_pooled_2 = max_pool(h_conv2) # <span class="number">7</span> * <span class="number">7</span> * <span class="number">64</span></span><br><span class="line"></span><br><span class="line"># func1 layer</span><br><span class="line">with <span class="keyword">tf</span>.name_scope(<span class="string">&#x27;nn-layer-1&#x27;</span>):</span><br><span class="line">    W_fun1 = weight_variable([<span class="number">7</span>*<span class="number">7</span>*<span class="number">64</span>, <span class="number">1024</span>])</span><br><span class="line">    b_fun1 = bias_variable([<span class="number">1024</span>])</span><br><span class="line">    h_pool2_flat = <span class="keyword">tf</span>.reshape(h_pooled_2, [-<span class="number">1</span>, <span class="number">7</span>*<span class="number">7</span>*<span class="number">64</span>])</span><br><span class="line">    h_fun2 = <span class="keyword">tf</span>.<span class="keyword">nn</span>.relu(<span class="keyword">tf</span>.matmul(h_pool2_flat, W_fun1) + b_fun1)</span><br><span class="line">    h_fun2_drop = <span class="keyword">tf</span>.<span class="keyword">nn</span>.dropout(h_fun2, keep_prob)</span><br><span class="line"></span><br><span class="line"># func2 layer</span><br><span class="line">with <span class="keyword">tf</span>.name_scope(<span class="string">&#x27;nn-layer-2&#x27;</span>):</span><br><span class="line">    W_fun2 = weight_variable([<span class="number">1024</span>, <span class="number">10</span>])</span><br><span class="line">    b_fun2 = bias_variable([<span class="number">10</span>])</span><br><span class="line">    prediction = <span class="keyword">tf</span>.<span class="keyword">nn</span>.softmax(<span class="keyword">tf</span>.matmul(h_fun2_drop, W_fun2) + b_fun2)</span><br><span class="line"></span><br><span class="line">cross_entropy = <span class="keyword">tf</span>.reduce_mean(-<span class="keyword">tf</span>.reduce_sum(ys * <span class="keyword">tf</span>.<span class="built_in">log</span>(prediction)))</span><br><span class="line">train_step = <span class="keyword">tf</span>.train.AdamOptimizer(<span class="number">1</span><span class="keyword">e</span>-<span class="number">04</span>).minimize(cross_entropy)</span><br><span class="line"></span><br><span class="line">## accuracy</span><br><span class="line">correct_prediction = <span class="keyword">tf</span>.equal(<span class="keyword">tf</span>.argmax(prediction, <span class="number">1</span>), <span class="keyword">tf</span>.argmax(ys, <span class="number">1</span>))</span><br><span class="line">accuracy = <span class="keyword">tf</span>.reduce_mean(<span class="keyword">tf</span>.cast(correct_prediction, <span class="keyword">tf</span>.float32))</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">import time</span><br><span class="line">n_epochs = <span class="number">15</span></span><br><span class="line">batch_size = <span class="number">100</span></span><br><span class="line"></span><br><span class="line">with <span class="keyword">tf</span>.Session() <span class="keyword">as</span> ses<span class="variable">s:</span></span><br><span class="line">    sess.run(<span class="keyword">tf</span>.global_variables_initializer())</span><br><span class="line">    <span class="keyword">st</span> = time.time()</span><br><span class="line">    <span class="keyword">for</span> epoch in <span class="built_in">range</span>(n_epochs):</span><br><span class="line">        n_batch = mnist.train.num_examples / batch_size</span><br><span class="line">        <span class="keyword">for</span> i in <span class="built_in">range</span>(n_batch):</span><br><span class="line">            batch_xs, batch_ys = mnist.train.next_batch(batch_size)</span><br><span class="line">            sess.run(train_step, feed_dict=&#123;<span class="keyword">x</span><span class="variable">s:</span> batch_xs, <span class="keyword">y</span><span class="variable">s:</span> batch_ys, keep_pro<span class="variable">b:0</span>.<span class="number">6</span>&#125;)</span><br><span class="line"></span><br><span class="line">        <span class="keyword">print</span> <span class="string">&#x27;epoch&#x27;</span>, <span class="number">1</span>+epoch, <span class="string">&#x27;accuracy:&#x27;</span>, sess.run(accuracy, feed_dict=&#123;keep_pro<span class="variable">b:1</span>.<span class="number">0</span>, <span class="keyword">x</span><span class="variable">s:</span> mnist.test.images, <span class="keyword">y</span><span class="variable">s:</span> mnist.test.labels&#125;)</span><br><span class="line">    end = time.time()</span><br><span class="line"></span><br><span class="line">    <span class="keyword">print</span> <span class="string">&#x27;*&#x27;</span> * <span class="number">30</span></span><br><span class="line">    <span class="keyword">print</span> <span class="string">&#x27;training finish.\ncost time:&#x27;</span>, <span class="keyword">int</span>(end-<span class="keyword">st</span>) , <span class="string">&#x27;seconds;\naccuracy:&#x27;</span>, sess.run(accuracy, feed_dict=&#123;keep_pro<span class="variable">b:1</span>.<span class="number">0</span>, <span class="keyword">x</span><span class="variable">s:</span> mnist.test.images, <span class="keyword">y</span><span class="variable">s:</span> mnist.test.labels&#125;)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>效果也很好， 仅仅这么简单的结构，迭代了15次，就可以达到99%, 通过调节参数，或许可以更高：</p>
+<figure class="highlight ldif"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">epoch 1 accuracy</span>: 0.9565</span><br><span class="line"><span class="attribute">epoch 2 accuracy</span>: 0.9717</span><br><span class="line"><span class="attribute">epoch 3 accuracy</span>: 0.9788</span><br><span class="line"><span class="attribute">epoch 4 accuracy</span>: 0.9799</span><br><span class="line"><span class="attribute">epoch 5 accuracy</span>: 0.9835</span><br><span class="line"><span class="attribute">epoch 6 accuracy</span>: 0.9856</span><br><span class="line"><span class="attribute">epoch 7 accuracy</span>: 0.987</span><br><span class="line"><span class="attribute">epoch 8 accuracy</span>: 0.9899</span><br><span class="line"><span class="attribute">epoch 9 accuracy</span>: 0.9886</span><br><span class="line"><span class="attribute">epoch 10 accuracy</span>: 0.9892</span><br><span class="line"><span class="attribute">epoch 11 accuracy</span>: 0.9903</span><br><span class="line"><span class="attribute">epoch 12 accuracy</span>: 0.9892</span><br><span class="line"><span class="attribute">epoch 13 accuracy</span>: 0.9897</span><br><span class="line"><span class="attribute">epoch 14 accuracy</span>: 0.99</span><br><span class="line"><span class="attribute">epoch 15 accuracy</span>: 0.9905</span><br><span class="line">******************************</span><br><span class="line"><span class="attribute">training finish.</span></span><br><span class="line"><span class="attribute">cost time</span>: 178 seconds;</span><br><span class="line"><span class="attribute">accuracy</span>: 0.9905</span><br></pre></td></tr></table></figure>
+<p>这一节主要是记录了如何使用TensorFlow写CNN，因为里面的参数困扰了好长时间，因此记录下来加深印象。</p>
+
+      
+    </div>
+
+
+    
+
+    
+	    <div class="article-footer-copyright">
+<!--<p>本文作者: shomy 发表于 <a href="http://shomy.top" target="_blank">个人博客</a></p> -->
+<p>
+本文标题: TensorFlow练习2-CNNs实现分类<br/>
+</p>
+<p>
+发布时间: 2017-01-01, 22:10:12<br/>
+<p>
+<p>
+最后更新: 2021-12-16, 23:11:45<br/>
+<p>
+本文链接: <a href="/2017/01/01/tensorflow-cnn-example-2/" target="_blank">http://shomy.top/2017/01/01/tensorflow-cnn-example-2/</a>
+</p>
+<p>非商业转载请注明作者及出处。商业转载请联系<a href="mailto:shomyliu@gmail.com">作者</a>本人。</p>
+</div>
+
+    
+
+    <footer class="article-footer">
+      
+        <a href="http://shomy.top/2017/01/01/tensorflow-cnn-example-2/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/DeepLearning/" rel="tag">DeepLearning</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/NN/" rel="tag">NN</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/TensorFlow/" rel="tag">TensorFlow</a></li></ul>
+
+    </footer>
+    
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2017/01/02/tensorflow-rnn-example-3/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          TensorFlow练习3-RNNs实现分类
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2017/01/01/tensorflow-fnn-example-1/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">TensorFlow练习1-前馈神经网络实现分类</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+
+
+<section id="comments">
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+<script>
+  var disqus_shortname = 'shomy';
+  
+  var disqus_url = 'http://shomy.top/2017/01/01/tensorflow-cnn-example-2/';
+  
+  (function(){
+    var dsq = document.createElement('script');
+    dsq.type = 'text/javascript';
+    dsq.async = true;
+    dsq.src = 'https://' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  }());
+</script>
+</section>
+
+
+
+
+</section>
+      </div>
+    </div>
+    
+    
+<a id="rocket" href="#top" ></a>
+
+<script src="https://cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <script src="http://cdn.htliu.cn/static/js/leancloud.js"></script>
+<script>AV.initialize("k883AKdzaz5jccQnH1eIrG2r-gzGzoHsz", "4HBQOmslEp3VdwK1SGL8vB9Y");</script>
+
+<script src="/js/Counter.js"></script>
+
+
+
+
+
+<script id="dsq-count-scr" src="//shomy.disqus.com/count.js" async></script>
+ 
+
+
+  <script src="https://cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.js"></script>
+  
+<script src="/js/fancybox.js"></script>
+
+
+
+
+  
+<script src="/js/search.js"></script>
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>使用coding/github的webhook实现自动化部署 | 天空的城</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="需求 一些代码托管网站比如coding.net&#x2F;github.com 等都提供了webhook的工具， 经常用于自动化部署。 之前写过一篇博客搭建git服务器以及web自动化部署 主要记录的是在自己服务器上如何搭建git服务，并且利用hook进行自动化部署。不过这种方式有个缺点，没有像github或者coding.net的web界面，管理起来可能稍微麻烦，因此我们还是习惯在github,codin">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用coding&#x2F;github的webhook实现自动化部署">
+<meta property="og:url" content="http://shomy.top/2017/09/29/codings-webhook/index.html">
+<meta property="og:site_name" content="天空的城">
+<meta property="og:description" content="需求 一些代码托管网站比如coding.net&#x2F;github.com 等都提供了webhook的工具， 经常用于自动化部署。 之前写过一篇博客搭建git服务器以及web自动化部署 主要记录的是在自己服务器上如何搭建git服务，并且利用hook进行自动化部署。不过这种方式有个缺点，没有像github或者coding.net的web界面，管理起来可能稍微麻烦，因此我们还是习惯在github,codin">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://cdn.htliu.cn/blog/coding-web-hook/webhook-1.png">
+<meta property="og:image" content="http://cdn.htliu.cn/blog/coding-web-hook/ssh-coding-1.png">
+<meta property="og:image" content="http://cdn.htliu.cn/blog/coding-web-hook/web-hook-new.png">
+<meta property="og:image" content="http://cdn.htliu.cn/blog/coding-web-hook/result-1.png">
+<meta property="article:published_time" content="2017-09-29T09:48:00.000Z">
+<meta property="article:modified_time" content="2021-12-16T15:11:45.653Z">
+<meta property="article:author" content="ShomyLiu">
+<meta property="article:tag" content="hook">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://cdn.htliu.cn/blog/coding-web-hook/webhook-1.png">
+  
+  
+    <link rel="icon" href="/image/favicon.ico">
+  
+
+  
+  <link href="https://cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.css" rel="stylesheet">
+  
+  <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  <link href="https://cdn.bootcss.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+<!-- Google Analytics -->
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-74368890-2', 'auto');
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+
+
+  
+
+  
+  <div class="site-search header-inner">
+    <div class="popup">
+        <span class="search-icon fa fa-search"></span>
+        <input type="text" id="local-search-input">
+        <div id="local-search-result"></div>
+        <span class="popup-btn-close">close</span>
+    </div>
+</div>
+
+
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      
+<header id="header">
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">天空的城</a>
+      </h1>
+      
+    </div>
+    <div id="header-menu">
+      <nav id="main-nav">
+        <ul>
+        
+          <li><a href="/"><i class="fa fa-home icon-setting"></i></a></li>
+        
+          <li><a href="/archives"><i class="fa fa-archive icon-setting"></i></a></li>
+        
+          <li><a href="/tags"><i class="fa fa-tag icon-setting"></i></a></li>
+        
+          <li><a href="/about"><i class="fa fa-user icon-setting"></i></a></li>
+        
+        
+          <li><a href="javascript:;" class="popup-trigger"><i class="fa fa-search > icon-setting"></i></a></li>
+        
+        </ul>
+      </nav>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-codings-webhook" class="article article-type-post" itemscope itemprop="blogPost">
+  
+  <div class="article-meta">
+    <a href="/2017/09/29/codings-webhook/" class="article-date">
+  <time datetime="2017-09-29T09:48:00.000Z" itemprop="datePublished">2017-09-29</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E5%B7%A5%E5%85%B7%E4%BD%BF%E7%94%A8/">工具使用</a>
+  </div>
+
+
+    
+        <div class="counter-tag counter">
+    <!-- 别忘记这个类名... post-title-link -->
+    <span id="/2017/09/29/codings-webhook/" class="leancloud_visitors article-hits post-title-link"
+           data-flag-title="使用coding/github的webhook实现自动化部署">
+        次阅读
+    </span>
+
+  </div>
+
+    
+
+  </div>
+  
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      使用coding/github的webhook实现自动化部署
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+            <div id="toc" class="toc-article">
+                <strong class="toc-title">文章目录</strong>
+                <ol class="post-toc"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E9%9C%80%E6%B1%82"><span class="post-toc-text">需求</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E6%93%8D%E4%BD%9C"><span class="post-toc-text">操作</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E6%80%BB%E7%BB%93"><span class="post-toc-text">总结</span></a></li></ol>
+            </div>
+        
+        
+        <h2 id="需求">需求</h2>
+<p>一些代码托管网站比如coding.net/github.com 等都提供了webhook的工具， 经常用于自动化部署。 之前写过一篇博客<a href="http://shomy.top/2016/04/14/git-server-hook/">搭建git服务器以及web自动化部署</a> 主要记录的是在自己服务器上如何搭建git服务，并且利用hook进行自动化部署。不过这种方式有个缺点，没有像github或者coding.net的web界面，管理起来可能稍微麻烦，因此我们还是习惯在github,coding.net上进行代码托管。然后再部署到服务器上，这样有些不方便。还好这些托管网站均提供了webhook的工具，功能与git的hook一致。 <span id="more"></span></p>
+<p>因此可以用来做自动化部署，用一张图来说明区别(参考<a target="_blank" rel="noopener" href="https://laravel-china.org/topics/2096/using-webhook-to-realize-automatic-deployment-of-online-server">1</a>]:</p>
+<p><img src="http://cdn.htliu.cn/blog/coding-web-hook/webhook-1.png" /> 这样以来， 开发者只需要push代码到github上即可，无需在服务器操作，即可将服务器代码同步最新状态。原理很简单，当coding.net收到<code>PUSH</code>或者<code>PR</code>之后，向服务器发起一个<code>POST</code>的请求， 服务器执行<code>git pull</code>的操作，拉取最新代码。 下面记录下总体的流程(github与coding.net操作基本相同，下面以coding.net为例)</p>
+<h2 id="操作">操作</h2>
+<p>基本流程分为以下几步: 1. 建立仓库，这一个没什么好说的，就是自己的项目 repo. 2. 将服务器的ssh公钥加入到项目的公钥: <img src="http://cdn.htliu.cn/blog/coding-web-hook/ssh-coding-1.png" /> 3. 建立WebHook <img src="http://cdn.htliu.cn/blog/coding-web-hook/web-hook-new.png" /> 4. 在服务器端写响应API 这部分就是写个响应POST请求的小程序就好，我这里用python的Flask来完成的。代码如下，其中使用了第三方执行命令库<code>sh</code>，可以方便执行一些Unix命令:</p>
+<p><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/env python</span></span><br><span class="line"><span class="comment"># encoding: utf-8</span></span><br><span class="line"><span class="keyword">from</span> flask <span class="keyword">import</span> Flask, request</span><br><span class="line"><span class="keyword">import</span> sh</span><br><span class="line"><span class="keyword">import</span> logging</span><br><span class="line">app = Flask(__name__)</span><br><span class="line"></span><br><span class="line"><span class="meta">@app.route(<span class="params"><span class="string">&#x27;/api/git_hook&#x27;</span>, methods=[<span class="string">&#x27;POST&#x27;</span>]</span>)</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">git_hook</span>():</span></span><br><span class="line">    token = request.form.get(<span class="string">&#x27;token&#x27;</span>, <span class="string">&#x27;&#x27;</span>) <span class="comment"># 提取token</span></span><br><span class="line">    <span class="keyword">if</span> <span class="string">&#x27;your-token&#x27;</span> == token:</span><br><span class="line">        sh.cd(<span class="string">&#x27;/var/www/html/web&#x27;</span>) <span class="comment"># 进入web项目的目录</span></span><br><span class="line">        <span class="comment"># 执行pull操作</span></span><br><span class="line">        sh.git.pull([<span class="string">&#x27;origin&#x27;</span>, <span class="string">&#x27;master&#x27;</span>])</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&#x27;&lt;pre&gt;pull&lt;/pre&gt;&#x27;</span></span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&#x27;&lt;pre&gt;Wrong Toen &lt;/pre&gt;&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&#x27;__main__&#x27;</span>:</span><br><span class="line">    app.run(port=<span class="number">5000</span>)</span><br></pre></td></tr></table></figure></p>
+<p>这里需要说明的是，服务器端的用户需要有项目目录的读写权限，最好直接把目录的own设置为用户。 之后直接执行该文件即可: <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">nohup python app.py <span class="number">2</span>&gt;&amp;<span class="number">1</span> &amp;</span><br></pre></td></tr></table></figure> 这样就可以在后台执行，端口是5000.</p>
+<ol start="5" type="1">
+<li><p>设置nginx域名转发 这一步其实就是Nginx的转发，将5000端口转到80端口，这样就可以使用域名访问了，直接在Nginx的server 80的配置文件，加上如下的一项:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">location /api &#123;</span><br><span class="line">    proxy_set_header    X-REAL-IP $remote_addr;</span><br><span class="line">    proxy_set_header    Host    $http_host;</span><br><span class="line">    proxy_pass          http://<span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span>:<span class="number">5000</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这样就可以直接使用域名<code>http://yoursite.com/api/git_hook</code>访问了，记得重启下nginx服务。</p></li>
+<li><p>测试 服务器的服务启动之后， 使用webhook做个测试， Test的部分是coding自己的测试，没有携带token。 <img src="http://cdn.htliu.cn/blog/coding-web-hook/result-1.png" /></p></li>
+</ol>
+<h2 id="总结">总结</h2>
+<p>这样就算完成了利用webhook的自动化部署的过程。 整体比较简单清晰。 这里需要提另外一个代码托管工具，<a target="_blank" rel="noopener" href="https://about.gitlab.com/">gitlab</a> 它除了github/coding.net的功能之外，提供了在自己服务器上搭建gitlab，同样可以拥有web管理的界面。 但是目前不直接用它的原因，就是这货比较吃配置，最小4G内存(包含SWAP)，而我现在的学生腾讯云服务器仅仅是1G内存，1核的CPU... 以后如果装备上去了 ，肯定会直接上gitlab. 一步到位。</p>
+
+      
+    </div>
+
+
+    
+
+    
+	    <div class="article-footer-copyright">
+<!--<p>本文作者: shomy 发表于 <a href="http://shomy.top" target="_blank">个人博客</a></p> -->
+<p>
+本文标题: 使用coding/github的webhook实现自动化部署<br/>
+</p>
+<p>
+发布时间: 2017-09-29, 17:48:00<br/>
+<p>
+<p>
+最后更新: 2021-12-16, 23:11:45<br/>
+<p>
+本文链接: <a href="/2017/09/29/codings-webhook/" target="_blank">http://shomy.top/2017/09/29/codings-webhook/</a>
+</p>
+<p>非商业转载请注明作者及出处。商业转载请联系<a href="mailto:shomyliu@gmail.com">作者</a>本人。</p>
+</div>
+
+    
+
+    <footer class="article-footer">
+      
+        <a href="http://shomy.top/2017/09/29/codings-webhook/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hook/" rel="tag">hook</a></li></ul>
+
+    </footer>
+    
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2017/12/05/Feature-Scaling-Batch-Norm/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          Feature Scaling 和 Batch Norm 笔记
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2017/08/17/python-tuple-assign/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">Python中tuple+=赋值的四个问题</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+
+
+<section id="comments">
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+<script>
+  var disqus_shortname = 'shomy';
+  
+  var disqus_url = 'http://shomy.top/2017/09/29/codings-webhook/';
+  
+  (function(){
+    var dsq = document.createElement('script');
+    dsq.type = 'text/javascript';
+    dsq.async = true;
+    dsq.src = 'https://' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  }());
+</script>
+</section>
+
+
+
+
+</section>
+      </div>
+    </div>
+    
+    
+<a id="rocket" href="#top" ></a>
+
+<script src="https://cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <script src="http://cdn.htliu.cn/static/js/leancloud.js"></script>
+<script>AV.initialize("k883AKdzaz5jccQnH1eIrG2r-gzGzoHsz", "4HBQOmslEp3VdwK1SGL8vB9Y");</script>
+
+<script src="/js/Counter.js"></script>
+
+
+
+
+
+<script id="dsq-count-scr" src="//shomy.disqus.com/count.js" async></script>
+ 
+
+
+  <script src="https://cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.js"></script>
+  
+<script src="/js/fancybox.js"></script>
+
+
+
+
+  
+<script src="/js/search.js"></script>
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

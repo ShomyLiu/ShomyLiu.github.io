@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>由一个例子到python的名字空间 | 天空的城</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="前言  python里面最核心的内容就是:名字空间(namespace)   例子引入">
+<meta property="og:type" content="article">
+<meta property="og:title" content="由一个例子到python的名字空间">
+<meta property="og:url" content="http://shomy.top/2016/03/01/python-namespace-1/index.html">
+<meta property="og:site_name" content="天空的城">
+<meta property="og:description" content="前言  python里面最核心的内容就是:名字空间(namespace)   例子引入">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2016-03-01T10:15:50.000Z">
+<meta property="article:modified_time" content="2021-12-16T15:11:45.668Z">
+<meta property="article:author" content="ShomyLiu">
+<meta property="article:tag" content="python">
+<meta property="article:tag" content="namepsace">
+<meta name="twitter:card" content="summary">
+  
+  
+    <link rel="icon" href="/image/favicon.ico">
+  
+
+  
+  <link href="https://cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.css" rel="stylesheet">
+  
+  <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  <link href="https://cdn.bootcss.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+<!-- Google Analytics -->
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-74368890-2', 'auto');
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+
+
+  
+
+  
+  <div class="site-search header-inner">
+    <div class="popup">
+        <span class="search-icon fa fa-search"></span>
+        <input type="text" id="local-search-input">
+        <div id="local-search-result"></div>
+        <span class="popup-btn-close">close</span>
+    </div>
+</div>
+
+
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      
+<header id="header">
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">天空的城</a>
+      </h1>
+      
+    </div>
+    <div id="header-menu">
+      <nav id="main-nav">
+        <ul>
+        
+          <li><a href="/"><i class="fa fa-home icon-setting"></i></a></li>
+        
+          <li><a href="/archives"><i class="fa fa-archive icon-setting"></i></a></li>
+        
+          <li><a href="/tags"><i class="fa fa-tag icon-setting"></i></a></li>
+        
+          <li><a href="/about"><i class="fa fa-user icon-setting"></i></a></li>
+        
+        
+          <li><a href="javascript:;" class="popup-trigger"><i class="fa fa-search > icon-setting"></i></a></li>
+        
+        </ul>
+      </nav>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-python-namespace-1" class="article article-type-post" itemscope itemprop="blogPost">
+  
+  <div class="article-meta">
+    <a href="/2016/03/01/python-namespace-1/" class="article-date">
+  <time datetime="2016-03-01T10:15:50.000Z" itemprop="datePublished">2016-03-01</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">编程语言</a>
+  </div>
+
+
+    
+        <div class="counter-tag counter">
+    <!-- 别忘记这个类名... post-title-link -->
+    <span id="/2016/03/01/python-namespace-1/" class="leancloud_visitors article-hits post-title-link"
+           data-flag-title="由一个例子到python的名字空间">
+        次阅读
+    </span>
+
+  </div>
+
+    
+
+  </div>
+  
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      由一个例子到python的名字空间
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+            <div id="toc" class="toc-article">
+                <strong class="toc-title">文章目录</strong>
+                <ol class="post-toc"><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#%E5%89%8D%E8%A8%80"><span class="post-toc-text">前言</span></a></li><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#%E4%BE%8B%E5%AD%90%E5%BC%95%E5%85%A5"><span class="post-toc-text">例子引入</span></a></li><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#%E5%90%8D%E5%AD%97%E7%A9%BA%E9%97%B4namespace"><span class="post-toc-text">名字空间(Namespace)</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E5%88%86%E7%B1%BB"><span class="post-toc-text">分类</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E8%AE%BF%E9%97%AE%E6%96%B9%E5%BC%8F"><span class="post-toc-text">访问方式</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E7%94%9F%E5%AD%98%E5%91%A8%E6%9C%9F"><span class="post-toc-text">生存周期</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E8%B5%8B%E5%80%BC"><span class="post-toc-text">赋值</span></a></li></ol></li><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#%E6%80%BB%E7%BB%93"><span class="post-toc-text">总结</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E5%88%86%E6%9E%90%E4%BE%8B%E5%AD%90"><span class="post-toc-text">分析例子</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E5%BB%B6%E4%BC%B8"><span class="post-toc-text">延伸</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#%E4%B8%8E%E9%97%AD%E5%8C%85%E7%9A%84%E4%B8%8D%E5%90%8C"><span class="post-toc-text">与闭包的不同</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#locals%E4%B8%8Eglobals"><span class="post-toc-text">locals()与globals()</span></a></li></ol></li></ol></li><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#%E5%8F%82%E8%80%83"><span class="post-toc-text">参考</span></a></li></ol>
+            </div>
+        
+        
+        <h1 id="前言">前言</h1>
+<blockquote>
+<p><code>python</code>里面最核心的内容就是:名字空间(namespace)</p>
+</blockquote>
+<hr />
+<h1 id="例子引入">例子引入</h1>
+<span id="more"></span>
+<p>例1</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/env python</span></span><br><span class="line"><span class="comment"># encoding: utf-8</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">func1</span>():</span></span><br><span class="line">    x = <span class="number">1</span></span><br><span class="line">    <span class="built_in">print</span> <span class="built_in">globals</span>()</span><br><span class="line">    <span class="built_in">print</span> <span class="string">&#x27;before func1:&#x27;</span>, <span class="built_in">locals</span>()</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">func2</span>():</span></span><br><span class="line">        a = <span class="number">1</span></span><br><span class="line">        <span class="built_in">print</span> <span class="string">&#x27;before fun2:&#x27;</span>, <span class="built_in">locals</span>()</span><br><span class="line">        a += x</span><br><span class="line">        <span class="built_in">print</span> <span class="string">&#x27;after fun2:&#x27;</span>, <span class="built_in">locals</span>()</span><br><span class="line"></span><br><span class="line">    func2()</span><br><span class="line">    <span class="built_in">print</span> <span class="string">&#x27;after func1:&#x27;</span>, <span class="built_in">locals</span>()</span><br><span class="line">    <span class="built_in">print</span> <span class="built_in">globals</span>()</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&#x27;__main__&#x27;</span>:</span><br><span class="line">    func1()</span><br></pre></td></tr></table></figure>
+<p>可以正常输出结果：　并且需要注意，在<code>func2</code>使用<code>x</code>变量之前的名字空间就已经有了<code>'x':1</code>. <figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">before</span> func<span class="number">1</span>: &#123;&#x27;x&#x27;: <span class="number">1</span>&#125;</span><br><span class="line"><span class="attribute">before</span> fun<span class="number">2</span>: &#123;&#x27;a&#x27;: <span class="number">1</span>, &#x27;x&#x27;: <span class="number">1</span>&#125;</span><br><span class="line"><span class="attribute">after</span> fun<span class="number">2</span>: &#123;&#x27;a&#x27;: <span class="number">2</span>, &#x27;x&#x27;: <span class="number">1</span>&#125;</span><br><span class="line"><span class="attribute">after</span> func<span class="number">1</span>: &#123;&#x27;x&#x27;: <span class="number">1</span>, &#x27;func<span class="number">2</span>&#x27;: &lt;function func<span class="number">2</span> at <span class="number">0</span>x<span class="number">7</span>f<span class="number">7</span>c<span class="number">89700</span>b<span class="number">90</span>&gt;&#125;</span><br></pre></td></tr></table></figure></p>
+<p>稍微改一点:如下</p>
+<p>例2:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/env python</span></span><br><span class="line"><span class="comment"># encoding: utf-8</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">func1</span>():</span></span><br><span class="line">    x = <span class="number">1</span></span><br><span class="line">    <span class="built_in">print</span> <span class="string">&#x27;before func1:&#x27;</span>, <span class="built_in">locals</span>()</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">func2</span>():</span></span><br><span class="line">        <span class="built_in">print</span> <span class="string">&#x27;before fun2:&#x27;</span>, <span class="built_in">locals</span>()</span><br><span class="line">        x += x <span class="comment">#就是这里使用x其余地方不变</span></span><br><span class="line">        <span class="built_in">print</span> <span class="string">&#x27;after fun2:&#x27;</span>, <span class="built_in">locals</span>()</span><br><span class="line"></span><br><span class="line">    func2()</span><br><span class="line">    <span class="built_in">print</span> <span class="string">&#x27;after func1:&#x27;</span>, <span class="built_in">locals</span>()</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&#x27;__main__&#x27;</span>:</span><br><span class="line">    func1()</span><br></pre></td></tr></table></figure>
+<p>输出就开始报错: 而且在<code>before func2</code>也没有了<code>x</code>. <figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">before</span> func1: &#123;<span class="string">&#x27;x&#x27;</span>: <span class="number">1</span>&#125;</span><br><span class="line"><span class="keyword">before</span> fun2: &#123;&#125;</span><br><span class="line">Traceback (most recent <span class="keyword">call</span> last):</span><br><span class="line">  File &quot;test.py&quot;, <span class="type">line</span> <span class="number">18</span>, <span class="keyword">in</span> &lt;module&gt;</span><br><span class="line">    func1()</span><br><span class="line">  File &quot;test.py&quot;, <span class="type">line</span> <span class="number">14</span>, <span class="keyword">in</span> func1</span><br><span class="line">    func2()</span><br><span class="line">  File &quot;test.py&quot;, <span class="type">line</span> <span class="number">11</span>, <span class="keyword">in</span> func2</span><br><span class="line">    x += x</span><br><span class="line">UnboundLocalError: <span class="keyword">local</span> variable <span class="string">&#x27;x&#x27;</span> referenced <span class="keyword">before</span> assignment</span><br><span class="line"></span><br></pre></td></tr></table></figure> 这两个例子正好涉及到了<code>python</code>里面最核心的内容：<strong>名字空间</strong>，正好总结一下，然后在解释这几个例子。</p>
+<hr />
+<h1 id="名字空间namespace">名字空间(Namespace)</h1>
+<p>比如我们定义一个"变量" <figure class="highlight xquery"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">In [<span class="number">14</span>]: a</span><br><span class="line">NameError:<span class="built_in"> name</span> <span class="string">&#x27;a&#x27;</span> <span class="literal">is</span><span class="built_in"> not</span> defined</span><br></pre></td></tr></table></figure></p>
+<p>所以，这里更准确的叫法应该是<code>名字</code>。 一些语言中比如<code>c,c++,java</code> 变量名是内存地址别名, 而Python 的名字就是一个字符串，它与所指向的目标对象关联构成名字空间里面的一个键值对<code>&#123;name: object&#125;</code>，因此可以这么说，python的<code>名字空间</code>就是一个字典.。</p>
+<h2 id="分类">分类</h2>
+<p>python里面有很多名字空间，每个地方都有自己的名字空间，互不干扰，不同空间中的两个相同名字的变量之间没有任何联系一般有4种: <code>LEGB</code>四种 - <code>locals</code>: 函数内部的名字空间，一般包括函数的局部变量以及形式参数 - <code>enclosing function</code>: 在嵌套函数中外部函数的名字空间, 对<code>fun2</code>来说，　<code>fun1</code>的名字空间就是。 - <code>globals</code>: 当前的模块空间，模块就是一些<code>py</code>文件。也就是说，globals()类似全局变量。 - <code>__builtins__</code>: 内置模块空间，　也就是内置变量或者内置函数的名字空间。</p>
+<p>当程序引用某个变量的名字时，就会从当前名字空间开始搜索。搜索顺序规则便是: <code>LEGB</code>. <figure class="highlight xl"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">locals</span>  -&gt;</span> <span class="function"><span class="title">enclosing</span> function -&gt;</span> <span class="function"><span class="title">globals</span> -&gt;</span> __builtins</span><br></pre></td></tr></table></figure> 一层一层的查找，找到了之后，便停止搜索，如果最后没有找到,则抛出在<code>NameError</code>的异常。这里暂时先不讨论<code>赋值</code>操作。 比如例1中的<code>a = x + 1</code>　这行代码，需要引用<code>x</code>, 则按照<code>LEGB</code>的顺序查找，locals()也就是<code>func2</code>的名字空间没有，进而开始<code>E</code>，也就是<code>func1</code>,里面有，找到了，停止搜索，还有后续工作，就是把<code>x</code>也加到自己的名字空间，这也是为什么<code>fun2</code>的名字空间里面也有<code>x</code>的原因。</p>
+<h2 id="访问方式">访问方式</h2>
+<p>其实上面都已经说了，这里暂时简单列一下 1. 使用<code>locals()</code>访问局部命名空间 2. 使用<code>globals()</code>访问全局命名空间 这里有一点需要注意，就是涉及到了<code>from A import B</code>　和<code>import A</code>的一点区别。 <figure class="highlight go"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">#!/usr/bin/env python</span><br><span class="line"># encoding: utf<span class="number">-8</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> <span class="built_in">copy</span></span><br><span class="line">from <span class="built_in">copy</span> <span class="keyword">import</span> deepcopy</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">def <span class="function"><span class="keyword">func</span><span class="params">()</span>:</span></span><br><span class="line">    x = <span class="number">123</span></span><br><span class="line">    <span class="built_in">print</span> <span class="string">&#x27;func locals:&#x27;</span>,locals()</span><br><span class="line"></span><br><span class="line">s = <span class="string">&#x27;hello world&#x27;</span></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&#x27;__main__&#x27;</span>:</span><br><span class="line">    <span class="function"><span class="keyword">func</span><span class="params">()</span></span></span><br><span class="line">    <span class="built_in">print</span> <span class="string">&#x27;globals:&#x27;</span>, globals()</span><br></pre></td></tr></table></figure> 输出结果:</p>
+<figure class="highlight xquery"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">func locals: &#123;<span class="string">&#x27;x&#x27;</span>: <span class="number">123</span>&#125;</span><br><span class="line">globals: &#123;<span class="string">&#x27;__builtins__&#x27;</span>: &lt;<span class="keyword">module</span> <span class="string">&#x27;__builtin__&#x27;</span> (built-in)&gt;,</span><br><span class="line"> <span class="string">&#x27;__file__&#x27;</span>: <span class="string">&#x27;test.py&#x27;</span>,</span><br><span class="line"> <span class="string">&#x27;__package__&#x27;</span>: None, </span><br><span class="line"><span class="string">&#x27;s&#x27;</span>: <span class="string">&#x27;hello world&#x27;</span>,</span><br><span class="line"><span class="string">&#x27;func&#x27;</span>: &lt;<span class="keyword">function</span> func <span class="keyword">at</span> <span class="number">0x7f1c3d617c80</span>&gt;,</span><br><span class="line"> <span class="string">&#x27;deepcopy&#x27;</span>: &lt;<span class="keyword">function</span> deepcopy <span class="keyword">at</span> <span class="number">0x7f1c3d6177d0</span>&gt;, </span><br><span class="line"><span class="string">&#x27;__name__&#x27;</span>: <span class="string">&#x27;__main__&#x27;</span>,</span><br><span class="line"> <span class="string">&#x27;copy&#x27;</span>: &lt;<span class="keyword">module</span> <span class="string">&#x27;copy&#x27;</span> from <span class="string">&#x27;/usr/lib/python2.7/copy.pyc&#x27;</span>&gt;, </span><br><span class="line"><span class="string">&#x27;__doc__&#x27;</span>: None&#125;</span><br></pre></td></tr></table></figure>
+<p>从输出结果可以看出<code>globals()</code>包含了定义的函数，变量等。对于<code>'deepcopy': &lt;function deepcopy at 0x7f1c3d6177d0&gt;</code>可以看出<code>deepcopy</code>已经被导入到自己的名字空间了，而不是在<code>copy</code>里面。　而导入的<code>import copy</code>则还保留着自身的名字空间。因此要访问<code>copy</code>的方法，就需要使用<code>copy.function</code>了。这也就是为什么推荐使用<code>import module</code>的原因，因为<code>from A import B</code>这样会把<code>B</code>引入自身的名字空间，容易发生覆盖或者说污染。</p>
+<h2 id="生存周期">生存周期</h2>
+<p>每个名字空间都有自己的生存周期，如下: - <code>__builtins__</code>: 在<code>python</code>解释器启动的时候，便已经创建,直到退出 - <code>globals</code>: 在模块定义被读入时创建，通常也一直保存到解释器退出。 - <code>locals</code> : 在<strong>函数调用</strong>时创建, 直到函数返回，或者抛出异常之后，销毁。　另外递归函数每一次均有自己的名字空间。</p>
+<p>看着没有问题，但是有很多地方需要考虑。比如名字空间都是在代码编译时期确定的，而不是执行期间。这个也就可以解释为什么在例1中，<code>before func2:</code>的locals()里面包含了<code>x: 1</code>　这一项。再看下面这个， <figure class="highlight autoit"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">def <span class="function"><span class="keyword">func</span><span class="params">()</span>:</span></span><br><span class="line">    <span class="keyword">if</span> <span class="literal">False</span>:</span><br><span class="line">        x = <span class="number">10</span> <span class="meta">#该语句永远不执行</span></span><br><span class="line">    print x</span><br></pre></td></tr></table></figure> 肯定会报错的，但是错误不是</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">NameError: <span class="keyword">global</span> <span class="type">name</span> <span class="string">&#x27;x&#x27;</span> <span class="keyword">is</span> <span class="keyword">not</span> defined</span><br></pre></td></tr></table></figure>
+<p>而是:</p>
+<figure class="highlight livecodeserver"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">UnboundLocalError: <span class="built_in">local</span> <span class="built_in">variable</span> <span class="string">&#x27;x&#x27;</span> referenced <span class="keyword">before</span> assignment</span><br></pre></td></tr></table></figure>
+<p>虽然<code>x = 10</code>永远不会执行，但是在执行之前的编译阶段，就会把<code>x</code>作为<code>locals</code>变量，但是后面编译到<code>print</code>的时候，发现没有赋值,因此直接抛出异常，<code>locals()</code>里面便不会有<code>x</code>。这个就跟例子2中,<code>before func2</code>里面没有<code>x</code>是一个道理。</p>
+<h2 id="赋值">赋值</h2>
+<p>为什么要把赋值单独列出来呢，因为赋值操作对名字空间的影响很大，而且很多地方需要注意。 核心就是: <strong>赋值修改的是命名空间，而不是对象</strong>, 比如: <figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">a</span> = <span class="number">10</span></span><br></pre></td></tr></table></figure> 这个语句就是把<code>a</code>放入到了对应的命名空间, 然后让它指向一个值为10的整数对象。</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-tag">a</span> = <span class="selector-attr">[]</span></span><br><span class="line"><span class="selector-tag">a</span><span class="selector-class">.append</span>(<span class="number">1</span>)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>这个就是把<code>a</code>放入到名字空间，然后指向一个列表对象,　然而后面的<code>a.append(1)</code>这句话只是修改了<code>list</code>的内容，并没有修改它的内存地址。因此 并没有涉及到修改名字空间。 赋值操作有个特点就是: 赋值操作总是在最里层的作用域.也就说，只要编译到了有赋值操作，就会在当前名字空间内新创建一个名字，然后开始才绑定对象。即便该名字已存在于赋值语句发生的上一层作用域中；</p>
+<h1 id="总结">总结</h1>
+<h2 id="分析例子">分析例子</h2>
+<p>现在再看例子2, 就清晰多了， <code>x += x</code> 编译到这里时，发现了赋值语句，于是准备把<code>x</code>新加入最内层名字空间也就是<code>func2</code>中，即使上层函数已经存在了; 但是赋值的时候，又要用到<code>x</code>的值， 然后就会报错:</p>
+<figure class="highlight livecodeserver"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">UnboundLocalError: <span class="built_in">local</span> <span class="built_in">variable</span> <span class="string">&#x27;x&#x27;</span> referenced <span class="keyword">before</span> assignment</span><br></pre></td></tr></table></figure>
+<p>这样看起来好像就是 内部函数只可以读取外部函数的变量，而不能做修改，其实本质还是因为<code>赋值</code>涉及到了新建<code>locals()</code>的名字。 在稍微改一点: <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/env python</span></span><br><span class="line"><span class="comment"># encoding: utf-8</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">func1</span>():</span></span><br><span class="line">    x = [<span class="number">1</span>,<span class="number">2</span>]</span><br><span class="line">    <span class="built_in">print</span> <span class="string">&#x27;before func1:&#x27;</span>, <span class="built_in">locals</span>()</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">func2</span>():</span></span><br><span class="line">        <span class="built_in">print</span> <span class="string">&#x27;before fun2:&#x27;</span>, <span class="built_in">locals</span>()</span><br><span class="line">        x[<span class="number">0</span>] += x[<span class="number">0</span>] <span class="comment">#就是这里使用x[0]其余地方不变</span></span><br><span class="line">        <span class="built_in">print</span> <span class="string">&#x27;after fun2:&#x27;</span>, <span class="built_in">locals</span>()</span><br><span class="line"></span><br><span class="line">    func2()</span><br><span class="line">    <span class="built_in">print</span> <span class="string">&#x27;after func1:&#x27;</span>, <span class="built_in">locals</span>()</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&#x27;__main__&#x27;</span>:</span><br><span class="line">    func1()</span><br><span class="line"></span><br></pre></td></tr></table></figure> 这个结果就是：</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">before</span> func1: &#123;<span class="string">&#x27;x&#x27;</span>: [<span class="number">1</span>, <span class="number">2</span>]&#125;</span><br><span class="line"><span class="keyword">before</span> fun2: &#123;<span class="string">&#x27;x&#x27;</span>: [<span class="number">1</span>, <span class="number">2</span>]&#125;</span><br><span class="line"><span class="keyword">after</span> fun2: &#123;<span class="string">&#x27;x&#x27;</span>: [<span class="number">2</span>, <span class="number">2</span>]&#125;</span><br><span class="line"><span class="keyword">after</span> func1: &#123;<span class="string">&#x27;x&#x27;</span>: [<span class="number">2</span>, <span class="number">2</span>], <span class="string">&#x27;func2&#x27;</span>: &lt;<span class="keyword">function</span> func2 at <span class="number">0x7fb67b253b18</span>&gt;&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>咋正确了呢---这不应该要报错吗？ 其实不然，就跟上面的<code>a.append(1)</code>是一个道理。 <code>x[0] += x[0]</code> 这个并不是对<code>x</code>的赋值操作。按照<code>LEGB</code>原则， 搜到<code>func1</code>有变量<code>x</code>并且是个<code>list</code>, 然后将其加入到自己的<code>locals()</code>, 后面的<code>x[0] += x[0]</code>, 就开始读取<code>x</code>的元素，并没有影响<code>func2</code>的名字空间。另外无论<code>func1</code>与<code>func2</code>的名字空间的<code>x</code> 没有什么关系，只不过都是对<code>[1, 2]</code>这个列表对象的一个引用。 这个例子其实也给了我们一个启发，我们知道内部函数无法直接修改外部函数的变量值，如例2，如果借助<code>list</code>的话， 就可以了吧！比如把想要修改的变量塞到一个<code>list</code>里面，然后在内部函数里面做改变！当然<code>python3.x</code>里面有了<code>nonlocal</code>关键字，直接声明一下就可以修改了。看到这里，对作用域理解应该有一点点了吧。</p>
+<h2 id="延伸">延伸</h2>
+<h3 id="与闭包的不同">与闭包的不同</h3>
+<p>我们都知道闭包是把外部函数的值放到<code>func.func_closure</code>里面，为什么不像上面的例子一样直接放到函数的名字空间呢？ 这是因为<code>locals()</code>空间是在函数调用的时候才创建！ 而闭包只是返回了一个函数， 并没有调用，也就没有所谓的空间。</p>
+<h3 id="locals与globals">locals()与globals()</h3>
+<p>在最外层的模块空间里<code>locals()</code>就是<code>globals()</code></p>
+<figure class="highlight isbl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable"><span class="keyword">In</span></span> [<span class="number">2</span>]: <span class="function"><span class="title">locals</span>() <span class="variable">is</span> <span class="title">globals</span>()</span></span><br><span class="line"><span class="variable">Out</span>[<span class="number">2</span>]: <span class="variable"><span class="literal">True</span></span></span><br></pre></td></tr></table></figure>
+<p>另外我们可以手动修改<code>globals()</code>来创建名字</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">In <span class="selector-attr">[3]</span>: globals()<span class="selector-attr">[<span class="string">&#x27;a&#x27;</span>]</span> = <span class="string">&#x27;abcde&#x27;</span></span><br><span class="line">In <span class="selector-attr">[4]</span>: <span class="selector-tag">a</span></span><br><span class="line">Out<span class="selector-attr">[4]</span>: <span class="string">&#x27;abcde&#x27;</span></span><br></pre></td></tr></table></figure>
+<p>但是<code>locals()</code>在函数里面的话， 貌似是不起作用的，如下：</p>
+<figure class="highlight arduino"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">In [<span class="number">5</span>]: <span class="function">def <span class="title">func</span><span class="params">()</span>:</span></span><br><span class="line"><span class="function">   ...:     x =</span> <span class="number">10</span></span><br><span class="line">   ...:     print x</span><br><span class="line">   ...:     <span class="function">print <span class="title">locals</span><span class="params">()</span></span></span><br><span class="line"><span class="function">   ...:     locals()[<span class="string">&#x27;x&#x27;</span>] =</span> <span class="number">20</span></span><br><span class="line">   ...:     print x</span><br><span class="line">In [<span class="number">6</span>]: <span class="built_in">func</span>()</span><br><span class="line"><span class="number">10</span></span><br><span class="line">&#123;<span class="string">&#x27;x&#x27;</span>: <span class="number">10</span>&#125;</span><br><span class="line"><span class="number">10</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>这是因为解释器会将 locals 名字复制到 一个叫<code>FAST</code>的 区域来优化访问速度，而实际上解释器访问对象时，是从<code>FAST</code>区域里面读取的，而非<code>locals()</code>。所以直接修改<code>locals()</code>并不能影响<code>x</code>(可以使用<code>exec</code> 动态访问，不再细述)。 不过赋值操作，会同时刷新<code>locals()</code>和<code>FAST</code>区域。</p>
+<hr />
+<p>查了不少资料，说了这么多，我只想说，作为<code>python</code>最核心的东西，名字空间还有很多很多地方需要探究，比如 - 作用域(scope)与名字空间, 这里只是模糊了二者的区别 - 面向对象，也就是类的名字空间， 又有不一样的地方。。。</p>
+<p>学一点记录一点吧。</p>
+<h1 id="参考">参考</h1>
+<p><a target="_blank" rel="noopener" href="http://www.cnblogs.com/ashboy/archive/2013/03/10/2953002.html">1</a> <a target="_blank" rel="noopener" href="http://python.jobbole.com/81367/#article-comment">2</a> <a target="_blank" rel="noopener" href="http://www.cnblogs.com/livingintruth/p/3300469.html">3</a></p>
+
+      
+    </div>
+
+
+    
+
+    
+	    <div class="article-footer-copyright">
+<!--<p>本文作者: shomy 发表于 <a href="http://shomy.top" target="_blank">个人博客</a></p> -->
+<p>
+本文标题: 由一个例子到python的名字空间<br/>
+</p>
+<p>
+发布时间: 2016-03-01, 18:15:50<br/>
+<p>
+<p>
+最后更新: 2021-12-16, 23:11:45<br/>
+<p>
+本文链接: <a href="/2016/03/01/python-namespace-1/" target="_blank">http://shomy.top/2016/03/01/python-namespace-1/</a>
+</p>
+<p>非商业转载请注明作者及出处。商业转载请联系<a href="mailto:shomyliu@gmail.com">作者</a>本人。</p>
+</div>
+
+    
+
+    <footer class="article-footer">
+      
+        <a href="http://shomy.top/2016/03/01/python-namespace-1/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/namepsace/" rel="tag">namepsace</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/python/" rel="tag">python</a></li></ul>
+
+    </footer>
+    
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2016/03/03/hexo-in-coding-github/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          hexo同时部署到coding(gitcafe)和github
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2016/02/28/python-default-para/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">python默认参数问题及其简单应用</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+
+
+<section id="comments">
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+<script>
+  var disqus_shortname = 'shomy';
+  
+  var disqus_url = 'http://shomy.top/2016/03/01/python-namespace-1/';
+  
+  (function(){
+    var dsq = document.createElement('script');
+    dsq.type = 'text/javascript';
+    dsq.async = true;
+    dsq.src = 'https://' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  }());
+</script>
+</section>
+
+
+
+
+</section>
+      </div>
+    </div>
+    
+    
+<a id="rocket" href="#top" ></a>
+
+<script src="https://cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <script src="http://cdn.htliu.cn/static/js/leancloud.js"></script>
+<script>AV.initialize("k883AKdzaz5jccQnH1eIrG2r-gzGzoHsz", "4HBQOmslEp3VdwK1SGL8vB9Y");</script>
+
+<script src="/js/Counter.js"></script>
+
+
+
+
+
+<script id="dsq-count-scr" src="//shomy.disqus.com/count.js" async></script>
+ 
+
+
+  <script src="https://cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.js"></script>
+  
+<script src="/js/fancybox.js"></script>
+
+
+
+
+  
+<script src="/js/search.js"></script>
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

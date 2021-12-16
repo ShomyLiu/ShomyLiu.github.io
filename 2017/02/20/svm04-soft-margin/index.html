@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>机器学习技法笔记(5)-Soft Margin SVM | 天空的城</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="上节介绍的Kernel SVM的结尾，提到了overfit的问题，那是因为SVM要找到的分类面是必须把所有的训练数据分开，即使有一些噪音数据，或者说是错误标注的数据，也要&quot;坚持&quot;分开，这可能就会形成很复杂的边界，很容易形成overfit，如下:">
+<meta property="og:type" content="article">
+<meta property="og:title" content="机器学习技法笔记(5)-Soft Margin SVM">
+<meta property="og:url" content="http://shomy.top/2017/02/20/svm04-soft-margin/index.html">
+<meta property="og:site_name" content="天空的城">
+<meta property="og:description" content="上节介绍的Kernel SVM的结尾，提到了overfit的问题，那是因为SVM要找到的分类面是必须把所有的训练数据分开，即使有一些噪音数据，或者说是错误标注的数据，也要&quot;坚持&quot;分开，这可能就会形成很复杂的边界，很容易形成overfit，如下:">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://cdn.htliu.cn/svm04-1.png">
+<meta property="og:image" content="http://cdn.htliu.cn/svm04-2.png">
+<meta property="og:image" content="http://cdn.htliu.cn/svm04-3.png">
+<meta property="og:image" content="http://cdn.htliu.cn/svm04-8.png">
+<meta property="og:image" content="http://cdn.htliu.cn/svm04-4.png">
+<meta property="og:image" content="http://cdn.htliu.cn/svm04-5.png">
+<meta property="og:image" content="http://cdn.htliu.cn/svm04-6.png">
+<meta property="og:image" content="http://cdn.htliu.cn/svm04-9.png">
+<meta property="article:published_time" content="2017-02-20T08:30:32.000Z">
+<meta property="article:modified_time" content="2021-12-16T15:11:45.672Z">
+<meta property="article:author" content="ShomyLiu">
+<meta property="article:tag" content="machine learning">
+<meta property="article:tag" content="svm">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://cdn.htliu.cn/svm04-1.png">
+  
+  
+    <link rel="icon" href="/image/favicon.ico">
+  
+
+  
+  <link href="https://cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.css" rel="stylesheet">
+  
+  <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  <link href="https://cdn.bootcss.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+<!-- Google Analytics -->
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-74368890-2', 'auto');
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+
+
+  
+
+  
+  <div class="site-search header-inner">
+    <div class="popup">
+        <span class="search-icon fa fa-search"></span>
+        <input type="text" id="local-search-input">
+        <div id="local-search-result"></div>
+        <span class="popup-btn-close">close</span>
+    </div>
+</div>
+
+
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      
+<header id="header">
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">天空的城</a>
+      </h1>
+      
+    </div>
+    <div id="header-menu">
+      <nav id="main-nav">
+        <ul>
+        
+          <li><a href="/"><i class="fa fa-home icon-setting"></i></a></li>
+        
+          <li><a href="/archives"><i class="fa fa-archive icon-setting"></i></a></li>
+        
+          <li><a href="/tags"><i class="fa fa-tag icon-setting"></i></a></li>
+        
+          <li><a href="/about"><i class="fa fa-user icon-setting"></i></a></li>
+        
+        
+          <li><a href="javascript:;" class="popup-trigger"><i class="fa fa-search > icon-setting"></i></a></li>
+        
+        </ul>
+      </nav>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-svm04-soft-margin" class="article article-type-post" itemscope itemprop="blogPost">
+  
+  <div class="article-meta">
+    <a href="/2017/02/20/svm04-soft-margin/" class="article-date">
+  <time datetime="2017-02-20T08:30:32.000Z" itemprop="datePublished">2017-02-20</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/">读书笔记</a>
+  </div>
+
+
+    
+        <div class="counter-tag counter">
+    <!-- 别忘记这个类名... post-title-link -->
+    <span id="/2017/02/20/svm04-soft-margin/" class="leancloud_visitors article-hits post-title-link"
+           data-flag-title="机器学习技法笔记(5)-Soft Margin SVM">
+        次阅读
+    </span>
+
+  </div>
+
+    
+
+  </div>
+  
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      机器学习技法笔记(5)-Soft Margin SVM
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+        
+        <p>上节介绍的Kernel SVM的结尾，提到了overfit的问题，那是因为SVM要找到的分类面是必须把所有的训练数据分开，即使有一些噪音数据，或者说是错误标注的数据，也要"坚持"分开，这可能就会形成很复杂的边界，很容易形成overfit，如下:</p>
+<span id="more"></span>
+<p><img src="http://cdn.htliu.cn/svm04-1.png" /></p>
+<p>我们希望的是左边的分类面，而非右边的，虽然右边的<span class="math inline">\(E_{in} = 0\)</span>，也就是说希望对于一些错误的数据忽略掉，前面介绍PLA的变种Pocket的用的就是这种方式:</p>
+<p><img src="http://cdn.htliu.cn/svm04-2.png" /></p>
+<p>Pocket找的是分类错误点尽可能少的分类面，不一定必须完全分开，容许错误的发生。而我们之前的SVM均是要求所有的数据都必须分类正确，如果我们将Pocket与SVM结合，即允许发生错误，如下:</p>
+<p><img src="http://cdn.htliu.cn/svm04-3.png" /></p>
+<p>上式约束条件中，对于分类正确的点，仍然需要满足<span class="math inline">\(\geq 1\)</span>的条件，对于当前分类错误的点不加任何限制。所以目标函数中除了原先的<code>margin</code>，还必须加入了分类错误的个数，对整体做最小化。系数<span class="math inline">\(C\)</span>的作用则是一种对<code>margin</code>和犯错个数的一个折中。<span class="math inline">\(C\)</span>越大表示犯错误越少越好，犯错误个数重要性大于<code>margin</code>，如果太大了， 就容易过拟合了，反之<span class="math inline">\(C\)</span>越小表示希望<code>magin</code> 越宽越好，也就是说<span class="math inline">\(\mathbf{w}\)</span>越小越好，就是说对错误的惩罚很小，这样就会导致分类效果变差。 用<span class="math inline">\(C\)</span>表示更重视<span class="math inline">\(margin\)</span>还是重视犯错误的多少, 如下图:</p>
+<p><img src="http://cdn.htliu.cn/svm04-8.png" /></p>
+<p>对于新的优化问题。然而由于存在bool的运算<span class="math inline">\(\neq\)</span>，也就是说该问题是离散的，无法用二次规划QP来求解。此外，还有一个缺点，那就是对所有的错误都是一视同仁的，无论是距离边界近还是远，只要分类错误，都计算在内，也就是说无法区分大错小错。</p>
+<p>为了解决上述问题，引入变量<span class="math inline">\(\xi \geq 0\)</span> 表示不满足<span class="math inline">\(y_n(\mathbf{w}^T\mathbf{z}+b) \geq 1\)</span>的数据距离当前分类边界的距离，用来量化偏离的程度，也就是错误的大小，把原问题转为如下:</p>
+<p><span class="math display">\[\begin{align} \min\limits_{b,\mathbf{w},\xi} &amp; \quad \frac{1}{2}\mathbf{w}^T\mathbf{w}+C \cdot \sum\limits_{n=1}^N \xi_n \\ s.t. &amp; \quad y_n(\mathbf{w}^T{\mathbf{z}}_n+b) \geq 1 - \xi_n, for \ all \ n; \\ &amp; \quad \xi_n \geq 0, for \ all \ n\end{align}\]</span></p>
+<p>对于满足margin条件的点其<span class="math inline">\(\xi =0\)</span>, 不满足margin条件的其<span class="math inline">\(\xi &gt; 0\)</span>; 如下图:</p>
+<p><img src="http://cdn.htliu.cn/svm04-4.png" /></p>
+<p>图中有除了A,B两点之外的点均满足条件，<span class="math inline">\(\xi=0\)</span>; 而A点属于没有不满足margin条件的，B点属于分类错误，因此<span class="math inline">\(\xi_{A} &gt;0, \xi_B&gt;0\)</span>。</p>
+<p>上述的优化问题已经可以使用二次规划问题的解法去求解了，三个自变量:<span class="math inline">\(b,\mathbf{w},\xi\)</span>，一共有<span class="math inline">\(\tilde{d}+1+N\)</span>维；约束条件的个数为<span class="math inline">\(2N\)</span>个，按照前面的解法即可。</p>
+<p>我们把这种容许犯错的SVM成为<strong>Soft-Margin SVM(软间隔SVM)</strong>，与前面几节的<strong>Hard-Margin SVM</strong>相对，并且引入的<span class="math inline">\(\xi\)</span>也叫做 <strong>松弛变量</strong>，顾名思义，允许数据偏离margin, 例如出现上图中A,B那样的数据。</p>
+<p>上述的优化问题是Soft-Margin原始问题，下面考虑Soft-Margin的对偶问题(Dual)，同Hard-Margin，只需将两个约束条件加入到Lagrange Function:</p>
+<p><span class="math display">\[\begin{align}\mathcal{L}(b, \mathbf{w}, \xi, \alpha, \beta)  = &amp;\frac{1}{2}\mathbf{w}^T\mathbf{w}+C \cdot \sum\limits_{n=1}^N \xi_n \\&amp;+ \sum\limits_{n=1}^{N}\alpha_n(1-\xi_n-y_n(\mathbf{w}^T\mathbf{z}_n+b)) \\ &amp; +\sum\limits_{n=1}^{N}\beta_n(-\xi_n) \end{align} \]</span></p>
+<p>然后将原始问题转为如下的对偶问题:</p>
+<p><span class="math display">\[\max\limits_{\alpha_n \geq 0,\ \beta \geq 0}\left(\min\limits_{b, \mathbf{w}, \xi} \quad   \mathcal{L(b, \mathbf{w}, \xi, \alpha, \beta)}\right)\]</span></p>
+<p>优化思路同Hard-Margin的对偶问题相同，首先对内层最小化部分对变量求微分： <span class="math display">\[\begin{align}&amp; \frac{\partial \mathcal{L}}{\partial \xi_n} = C - \alpha_n - \beta_n = 0 \\ &amp; \Rightarrow  \beta_n=C-\alpha_n \end{align}\]</span></p>
+<p>这样利用这个条件，就可以向Hard-Margin消去<span class="math inline">\(b\)</span>一样去掉<span class="math inline">\(\beta_n\)</span>, 同时结合<span class="math inline">\(\beta_n \geq 0\)</span>可以得到$ 0 _n C$。</p>
+<p>整理一下式子，提取出<span class="math inline">\(\xi\)</span>的部分：<span class="math inline">\(\sum(C-\alpha_n-\beta_n) \xi_n\)</span>，已知最优解满足<span class="math inline">\(\alpha_n+\beta_n =C\)</span>， 因此<span class="math inline">\(\xi\)</span>部分可以消去，最终如下：</p>
+<p><span class="math display">\[\max\limits_{ 0 \leq \alpha_n \leq C}\left(\min\limits_{b, \mathbf{w}} \quad   \frac{1}{2}\mathbf{w}^T{\mathbf{w}} + \sum\limits_{n=1}^{N}\alpha_n(1-y_n(\mathbf{w}^T\mathbf{z}+b))\right)\]</span></p>
+<p>除了外层的<span class="math inline">\(\alpha_n\)</span>多了一个上限之外，与Hard-Margin的对偶问题完全一样，接下来对<span class="math inline">\(b, \mathbf{w}\)</span>分别求微分，然后去掉<span class="math inline">\(b,\mathbf{w}\)</span>，再将外层最大化稍微化简，最终转为如下的二次规划(QP)问题：(此过程与Dual SVM中完全一样，不再重写一遍):</p>
+<p><span class="math display">\[\begin{align} \min\limits_{\alpha} &amp; \quad  \frac{1}{2}\sum\limits_{n=1}^N\sum\limits_{m=1}^N \alpha_n\alpha_my_ny_m\mathbf{z}_n^T\mathbf{z}_m - \sum\limits_{n=1}^{N}\alpha_n \\ s.t. &amp; \quad \sum\limits_{n=1}^{N}\alpha_ny_n = 0; \\ &amp; \quad 0 \leq \alpha_n \leq C, \ n = 1,2...N \end{align}\]</span></p>
+<p>当然还有一些中间条件: <span class="math inline">\(\mathbf{w} = \sum \alpha_ny_n\mathbf{z}_n, \beta_n=C-\alpha_n\)</span>；</p>
+<p>到这里我们的问题转为了有<span class="math inline">\(N\)</span>个变量，<span class="math inline">\(2N+1\)</span>个约束条件的二次规划问题，表示出<span class="math inline">\(Q,p,A,c\)</span>然后使用某个QP Solver即可得到最优的<span class="math inline">\(\alpha\)</span>:</p>
+<p><img src="http://cdn.htliu.cn/svm04-5.png" /></p>
+<ul>
+<li>Q矩阵元素: <span class="math inline">\(q_{n,m} = y_ny_m\mathbf{z}_n^T\mathbf{z}_m\)</span></li>
+<li>$ p = -_N$</li>
+<li>对于<span class="math inline">\(A,c\)</span>，对应如下:
+<ul>
+<li><span class="math inline">\(a_{\geq} = y, c_{\geq} = 0\)</span></li>
+<li><span class="math inline">\(a_{\leq} = -y, c_{\leq} = 0\)</span></li>
+<li>对于<span class="math inline">\(\alpha \geq 0\)</span> 有<span class="math inline">\(a_n^T =\)</span> n-th unit dircection, $c_n = 0 $</li>
+<li>对于<span class="math inline">\(\alpha \leq C\)</span> 有<span class="math inline">\(a_n^T =\)</span> n-th unit direction, <span class="math inline">\(c_n = -C\)</span></li>
+</ul></li>
+</ul>
+<p>到此为止，我们得到了对偶问题的最优的<span class="math inline">\(\alpha\)</span>, 再结合上节的Kernel Trick, 我们得到了 <strong>Kernel Soft-Margin SVM</strong>,基本流程如下:</p>
+<p><img src="http://cdn.htliu.cn/svm04-6.png" /></p>
+<p>这里有一点不一样的地方是对<span class="math inline">\(b\)</span>的求解，回想之前是利用转化为拉格朗日对偶问题(min(max) <span class="math inline">\(\Leftrightarrow\)</span> max(min))时候，利用互补条件(complementary slackness)，参考<a href="http://shomy.top/2017/02/17/svm-02-dual/#模型求解">Dual SVM</a>, 但是Soft-Margin有两个条件，即:</p>
+<p><span class="math display">\[\begin{align} \alpha_n(1-\xi_n-y_n(\mathbf{w}^T\mathbf{z}_n+b)) &amp;=0 \\ \beta_n \xi_n = (C- \alpha_n)\xi_n &amp; =0\end{align}\]</span></p>
+<p>首先对第一个式子，对于SV(<span class="math inline">\(\alpha_s &gt; 0\)</span>)， 那么可以得到 <span class="math inline">\(b=y_s - y_s\xi_s - \mathbf{w}^T\mathbf{z}_s\)</span>，但是里面含有<span class="math inline">\(\xi\)</span>，无法求解。 再看第二个式子，对于<span class="math inline">\(\alpha_s &lt; C\)</span>的那部分SV(也叫free SV)，则有<span class="math inline">\(\xi_s = 0\)</span>，因此利用这部分SV， 加上Kernel Function便可得到<span class="math inline">\(b\)</span>：</p>
+<p><span class="math display">\[b=y_s - \mathbf{w}^T\mathbf{z}_s = y_s - \sum\limits_{free \ SV} \alpha_ny_nK(\mathbf{x}_n, \mathbf{x}_s)\]</span></p>
+<p>到这里基本完成了<strong>Soft-Margin SVM</strong>的算法，集对偶，核，Soft-Margin于一身，可以解决非线性问题，松弛变量允许噪音数据等，在实际分类问题中，应用很广泛。 不过需要注意的是这种SVM也有可能overfit的，因此需要仔细调整参数<span class="math inline">\(C\)</span>，以及Kernel Function的参数，一般使用模型验证(Validation)手段比如交叉验证去选择最好的参数。</p>
+<p>最后再提一下Soft-Margin 中的<span class="math inline">\(\alpha\)</span>的物理意义，看下图:</p>
+<p><img src="http://cdn.htliu.cn/svm04-9.png" /></p>
+<p>根据两个互补条件，可以得到三类点点:</p>
+<ul>
+<li>非SV(支撑向量): 也就是距离分离面比较远的那些数据，如图中的圈圈叉叉，对应的<span class="math inline">\(\alpha_n = 0, \xi_n = 0\)</span></li>
+<li>free SV: 也就是说<span class="math inline">\(\alpha_n &lt; C, \xi_n =0\)</span>，它们在边界上, 满足条件。图中方框标记的点，我们使用这些点计算的<span class="math inline">\(b\)</span>。</li>
+<li>bounded SV: <span class="math inline">\(\alpha_n =C, \xi_n &gt; 0\)</span>，这种类型的数据，不满足margin条件，或者分错类别的，如图中三角标记的。</li>
+</ul>
+
+      
+    </div>
+
+
+    
+
+    
+	    <div class="article-footer-copyright">
+<!--<p>本文作者: shomy 发表于 <a href="http://shomy.top" target="_blank">个人博客</a></p> -->
+<p>
+本文标题: 机器学习技法笔记(5)-Soft Margin SVM<br/>
+</p>
+<p>
+发布时间: 2017-02-20, 16:30:32<br/>
+<p>
+<p>
+最后更新: 2021-12-16, 23:11:45<br/>
+<p>
+本文链接: <a href="/2017/02/20/svm04-soft-margin/" target="_blank">http://shomy.top/2017/02/20/svm04-soft-margin/</a>
+</p>
+<p>非商业转载请注明作者及出处。商业转载请联系<a href="mailto:shomyliu@gmail.com">作者</a>本人。</p>
+</div>
+
+    
+
+    <footer class="article-footer">
+      
+        <a href="http://shomy.top/2017/02/20/svm04-soft-margin/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/machine-learning/" rel="tag">machine learning</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/svm/" rel="tag">svm</a></li></ul>
+
+    </footer>
+    
+	    <script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+    
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2017/02/26/rbf-network/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          机器学习技法笔记(6)-RBF Network(径向基函数网络)
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2017/02/19/svm03-kernel-trick/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">机器学习技法笔记(4)-Kernel SVM</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+
+
+<section id="comments">
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+<script>
+  var disqus_shortname = 'shomy';
+  
+  var disqus_url = 'http://shomy.top/2017/02/20/svm04-soft-margin/';
+  
+  (function(){
+    var dsq = document.createElement('script');
+    dsq.type = 'text/javascript';
+    dsq.async = true;
+    dsq.src = 'https://' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  }());
+</script>
+</section>
+
+
+
+
+</section>
+      </div>
+    </div>
+    
+    
+<a id="rocket" href="#top" ></a>
+
+<script src="https://cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <script src="http://cdn.htliu.cn/static/js/leancloud.js"></script>
+<script>AV.initialize("k883AKdzaz5jccQnH1eIrG2r-gzGzoHsz", "4HBQOmslEp3VdwK1SGL8vB9Y");</script>
+
+<script src="/js/Counter.js"></script>
+
+
+
+
+
+<script id="dsq-count-scr" src="//shomy.disqus.com/count.js" async></script>
+ 
+
+
+  <script src="https://cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.js"></script>
+  
+<script src="/js/fancybox.js"></script>
+
+
+
+
+  
+<script src="/js/search.js"></script>
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

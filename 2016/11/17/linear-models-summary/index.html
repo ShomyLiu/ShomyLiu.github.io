@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>机器学习基石笔记(6)-线性模型总结 | 天空的城</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="课程到此为止，一共介绍了PLA(感知机)，Linear Regression(线性回归)，Logistic Regression(逻辑回归)三种很相近的线性模型。这一节主要从error function分析介绍三种模型的联系，一些优化方法，最后如何延伸到多分类的情况。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="机器学习基石笔记(6)-线性模型总结">
+<meta property="og:url" content="http://shomy.top/2016/11/17/linear-models-summary/index.html">
+<meta property="og:site_name" content="天空的城">
+<meta property="og:description" content="课程到此为止，一共介绍了PLA(感知机)，Linear Regression(线性回归)，Logistic Regression(逻辑回归)三种很相近的线性模型。这一节主要从error function分析介绍三种模型的联系，一些优化方法，最后如何延伸到多分类的情况。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://cdn.htliu.cn/ml06-1.png">
+<meta property="og:image" content="http://cdn.htliu.cn/ml06-2.png">
+<meta property="og:image" content="http://cdn.htliu.cn/ml06-3.png">
+<meta property="og:image" content="http://cdn.htliu.cn/ml06-4.png">
+<meta property="og:image" content="http://cdn.htliu.cn/ml06-5.png">
+<meta property="article:published_time" content="2016-11-17T13:30:01.000Z">
+<meta property="article:modified_time" content="2021-12-16T15:11:45.663Z">
+<meta property="article:author" content="ShomyLiu">
+<meta property="article:tag" content="machine learning">
+<meta property="article:tag" content="linear models">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://cdn.htliu.cn/ml06-1.png">
+  
+  
+    <link rel="icon" href="/image/favicon.ico">
+  
+
+  
+  <link href="https://cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.css" rel="stylesheet">
+  
+  <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  <link href="https://cdn.bootcss.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+<!-- Google Analytics -->
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-74368890-2', 'auto');
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+
+
+  
+
+  
+  <div class="site-search header-inner">
+    <div class="popup">
+        <span class="search-icon fa fa-search"></span>
+        <input type="text" id="local-search-input">
+        <div id="local-search-result"></div>
+        <span class="popup-btn-close">close</span>
+    </div>
+</div>
+
+
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      
+<header id="header">
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">天空的城</a>
+      </h1>
+      
+    </div>
+    <div id="header-menu">
+      <nav id="main-nav">
+        <ul>
+        
+          <li><a href="/"><i class="fa fa-home icon-setting"></i></a></li>
+        
+          <li><a href="/archives"><i class="fa fa-archive icon-setting"></i></a></li>
+        
+          <li><a href="/tags"><i class="fa fa-tag icon-setting"></i></a></li>
+        
+          <li><a href="/about"><i class="fa fa-user icon-setting"></i></a></li>
+        
+        
+          <li><a href="javascript:;" class="popup-trigger"><i class="fa fa-search > icon-setting"></i></a></li>
+        
+        </ul>
+      </nav>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-linear-models-summary" class="article article-type-post" itemscope itemprop="blogPost">
+  
+  <div class="article-meta">
+    <a href="/2016/11/17/linear-models-summary/" class="article-date">
+  <time datetime="2016-11-17T13:30:01.000Z" itemprop="datePublished">2016-11-17</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/">读书笔记</a>
+  </div>
+
+
+    
+        <div class="counter-tag counter">
+    <!-- 别忘记这个类名... post-title-link -->
+    <span id="/2016/11/17/linear-models-summary/" class="leancloud_visitors article-hits post-title-link"
+           data-flag-title="机器学习基石笔记(6)-线性模型总结">
+        次阅读
+    </span>
+
+  </div>
+
+    
+
+  </div>
+  
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      机器学习基石笔记(6)-线性模型总结
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+            <div id="toc" class="toc-article">
+                <strong class="toc-title">文章目录</strong>
+                <ol class="post-toc"><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#%E7%BA%BF%E6%80%A7%E6%A8%A1%E5%9E%8B%E5%9B%9E%E9%A1%BE"><span class="post-toc-text">线性模型回顾</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E6%8D%9F%E5%A4%B1%E5%87%BD%E6%95%B0"><span class="post-toc-text">损失函数</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#sgd%E4%BC%98%E5%8C%96"><span class="post-toc-text">SGD优化</span></a></li></ol></li><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#%E5%A4%9A%E5%88%86%E7%B1%BB%E9%97%AE%E9%A2%98"><span class="post-toc-text">多分类问题</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#ova"><span class="post-toc-text">OVA</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#ovo"><span class="post-toc-text">OVO</span></a></li></ol></li><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#%E6%80%BB%E7%BB%93"><span class="post-toc-text">总结</span></a></li></ol>
+            </div>
+        
+        
+        <blockquote>
+<p>课程到此为止，一共介绍了PLA(感知机)，Linear Regression(线性回归)，Logistic Regression(逻辑回归)三种很相近的线性模型。这一节主要从error function分析介绍三种模型的联系，一些优化方法，最后如何延伸到多分类的情况。</p>
+</blockquote>
+<span id="more"></span>
+<h1 id="线性模型回顾">线性模型回顾</h1>
+<p>首先PLA和Logistic Regression是分类模型，(严格来说, PLA是一个Algorithm而非Model，这里不作细分)，而Linear Regression是一个回归模型，三者都是基于如下的线性方程进行建模的，这个方程也叫Linear Scoring Function(线性评分方程):<span class="math display">\[\color{purple}{s}=w^Tx\]</span>不同的是它们的hypothsis, 进而error function产生区别，如下图所示: <img src="http://cdn.htliu.cn/ml06-1.png" /></p>
+<p>我们下面简单总结一下三者:</p>
+<ul>
+<li>PLA: 硬分类，直接输出+1 or -1，使用0/1损失函数，但是该损失函数是离散的函数，在优化的过程很难解(NP-HARD)，也因此是使用另外的方式进行迭代求解。</li>
+<li>Linear Regression：回归，直接得到某个实数值，使用平方损失函数，得到连续二阶可微的凸函数，并且一阶微分为线性函数，可以直接求解最优参数，仅仅需要一次矩阵运算。</li>
+<li>Logistic Regression，软分类，输出某类的概率。使用对数损失函数也叫 cross error，得到连续二阶可微的凸函数，不过一阶微分函数非线性，很难直接求解，因此使用梯度下降的方式来迭代求解。</li>
+</ul>
+<h2 id="损失函数">损失函数</h2>
+<p>可以看出，线性回归的求解相对来说，最简单，那我们能不能把它用到分类上呢？设置一个阈值，如果回归值大于阈值为+1, 小于为-1，就跟Logistic Regression一样，有个阈值即可。既然可以，那为什么不直接使用求解简单线性回归来分类呢？我们知道PLA的在线性可分的条件下，分类效果是最好的，那如果我们用其余两个做分类的时候，效果会怎么样呢？我们从它们三个的损失函数入手，为了统一形式，均构造为$<span class="math inline">\(ys\)</span>的形式，如下图: <img src="http://cdn.htliu.cn/ml06-2.png" /></p>
+<p>每个error-function里面都有<span class="math inline">\(ys\)</span>，我们可以考虑一下<span class="math inline">\(ys\)</span>与<span class="math inline">\(err\)</span>的大致关系：</p>
+<ul>
+<li>0/1: 0 iff ys &lt;0</li>
+<li>平方: 当ys的绝对值比较大的时候， err也会很大。也有地方很接近与0/1损失函数</li>
+<li>cross-error: 相对平滑稳定很多，更加接近与0/1损失</li>
+</ul>
+<p>我们作出函数图像看得更加直观，以ys为横坐标，err为纵坐标，如下:</p>
+<p><img src="http://cdn.htliu.cn/ml06-3.png" /></p>
+<p>我们已经知道了PLA的分类效果是最好的，因为只要线性可分的话，肯定可以把<span class="math inline">\(E_{in}\)</span>降到最低，但是不容易优化！首先考虑Linear Regression，在图像上看到，当<span class="math inline">\(ys &lt; 0\)</span>时，<span class="math inline">\(err\)</span>比较大，这个我们可以勉强接受，因为这时候PLA的分类也是错误的。但是当<span class="math inline">\(ys\)</span>很大的时候，Linear Regression的<span class="math inline">\(err\)</span>也很大，这种情况就不太理想了，因为此时PLA可以分类正确！接下来再看看Logistic Regression的损失函数整体趋势与PLA的0/1损失函数很接近，尤其在<span class="math inline">\(ys&gt;0\)</span>时。在<span class="math inline">\(ys&lt;0\)</span>的时候，<span class="math inline">\(err\)</span>也比较大。</p>
+<p>换句话说，<span class="math inline">\(err_{sqr}\)</span>与<span class="math inline">\(err_{ce}\)</span>可以作为<span class="math inline">\(err_{0/1}\)</span>的upper bound。另外从图像中可以看出来，当<span class="math inline">\(err_{sqr}\)</span>和<span class="math inline">\(err_{ce}\)</span>比较小，即它俩分类效果比较好的时候，<span class="math inline">\(err_{0/1}\)</span>同时也很小，这个很容易理解。</p>
+<p>下面总结一下，对分类问题，PLA，Linear Regression，Logistic Regression三者的优缺点:</p>
+<ul>
+<li>PLA: 在线性可分的情况下，效果最好，可以有最小的<span class="math inline">\(E_{in}\)</span>; 缺点是: 必须是线性可分，否则需要用Pocket改进算法，这样的话，求解优势不明显。</li>
+<li>Linear Regression: 最优解求解最简单。缺点: 在<span class="math inline">\(|ys|\)</span>比较大的时候，<span class="math inline">\(err\)</span>这个bound太大。</li>
+<li>Logistic Regression: 求解相对简单。缺点: 在<span class="math inline">\(ys&lt;0\)</span>时， <span class="math inline">\(err\)</span>偏大。</li>
+</ul>
+<p>综上的话，在实际中做二分类的时候，经常先用Linear Regression 做一次，得到一个参数，将此参数作为Logistic Regression 或者 Pocket PLA的初始参数: <span class="math inline">\(w_0\)</span>，进而再去使用梯度迭代的方式最优化，这样可以很大程度上加速迭代的过程，更快得到最终解。 还有一点是，相对于Pocket PLA来说，在实际中用的更多的还是Logistic Regression。</p>
+<h2 id="sgd优化">SGD优化</h2>
+<p>前面说了，在实际中用的最多的还是Logistic 分类，但是我们也知道对应梯度<span class="math inline">\(\triangledown E_{in}(W)=\frac{\partial E_{in}(W)}{\partial W}=\frac{1}{N}\sum\limits_{n=1}^{N}\frac{1}{1+e^{y_nW^Tx_n}}(-y_nx_n)\)</span>，每次迭代都需要计算所有数据对梯度的贡献，这个在数据量很大的情况下，时间复杂度就很高了，因此这里就有了SGD(Stochastic Gradient Descent)，也叫随机梯度下降的优化策略，即类似与PLA的标准算法，每次只选择一个数据点计算。在LR这里同样这样处理，每次只计算一个数据的梯度，这样经过多次迭代之后，与每次计算所有的数据的梯度效果很接近，但是时间复杂度很低，尤其是在数据量大的时候，或者 online-learning中应用最多。SGD的核心即修改更新方程如下:<span class="math display">\[w_{t+1} \leftarrow w_t - \eta \frac{1}{1+e^{y_nW^Tx_n}}(-y_nx_n) \]</span>当然它也有缺点，就是如果当前选择的点有噪音Nosie的话，可能不太稳定。</p>
+<h1 id="多分类问题">多分类问题</h1>
+<p>前面讲的都是二分类的问题，都是输出+1或者-1。但是在实际中，会经常遇到多分类的问题，这个时候只需要对前面的二分类算法PLA或者LR进行稍加修改即可。下面大致介绍两种利用二分类来解决多分类问题的方式。</p>
+<h2 id="ova">OVA</h2>
+<p>OVA 即One Versus All，就是每次选中一个类别<span class="math inline">\(K\)</span>作为圈圈，所有其它类别的作为叉叉，这样就构成了一个二分类的问题，然后我们用Logistic Regression得到一个模型，进而计算一下概率<span class="math inline">\(P_{K}\)</span>，同理一共构造<span class="math inline">\(N\)</span>个分类器，然后选择概率最大的类别就可以了。</p>
+<p>如下示意图，四个类别时候的情况:</p>
+<p><img src="http://cdn.htliu.cn/ml06-4.png" /></p>
+<p>这种方式很直观，有效。但是有缺点就是， 不平衡的问题，因为类别比较多而且很平均，这时候，每个类别的数据量远小于其它类别数据总量，这样的不平衡会导致算法不稳定。下面的OVO就是为了解决这个问题的。</p>
+<h2 id="ovo">OVO</h2>
+<p>与OVA不同的是， OVO(One Versus One)每次只选出两个类别的数据进行分类，也就是说一共有<span class="math inline">\(\frac{n \times (n-1)}{2}\)</span>个分类器，每个分类器会得到一种类别，然后我们只需要找出这<span class="math inline">\(\frac{n\times (n-1)}{2}\)</span>中出现次数最多的，也就是被选中的最多的类别，作为最终的类别即可。</p>
+<p>示意图如下，一共有四个类别,需要6个分类器，然后选出6个里面出现次数最多的类别，有点类似KNN算法。</p>
+<p><img src="http://cdn.htliu.cn/ml06-5.png" /></p>
+<h1 id="总结">总结</h1>
+<p>到这里，课程中的线性模型基本总结完了，在总结的过程中，参考了<a target="_blank" rel="noopener" href="http://beader.me/mlnotebook/section3/linear_models_for_classification.html">beader</a>这系列博客的很多内容。林老师的讲解思路还是十分清晰的。接下来就是代码实现这几个简单的线性模型了。</p>
+
+      
+    </div>
+
+
+    
+
+    
+	    <div class="article-footer-copyright">
+<!--<p>本文作者: shomy 发表于 <a href="http://shomy.top" target="_blank">个人博客</a></p> -->
+<p>
+本文标题: 机器学习基石笔记(6)-线性模型总结<br/>
+</p>
+<p>
+发布时间: 2016-11-17, 21:30:01<br/>
+<p>
+<p>
+最后更新: 2021-12-16, 23:11:45<br/>
+<p>
+本文链接: <a href="/2016/11/17/linear-models-summary/" target="_blank">http://shomy.top/2016/11/17/linear-models-summary/</a>
+</p>
+<p>非商业转载请注明作者及出处。商业转载请联系<a href="mailto:shomyliu@gmail.com">作者</a>本人。</p>
+</div>
+
+    
+
+    <footer class="article-footer">
+      
+        <a href="http://shomy.top/2016/11/17/linear-models-summary/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/linear-models/" rel="tag">linear models</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/machine-learning/" rel="tag">machine learning</a></li></ul>
+
+    </footer>
+    
+	    <script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+    
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2016/12/02/nonlinera-transformation/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          机器学习基石笔记(7)-非线性转换
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2016/11/16/logistic-regression-1/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">机器学习基石笔记(5)-逻辑回归</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+
+
+<section id="comments">
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+<script>
+  var disqus_shortname = 'shomy';
+  
+  var disqus_url = 'http://shomy.top/2016/11/17/linear-models-summary/';
+  
+  (function(){
+    var dsq = document.createElement('script');
+    dsq.type = 'text/javascript';
+    dsq.async = true;
+    dsq.src = 'https://' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  }());
+</script>
+</section>
+
+
+
+
+</section>
+      </div>
+    </div>
+    
+    
+<a id="rocket" href="#top" ></a>
+
+<script src="https://cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <script src="http://cdn.htliu.cn/static/js/leancloud.js"></script>
+<script>AV.initialize("k883AKdzaz5jccQnH1eIrG2r-gzGzoHsz", "4HBQOmslEp3VdwK1SGL8vB9Y");</script>
+
+<script src="/js/Counter.js"></script>
+
+
+
+
+
+<script id="dsq-count-scr" src="//shomy.disqus.com/count.js" async></script>
+ 
+
+
+  <script src="https://cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.js"></script>
+  
+<script src="/js/fancybox.js"></script>
+
+
+
+
+  
+<script src="/js/search.js"></script>
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

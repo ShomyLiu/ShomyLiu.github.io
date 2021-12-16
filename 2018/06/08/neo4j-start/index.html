@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Neo4j初探 | 天空的城</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="2018.10.28 更新: docker 安装Neo4j的坑  使用docker安装neo4j，官网文档有误，安装之后启动失败; 官网文档上错误的启动命令:">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Neo4j初探">
+<meta property="og:url" content="http://shomy.top/2018/06/08/neo4j-start/index.html">
+<meta property="og:site_name" content="天空的城">
+<meta property="og:description" content="2018.10.28 更新: docker 安装Neo4j的坑  使用docker安装neo4j，官网文档有误，安装之后启动失败; 官网文档上错误的启动命令:">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://cdn.htliu.cn/blog/neo4j-start/neo4j-1.jpg">
+<meta property="og:image" content="http://cdn.htliu.cn/blog/neo4j-start/neo4j-2.jpg">
+<meta property="og:image" content="http://cdn.htliu.cn/blog/neo4j-start/neo4j-3.jpg">
+<meta property="og:image" content="http://cdn.htliu.cn/blog/neo4j-start/neo4j-4.jpg">
+<meta property="article:published_time" content="2018-06-08T12:52:49.000Z">
+<meta property="article:modified_time" content="2021-12-16T15:11:45.665Z">
+<meta property="article:author" content="ShomyLiu">
+<meta property="article:tag" content="neo4j">
+<meta property="article:tag" content="graph">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://cdn.htliu.cn/blog/neo4j-start/neo4j-1.jpg">
+  
+  
+    <link rel="icon" href="/image/favicon.ico">
+  
+
+  
+  <link href="https://cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.css" rel="stylesheet">
+  
+  <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  <link href="https://cdn.bootcss.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+<!-- Google Analytics -->
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-74368890-2', 'auto');
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+
+
+  
+
+  
+  <div class="site-search header-inner">
+    <div class="popup">
+        <span class="search-icon fa fa-search"></span>
+        <input type="text" id="local-search-input">
+        <div id="local-search-result"></div>
+        <span class="popup-btn-close">close</span>
+    </div>
+</div>
+
+
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      
+<header id="header">
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">天空的城</a>
+      </h1>
+      
+    </div>
+    <div id="header-menu">
+      <nav id="main-nav">
+        <ul>
+        
+          <li><a href="/"><i class="fa fa-home icon-setting"></i></a></li>
+        
+          <li><a href="/archives"><i class="fa fa-archive icon-setting"></i></a></li>
+        
+          <li><a href="/tags"><i class="fa fa-tag icon-setting"></i></a></li>
+        
+          <li><a href="/about"><i class="fa fa-user icon-setting"></i></a></li>
+        
+        
+          <li><a href="javascript:;" class="popup-trigger"><i class="fa fa-search > icon-setting"></i></a></li>
+        
+        </ul>
+      </nav>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-neo4j-start" class="article article-type-post" itemscope itemprop="blogPost">
+  
+  <div class="article-meta">
+    <a href="/2018/06/08/neo4j-start/" class="article-date">
+  <time datetime="2018-06-08T12:52:49.000Z" itemprop="datePublished">2018-06-08</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E5%B7%A5%E5%85%B7%E4%BD%BF%E7%94%A8/">工具使用</a>
+  </div>
+
+
+    
+        <div class="counter-tag counter">
+    <!-- 别忘记这个类名... post-title-link -->
+    <span id="/2018/06/08/neo4j-start/" class="leancloud_visitors article-hits post-title-link"
+           data-flag-title="Neo4j初探">
+        次阅读
+    </span>
+
+  </div>
+
+    
+
+  </div>
+  
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Neo4j初探
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+            <div id="toc" class="toc-article">
+                <strong class="toc-title">文章目录</strong>
+                <ol class="post-toc"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#cypher%E5%9F%BA%E6%9C%AC%E6%93%8D%E4%BD%9C"><span class="post-toc-text">Cypher基本操作</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E5%AF%BC%E5%85%A5%E6%95%B0%E6%8D%AE"><span class="post-toc-text">导入数据</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#%E5%AF%BC%E5%85%A5csv-%E6%A0%BC%E5%BC%8F%E6%95%B0%E6%8D%AE"><span class="post-toc-text">导入CSV 格式数据</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#%E5%AF%BC%E5%85%A5json%E6%A0%BC%E5%BC%8F%E6%95%B0%E6%8D%AE"><span class="post-toc-text">导入JSON格式数据</span></a></li></ol></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%BA%90"><span class="post-toc-text">参考资源</span></a></li></ol>
+            </div>
+        
+        
+        <blockquote>
+<p>2018.10.28 更新: docker 安装Neo4j的坑</p>
+</blockquote>
+<p>使用docker安装neo4j，官网文档有误，安装之后启动失败; 官网文档上错误的启动命令: <span id="more"></span></p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">docker <span class="builtin-name">run</span> \</span><br><span class="line">    <span class="attribute">--publish</span>=7474:7474 <span class="attribute">--publish</span>=7687:7687 \</span><br><span class="line">    <span class="attribute">--volume</span>=<span class="variable">$HOME</span>/neo4j/data:/data \</span><br><span class="line">    <span class="attribute">--volume</span>=<span class="variable">$HOME</span>/neo4j/logs:/logs \</span><br><span class="line">    neo4j:3.4</span><br></pre></td></tr></table></figure>
+<p>错误信息大概是:</p>
+<figure class="highlight livecodeserver"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">Active database: graph.db</span><br><span class="line"><span class="number">2018</span><span class="number">-04</span><span class="number">-03</span> <span class="number">21</span>:<span class="number">52</span>:<span class="number">03.380</span>+<span class="number">0000</span> ERROR Failed <span class="built_in">to</span> <span class="built_in">start</span> Neo4j: Starting Neo4j failed: Component <span class="string">&#x27;org.neo4j.server.database.LifecycleManagingDatabase@2fd66ad3&#x27;</span> was successfully initialized, but failed <span class="built_in">to</span> <span class="built_in">start</span>. Please see <span class="keyword">the</span> attached cause exception <span class="string">&quot;/logs/debug.log (Permission denied)&quot;</span>. Starting Neo4j failed: Component <span class="string">&#x27;org.neo4j.server.database.LifecycleManagingDatabase@2fd66ad3&#x27;</span> was successfully initialized, but failed <span class="built_in">to</span> <span class="built_in">start</span>. Please see <span class="keyword">the</span> attached cause exception <span class="string">&quot;/logs/debug.log (Permission denied)&quot;</span>.</span><br><span class="line">org.neo4j.server.ServerStartupException: Starting Neo4j failed: Component <span class="string">&#x27;org.neo4j.server.database.LifecycleManagingDatabase@2fd66ad3&#x27;</span> was successfully initialized, but failed <span class="built_in">to</span> <span class="built_in">start</span>. Please see <span class="keyword">the</span> attached cause exception <span class="string">&quot;/logs/debug.log (Permission denied)&quot;</span>.</span><br><span class="line">Caused <span class="keyword">by</span>: org.neo4j.kernel.lifecycle.LifecycleException: Component <span class="string">&#x27;org.neo4j.server.database.LifecycleManagingDatabase@2fd66ad3&#x27;</span> was successfully initialized, but failed <span class="built_in">to</span> <span class="built_in">start</span>. Please see <span class="keyword">the</span> attached cause exception <span class="string">&quot;/logs/debug.log (Permission denied)&quot;</span>.</span><br><span class="line">        ... <span class="number">3</span> more</span><br><span class="line">Caused <span class="keyword">by</span>: java.lang.RuntimeException: java.io.FileNotFoundException: /logs/debug.<span class="built_in">log</span> (Permission denied)</span><br><span class="line">        ... <span class="number">5</span> more</span><br><span class="line">Caused <span class="keyword">by</span>: java.io.FileNotFoundException: /logs/debug.<span class="built_in">log</span> (Permission denied)</span><br><span class="line">        ... <span class="number">12</span> more</span><br><span class="line"><span class="number">2018</span><span class="number">-04</span><span class="number">-03</span> <span class="number">21</span>:<span class="number">52</span>:<span class="number">03.400</span>+<span class="number">0000</span> INFO  Neo4j Server shutdown initiated <span class="keyword">by</span> request</span><br></pre></td></tr></table></figure>
+<p>原始是因为在neo4j中的<code>logs</code> 在最近的几个版本中，不能再指向<code>/</code>, 因此不能手动<code>--volumns</code>，去掉那一行即可: <figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">docker <span class="builtin-name">run</span> \</span><br><span class="line">    <span class="attribute">--publish</span>=7474:7474 <span class="attribute">--publish</span>=7687:7687 \</span><br><span class="line">    <span class="attribute">--volume</span>=<span class="variable">$HOME</span>/neo4j/data:/data \</span><br><span class="line">    neo4j:3.4</span><br></pre></td></tr></table></figure> 参考: https://github.com/neo4j/docker-neo4j/issues/131</p>
+<p>此外，如果修改了主机的端口，比如<code>-p 7574:7474 -p 7787:7687</code> 在主机登录的时候，需要修改一下web界面上的host那一项(bolt://ip:7787)，不然登录失败。</p>
+<p>近期需要处理图数据，考察后打算使用<a target="_blank" rel="noopener" href="https://neo4j.com/">neo4j</a>, 相比其他一些图数据库，neo4j开源，跨平台，接口友好，文档齐全，完整支持ACID。 首先放一张网上的图片，关系型数据库与图数据库存储网络数据的差异:</p>
+<p><img src="http://cdn.htliu.cn/blog/neo4j-start/neo4j-1.jpg" /></p>
+<p>初次接触neo4j 踩了不少坑，这里记录一下。</p>
+<p>关于如何安装Neo4j和使用web ui进行查询操作就不再赘述。</p>
+<h2 id="cypher基本操作">Cypher基本操作</h2>
+<p>相比关系型数据库的SQL查询语言，Neo4j的查询语言为<code>Cypher</code>，语法更加友好，更适合图数据做查询操作。首先介绍在图数据里面几个概念:</p>
+<ul>
+<li>节点(Node): 使用小括号表示<code>(n)</code>表示n这个节点，同时一般都会赋予节点某个标签(Label), 等同于关系书库里面的表名。比如<code>(n: Person)</code>表示n是一个<code>Person</code>类的节点，当然一个节点可以同时有多个label.</li>
+<li>关系(Relation)：关系使用中括号表示<code>[r:Knows]</code>表示<code>r</code>是<code>Knows</code>这种关系。两个节点的关系用<code>--</code>表示，如果有方向的话，加个箭头即可。如<code>(a)-[r:Knowns]-&gt;(b)</code>表示节点a和b之间有r关系，其中<code>Knowns</code>为<code>r</code>的类型</li>
+<li>属性(Property): 节点和关系都可以附带属性，这个也是图数据库的优势，储存属性非常方便，直接用key-value表示即可。比如<code>(n:Person&#123;name:"John"&#125;)</code>表示name为John的节点n。同样关系也可以有属性:<code>[r:Knows]&#123;year: 2018&#125;</code>表示为r赋予一个year属性。</li>
+</ul>
+<p>几个常用的关键字介绍:</p>
+<ul>
+<li><strong>MATCH</strong>: 表示查询，是读数据库操作。比如查属于Person的节点:<code>MATCH (n:Person)</code>，查找姓名为"John"的节点:<code>MATCH (n:Person)&#123;name: "John"&#125;</code>或者使用<code>where</code>语句:<code>MATCH (n:Person) WHERE n.name="John"</code>。当然这里面很多语法可以使用，比如正则匹配等，这里就不再赘述了。当然在实际使用中，MATCH不能单独使用，需要结合<code>RETURN</code>。</li>
+<li><strong>CREATE</strong>: 表示创建，可以新增节点，关系，索引，约束等等，是一种写操作。比如<code>CREATE (n:Person&#123;name:"Ana"&#125;)</code>表示创建一个name为"Ana"的Person节点。在创建的同时可以设置属性:<code>CREATE (n:Person&#123;name:"Ana"&#125;) set n.age=20</code>。同样在某个属性上创建索引:<code>CREATE INDEX ON :Person(name)</code>，这里需要提一下，<strong>尽量所有的Label都设置索引或者UNIQUE约束</strong>，在后续的读操作比如MATCH会大大提高性能(创建索引可以在导入节点之前执行)。</li>
+<li><strong>DELETE</strong>: 表示删除节点，关系等，也是写操作。一般需要结合<code>MATCH</code>匹配查询要删除的节点。<code>MATCH (n:Person) DELETE n</code>。如果在删除有关系的节点，这样删除会报错，可以先删除边<code>MATCH (n:Person)-[r:KNOWS]-&gt;() DELETE r</code>再删除节点。不过更推荐使用<code>DETACH DELETE</code>来级联删除，<code>MATCH (n:Person) DETACH DELETE n</code>可以同时删除节点及节点的关系。</li>
+<li><strong>MERGE</strong>：合并节点或者关系，属于先读后写操作，相当于<code>MATCH + CREATE</code>，先检查数据库中节点/关系是否存在，如果存在的话就不再创建，反之执行CREATE。如:MERGE(a:Person{name:"John"}) on create set a.age=20 //创建节点，先检测是否存在 // 给节点a,b建立关系，如果a,b已经存在，就无需新建。 MATCH (a:Person{name:"John"}), (b:Person{name:"Ana"}) MERGE (a)-[:KNOWS]-&gt;(b)</li>
+</ul>
+<p>这几个只是最基本的操作，在复杂查询中，会用到诸如<code>WITH, UNWIND</code>等命令。这里不再详细描述。</p>
+<p>几个注意事项:</p>
+<ul>
+<li>节点名称与节点Label的定义容易混乱。比如<code>CREATE (n:Person)</code>创建了一个属于Person的节点n。这里的n仅仅属于一个变量名，跟节点本身没有关系，命令执行结束，n的生命周期也就结束了，而Person则是节点本身的Label，会一直存在。</li>
+<li>索引一定要建立</li>
+</ul>
+<p>关于Neo4j浏览器的初次使用有几个快捷键:</p>
+<ul>
+<li>默认单行输入，按回车执行命令</li>
+<li>输入一行命令之后，按<code>SHIFT + ENTER</code>进入多行输入状态</li>
+<li>在多行输入时，<code>CTRL + ENTER</code>执行命令</li>
+<li><code>ESC</code>可以放大输入框至屏幕大小，复杂查询的时候，很方便。</li>
+</ul>
+<p>关于内存配置的几个参数<a target="_blank" rel="noopener" href="https://neo4j.com/docs/operations-manual/3.4/performance/memory-configuration/">内存配置</a>:</p>
+<ul>
+<li><code>dbms.memory.heap.initial_size</code></li>
+<li><code>dbms.memory.heap.max_size</code></li>
+<li><code>dbms.memory.pagecache.size</code>可以使用<code>neo4j-admin memrec</code>来根据当前数据库数据，查看推荐的内存配置</li>
+</ul>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">bin/neo4j-<span class="keyword">admin</span> memrec <span class="comment">--database=graph.db</span></span><br></pre></td></tr></table></figure>
+<h2 id="导入数据">导入数据</h2>
+<p>这一部分主要记录下如何将图数据从文件中导入库，常见的格式为CSV和JSON格式。</p>
+<h3 id="导入csv-格式数据">导入CSV 格式数据</h3>
+<p>Neo4j内置了命令来导入CSV数据：使用方法也很简单。假设CSV格式如下:</p>
+<figure class="highlight 1c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">&quot;Id&quot;</span>,<span class="string">&quot;Name&quot;</span>,<span class="string">&quot;Year&quot;</span></span><br><span class="line"><span class="string">&quot;1&quot;</span>,<span class="string">&quot;ABBA&quot;</span>,<span class="string">&quot;1992&quot;</span></span><br><span class="line"><span class="string">&quot;2&quot;</span>,<span class="string">&quot;Roxette&quot;</span>,<span class="string">&quot;1986&quot;</span></span><br><span class="line"><span class="string">&quot;3&quot;</span>,<span class="string">&quot;Europe&quot;</span>,<span class="string">&quot;1979&quot;</span></span><br><span class="line"><span class="string">&quot;4&quot;</span>,<span class="string">&quot;The Cardigans&quot;</span>,<span class="string">&quot;1992&quot;</span></span><br></pre></td></tr></table></figure>
+<p>直接使用如下命令导入并直接引用headers来表示属性并创建节点:</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">LOAD</span> CSV <span class="keyword">WITH</span> HEADERS <span class="keyword">FROM</span> <span class="string">&#x27;FILE:/artists.csv&#x27;</span> <span class="keyword">AS</span> <span class="type">line</span></span><br><span class="line"><span class="keyword">CREATE</span> (:Artist &#123; <span class="type">name</span>: <span class="type">line</span>.Name, year: toInteger(<span class="type">line</span>.Year)&#125;)</span><br></pre></td></tr></table></figure>
+<p>注意事项:</p>
+<ul>
+<li>分隔符默认是<code>,</code>, 可以用<code>FIELDTERMINATOR</code>自定义分隔符:LOAD CSV WITH HEADERS FROM 'FILE:/artists.csv' AS line FIELDTERMINATOR ";"</li>
+<li>文件位置: 可以直接使用URL地址作为文件位置，如果是本地文件的话，直接使用"FILE:"表明，文件的位置是相对位置，在配置文件<code>neo4j.conf</code>中的<code>dbms.directories.import</code>参数可以指定，默认是neo4j安装目录下的<code>import</code>文件夹，将CSV文件放到该目录下即可。</li>
+<li>对于大规模数据，如果一次性导入可能会超内存，此时可以用<code>PERIODIC COMMIT</code>来分批提交导入数据，默认是1000行提交一次，具体如下:</li>
+</ul>
+<figure class="highlight gams"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">USING</span> PERIODIC COMMIT <span class="number">500</span></span><br><span class="line"><span class="function"><span class="title">LOAD</span></span> CSV WITH HEADERS FROM...</span><br><span class="line">....</span><br></pre></td></tr></table></figure>
+<ul>
+<li>文本内容存在<code>"</code>的字段需要特殊处理</li>
+</ul>
+<h3 id="导入json格式数据">导入JSON格式数据</h3>
+<p>图数据里面更常见的则是JSON数据， 假设数据格式如下：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">[</span><br><span class="line">    &#123;</span><br><span class="line">    <span class="attr">&quot;id&quot;</span>:<span class="number">1</span>, <span class="attr">&quot;friends&quot;</span>:[<span class="number">2</span>,<span class="number">3</span>], <span class="attr">&quot;name&quot;</span>: <span class="string">&quot;Bob&quot;</span>, <span class="attr">&quot;age&quot;</span>: <span class="number">27</span>,</span><br><span class="line">    <span class="attr">&quot;book&quot;</span>:[&#123;<span class="attr">&quot;name&quot;</span>:<span class="string">&quot;book1&quot;</span>, <span class="attr">&quot;year&quot;</span>:<span class="number">2000</span>&#125;, &#123;<span class="attr">&quot;name&quot;</span>:<span class="string">&quot;book3&quot;</span>, <span class="attr">&quot;year&quot;</span>:<span class="number">1990</span>&#125;]</span><br><span class="line">    &#125;,</span><br><span class="line">    &#123;</span><br><span class="line">    <span class="attr">&quot;id&quot;</span>:<span class="number">2</span>, <span class="attr">&quot;friends&quot;</span>:[<span class="number">1</span>], <span class="attr">&quot;name&quot;</span>: <span class="string">&quot;Alice&quot;</span>, <span class="attr">&quot;age&quot;</span>: <span class="number">29</span>,</span><br><span class="line">    <span class="attr">&quot;book&quot;</span>:[&#123;<span class="attr">&quot;name&quot;</span>:<span class="string">&quot;book1&quot;</span>, <span class="attr">&quot;year&quot;</span>:<span class="number">2000</span>&#125;, &#123;<span class="attr">&quot;name&quot;</span>:<span class="string">&quot;book2&quot;</span>, <span class="attr">&quot;year&quot;</span>:<span class="number">1999</span>&#125;]</span><br><span class="line">    &#125;,</span><br><span class="line">    &#123;</span><br><span class="line">    <span class="attr">&quot;id&quot;</span>:<span class="number">3</span>, <span class="attr">&quot;friends&quot;</span>:[<span class="number">2</span>], <span class="attr">&quot;name&quot;</span>: <span class="string">&quot;John&quot;</span>, <span class="attr">&quot;age&quot;</span>: <span class="number">20</span>,</span><br><span class="line">    <span class="attr">&quot;book&quot;</span>:[&#123;<span class="attr">&quot;name&quot;</span>:<span class="string">&quot;book3&quot;</span>, <span class="attr">&quot;year&quot;</span>:<span class="number">1990</span>&#125;]</span><br><span class="line">    &#125;</span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+<p>列表中每一个map都代表一个User, 其属性有<code>id</code>,<code>name</code>,<code>age</code>; 同时<code>friends</code>字段表示朋友关系，<code>book</code>字段表示读过某本书。 现在我们需要创建 Person 和 Book两类节点，同时Person和Book 之间有READ关系。 Neo4j 并没有内置直接导入Json的函数，不过在Neo3.3版本之后，推出了一个函数存储包APOC，里面包含了非常丰富的函数和存储过程，如各种图计算算法，是Cypher的有力补充，其中就包含了从Json中导入数据。安装APOC很简单，只需要三步:</p>
+<ul>
+<li>从<a target="_blank" rel="noopener" href="https://github.com/neo4j-contrib/neo4j-apoc-procedures/releases/">github</a>中下载与Neo4j对应版本的APOCjar包</li>
+<li>将jar包拷贝到neo4j安装目录的plugins目录下</li>
+<li>在配置文件neo4j.conf中加入一行允许APOC导入文件:apoc.import.file.enabled=true</li>
+<li>重启Neo4j即可</li>
+</ul>
+<p>在Neo4j浏览器中，输入<code>return apoc.version()</code>即可查看版本号</p>
+<p><img src="http://cdn.htliu.cn/blog/neo4j-start/neo4j-2.jpg" /></p>
+<p>此外我们可以看到apoc支持导入非常多格式的数据：</p>
+<p><img src="http://cdn.htliu.cn/blog/neo4j-start/neo4j-3.jpg" /></p>
+<p>导入方式很简单，我们要创建两类节点，首先创建索引，方便后续导入。</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">INDEX</span> <span class="keyword">ON</span> :Person(id)</span><br><span class="line"><span class="keyword">CREATE</span> <span class="keyword">INDEX</span> <span class="keyword">ON</span> :Book(<span class="type">name</span>)</span><br></pre></td></tr></table></figure>
+<p>导入代码如下:</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// YIELD关键字表示每次导入json数据中的一组数据，即`[...]`中的每一个`&#123;&#125;`, 这里的person.json是系统绝对路径</span></span><br><span class="line">CALL apoc<span class="selector-class">.load</span><span class="selector-class">.json</span>(<span class="string">&quot;file:///person.json&quot;</span>) YIELD value as person</span><br><span class="line"><span class="comment">// 需要对book属性进行列表展开，后续建立Person和Book关系的时候，需要用。</span></span><br><span class="line">UNWIND person<span class="selector-class">.book</span> as book</span><br><span class="line"><span class="comment">// 创建Person节点</span></span><br><span class="line">MERGE (<span class="selector-tag">p</span>:Person&#123;id:person.id&#125;)</span><br><span class="line">SET <span class="selector-tag">p</span>.name=person<span class="selector-class">.name</span>, <span class="selector-tag">p</span>.age=person<span class="selector-class">.age</span>, <span class="selector-tag">p</span>.friends=person<span class="selector-class">.friends</span></span><br><span class="line"><span class="comment">//创建book节点</span></span><br><span class="line">MERGE (<span class="selector-tag">b</span>:Book&#123;name:book.name&#125;)</span><br><span class="line">SET <span class="selector-tag">b</span>.year=book<span class="selector-class">.year</span></span><br><span class="line"><span class="comment">//建立person-&gt;book关系</span></span><br><span class="line">MERGE (p)-<span class="selector-attr">[:READ]</span>-&gt;(b)</span><br></pre></td></tr></table></figure>
+<p>然后再根据已有的<code>friends</code>导入<code>Friend</code>关系:</p>
+<figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//对每一个 person遍历</span></span><br><span class="line"><span class="selector-tag">MATCH</span> (<span class="attribute">p</span>:Person)</span><br><span class="line"><span class="comment">// 对p的friends进行列表展开，</span></span><br><span class="line"><span class="selector-tag">UNWIND</span> <span class="selector-tag">p</span><span class="selector-class">.friends</span> <span class="selector-tag">as</span> <span class="selector-tag">f</span></span><br><span class="line"><span class="comment">// 根据id搜索Person节点</span></span><br><span class="line"><span class="selector-tag">MATCH</span> (<span class="attribute">q</span>:Person&#123;id:f&#125;)</span><br><span class="line"><span class="comment">// 建立关系</span></span><br><span class="line"><span class="selector-tag">MERGE</span> (p)<span class="selector-tag">-</span><span class="selector-attr">[:Friend]</span><span class="selector-tag">-</span>(q)</span><br></pre></td></tr></table></figure>
+<p>执行按成之后，可视化看一下 ，:</p>
+<p><img src="http://cdn.htliu.cn/blog/neo4j-start/neo4j-4.jpg" /></p>
+<p>到这里导入基本完成了，不过还有一点问题，暂时没有解决，使用<code>UNWIND person.book as book</code>的时候，如果某个节点没有book这个一个属性，那么后续代码将不再执行，即该Person节点不会创建。但是如果将UNWIND放到创建Person之后，建立的READ关系会有问题，还在查找原因。</p>
+<h2 id="参考资源">参考资源</h2>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://neo4j.com/docs/developer-manual/current/">官方文档</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/GraphWay/article/details/78957415">APOC</a></li>
+<li><a target="_blank" rel="noopener" href="http://gitbook.cn/books/5a33782c5778440a9d906017/index.html">Neo4j应用</a></li>
+</ul>
+
+      
+    </div>
+
+
+    
+
+    
+	    <div class="article-footer-copyright">
+<!--<p>本文作者: shomy 发表于 <a href="http://shomy.top" target="_blank">个人博客</a></p> -->
+<p>
+本文标题: Neo4j初探<br/>
+</p>
+<p>
+发布时间: 2018-06-08, 20:52:49<br/>
+<p>
+<p>
+最后更新: 2021-12-16, 23:11:45<br/>
+<p>
+本文链接: <a href="/2018/06/08/neo4j-start/" target="_blank">http://shomy.top/2018/06/08/neo4j-start/</a>
+</p>
+<p>非商业转载请注明作者及出处。商业转载请联系<a href="mailto:shomyliu@gmail.com">作者</a>本人。</p>
+</div>
+
+    
+
+    <footer class="article-footer">
+      
+        <a href="http://shomy.top/2018/06/08/neo4j-start/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/graph/" rel="tag">graph</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/neo4j/" rel="tag">neo4j</a></li></ul>
+
+    </footer>
+    
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2018/06/26/neo4j-aminer-import/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          Neo4j导入Aminer论文数据
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/03/01/2017-review/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">2017</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+
+
+<section id="comments">
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+<script>
+  var disqus_shortname = 'shomy';
+  
+  var disqus_url = 'http://shomy.top/2018/06/08/neo4j-start/';
+  
+  (function(){
+    var dsq = document.createElement('script');
+    dsq.type = 'text/javascript';
+    dsq.async = true;
+    dsq.src = 'https://' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  }());
+</script>
+</section>
+
+
+
+
+</section>
+      </div>
+    </div>
+    
+    
+<a id="rocket" href="#top" ></a>
+
+<script src="https://cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <script src="http://cdn.htliu.cn/static/js/leancloud.js"></script>
+<script>AV.initialize("k883AKdzaz5jccQnH1eIrG2r-gzGzoHsz", "4HBQOmslEp3VdwK1SGL8vB9Y");</script>
+
+<script src="/js/Counter.js"></script>
+
+
+
+
+
+<script id="dsq-count-scr" src="//shomy.disqus.com/count.js" async></script>
+ 
+
+
+  <script src="https://cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.js"></script>
+  
+<script src="/js/fancybox.js"></script>
+
+
+
+
+  
+<script src="/js/search.js"></script>
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

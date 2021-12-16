@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Factorization Machine笔记及Pytorch 实现 | 天空的城</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="简介 Factorization Machine(因子分解机)是Steffen Rendle在2010年提出的一种机器学习算法，可以用来做任意实数值向量的预测。对比SVM，基本的优势有：  非常适用与稀疏的数据，尤其在推荐系统中。 线性复杂度，在large scale数据里面效率高 适用于任何的实数向量的预测任务，包括:  回归 分类 排序">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Factorization Machine笔记及Pytorch 实现">
+<meta property="og:url" content="http://shomy.top/2018/12/31/factorization-machine/index.html">
+<meta property="og:site_name" content="天空的城">
+<meta property="og:description" content="简介 Factorization Machine(因子分解机)是Steffen Rendle在2010年提出的一种机器学习算法，可以用来做任意实数值向量的预测。对比SVM，基本的优势有：  非常适用与稀疏的数据，尤其在推荐系统中。 线性复杂度，在large scale数据里面效率高 适用于任何的实数向量的预测任务，包括:  回归 分类 排序">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://cdn.htliu.cn/blog/factorization_machine/fm1.jpg">
+<meta property="article:published_time" content="2018-12-31T08:26:08.000Z">
+<meta property="article:modified_time" content="2021-12-16T15:11:45.656Z">
+<meta property="article:author" content="ShomyLiu">
+<meta property="article:tag" content="factorization machine">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://cdn.htliu.cn/blog/factorization_machine/fm1.jpg">
+  
+  
+    <link rel="icon" href="/image/favicon.ico">
+  
+
+  
+  <link href="https://cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.css" rel="stylesheet">
+  
+  <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  <link href="https://cdn.bootcss.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+<!-- Google Analytics -->
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-74368890-2', 'auto');
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+
+
+  
+
+  
+  <div class="site-search header-inner">
+    <div class="popup">
+        <span class="search-icon fa fa-search"></span>
+        <input type="text" id="local-search-input">
+        <div id="local-search-result"></div>
+        <span class="popup-btn-close">close</span>
+    </div>
+</div>
+
+
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      
+<header id="header">
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">天空的城</a>
+      </h1>
+      
+    </div>
+    <div id="header-menu">
+      <nav id="main-nav">
+        <ul>
+        
+          <li><a href="/"><i class="fa fa-home icon-setting"></i></a></li>
+        
+          <li><a href="/archives"><i class="fa fa-archive icon-setting"></i></a></li>
+        
+          <li><a href="/tags"><i class="fa fa-tag icon-setting"></i></a></li>
+        
+          <li><a href="/about"><i class="fa fa-user icon-setting"></i></a></li>
+        
+        
+          <li><a href="javascript:;" class="popup-trigger"><i class="fa fa-search > icon-setting"></i></a></li>
+        
+        </ul>
+      </nav>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-factorization-machine" class="article article-type-post" itemscope itemprop="blogPost">
+  
+  <div class="article-meta">
+    <a href="/2018/12/31/factorization-machine/" class="article-date">
+  <time datetime="2018-12-31T08:26:08.000Z" itemprop="datePublished">2018-12-31</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/">读书笔记</a>
+  </div>
+
+
+    
+        <div class="counter-tag counter">
+    <!-- 别忘记这个类名... post-title-link -->
+    <span id="/2018/12/31/factorization-machine/" class="leancloud_visitors article-hits post-title-link"
+           data-flag-title="Factorization Machine笔记及Pytorch 实现">
+        次阅读
+    </span>
+
+  </div>
+
+    
+
+  </div>
+  
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Factorization Machine笔记及Pytorch 实现
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+            <div id="toc" class="toc-article">
+                <strong class="toc-title">文章目录</strong>
+                <ol class="post-toc"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E7%AE%80%E4%BB%8B"><span class="post-toc-text">简介</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E5%AE%9E%E7%8E%B0"><span class="post-toc-text">实现</span></a></li></ol>
+            </div>
+        
+        
+        <h2 id="简介">简介</h2>
+<p>Factorization Machine(因子分解机)是Steffen Rendle在2010年提出的一种机器学习算法，可以用来做任意实数值向量的预测。对比SVM，基本的优势有：</p>
+<ul>
+<li>非常适用与稀疏的数据，尤其在推荐系统中。</li>
+<li>线性复杂度，在large scale数据里面效率高</li>
+<li>适用于任何的实数向量的预测任务，包括:
+<ul>
+<li>回归</li>
+<li>分类</li>
+<li>排序</li>
+</ul></li>
+</ul>
+<span id="more"></span>
+<p>目前推荐系统中，很多深度学习模型最后都会接一个FM来做评分的预测，或者情感分类等。网上关于FM的讲解资料很多，这里简单记录下。 首先FM的形式如下(后续黑体表示向量，普通字体为实数值)： <span class="math display">\[y(\mathbf{x}) = w_0 + \sum_{i=0}^{n}w_ix_i + \sum_{i=1}^{n}\sum_{j=i+1}^{n}&lt;\mathbf{v_i}, \mathbf{v_j}&gt;x_ix_j\]</span> 其中前两项为基本的线性回归，后面一项为向量的交互项，参数为：</p>
+<ul>
+<li><span class="math inline">\(\mathbf{x} \in R^{n}\)</span> 为一个输入的向量，维度为<span class="math inline">\(n\)</span></li>
+<li><span class="math inline">\(\mathbf{w}\)</span>为线性回归的参数</li>
+<li><span class="math inline">\(\mathbf{V} \in R^{n \times k}\)</span>为交互矩阵, k是factor 维度，属于超参数。 相对于为输入<span class="math inline">\(\mathbf{x}\)</span>的每一个维度定义一个特征向量。</li>
+<li><span class="math inline">\(&lt;\mathbf{v}_i, \mathbf{v}_j&gt; = \sum_{f=1}^k v_{i,f} \cdot v_{j,f}\)</span> ，向量内积表示交互。</li>
+</ul>
+<p>相比与SVM, 上述的模型完全是线性复杂度，并且由于对输入每个维度额外定义了一个因子向量<span class="math inline">\(\mathbf{v_i}\)</span>，能够赋予更多的特征信息。 FM可以用于不同任务：</p>
+<ul>
+<li>回归任务：直接以输出<span class="math inline">\(y\)</span>作为回归值即可</li>
+<li>分类任务：在<span class="math inline">\(y\)</span>上接一个<span class="math inline">\(sigmoid\)</span>，即：y = <span class="math inline">\(\frac{1}{1+e^{-y}}\)</span></li>
+<li>排序任务: 将<span class="math inline">\(y\)</span>作为输入<span class="math inline">\(x\)</span>的score.</li>
+</ul>
+<h2 id="实现">实现</h2>
+<p>如果直接按照公式来实现的话，第三项的复杂度为<span class="math inline">\(O(kn^2)\)</span>，不过论文中通过因子变化，可以优化到<span class="math inline">\(O(kn)\)</span>，具体推导如下，类似于<span class="math inline">\(2ab = (a+b)^2 - a^2 - b^2\)</span>： <img src="http://cdn.htliu.cn/blog/factorization_machine/fm1.jpg" /> 这样复杂度即可降到<span class="math inline">\(O(kn)\)</span>, 转换为矩阵乘法即可。 pytorch的实现如下： <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">FM_Layer</span>(<span class="params">nn.Module</span>):</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span>(<span class="params">self, n=<span class="number">10</span>, k=<span class="number">5</span></span>):</span></span><br><span class="line">        <span class="built_in">super</span>(FM_Layer, self).__init__()</span><br><span class="line">        self.n = n</span><br><span class="line">        self.k = k</span><br><span class="line">        self.linear = nn.Linear(self.n, <span class="number">1</span>)   <span class="comment"># 前两项线性层</span></span><br><span class="line">        self.V = nn.Parameter(torch.randn(self.n, self.k))   <span class="comment"># 交互矩阵</span></span><br><span class="line">        nn.init.uniform_(self.v, -<span class="number">0.1</span>, <span class="number">0.1</span>)</span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">fm_layer</span>(<span class="params">self, x</span>):</span></span><br><span class="line">        linear_part = self.linear(x)</span><br><span class="line">        interaction_part_1 = torch.mm(x, self.V)</span><br><span class="line">        interaction_part_1 = torch.<span class="built_in">pow</span>(interaction_part_1, <span class="number">2</span>)</span><br><span class="line">        interaction_part_2 = torch.mm(torch.<span class="built_in">pow</span>(x, <span class="number">2</span>), torch.<span class="built_in">pow</span>(self.V, <span class="number">2</span>))</span><br><span class="line">        output = linear_part + <span class="number">0.5</span> * torch.<span class="built_in">sum</span>(interaction_part_2 - interaction_part_1, <span class="number">1</span>, keepdim=<span class="literal">False</span>)</span><br><span class="line">        <span class="keyword">return</span> output</span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">forward</span>(<span class="params">self, x</span>):</span></span><br><span class="line">        <span class="keyword">return</span> self.fm_layer(x)</span><br><span class="line"></span><br><span class="line">fm = FM_Layer(<span class="number">10</span>, <span class="number">5</span>)</span><br><span class="line">x = torch.randn(<span class="number">1</span>, <span class="number">10</span>)</span><br><span class="line">output = fm(x)</span><br></pre></td></tr></table></figure></p>
+<p>参考:</p>
+<ul>
+<li>Rendle S. Factorization machines[C]//Data Mining (ICDM), 2010 IEEE 10th International Conference on. IEEE, 2010: 995-1000.</li>
+<li>https://github.com/vanzytay/KDD2018_MPCN/blob/master/tylib/lib/compose_op.py</li>
+</ul>
+
+      
+    </div>
+
+
+    
+
+    
+	    <div class="article-footer-copyright">
+<!--<p>本文作者: shomy 发表于 <a href="http://shomy.top" target="_blank">个人博客</a></p> -->
+<p>
+本文标题: Factorization Machine笔记及Pytorch 实现<br/>
+</p>
+<p>
+发布时间: 2018-12-31, 16:26:08<br/>
+<p>
+<p>
+最后更新: 2021-12-16, 23:11:45<br/>
+<p>
+本文链接: <a href="/2018/12/31/factorization-machine/" target="_blank">http://shomy.top/2018/12/31/factorization-machine/</a>
+</p>
+<p>非商业转载请注明作者及出处。商业转载请联系<a href="mailto:shomyliu@gmail.com">作者</a>本人。</p>
+</div>
+
+    
+
+    <footer class="article-footer">
+      
+        <a href="http://shomy.top/2018/12/31/factorization-machine/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/factorization-machine/" rel="tag">factorization machine</a></li></ul>
+
+    </footer>
+    
+	    <script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+    
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2019/01/01/elmo-1/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          Bert/ELMo词向量及使用方法记录
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/10/29/docker-neo4j-es/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">docker搭建neo4j与elasticsearch数据同步</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+
+
+<section id="comments">
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+<script>
+  var disqus_shortname = 'shomy';
+  
+  var disqus_url = 'http://shomy.top/2018/12/31/factorization-machine/';
+  
+  (function(){
+    var dsq = document.createElement('script');
+    dsq.type = 'text/javascript';
+    dsq.async = true;
+    dsq.src = 'https://' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  }());
+</script>
+</section>
+
+
+
+
+</section>
+      </div>
+    </div>
+    
+    
+<a id="rocket" href="#top" ></a>
+
+<script src="https://cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <script src="http://cdn.htliu.cn/static/js/leancloud.js"></script>
+<script>AV.initialize("k883AKdzaz5jccQnH1eIrG2r-gzGzoHsz", "4HBQOmslEp3VdwK1SGL8vB9Y");</script>
+
+<script src="/js/Counter.js"></script>
+
+
+
+
+
+<script id="dsq-count-scr" src="//shomy.disqus.com/count.js" async></script>
+ 
+
+
+  <script src="https://cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.js"></script>
+  
+<script src="/js/fancybox.js"></script>
+
+
+
+
+  
+<script src="/js/search.js"></script>
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

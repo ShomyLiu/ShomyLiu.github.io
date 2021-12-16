@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Hexo下mathjax的转义问题 | 天空的城</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="问题 我们平时使用markdown写文档的时候，免不了会碰到数学公式，好在有强大的Mathjax,可以解析网页上的数学公式，与hexo的结合也很简单，可以手动加入js，或者直接使用hexo-math插件.大部分情况下都是可以的，但是Markdwon本身的特殊符号与Latex中的符号会出现冲突的时候:">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Hexo下mathjax的转义问题">
+<meta property="og:url" content="http://shomy.top/2016/10/22/hexo-markdown-mathjax/index.html">
+<meta property="og:site_name" content="天空的城">
+<meta property="og:description" content="问题 我们平时使用markdown写文档的时候，免不了会碰到数学公式，好在有强大的Mathjax,可以解析网页上的数学公式，与hexo的结合也很简单，可以手动加入js，或者直接使用hexo-math插件.大部分情况下都是可以的，但是Markdwon本身的特殊符号与Latex中的符号会出现冲突的时候:">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2016-10-22T06:06:24.000Z">
+<meta property="article:modified_time" content="2021-12-16T15:11:45.661Z">
+<meta property="article:author" content="ShomyLiu">
+<meta property="article:tag" content="hexo">
+<meta property="article:tag" content="markdown">
+<meta property="article:tag" content="mathjax">
+<meta name="twitter:card" content="summary">
+  
+  
+    <link rel="icon" href="/image/favicon.ico">
+  
+
+  
+  <link href="https://cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.css" rel="stylesheet">
+  
+  <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  <link href="https://cdn.bootcss.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+<!-- Google Analytics -->
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-74368890-2', 'auto');
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+
+
+  
+
+  
+  <div class="site-search header-inner">
+    <div class="popup">
+        <span class="search-icon fa fa-search"></span>
+        <input type="text" id="local-search-input">
+        <div id="local-search-result"></div>
+        <span class="popup-btn-close">close</span>
+    </div>
+</div>
+
+
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      
+<header id="header">
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">天空的城</a>
+      </h1>
+      
+    </div>
+    <div id="header-menu">
+      <nav id="main-nav">
+        <ul>
+        
+          <li><a href="/"><i class="fa fa-home icon-setting"></i></a></li>
+        
+          <li><a href="/archives"><i class="fa fa-archive icon-setting"></i></a></li>
+        
+          <li><a href="/tags"><i class="fa fa-tag icon-setting"></i></a></li>
+        
+          <li><a href="/about"><i class="fa fa-user icon-setting"></i></a></li>
+        
+        
+          <li><a href="javascript:;" class="popup-trigger"><i class="fa fa-search > icon-setting"></i></a></li>
+        
+        </ul>
+      </nav>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-hexo-markdown-mathjax" class="article article-type-post" itemscope itemprop="blogPost">
+  
+  <div class="article-meta">
+    <a href="/2016/10/22/hexo-markdown-mathjax/" class="article-date">
+  <time datetime="2016-10-22T06:06:24.000Z" itemprop="datePublished">2016-10-22</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E5%B7%A5%E5%85%B7%E4%BD%BF%E7%94%A8/">工具使用</a>
+  </div>
+
+
+    
+        <div class="counter-tag counter">
+    <!-- 别忘记这个类名... post-title-link -->
+    <span id="/2016/10/22/hexo-markdown-mathjax/" class="leancloud_visitors article-hits post-title-link"
+           data-flag-title="Hexo下mathjax的转义问题">
+        次阅读
+    </span>
+
+  </div>
+
+    
+
+  </div>
+  
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Hexo下mathjax的转义问题
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+            <div id="toc" class="toc-article">
+                <strong class="toc-title">文章目录</strong>
+                <ol class="post-toc"><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#%E9%97%AE%E9%A2%98"><span class="post-toc-text">问题</span></a></li><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#%E5%8E%9F%E5%9B%A0"><span class="post-toc-text">原因</span></a></li><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#%E8%A7%A3%E5%86%B3%E6%96%B9%E6%B3%95"><span class="post-toc-text">解决方法</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E6%89%8B%E5%8A%A8escape"><span class="post-toc-text">1. 手动escape</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E4%BF%9D%E6%8A%A4%E4%BB%A3%E7%A0%81%E5%9D%97"><span class="post-toc-text">2. 保护代码块</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E6%9B%B4%E6%8D%A2hexo%E7%9A%84markdown%E5%BC%95%E6%93%8E"><span class="post-toc-text">3. 更换Hexo的markdown引擎</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E4%BF%AE%E6%94%B9hexo%E6%B8%B2%E6%9F%93%E6%BA%90%E7%A0%81"><span class="post-toc-text">4. 修改Hexo渲染源码</span></a></li></ol></li></ol>
+            </div>
+        
+        
+        <h1 id="问题">问题</h1>
+<p>我们平时使用markdown写文档的时候，免不了会碰到数学公式，好在有强大的<a target="_blank" rel="noopener" href="https://www.mathjax.org/">Mathjax</a>,可以解析网页上的数学公式，与hexo的结合也很简单，可以手动加入js，或者直接使用<a target="_blank" rel="noopener" href="https://github.com/akfish/hexo-math">hexo-math</a>插件.大部分情况下都是可以的，但是Markdwon本身的特殊符号与Latex中的符号会出现冲突的时候: <span id="more"></span></p>
+<ul>
+<li><code>—</code>的转义，在markdown中，<code>_</code>是斜体，但是在latex中，却有下标的意思，就会出现问题。</li>
+<li><code>\\</code>的换行，在markdown中，<code>\\</code>会被转义为<code>\</code>这样也会影响影响mathjax对公式中的<code>\\</code>进行渲染</li>
+</ul>
+<h1 id="原因">原因</h1>
+<p>hexo默认使用<code>marked.js</code>去解析我们写的markdown，比如一些符号，<code>_</code>代表斜体，会被处理为<code>&lt;em&gt;</code>标签，比如<code>x_i</code>在开始被渲染的时候，处理为<code>x&lt;em&gt;i&lt;/em&gt;</code>，这个时候mathjax就无法渲染成下标了。很多符号都有这个问题，比如粗体<code>*</code>,也是无法在mathjax渲染出来的，好在有替代的乘法等,包括<code>\\</code>同理。 所以说到底，是hexo使用的markdown引擎的锅，因为很多其它引擎在这方面处理的很好。</p>
+<h1 id="解决方法">解决方法</h1>
+<p>在网上查了一些资料，结合自己使用经验，总结为如下的方法</p>
+<h2 id="手动escape">1. 手动escape</h2>
+<p>这个方法最直接，需要转义我就转义。比如我需要在公式中写下标符号，那就修改写法写为: <code>$x\_i$</code>;需要换行就使用<code>\\\\</code>,即可。 很明显，这种方式虽然可以解决问题通用性很差,比如想迁移到其它地方，就无法识别了，因为大部分的markdown引擎是没有这个问题的。</p>
+<h2 id="保护代码块">2. 保护代码块</h2>
+<p>我们知道在markdown中的两个`之间的东西不会转义，正好符号我们的需求，我们保护<span class="math display">\[之间的代码不被markdown渲染，这样就可以，但是有一个后遗症，就是的样式问题， markdown中是code的样式的，这样也还是有问题，解决思路就是重新处理code标签,使其遇见\]</span>的话，跳过，详情见:<a target="_blank" rel="noopener" href="http://liam0205.me/2015/09/09/fix-conflict-between-mathjax-and-markdown/">解决 MathJax 与 Markdown 的冲突</a> 这个方法有个问题，就是有时候我们的代码中会有$$的出现，这时候，仍然使用mathjax就有可能出现无法预料的结果了。</p>
+<h2 id="更换hexo的markdown引擎">3. 更换Hexo的markdown引擎</h2>
+<p>这个是最直接的方法，也是我现在使用的方法，直接换发动机,就是把hexo默认的渲染markdown的引擎换掉。查到了有如下几个插件可以使用:</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://github.com/wzpan/hexo-renderer-pandoc">hexo-renderer-pandoc</a>, 很强大的解析器，Pandoc的语法完全没有上述问题, 推荐使用。</li>
+<li><a target="_blank" rel="noopener" href="https://github.com/sun11/hexo-renderer-kramed">hexo-renderer-kramed</a>,或者<a target="_blank" rel="noopener" href="https://github.com/hexojs/hexo-renderer-marked">hexo-renderer-marked</a>,这两个差不多，第一个fork了第二个，改了一部分bug，但是还是有部分问题。</li>
+</ul>
+<p>下面说一下如何使用pandoc渲染。</p>
+<ol type="1">
+<li>首先安装Pandoc，官网提供了Ubuntu的deb安装包，按照官网教程就可以安装完成。</li>
+<li>就是卸载hexo默认的markd,再安装新的: <figure class="highlight ada"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">npm uninstall hexo-renderer-marked <span class="comment">--save</span></span><br><span class="line">npm install hexo-renderer-pandoc <span class="comment">--save</span></span><br></pre></td></tr></table></figure></li>
+</ol>
+<p>如果决定要换的话，还是更换为Pandoc吧，虽然比较笨重，需要首先安装Pandoc, 不过的确可以完美解决上述的不兼容问题，另外它的语法与markdown有些微的差异，需要注意。</p>
+<h2 id="修改hexo渲染源码">4. 修改Hexo渲染源码</h2>
+<p>修改hexo的渲染源码: <code>nodes_modules/marked/lib/marked.js</code>:</p>
+<ul>
+<li>去掉<code>\\</code>的额外转义</li>
+<li>将em标签对应的符号中，去掉<code>_</code>,因为markdown中有<code>*</code>可以表示斜体，<code>—</code>就去掉了。</li>
+</ul>
+<p>具体思路参考了<a target="_blank" rel="noopener" href="http://blog.csdn.net/emptyset110/article/details/50123231">使Marked.js与MathJax共存</a>, 打开<code>nodes_modules/marked/lib/marked.js</code>: 第一步: 找到下面的代码: <figure class="highlight taggerscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">escape: /^<span class="symbol">\\</span>([<span class="symbol">\\</span>`*&#123;&#125;<span class="symbol">\[</span><span class="symbol">\]</span>()# +<span class="symbol">\-</span>.!_&gt;])/,</span><br></pre></td></tr></table></figure> 改为: <figure class="highlight taggerscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">escape: /^<span class="symbol">\\</span>([`*&#123;&#125;<span class="symbol">\[</span><span class="symbol">\]</span>()# +<span class="symbol">\-</span>.!_&gt;])/,</span><br></pre></td></tr></table></figure> 这样就会去掉<code>\\</code>的转义了。 第二步: 找到em的符号: <figure class="highlight taggerscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">em: /^<span class="symbol">\b</span>_((?:[^_]|__)+?)_<span class="symbol">\b</span>|^<span class="symbol">\*</span>((?:<span class="symbol">\*</span><span class="symbol">\*</span>|[<span class="symbol">\s</span><span class="symbol">\S</span>])+?)<span class="symbol">\*</span>(?!<span class="symbol">\*</span>)/,</span><br></pre></td></tr></table></figure> 改为: <figure class="highlight taggerscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">em:/^<span class="symbol">\*</span>((?:<span class="symbol">\*</span><span class="symbol">\*</span>|[<span class="symbol">\s</span><span class="symbol">\S</span>])+?)<span class="symbol">\*</span>(?!<span class="symbol">\*</span>)/,</span><br></pre></td></tr></table></figure> 去掉<code>_</code>的斜体含义,这样就解决了。这种方式指标不治本，因为保证不了还可能有其它的字符会冲突，这样的话，还需要返回去接着修改。</p>
+<p>大家可以根据自己的情况选择，不过还是建议第三种换Markdown引擎，使用Pandoc来渲染，这样就算换了机器，直接安装一个插件就好了，没有必要再去倒腾源码了</p>
+
+      
+    </div>
+
+
+    
+
+    
+	    <div class="article-footer-copyright">
+<!--<p>本文作者: shomy 发表于 <a href="http://shomy.top" target="_blank">个人博客</a></p> -->
+<p>
+本文标题: Hexo下mathjax的转义问题<br/>
+</p>
+<p>
+发布时间: 2016-10-22, 14:06:24<br/>
+<p>
+<p>
+最后更新: 2021-12-16, 23:11:45<br/>
+<p>
+本文链接: <a href="/2016/10/22/hexo-markdown-mathjax/" target="_blank">http://shomy.top/2016/10/22/hexo-markdown-mathjax/</a>
+</p>
+<p>非商业转载请注明作者及出处。商业转载请联系<a href="mailto:shomyliu@gmail.com">作者</a>本人。</p>
+</div>
+
+    
+
+    <footer class="article-footer">
+      
+        <a href="http://shomy.top/2016/10/22/hexo-markdown-mathjax/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/hexo/" rel="tag">hexo</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/markdown/" rel="tag">markdown</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mathjax/" rel="tag">mathjax</a></li></ul>
+
+    </footer>
+    
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2016/11/12/focus-linear-regression/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          机器学习基石笔记(4)-线性回归
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2016/10/17/feasibility-of-learning-3/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">机器学习基石笔记(3)</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+
+
+<section id="comments">
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+<script>
+  var disqus_shortname = 'shomy';
+  
+  var disqus_url = 'http://shomy.top/2016/10/22/hexo-markdown-mathjax/';
+  
+  (function(){
+    var dsq = document.createElement('script');
+    dsq.type = 'text/javascript';
+    dsq.async = true;
+    dsq.src = 'https://' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  }());
+</script>
+</section>
+
+
+
+
+</section>
+      </div>
+    </div>
+    
+    
+<a id="rocket" href="#top" ></a>
+
+<script src="https://cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <script src="http://cdn.htliu.cn/static/js/leancloud.js"></script>
+<script>AV.initialize("k883AKdzaz5jccQnH1eIrG2r-gzGzoHsz", "4HBQOmslEp3VdwK1SGL8vB9Y");</script>
+
+<script src="/js/Counter.js"></script>
+
+
+
+
+
+<script id="dsq-count-scr" src="//shomy.disqus.com/count.js" async></script>
+ 
+
+
+  <script src="https://cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.js"></script>
+  
+<script src="/js/fancybox.js"></script>
+
+
+
+
+  
+<script src="/js/search.js"></script>
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

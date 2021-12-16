@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Feature Scaling 和 Batch Norm 笔记 | 天空的城</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="Batch Normlization是2015年提出的一个加速神经网络训练的技巧，同时对performance也有一定的提高，现在基本已经广泛使用了。这里相对完整的整理一下学习笔记。主要参考李宏毅老师的机器学习课程。  从Feature Scaling 开始">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Feature Scaling 和 Batch Norm 笔记">
+<meta property="og:url" content="http://shomy.top/2017/12/05/Feature-Scaling-Batch-Norm/index.html">
+<meta property="og:site_name" content="天空的城">
+<meta property="og:description" content="Batch Normlization是2015年提出的一个加速神经网络训练的技巧，同时对performance也有一定的提高，现在基本已经广泛使用了。这里相对完整的整理一下学习笔记。主要参考李宏毅老师的机器学习课程。  从Feature Scaling 开始">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://cdn.htliu.cn/blog/feature-scaling-BN/scaling-1.png">
+<meta property="og:image" content="http://cdn.htliu.cn/blog/feature-scaling-BN/scaling-2.png">
+<meta property="og:image" content="http://cdn.htliu.cn/blog/feature-scaling-BN/scaling-3.png">
+<meta property="og:image" content="http://cdn.htliu.cn/blog/feature-scaling-BN/scaling-4.png">
+<meta property="article:published_time" content="2017-12-05T08:50:00.000Z">
+<meta property="article:modified_time" content="2021-12-16T15:11:45.649Z">
+<meta property="article:author" content="ShomyLiu">
+<meta property="article:tag" content="machine learning">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://cdn.htliu.cn/blog/feature-scaling-BN/scaling-1.png">
+  
+  
+    <link rel="icon" href="/image/favicon.ico">
+  
+
+  
+  <link href="https://cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.css" rel="stylesheet">
+  
+  <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  <link href="https://cdn.bootcss.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+<!-- Google Analytics -->
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-74368890-2', 'auto');
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+
+
+  
+
+  
+  <div class="site-search header-inner">
+    <div class="popup">
+        <span class="search-icon fa fa-search"></span>
+        <input type="text" id="local-search-input">
+        <div id="local-search-result"></div>
+        <span class="popup-btn-close">close</span>
+    </div>
+</div>
+
+
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      
+<header id="header">
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">天空的城</a>
+      </h1>
+      
+    </div>
+    <div id="header-menu">
+      <nav id="main-nav">
+        <ul>
+        
+          <li><a href="/"><i class="fa fa-home icon-setting"></i></a></li>
+        
+          <li><a href="/archives"><i class="fa fa-archive icon-setting"></i></a></li>
+        
+          <li><a href="/tags"><i class="fa fa-tag icon-setting"></i></a></li>
+        
+          <li><a href="/about"><i class="fa fa-user icon-setting"></i></a></li>
+        
+        
+          <li><a href="javascript:;" class="popup-trigger"><i class="fa fa-search > icon-setting"></i></a></li>
+        
+        </ul>
+      </nav>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-Feature-Scaling-Batch-Norm" class="article article-type-post" itemscope itemprop="blogPost">
+  
+  <div class="article-meta">
+    <a href="/2017/12/05/Feature-Scaling-Batch-Norm/" class="article-date">
+  <time datetime="2017-12-05T08:50:00.000Z" itemprop="datePublished">2017-12-05</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/">读书笔记</a>
+  </div>
+
+
+    
+        <div class="counter-tag counter">
+    <!-- 别忘记这个类名... post-title-link -->
+    <span id="/2017/12/05/Feature-Scaling-Batch-Norm/" class="leancloud_visitors article-hits post-title-link"
+           data-flag-title="Feature Scaling 和 Batch Norm 笔记">
+        次阅读
+    </span>
+
+  </div>
+
+    
+
+  </div>
+  
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Feature Scaling 和 Batch Norm 笔记
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+            <div id="toc" class="toc-article">
+                <strong class="toc-title">文章目录</strong>
+                <ol class="post-toc"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E4%BB%8Efeature-scaling-%E5%BC%80%E5%A7%8B"><span class="post-toc-text">从Feature Scaling 开始</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#batch-normalization"><span class="post-toc-text">Batch Normalization</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E9%99%84pytorch-%E7%AE%80%E5%8D%95%E5%AE%9E%E7%8E%B0"><span class="post-toc-text">附Pytorch 简单实现</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E5%8F%82%E8%80%83"><span class="post-toc-text">参考</span></a></li></ol>
+            </div>
+        
+        
+        <blockquote>
+<p>Batch Normlization是2015年提出的一个加速神经网络训练的技巧，同时对performance也有一定的提高，现在基本已经广泛使用了。这里相对完整的整理一下学习笔记。主要参考李宏毅老师的机器学习课程。</p>
+</blockquote>
+<h2 id="从feature-scaling-开始">从Feature Scaling 开始</h2>
+<span id="more"></span>
+<p>提起BN首先需要从Feature Scaling/Normalization(特征缩放/归一化)说起。 在机器学习中，经常需要对特征做归一化，标准化，具体原因是什么呢？如果输入的特征的尺度差别很大，比如说<span class="math inline">\(x_1\)</span>的取值位于<span class="math inline">\(0-1\)</span>, <span class="math inline">\(x_2\)</span>的尺度位于<span class="math inline">\(1000-2000\)</span>, 这个时候，就需要将特征scaling到同一个尺度，一般来说，特征缩放之后有两个好处。</p>
+<ul>
+<li><strong>提高学习器的性能</strong>，特别是涉及到距离计算的，比如KNN, SVM等分类器，KMeans聚类等。这个很容易理解，在计算距离的时候， 如果某一个特征取值范围很大，这样这一个特征对距离的计算就会占据主导作用， 其它尺度小的特征起到的作用就会变小，而实际上这些特征的重要性可能是一样的。 因此做了Feature Scaling将特征范围缩放到一个尺度的话，就可以避免这种情况。</li>
+<li><p><strong>加快梯度下降优化的收敛速度</strong> 这里经常使用的是吴恩达老师的机器学习课程中预测房价的例子，假设有影响房价两个特征</p>
+<ul>
+<li><span class="math inline">\(x_1\)</span>:房间数目，一般比较小，位于1-5左右</li>
+<li><span class="math inline">\(x_2\)</span>: 房屋面积, 一般取值比较大，比如位于80-200等</li>
+</ul>
+<p>一般线性回归的关系函数如下: <span class="math display">\[s = \theta_1x_1 + \theta_2x*2 + b\]</span> 取平方误差的话, 损失函数为(仅仅考虑一个数据): <span class="math display">\[LOSS = (s_\theta(x_i)-y_i)^2\]</span> 因为<span class="math inline">\(x_2\)</span>的尺度比<span class="math inline">\(x_1\)</span>大很多，因此即使两个参数<span class="math inline">\(w_1,w_2\)</span>同样大小的变化，乘上<span class="math inline">\(x_i\)</span>之后，对最后的结果LOSS影响差距也很不同, <span class="math inline">\(w_2\)</span>明显要比<span class="math inline">\(w_1\)</span>的作用要大，也就是说，<span class="math inline">\(\theta_2\)</span>很小的变化就会导致LOSS较大变化，在LOSS的等高线上就会呈现出椭圆的形状, 如图1: <img src="http://cdn.htliu.cn/blog/feature-scaling-BN/scaling-1.png" alt="img" /> 这个图的横纵坐标表示两个特征，然后每一圈代表一个LOSS值，圈越大，LOSS越大，最里面的B则是最优解的位置。 然后考虑梯度更新的过程，上述的等高线即LOSS与<span class="math inline">\(\theta_1,\theta_2\)</span>的函数关系， 因此图中椭圆的切线方向就是梯度下降的方向， 从图1中可以看出来，从初始点A到最有点B需要经过很多次的无用的迭代，并不是每次向着最优的方向走，类似于之字形，这样收敛就会很慢了。 反过来看，如果做了Feature Scaling的话，<span class="math inline">\(\theta_1, \theta_2\)</span>的更新变化对LOSS影响一致，这样等高线就会成近圆形如图2所示，这样沿着切线的方向进行梯度更新就会一直沿着最优的方向走，就会加快收敛速度。</p></li>
+</ul>
+<p>常用的Feature Scaling的方法有:</p>
+<ul>
+<li>标准化(Standardization): 所有特征量化到标准正态分布上: <span class="math display">\[z = \frac{x- \mu}{\sigma}\]</span> 其中<span class="math inline">\(\mu,\sigma\)</span>就是 <span class="math inline">\(x\)</span>的均值和标准差，这样所有特征的尺度就基本类似了。 这种标准化的缺点就是如果原始数据不近似于高斯分布的话，效果可能会变差，毕竟修改了分布。</li>
+<li>最大-最小化 (Min-Max Scaling) 线性归一: <span class="math display">\[z = \frac{x-x_{min}}{x_{max} - x_{min}}\]</span> 这种也比较简单常用。这样所有的数据都会到[0,1]的范围内了，尺度一致。</li>
+</ul>
+<p>此外， 其实做Feature Scaling或多或少的跟原始数据都有一些差异， 理论上比较好的方法是，不同的Feature设置不同的学习率，尺度大的特征的学习率应该小一点，尺度小的特征的学习率稍微大一些，但是在实际梯度下降中，特征很多，对每个特征设置不通的学习率不切实际，很难实现，因此换一种思路，对特征做scale, 这样也可以避免尺度不一带来的问题。</p>
+<h2 id="batch-normalization">Batch Normalization</h2>
+<p>开始考虑神经网络， 我们知道神经网络有很多个Layer组成， 每个layer的输入都是上一层layer的输出， 那我们就有理由相信对每一层的输入的特征做Feature Scaling 可能会起到不错的作用。 在说BN之前，需要简单提一下 Internal Covariate Shift(ICS) 这个现象. 我们知道多层的神经网络，每一层的输出数据的分布都在随着训练也就是参数更新发生着变化，比如说第一层的输出的分布随着第一层的权重和bias的训练更新而改变，这种数据分布的改变就称之为: Internal Covariate Shift(ICS). 而如果对每一层的输入都做归一化的话，就相当于每一层的分布都保持一致了(均值方差相同), 这样可以一定程度上减小ICS带来的影响，当然显然并不能从根本上解决，只是减弱一些而已(具体关于ICS的内容这里不再介绍，理论知识偏多)。 下面考虑一下Batch Normalization是怎么做的。 有了前面的Feature Scaling, 貌似问题很简单了， 就对每一层的输出做scaling就可以了，直接使用上述的第一种归一化的方式即可: <span class="math display">\[\hat{x} = \frac{x-\mu}{\sigma}\]</span> 但是这里需要考虑一个问题，在做归一化的时候， 会影响原来学到的特征，比如说在输入到sigmod激活函数之前，如果经过Wx+b之后的结果，分布在S型函数的两侧， 也就是近乎平行坐标轴的那部分区域，这样原本经过激活函数之后就是0或者1了， 但是经过归一化之后，结果数据都到了S型函数的中间部分,如下图: <img src="http://cdn.htliu.cn/blog/feature-scaling-BN/scaling-2.png" alt="img" /></p>
+<p>这样会有问题，归一化都到了[-1, 1]那一部分区域， 而对应的sigmod近乎是一条直线了，如红色虚线所示，那这样就成了线性变换了，那神经网络的非线性变化就没有意义了。所以BN在做完归一化，具体来说是标准化之后，又做了一步特征转换的操作: <span class="math display">\[\hat{x} = \frac{x-\mu}{\sigma} //归一化\]</span> <span class="math display">\[z = \gamma \hat{x} + \beta //重构转换\]</span></p>
+<p>其中 <span class="math inline">\(\gamma, \beta\)</span> 是两个参数，跟权重矩阵参数一样， 也是需要训练更新的。<span class="math inline">\(\hat{x}\)</span>则是标准化之后的值。可以看出来，如果<span class="math inline">\(\gamma=\sigma, \beta=\mu\)</span>的时候，我们就会发现<span class="math inline">\(x=z\)</span>了，这样就恢复到了原始的特征分布，其实可以这样理解，<span class="math inline">\(\gamma, \beta\)</span>这两个参数其实就是来学习前面的Normalization到底有没有作用，如果没有作用那就做一些转换，抵消一部分Normalization带来的影响。 这样完整的BN的步骤如下，需要注意的是，输入是一个Batch的数据，上述求得均值，方差均是对同一个Batch的数据计算得出的也就是说下图的m就是minbatch size： <img src="http://cdn.htliu.cn/blog/feature-scaling-BN/scaling-3.png" alt="img" /></p>
+<p>用图示表示，更加形象一些: <img src="http://cdn.htliu.cn/blog/feature-scaling-BN/scaling-4.png" alt="img" /></p>
+<p>需要注意的有两点:</p>
+<ul>
+<li>理论上BN可以放到激活函数之前，也可以放在其之后，但是一般情况，BN层会放在激活函数之前，这个其实很容易理解，比如激活函数如果是sigmod或者tanh的话，本身的输出都已经在一定程度上有了归一化了，后面再加一个BN的话，意义不大。</li>
+<li>batch-size 大一些泛化能力更强。 如果batch很小的话，计算均值和方差其实没有代表性。</li>
+</ul>
+<p>前面的都是在training阶段，在test的时候，情况不太一样。因为在测试的话，我们没有batch 的输入，如何去计算<span class="math inline">\(\mu, \gamma\)</span>呢。一般都是从训练数据出发, 比如使用所有数据的均值和方差，这种方法在数据集很大的时候，很难实现。因此可以退而求其次，在最后一个epoch的时候，保存每个batch的均值和方差，最后去平均。取最后一个epoch的原因也很简单，最后一个epoch参数的训练已经近乎最优了。</p>
+<h2 id="附pytorch-简单实现">附Pytorch 简单实现</h2>
+<p>Pytorch已经内置了<code>BatchNorm</code>函数，而且有多种，这里就以简单的神经网络来做个例子，直接在激活函数之前就加入BN即可: <figure class="highlight nix"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">model</span> = nn.Sequential(</span><br><span class="line">    nn.Linear(<span class="number">10</span>, <span class="number">20</span>),           <span class="comment"># 输入10维，隐层20维</span></span><br><span class="line">    nn.BatchNorm1d(<span class="number">20</span>, <span class="attr">momentum=0.5),</span>     <span class="comment"># BN层，参数为隐层的个数</span></span><br><span class="line">    nn.tanh(),                        <span class="comment"># 激活函数</span></span><br><span class="line">    nn.Linear(<span class="number">20</span>, <span class="number">2</span>),             <span class="comment"># 输出层</span></span><br><span class="line"> )</span><br><span class="line"></span><br></pre></td></tr></table></figure></p>
+<h2 id="参考">参考</h2>
+<ol type="1">
+<li>https://arxiv.org/abs/1502.03167</li>
+<li>http://blog.csdn.net/lovesophiaw/article/details/58996684</li>
+<li>https://zhuanlan.zhihu.com/p/25234554</li>
+<li><a target="_blank" rel="noopener" href="https://www.youtube.com/watch?v=BZh1ltr5Rkg">李宏毅老师 Batch-Norm 教程</a></li>
+<li>http://www.voidcn.com/article/p-bptxerfe-bcx.html</li>
+<li>https://morvanzhou.github.io/tutorials/machine-learning/torch/5-04-A-batch-normalization/</li>
+</ol>
+
+      
+    </div>
+
+
+    
+
+    
+	    <div class="article-footer-copyright">
+<!--<p>本文作者: shomy 发表于 <a href="http://shomy.top" target="_blank">个人博客</a></p> -->
+<p>
+本文标题: Feature Scaling 和 Batch Norm 笔记<br/>
+</p>
+<p>
+发布时间: 2017-12-05, 16:50:00<br/>
+<p>
+<p>
+最后更新: 2021-12-16, 23:11:45<br/>
+<p>
+本文链接: <a href="/2017/12/05/Feature-Scaling-Batch-Norm/" target="_blank">http://shomy.top/2017/12/05/Feature-Scaling-Batch-Norm/</a>
+</p>
+<p>非商业转载请注明作者及出处。商业转载请联系<a href="mailto:shomyliu@gmail.com">作者</a>本人。</p>
+</div>
+
+    
+
+    <footer class="article-footer">
+      
+        <a href="http://shomy.top/2017/12/05/Feature-Scaling-Batch-Norm/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/machine-learning/" rel="tag">machine learning</a></li></ul>
+
+    </footer>
+    
+	    <script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+    
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2018/02/28/relation-extraction/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          关系抽取(分类)总结
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2017/09/29/codings-webhook/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">使用coding/github的webhook实现自动化部署</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+
+
+<section id="comments">
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+<script>
+  var disqus_shortname = 'shomy';
+  
+  var disqus_url = 'http://shomy.top/2017/12/05/Feature-Scaling-Batch-Norm/';
+  
+  (function(){
+    var dsq = document.createElement('script');
+    dsq.type = 'text/javascript';
+    dsq.async = true;
+    dsq.src = 'https://' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  }());
+</script>
+</section>
+
+
+
+
+</section>
+      </div>
+    </div>
+    
+    
+<a id="rocket" href="#top" ></a>
+
+<script src="https://cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <script src="http://cdn.htliu.cn/static/js/leancloud.js"></script>
+<script>AV.initialize("k883AKdzaz5jccQnH1eIrG2r-gzGzoHsz", "4HBQOmslEp3VdwK1SGL8vB9Y");</script>
+
+<script src="/js/Counter.js"></script>
+
+
+
+
+
+<script id="dsq-count-scr" src="//shomy.disqus.com/count.js" async></script>
+ 
+
+
+  <script src="https://cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.js"></script>
+  
+<script src="/js/fancybox.js"></script>
+
+
+
+
+  
+<script src="/js/search.js"></script>
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

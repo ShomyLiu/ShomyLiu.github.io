@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>python使用futures进行并行处理 | 天空的城</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="很多时候任务都需要并行，比如IO密集型的爬数据，读写磁盘等，CPU计算密集型的计算任务等等。而Python由于GIL的原因，默认情况下只能单线程运行，无法直接利用硬件的多核多线程，因此效率较低，python也早提供了一些列的多线程多进程的库可以用来使用，比如multiprocessing, queue 等等, 不过使用起来都相对复杂，不易控制。 经过几番尝试调研尝试，发现futures基本是最方便">
+<meta property="og:type" content="article">
+<meta property="og:title" content="python使用futures进行并行处理">
+<meta property="og:url" content="http://shomy.top/2020/02/14/python-futures-para/index.html">
+<meta property="og:site_name" content="天空的城">
+<meta property="og:description" content="很多时候任务都需要并行，比如IO密集型的爬数据，读写磁盘等，CPU计算密集型的计算任务等等。而Python由于GIL的原因，默认情况下只能单线程运行，无法直接利用硬件的多核多线程，因此效率较低，python也早提供了一些列的多线程多进程的库可以用来使用，比如multiprocessing, queue 等等, 不过使用起来都相对复杂，不易控制。 经过几番尝试调研尝试，发现futures基本是最方便">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-02-14T06:59:11.000Z">
+<meta property="article:modified_time" content="2021-12-16T15:11:45.667Z">
+<meta property="article:author" content="ShomyLiu">
+<meta property="article:tag" content="python">
+<meta property="article:tag" content="futures">
+<meta name="twitter:card" content="summary">
+  
+  
+    <link rel="icon" href="/image/favicon.ico">
+  
+
+  
+  <link href="https://cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.css" rel="stylesheet">
+  
+  <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  <link href="https://cdn.bootcss.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+<!-- Google Analytics -->
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-74368890-2', 'auto');
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+
+
+  
+
+  
+  <div class="site-search header-inner">
+    <div class="popup">
+        <span class="search-icon fa fa-search"></span>
+        <input type="text" id="local-search-input">
+        <div id="local-search-result"></div>
+        <span class="popup-btn-close">close</span>
+    </div>
+</div>
+
+
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      
+<header id="header">
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">天空的城</a>
+      </h1>
+      
+    </div>
+    <div id="header-menu">
+      <nav id="main-nav">
+        <ul>
+        
+          <li><a href="/"><i class="fa fa-home icon-setting"></i></a></li>
+        
+          <li><a href="/archives"><i class="fa fa-archive icon-setting"></i></a></li>
+        
+          <li><a href="/tags"><i class="fa fa-tag icon-setting"></i></a></li>
+        
+          <li><a href="/about"><i class="fa fa-user icon-setting"></i></a></li>
+        
+        
+          <li><a href="javascript:;" class="popup-trigger"><i class="fa fa-search > icon-setting"></i></a></li>
+        
+        </ul>
+      </nav>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-python-futures-para" class="article article-type-post" itemscope itemprop="blogPost">
+  
+  <div class="article-meta">
+    <a href="/2020/02/14/python-futures-para/" class="article-date">
+  <time datetime="2020-02-14T06:59:11.000Z" itemprop="datePublished">2020-02-14</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">编程语言</a>
+  </div>
+
+
+    
+        <div class="counter-tag counter">
+    <!-- 别忘记这个类名... post-title-link -->
+    <span id="/2020/02/14/python-futures-para/" class="leancloud_visitors article-hits post-title-link"
+           data-flag-title="python使用futures进行并行处理">
+        次阅读
+    </span>
+
+  </div>
+
+    
+
+  </div>
+  
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      python使用futures进行并行处理
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+        
+        <p>很多时候任务都需要并行，比如IO密集型的爬数据，读写磁盘等，CPU计算密集型的计算任务等等。而Python由于GIL的原因，默认情况下只能单线程运行，无法直接利用硬件的多核多线程，因此效率较低，python也早提供了一些列的多线程多进程的库可以用来使用，比如multiprocessing, queue 等等, 不过使用起来都相对复杂，不易控制。 经过几番尝试调研尝试，发现<code>futures</code>基本是最方便将单线程/进程代码改为并发的代码的一个模块。</p>
+<p>这篇博客主要是简单记录下futures最常用的方式，以方便后续使用。</p>
+<span id="more"></span>
+<blockquote>
+<p>futures 是 从Python3.2 加入到python标准库，python2.x需要额外pip安装，主要是对线程池和进程池做了高度的封装，可以更加灵活的使用并行编程。</p>
+</blockquote>
+<p>futures提供了多线程和多进程的接口：</p>
+<ul>
+<li><code>futures.ThreadPoolExecutor</code>: 多线程，适合IO密集型任务：爬虫，读写处理</li>
+<li><code>futures.ThreadPoolExecutor</code>: 多进程，适合CPU密集型任务，比如数学运算等。</li>
+</ul>
+<p>话不多说，直接先上一个最常用的例子模板：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/env python</span></span><br><span class="line"><span class="comment"># encoding: utf-8</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">from</span> concurrent <span class="keyword">import</span> futures</span><br><span class="line"><span class="keyword">import</span> requests</span><br><span class="line"></span><br><span class="line">r = requests.Session()</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">func</span>(<span class="params">url</span>):</span></span><br><span class="line">    data = r.get(url).text</span><br><span class="line">    <span class="keyword">return</span> data</span><br><span class="line"></span><br><span class="line">task_list = [<span class="string">&quot;https://www.163.com&quot;</span>, <span class="string">&quot;https://www.zhibo8.cc&quot;</span>, <span class="string">&quot;https://www.baidu.com&quot;</span>]</span><br><span class="line">res = []</span><br><span class="line"><span class="keyword">with</span> futures.ThreadPoolExecutor(max_workers=<span class="number">2</span>) <span class="keyword">as</span> executor:</span><br><span class="line">   f_tasks = &#123;executor.submit(func, url): url <span class="keyword">for</span> url <span class="keyword">in</span> task_list&#125;</span><br><span class="line">   <span class="keyword">for</span> f <span class="keyword">in</span> futures.as_completed(f_tasks):</span><br><span class="line">            url = f_tasks[f]</span><br><span class="line">            <span class="keyword">try</span>:</span><br><span class="line">                data = f.result()</span><br><span class="line">                res.append(data)</span><br><span class="line">                <span class="built_in">print</span>(<span class="string">f&quot;<span class="subst">&#123;url&#125;</span> finished&quot;</span>)</span><br><span class="line">            <span class="keyword">except</span> Exception <span class="keyword">as</span> exc:</span><br><span class="line">                <span class="built_in">print</span>(<span class="string">f&quot;<span class="subst">&#123;url&#125;</span> in wrong:<span class="subst">&#123;exc&#125;</span>&quot;</span>)</span><br></pre></td></tr></table></figure>
+<p>简单解释下：</p>
+<ul>
+<li>func函数：对于每一个任务的执行函数，对应修改自己的任务即可</li>
+<li><code>ThreadPoolExecutor(max_workers=2)</code> 这里用的是多线程，多进程的话只需要修改为ProcessPoolExecutor, <code>max_workers</code> 调解并行线程或者进程数目。</li>
+<li><code>executor.submit(func, url)</code> 这个是定义了执行函数，一般不用特别修改，当然如果要传入多个参数的话，也是可以的，直接包装为一个list或者tuple即可。</li>
+<li><code>f.result()</code> 是在任务完成时候，取出结果</li>
+<li>最后 <code>try / except</code> 一定要保留，不然代码出错的话，也不会抛出异常。</li>
+</ul>
+<p>当然<code>futures</code>除了上面的用法，还有很多其他的API和用法，比如<code>executor.map</code>等，不过上面的用法是我个人最常用的，这篇博客就是记录下，免得以后用到了还得去查。</p>
+<p>想深入了解futures的话，可以看看下面的几个讲解</p>
+<ul>
+<li>https://www.dongwm.com/post/78/</li>
+<li>https://juejin.im/post/5b1e36476fb9a01e4a6e02e4</li>
+</ul>
+
+      
+    </div>
+
+
+    
+
+    
+	    <div class="article-footer-copyright">
+<!--<p>本文作者: shomy 发表于 <a href="http://shomy.top" target="_blank">个人博客</a></p> -->
+<p>
+本文标题: python使用futures进行并行处理<br/>
+</p>
+<p>
+发布时间: 2020-02-14, 14:59:11<br/>
+<p>
+<p>
+最后更新: 2021-12-16, 23:11:45<br/>
+<p>
+本文链接: <a href="/2020/02/14/python-futures-para/" target="_blank">http://shomy.top/2020/02/14/python-futures-para/</a>
+</p>
+<p>非商业转载请注明作者及出处。商业转载请联系<a href="mailto:shomyliu@gmail.com">作者</a>本人。</p>
+</div>
+
+    
+
+    <footer class="article-footer">
+      
+        <a href="http://shomy.top/2020/02/14/python-futures-para/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/futures/" rel="tag">futures</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/python/" rel="tag">python</a></li></ul>
+
+    </footer>
+    
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2020/04/06/2019-review/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          2019
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2019/12/31/neu-review-rec/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">基于评论文本的深度推荐系统总结</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+
+
+<section id="comments">
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+<script>
+  var disqus_shortname = 'shomy';
+  
+  var disqus_url = 'http://shomy.top/2020/02/14/python-futures-para/';
+  
+  (function(){
+    var dsq = document.createElement('script');
+    dsq.type = 'text/javascript';
+    dsq.async = true;
+    dsq.src = 'https://' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  }());
+</script>
+</section>
+
+
+
+
+</section>
+      </div>
+    </div>
+    
+    
+<a id="rocket" href="#top" ></a>
+
+<script src="https://cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <script src="http://cdn.htliu.cn/static/js/leancloud.js"></script>
+<script>AV.initialize("k883AKdzaz5jccQnH1eIrG2r-gzGzoHsz", "4HBQOmslEp3VdwK1SGL8vB9Y");</script>
+
+<script src="/js/Counter.js"></script>
+
+
+
+
+
+<script id="dsq-count-scr" src="//shomy.disqus.com/count.js" async></script>
+ 
+
+
+  <script src="https://cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.js"></script>
+  
+<script src="/js/fancybox.js"></script>
+
+
+
+
+  
+<script src="/js/search.js"></script>
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

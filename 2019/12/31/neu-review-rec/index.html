@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>基于评论文本的深度推荐系统总结 | 天空的城</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="本文主要总结下近几年结合评论文本的推荐系统 (review-based recommendation)，侧重深度学习的模型，并且开源了一个代码库: Neu-Review-Rec 主要完成了数据处理，模型构建，baseline复现等完整的Pipeline。[长文预警]">
+<meta property="og:type" content="article">
+<meta property="og:title" content="基于评论文本的深度推荐系统总结">
+<meta property="og:url" content="http://shomy.top/2019/12/31/neu-review-rec/index.html">
+<meta property="og:site_name" content="天空的城">
+<meta property="og:description" content="本文主要总结下近几年结合评论文本的推荐系统 (review-based recommendation)，侧重深度学习的模型，并且开源了一个代码库: Neu-Review-Rec 主要完成了数据处理，模型构建，baseline复现等完整的Pipeline。[长文预警]">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://cdn.htliu.cn/blog/review-based-rec/frame.png">
+<meta property="og:image" content="http://cdn.htliu.cn/blog/review-based-rec/convmf.png">
+<meta property="og:image" content="http://cdn.htliu.cn/blog/review-based-rec/deepconn.png">
+<meta property="og:image" content="http://cdn.htliu.cn/blog/review-based-rec/dattn.png">
+<meta property="og:image" content="http://cdn.htliu.cn/blog/review-based-rec/anr.png">
+<meta property="og:image" content="http://cdn.htliu.cn/blog/review-based-rec/carl.png">
+<meta property="og:image" content="http://cdn.htliu.cn/blog/review-based-rec/narre.png">
+<meta property="og:image" content="http://cdn.htliu.cn/blog/review-based-rec/tarmf.png">
+<meta property="og:image" content="http://cdn.htliu.cn/blog/review-based-rec/mpcn.png">
+<meta property="og:image" content="http://cdn.htliu.cn/blog/review-based-rec/parl.png">
+<meta property="article:published_time" content="2019-12-31T15:44:37.000Z">
+<meta property="article:modified_time" content="2021-12-16T15:11:45.665Z">
+<meta property="article:author" content="ShomyLiu">
+<meta property="article:tag" content="recommendation">
+<meta property="article:tag" content="deep learning">
+<meta property="article:tag" content="review-based">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://cdn.htliu.cn/blog/review-based-rec/frame.png">
+  
+  
+    <link rel="icon" href="/image/favicon.ico">
+  
+
+  
+  <link href="https://cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.css" rel="stylesheet">
+  
+  <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  <link href="https://cdn.bootcss.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+<!-- Google Analytics -->
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-74368890-2', 'auto');
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+
+
+  
+
+  
+  <div class="site-search header-inner">
+    <div class="popup">
+        <span class="search-icon fa fa-search"></span>
+        <input type="text" id="local-search-input">
+        <div id="local-search-result"></div>
+        <span class="popup-btn-close">close</span>
+    </div>
+</div>
+
+
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      
+<header id="header">
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">天空的城</a>
+      </h1>
+      
+    </div>
+    <div id="header-menu">
+      <nav id="main-nav">
+        <ul>
+        
+          <li><a href="/"><i class="fa fa-home icon-setting"></i></a></li>
+        
+          <li><a href="/archives"><i class="fa fa-archive icon-setting"></i></a></li>
+        
+          <li><a href="/tags"><i class="fa fa-tag icon-setting"></i></a></li>
+        
+          <li><a href="/about"><i class="fa fa-user icon-setting"></i></a></li>
+        
+        
+          <li><a href="javascript:;" class="popup-trigger"><i class="fa fa-search > icon-setting"></i></a></li>
+        
+        </ul>
+      </nav>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-neu-review-rec" class="article article-type-post" itemscope itemprop="blogPost">
+  
+  <div class="article-meta">
+    <a href="/2019/12/31/neu-review-rec/" class="article-date">
+  <time datetime="2019-12-31T15:44:37.000Z" itemprop="datePublished">2019-12-31</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/">读书笔记</a>
+  </div>
+
+
+    
+        <div class="counter-tag counter">
+    <!-- 别忘记这个类名... post-title-link -->
+    <span id="/2019/12/31/neu-review-rec/" class="leancloud_visitors article-hits post-title-link"
+           data-flag-title="基于评论文本的深度推荐系统总结">
+        次阅读
+    </span>
+
+  </div>
+
+    
+
+  </div>
+  
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      基于评论文本的深度推荐系统总结
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+            <div id="toc" class="toc-article">
+                <strong class="toc-title">文章目录</strong>
+                <ol class="post-toc"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E9%97%AE%E9%A2%98%E7%AE%80%E4%BB%8B"><span class="post-toc-text">问题简介</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#%E6%95%B0%E6%8D%AE%E9%9B%86"><span class="post-toc-text">数据集</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#%E8%AF%84%E4%BB%B7%E6%8C%87%E6%A0%87"><span class="post-toc-text">评价指标</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#%E5%9F%BA%E6%9C%AC%E6%A1%86%E6%9E%B6"><span class="post-toc-text">基本框架</span></a></li></ol></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E5%9F%BA%E4%BA%8Edocument%E5%BB%BA%E6%A8%A1%E7%9A%84%E6%96%B9%E6%B3%95"><span class="post-toc-text">基于document建模的方法</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#convmf-recsys16"><span class="post-toc-text">ConvMF (RecSys&#39;16)</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#deepconn-wsdm17"><span class="post-toc-text">DeepCoNN (WSDM&#39;17)</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#d-attn-recsys17"><span class="post-toc-text">D-Attn (RecSys&#39;17)</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#anrcikm18"><span class="post-toc-text">ANR(CIKM&#39;18)</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#carltois19"><span class="post-toc-text">CARL(TOIS&#39;19)</span></a></li></ol></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E5%9F%BA%E4%BA%8Ereview%E5%BB%BA%E6%A8%A1%E7%9A%84%E6%96%B9%E6%B3%95"><span class="post-toc-text">基于review建模的方法</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#narre-www18"><span class="post-toc-text">NARRE (WWW&#39;18)</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#tarmfwww18"><span class="post-toc-text">TARMF(WWW&#39;18)</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#mpcnkdd18"><span class="post-toc-text">MPCN(KDD&#39;18)</span></a></li></ol></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E5%85%B6%E4%BB%96"><span class="post-toc-text">其他</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#parlcikm18"><span class="post-toc-text">PARL(CIKM&#39;18)</span></a></li></ol></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E6%80%BB%E7%BB%93"><span class="post-toc-text">总结</span></a></li></ol>
+            </div>
+        
+        
+        <p>本文主要总结下近几年结合评论文本的推荐系统 (review-based recommendation)，侧重深度学习的模型，并且开源了一个代码库: <a target="_blank" rel="noopener" href="https://github.com/ShomyLiu/Neu-Review-Rec">Neu-Review-Rec</a> 主要完成了数据处理，模型构建，baseline复现等完整的Pipeline。[<strong>长文预警</strong>]</p>
+<span id="more"></span>
+<h2 id="问题简介">问题简介</h2>
+<p>电商网站都允许用户为商品填写评论，这些文本评论能够体现出用户的偏好以及商品特征信息，是一种语义信息丰富的隐式特征。 相比于单纯的利用显式评分特征，文本信息一方面可以弥补评分稀疏性的问题，另一方面在推荐系统的可解释方面也能够做的更好。 从用户对某部电影的评论中，能够看出电影的一些情节特征，还有用户自己的理解与喜好兴趣等。</p>
+<p>很多推荐系统工作开始考虑利用评论信息为用户和商品进行建模，在介绍具体的工作前，先简单介绍下常用的数据集，评价指标等。</p>
+<h3 id="数据集">数据集</h3>
+<p>一般情况，最常用的两大类带评论信息的数据集为：</p>
+<ul>
+<li>Amazon Review: 亚马逊数据集一般分不同的类别，比如电影，音乐，衣服，工具，游戏等，由McAuley整理发布出来的。现在有两个版本，一个是旧版数据(<a target="_blank" rel="noopener" href="http://jmcauley.ucsd.edu/data/amazon/">链接</a>，时间为1996-2014年的Amazon数据。另外Mc课题组又更新到了新版数据(<a target="_blank" rel="noopener" href="https://nijianmo.github.io/amazon/index.html">链接</a>)，新加了2014-2018年间的Amazon Review数据，具体的字段可以到上述链接中查看。 目前大部分已有工作基于旧版数据中的small部分，一般是选择几个分类目录去做实验，当然也有文章把所有的分类都跑了的，比如MPCN。</li>
+<li>Yelp Review dataset: Yelp网站上的评论数据 (<a target="_blank" rel="noopener" href="https://www.yelp.com/dataset">链接</a>) , 常用的几个Yelp数据有 yelp2013, yelp2014, 和 yelp2016。Yelp提供的是完整数据集，需要根据需要自己去筛选不同年份的数据。</li>
+</ul>
+<p>此外，还有一些用的比较少的数据，比如<a target="_blank" rel="noopener" href="https://www.ratebeer.com/">Beer Dataset</a>, 之前在SNAP上有相关数据集，后来被要求删除了。 不过一般情况做实验使用Amazon的几个目录以及Yelp的数据集就足够了。 数据格式都可以简化为用户评论商品的四元组： <code>user, item, review text, rating</code>，其中rating一般都是从1-5分。 一般将按照user-item pair将数据集划分为训练接/验证集/测试集三部分，不过这里有一个坑需要注意:</p>
+<blockquote>
+<p>使用评论文本建模用户和商品，因此需要将在验证集和测试集中的user-item对应的review从训练集中去掉，这一条review在实际中是不存在的，因此不能用来建模用户或者对应的物品，如果这一条review没有移除的话，模型效果可能会不合理的提高。</p>
+</blockquote>
+<h3 id="评价指标">评价指标</h3>
+<p>基于评论的推荐系统的基本目标就是评分预测 (Rating Prediction)，因此本质上是一个回归问题，因此一般情况下，j常用的三种评价指标如下：</p>
+<ul>
+<li>Mean Squared Error: <span class="math inline">\(MSE = \frac{1}{|D|}\sum_{(u,i) \in D}(r_{u,i} - \hat{r}_{u,i})^2\)</span></li>
+<li>Root Mean Squared Error: <span class="math inline">\(RMSE = \sqrt{\frac{1}{|D|}\sum_{(u,i) \in D}(r_{u,i} - \hat{r}_{u,i})}\)</span></li>
+<li>Mean Absolute Error: <span class="math inline">\(MAE = \frac{1}{|D|}\sum_{(u,i) \in D}|r_{u,i} - \hat{r}_{u,i}|\)</span></li>
+</ul>
+<p>其中<span class="math inline">\(r_{u,i}\)</span> 表示用户u对商品i的真实评分，$ _{u,i}$则是模型预测评分。本质上这三个评价指标差别不大，一般常用的是MSE/RMSE, MAE很少单独使用。 不过有一点小trick，就是模型在训练选择loss的时候，可以尝试这三个，有时候performance可能会有些许的不同。</p>
+<h3 id="基本框架">基本框架</h3>
+<p>推荐系统的一个核心任务就是如何得到更精确的用户和商品表示。基于评论文本的推荐模型也不例外，核心就是利用评论文本信息表示用户和商品。 一般而言， 模型都包含编码层，融合层，评分预测层等几个模块，如下简图所示： <img src="http://cdn.htliu.cn/blog/review-based-rec/frame.png" alt="framework" /></p>
+<p>其中:</p>
+<ul>
+<li>编码层：将用户和商品的文档通过模型编码，得到各自的特征，例如利用CNN/RNN，还有各种Attention的变种等。</li>
+<li>融合层：如何将用户表示(user embedding)和物品表示(item embedding) 进行融合以及交互，得到统一的向量，常见的element-wise的add，dot以及concatenate等，还有一些其他更复杂的操作。</li>
+<li>评分预测层：将融合得到的向量进行最终的rating prediction, 本质就是一个回归问题。常用的有使用MLP，FM, LFM等方式做最后的预测。多提一句，我们的实践发现这一层可能对部分模型效果影响较大，可能换一个输出层，指标就上去了....</li>
+</ul>
+<p>大部分的工作都会在上述三个模块中动手脚，这里面的核心就是编码层，如何利用用户与商品的评论进行建模， 尽可能的反映出用户偏好和商品特征，这是本质的目的。目前已有很多基于深度学习的工作，下面会对一些比较经典常用的工作分了两类，并做简单介绍。<br />
+关于分类标准，本文并没有从方法论的角度分类(如是否用注意力机制)，而是从问题建模的角度出发。</p>
+<blockquote>
+<p>考虑到一个用户或者一个商品会有多条评论，关于如何处理多条评论，个人将已有工作分为两种:</p>
+</blockquote>
+<ul>
+<li>将用户或商品的多条reviews进行concatenate得到一个较长的document, 然后对该document进行提取特征作为用户和商品特征。 这种方法将所有review聚合，能够得到用户或者商品一个全局的兴趣或者特征。</li>
+<li>单独建模每一条review，之后再将review的特征聚合为用户特征。这种方法能够捕获用户对某一特定商品的偏好信息。</li>
+</ul>
+<p>下面将会按照上述的分类对已有工作进行介绍，此外最后附上几篇角度比较新奇的工作。</p>
+<p>此外，这里先给出两种特征：</p>
+<ul>
+<li>review-based feaure：使用user与item的评论文本信息得到对应的语义特征。</li>
+<li>rating-based feature: 可以理解为单纯的user/item 的ID embedding，能够视为每个用户或者商品的独有的特征。</li>
+</ul>
+<h2 id="基于document建模的方法">基于document建模的方法</h2>
+<p>下面介绍的几篇文章都是将用户或者商品的所有评论进行合并成一个长文档然后进行建模的。</p>
+<h3 id="convmf-recsys16">ConvMF (RecSys'16)</h3>
+<blockquote>
+<p>Kim D, Park C, Oh J, et al. Convolutional matrix factorization for document context-aware recommendation[C]//Proceedings of the 10th ACM Conference on Recommender Systems. ACM, 2016: 233-240.</p>
+</blockquote>
+<p><strong>基本介绍</strong></p>
+<p>这大概是较早的探索卷积神经网络在review-based rec上的工作，将CNN与概率矩阵分解(PMF)结合起来进行评分预测，值得注意的是，本文仅仅利用了商品的评论数据，用户的话，还是只有评分数据。这与后面的大部分用户-商品的平行结构是不同的。</p>
+<p>代码：<a target="_blank" rel="noopener" href="https://github.com/cartopy/ConvMF">ConvMF</a>。</p>
+<p><strong>方法</strong> 在介绍ConvMF前，先简单介绍下基于评分矩阵的PMF。一般情况下，评分预测任务首先需要学习用户和商品的feature, 即两个latent feature matrix: <span class="math inline">\(U \in R^{N \times k}, V \in R^{M \times k}\)</span>, 其中U，V分别为N个用户和M个商品的特征矩阵。一般情况下，利用已有的观测矩阵向量，可以给出条件概率： <span class="math display">\[p(R|U, V, \sigma^2) = \prod \prod \mathcal{N}(R_{ij}| U_i, V_j, \sigma^2) \]</span></p>
+<p>其中U，V也都利用均值为 (向量)的高斯分布来刻画： <span class="math display">\[p(U|\sigma_{U}^2) = \prod_{i=1}^{N} \mathcal{N}(U_i|0,\sigma_{U}^2\mathbf{I}), p(V|\sigma_{V}^2) = \prod_{j=1}^{M} \mathcal{N}(V_j|0,\sigma_{V}^2\mathbf{I})\]</span> 最后使用最大化后验概率来优化函数，然后推导化简最终可以得到 <span class="math display">\[\mathcal{L}(U,V) = \sum_{i=1}^N\sum_{j=1}^M(R_{ij} - U_i^TV_j)^2 + \frac{\lambda_U}{2}\sum_{i=1}^N||U_i||^2_2 + \frac{\lambda_V}{2}\sum_{j=1}^{M}||V_j||^2_2 \]</span> 从最后的损失函数中可以看出来，其实也就是一个MSE损失，后面两项可以看出正则项，所以虽然PMF是概率模型，通过后验概率去优化，不过与直接MSE殊途同归。这样根据训练数据去更新U和V到收敛, 得到用户和商品的潜在特征，最后的评分预测，就直接使用用户和商品特征的dot得到：<span class="math inline">\(r = U_i^TV_j\)</span>。</p>
+<p>理解了PMF, ConvMF这篇文章基本就很容易了。 ConvMF在商品的特征向量V的高斯分布上做文章，将经过CNN抽取出的评论信息特征，作为V的高斯分布的均值，而不再使用均值为<span class="math inline">\(\mathbf{0}\)</span>。如下: <span class="math display">\[p(V|W, X, \sigma_{V}^2) = \prod_{j=1}^{M} \mathcal{N}(V_j|cnn(W,X ),\sigma_{V}^2\mathbf{I})\]</span> 这其中<span class="math inline">\(\mathbf{X}\)</span>就是商品的评论文档，而<span class="math inline">\(\mathbf{W}\)</span>则是卷积的参数，包括卷积核和偏置。至于CNN的用法，这里就不再赘述了，毕竟现在看来还是比较简单，利用word embedding将词映射为向量，之后卷积，最大池化得到feature vector。完整的框架图如下: <img src="http://cdn.htliu.cn/blog/review-based-rec/convmf.png" alt="ConvMF" /> 有了CNN，相当于在PMF的基础上多了一个W参数，这样在最后的损失函数上，就会变成下面的: <span class="math display">\[\mathcal{L}(U,V,W) = \sum_{i=1}^N\sum_{j=1}^M(R_{ij} - U_i^TV_j)^2 + \frac{\lambda_U}{2}\sum_{i=1}^N||U_i||^2_2 + \frac{\lambda_V}{2}\sum_{j=1}^{M}||V_j-cnn(W,X_j)||^2_2 + \frac{\lambda_W}{2}||W||^2_2 \]</span> 其中商品对应的高斯分布的均值将PMF与CNN的桥梁。 在最终优化的时候，很显然CNN的参数W不能得到解析解，因此这两部分参数还是需要分开优化。在固定U,V的前提下，使用BP更新W。固定W的条件下， 使用坐标梯度下降即可更新U后者V，直到收敛。</p>
+<p><strong>总结</strong></p>
+<p>现在看来这篇文章的思路其实很简单，利用CNN提取商品的feature，之后将其融入到PMF中。 其实这种方法也是深度学习与概率图模型的结合的一种很直接的方式，用深度模型学到的特征替换某一分布的参数，可以理解为先验。 后来也有不少工作在这个思路上发展，比如偶然看见的WWW2018的一篇Poster：</p>
+<blockquote>
+<p>Network Embedding Based Recommendation Method in Social Networks</p>
+</blockquote>
+<p>基本思路也是利用预训练的Embedding替换分布参数。 此外，反过来思考这篇文章只用了商品的评论建模，没有利用用户的历史评论信息，可能是当时推荐系统优先考虑如何学习item embedding, 而对user embedding的研究并不是很多。</p>
+<h3 id="deepconn-wsdm17">DeepCoNN (WSDM'17)</h3>
+<blockquote>
+<p>Zheng L, Noroozi V, Yu P S. Joint deep modeling of users and items using reviews for recommendation[C]//Proceedings of the Tenth ACM International Conference on Web Search and Data Mining. ACM, 2017: 425-434.</p>
+</blockquote>
+<p><strong>基本介绍</strong></p>
+<p>上面说到ConvMFC只用了商品的评论文本，DeepCoNN这篇文章可以说是ConvMF的进阶版，全部使用深度学习模型去建模用户和商品，完全的end-to-end训练。 利用两个平行的卷积结构分别对用户和商品的评论文档建模，最后使用了FM (Factorization Machine) 做评分预测。 需要说明的是：</p>
+<blockquote>
+<p>DeepCoNN原文在处理数据的时候，并没有去掉在validation 和 test dataset中 的评论。</p>
+</blockquote>
+<p>第三方复现的代码：<a target="_blank" rel="noopener" href="https://github.com/chenchongthu/DeepCoNN">DeepCoNN</a> .</p>
+<p><strong>方法</strong></p>
+<p>模型其实现在看来很简单，首先将用户和商品的所有评论串联起来组成两个长的文档，然后用两个卷积结构（卷积层，池化层）学习文档的表示向量作为用户和商品的表示，最后串联二者输入到FM中预测评分，结构图如下：</p>
+<figure>
+<img src="http://cdn.htliu.cn/blog/review-based-rec/deepconn.png" alt="DeepCoNN" /><figcaption>DeepCoNN</figcaption>
+</figure>
+<p>对应到三个模板的就是：</p>
+<ul>
+<li>编码层：卷积神经网络, CNN</li>
+<li>融合层: concatenation 串联</li>
+<li>评分预测层：Factorization Machine 因子分解机</li>
+</ul>
+<p>具体的细节也就无需再介绍了。</p>
+<p><strong>总结</strong></p>
+<p>这篇文章应该算是第一篇完全基于深度学习的review-based rec模型，并且设计的用户和商品平行结构 （类似文本语义匹配的双塔结构）也是后面很多工作的基石。</p>
+<h3 id="d-attn-recsys17">D-Attn (RecSys'17)</h3>
+<blockquote>
+<p>Sungyong Seo, Jing Huang, Hao Yang, and Yan Liu. 2017. Interpretable Convolutional Neural Networks with Dual Local and Global Attention for Review Rating Prediction. In Proceedings ofthe Eleventh ACMConference on Recommender Systems.</p>
+</blockquote>
+<p><strong>基本介绍</strong></p>
+<p>这篇文章在DeepCoNN的基础上引入了词级别的attention，不同的词对于建模用户和商品的重要性是不同的， 因此这篇文章引入了两种词级别的注意力机制：local and global attention 都是为了寻找更informative的词，为不同的词赋予不同的权重。</p>
+<p><strong>方法</strong></p>
+<p>跟DeepCoNN一样，双塔结构。首先review document经过word embedding层，得到词矩阵表示<span class="math inline">\(\mathbf{d_u=[x_1, x_2, ..., x_ T]}\)</span>。之后分别是两种attention + CNN：</p>
+<ul>
+<li>CNN based on local attention : 这一层利用词的上下文信息，来获得当前词的重要性。
+<ul>
+<li>具体首先设定一个local window，假设宽度为<span class="math inline">\(w\)</span>, 当前词为第<span class="math inline">\(i\)</span>-th 词， 那么如何结算第<span class="math inline">\(i\)</span>-th词的注意力权重呢？ 首先取出第i个词上下各<span class="math inline">\(w/2\)</span>的词，即: <span class="math inline">\(\mathbf{X_{l-att,i}}[\mathbf{x_{i+\frac{-w+1}{2}}, \cdots, x_i, \cdots, x_{i+\frac{w-1}{2}}}] \in R^{w \times d}\)</span>, 这样组成一个<span class="math inline">\(w*d\)</span>的矩阵，作为<span class="math inline">\(x_i\)</span>的上下文局部信息，之后直接经过一层的MLP得到一个权重标量，作为词的权重: <span class="math inline">\(s_i = MLP(\mathbf{X_{l-att, i}})\)</span>, 之后得到一个带权的document 矩阵<span class="math inline">\([s_1\mathbf{x_1},\cdots,s_i\mathbf{x_i}...]\)</span>。</li>
+<li>由于前面的加权词矩阵已经捕获了上下文信息，因此接下来的CNN的filter的窗口直接设置为1，最后使用max pooling得到基于local attention的用户、商品的评论文档特征向量。</li>
+</ul></li>
+<li>CNN based on global attention：这一部分global attention本质上就是一个普通的窗口大于1 的CNN, 然后池化得到一个特征向量，至于能否称之为global还有待商榷。</li>
+<li>将这两部分的特征进行拼接得到用户和商品的表示向量，之后直接进行dot product 预测最终的评分。</li>
+</ul>
+<p>完整的框架图如下所示：</p>
+<figure>
+<img src="http://cdn.htliu.cn/blog/review-based-rec/dattn.png" alt="D-Attn" /><figcaption>D-Attn</figcaption>
+</figure>
+<p><strong>总结</strong></p>
+<p>这篇文章算是第一篇在review-based rec上使用了attention机制，用来indicate那些更加重要的词。不过现在看来global attention的动机稍微不那么convincing，根据文中的描述，本质就是朴素的CNN，当然这篇文章的核心贡献就是引入了注意力机制，但是仅仅是词级别，所以才会有后面的review-level的注意力机制模型。</p>
+<h3 id="anrcikm18">ANR(CIKM'18)</h3>
+<blockquote>
+<p>Chin J Y, Zhao K, Joty S, et al. ANR: Aspect-based neural recommender[C]//Proceedings of the 27th ACM International Conference on Information and Knowledge Management. 2018: 147-156.</p>
+</blockquote>
+<p><strong>基本介绍</strong></p>
+<p>这篇文章是利用评论文本从aspect的角度来建模用户和商品，需要注意的是，不同于显式的预先提取文本的aspect的方法（价格，质量等），ANR是并没有规定抽取哪些Aspect, 而是将不同的aspect抽象为模型不同参数去学习，或许可以称为隐式aspect。</p>
+<p>代码: https://github.com/almightyGOSU/ANR</p>
+<p><strong>方法</strong></p>
+<p>框架图如下所示： <img src="http://cdn.htliu.cn/blog/review-based-rec/anr.png" alt="ANR" /></p>
+<p>首先编码层ANR没有使用CNN或者RNN等抽取文本评论的特征，而是使用一种结合了aspect信息的类似local attention的方法，出发点就是同一个词或者同一个句子在不同的aspect下含义可能是不一样的，具体如下： 文中先假设有K个aspect， 为每个aspect定义了一个词映射矩阵<span class="math inline">\(W_a\)</span>，用来更新同一个词在不同的aspect下的embedding: <span class="math display">\[M_{u,a}[i] = M_u[i]W_a\]</span> 其中<span class="math inline">\(M_u[i]\)</span>是用户u的评论文档中第<span class="math inline">\(i\)</span>个词的原始词向量，经过这样的映射，得到的新的词向量<span class="math inline">\(M_{u,a}[i]\)</span>则就可以视为在当前aspect下的词特征。</p>
+<p>之后就是local attention，首先计算每个word的上下文信息，其实就是把当前word周围的词的词向量直接串联起来: <span class="math inline">\(z_{u,a,i} = (M_{u,a}[i-c/2],..., M_{u,a}[i],...,M_{u,a}[i+c/2])\)</span>$，</p>
+<p>再之后就是attention的过程， 计算每个词的权重: <span class="math inline">\(attn_{u,a}[i] = softmax(v_az_{u,a,i}^T)\)</span>, 这里面<span class="math inline">\(v_a\)</span>可以理解为针对某个aspect的查询向量(attention query vector), 也是模型参数， 这样可以计算出每个词的归一化之后的权重，最后直接加权平均得到在当前aspect下的用户u的评论文档的表示: <span class="math display">\[p_{u,a} = \sum_{i=1}^nattn_{u,a}[i] M_{u,a}[i]\]</span> 同理也可以得到商品i在aspect下的表示<span class="math inline">\(q_{i,a}, a \in 1-K\)</span>. 这一部分共有两部分参数: (1)词映射矩阵<span class="math inline">\(W_a\)</span>, (2) 查询向量<span class="math inline">\(v_a\)</span>，通过这两个aspect-specific的参数，可以为用户和商品的得到他们的apsect-level的评论特征矩阵: <span class="math inline">\(P_{u} =[p_{u,1}, p_{u,2}...,p_{u,K}]\)</span> 以及 <span class="math inline">\(Q_{u} =[q_{i,1}, q_{i,2}...,q_{i,K}]\)</span>。</p>
+<p>模型的第二部分就是根据两个矩阵<span class="math inline">\(P_{u}\)</span>和<span class="math inline">\(Q_{i}\)</span>来考虑用户和商品的交互了。基本的出发点就是用户在面对不同商品的时候，不同apsect的重要性是不一样的。 这个也很直观，比如用户在对衣服时，可能注重价格，在购买数码产品时，可能注重售后等。反之亦然，即：同一个商品在面对不同的用户时候，它的不同aspect的重要性也是不同的。 其实这个动机就是经常说的考虑上下文信息， <strong>context-aware</strong>，学习一种用户以及当前商品的动态的交互过程。 其实本质上就是如何计算两个矩阵的相似性。 ANR使用的是一种比较常见的利用affinity matrix来计算: <span class="math inline">\(S=\phi(P_uW_sQ_i)\)</span>, 其中<span class="math inline">\(W_s\in R^{K \times K}\)</span>, 这里得到的<span class="math inline">\(S\)</span>就是可以认为用户的K个aspect和物品的K个aspect之间的关联性。最后就是利用两个MLP层来计算这一个user-item pair的aspect的重要性: <span class="math display">\[H_u=\phi(P_uW_x+S^T(Q_iWy)), \beta_u = softmax(H_uv_x)\]</span> 得到的<span class="math inline">\(\beta_u \in R^K\)</span> 则就是在面对商品i的情况下，用户u的K个aspect的重要性。 同理可以得到商品的aspect的重要性$_i $。</p>
+<p>最后是预测层使用的是改进的LFM，将<span class="math inline">\(\beta_u\)</span>和<span class="math inline">\(\beta_i\)</span>融合： <span class="math display">\[r_{u,i} = \sum_{a=1}^K \beta_{u,a} \cdot \beta_{i,a} \cdot p_{u,a}q_{i,a} + b_u +b_i +b_0\]</span></p>
+<p>基本上到此就是ANR模型的完整过程了，细节较多，相对繁琐。</p>
+<p><strong>总结</strong></p>
+<p>总的来说，ANR这篇文章用了一堆的矩阵变换，来体现Aspect的作用，本质上说有点新瓶装旧酒的意思，一方面类似借助aspect的名义来进行各种转化，这样在动机上会容易描述一些，另一方面有点类似multi-head attention，都是为了学到更多的语义特征。 不过我个人愚见--没有任何先验知识（没有实现抽取出哪些aspect) 单纯靠模型学习得到的所谓的"aspect"的都不太靠谱。 整体来说，ANR这篇文章模型和实验都很扎实，写的也挺好的，可以把很繁琐细节讲明白。另外就是实验部分，本文居然把Amazon所有数据都跑了，这个算力太强了。 最后说一句ANR这种隐式Aspect的思路，其实可以融合到后面讲的review-level的模型里面。</p>
+<h3 id="carltois19">CARL(TOIS'19)</h3>
+<blockquote>
+<p>Wu L, Quan C, Li C, et al. A context-aware user-item representation learning for item recommendation[J]. ACM Transactions on Information Systems (TOIS), 2019, 37(2): 1-29.</p>
+</blockquote>
+<p><strong>基本介绍</strong></p>
+<p>这篇文章从标题中即可看出这篇文章就是面向context-aware这种场景的。基本出发点前面ANR也说过了，就是同一个用户面对不同商品偏好可能是不同的，因此不管对用户或者商品，为他们学单一/静态的表示就会有缺陷，无法充分捕获用户偏好和商品的特征，因此为用户和商品学习的特征应该是pair-wise的，相互关联动态的，而非独立的。 具体到评论信息的话，同一个词在不同的上下文下或许会有不同的语义信息，因此在建模评论文档的时候，需要把这个考虑进去。 本文就是从这个角度，学习了两层的交互关系（low- and high-lelve) 去得到context-aware representation.</p>
+<p>代码: https://github.com/WHUIR/CARL</p>
+<p><strong>方法</strong></p>
+<p>评论文档建模的主要架构：</p>
+<figure>
+<img src="http://cdn.htliu.cn/blog/review-based-rec/carl.png" alt="CARL" /><figcaption>CARL</figcaption>
+</figure>
+<p>主要包含CNN编码层，以及基于注意力机制的user-item交互层。</p>
+<ol type="1">
+<li><p>编码层的前面部分都类似，首先word embedding，在之后使用卷积神经网络提取特征，这部分不再赘述了，经过卷积操作之后，最终得到用户和商品的两个评论文本的特征矩阵<span class="math inline">\(U \in R^{n \times f}, V \in R^{m \times f}\)</span>，其中m，n表示商品和用户评论文档中有n个单词，f为卷积核的数目，这样这两个矩阵的每一行就表示了每个词的feature vector。</p></li>
+<li><p>下面就是考虑如何计算这两个矩阵之间的交互，也就。方法很多，类似ANR，CARL采用的也是affinity matrix的方法，使用一个中间矩阵<span class="math inline">\(T \in R^{f \times f}\)</span>去计算：<span class="math inline">\(R_{j,k} = tanh(c_j^uTc_k^i)\)</span>, 这里面的<span class="math inline">\(c_j^u\)</span>和<span class="math inline">\(c_k^i\)</span>分别表示矩阵U和V中的一行，这样R_{j,k}就可以表示user中第j个word 与 item中第k个word的相关性， 因此直接$R_{j,*} R^m $ 表示user的j个词语与当前item的所有词的相关性，文中直接取平均再归一化得到第j个词的权重： <span class="math display">\[a_j^u = softmax(mean(R_{j,1,}, R_{j,2}...R_{j, m}))\]</span> 这样为每个用户和商品都得到了一个词权重向量<span class="math inline">\(a^u, a^i\)</span>，然后乘到给每个词的表示，得到加权的的评论矩阵<span class="math inline">\(U^w=diag(a^u)U, V^w=diag(a^i)V\)</span>， 到这里就是框架图中的Attention Layer。</p></li>
+<li><p>之后如何将加权之后的评论文档矩阵pool成向量呢？本文没有直接使用mean或者max等，而是接着用了一层CNN去捕获更high-level的特征，之后再使用mean做pooling。文中给出的理由是，mean或者max简单操作会引入不相关的噪音信息，而CNN可以获取更丰富的Local Context 特征，也有道理，只是复杂度又多了一些。再加一个MLP，最终得到用户的评论特征: <span class="math display">\[t_u = MLP(CNN(U^w)), t_i=MLP(CNN(V^w))\]</span> 这就是图中的Abstracting Layer了。</p></li>
+<li><p>再经过一番点积，串联等操作，得到用户和商品的基于评论的特征：<span class="math inline">\(z_{review} = [(t_u \odot t_i) \oplus t_u \oplus t_i]\)</span>，同时再结合上用户和商品的ID embedding 或者叫 interaction feature 得到rating feature: <span class="math inline">\(z_{int}=[(p_u \odot p_i) \oplus p_u \oplus p_i]\)</span>。其中<span class="math inline">\(p_u\)</span>和<span class="math inline">\(p_i\)</span>是ID embedding。</p></li>
+</ol>
+<p>最后rating prediction，本文使用将两份特征输入到Factorization Machine (FM) 中得到两个评分，<span class="math inline">\(\hat{y}(z_review)\)</span>和<span class="math inline">\(\hat{y}(z_int)\)</span>，最后使用一种动态参数的小技巧将两份评分融合得到最后的预测。这里不再赘述了，模型部分就结束了。</p>
+<p><strong>总结</strong></p>
+<p>现在看来其实本文的思想相对比较简单，不过听作者说，CARL其实是2017年投的，不过直到2019年才接收。核心只有一个就是context-aware，如何计算两个矩阵的交互，本文使用的加入一个中间矩阵来计算。其实还有其他的方法来做，比如KDD2019年的DAML: Dual Attention Mutual Learning between Ratings and Reviews for Item Recommendation在本文的基础上，修改了两个地方，(1) 计算交互性的方法，DAML改为使用欧氏距离来计算UV的相似度.(2) 将最终的FM修改为Neural FM，其余地方很类似，这篇文章就不单独介绍了。其实我们自己也按照这个思路，水了一篇文章，其中一个贡献就是利用self attention去计算上下文相关性，去学习用户和商品的表示。</p>
+<h2 id="基于review建模的方法">基于review建模的方法</h2>
+<p>接下来这一系列的方法都是单独对用户或商品的每一条评论进行建模，得到每一条review的feature，之后将所有的feature进行聚合，作为用户或者商品的特征。</p>
+<h3 id="narre-www18">NARRE (WWW'18)</h3>
+<blockquote>
+<p>Chen C, Zhang M, Liu Y, et al. Neural attentional rating regression with review-level explanations[C]//Proceedings of the 2018 World Wide Web Conference. 2018: 1583-1592.</p>
+</blockquote>
+<p><strong>基本介绍</strong></p>
+<p>这篇文章的出发点很简单，就是不同review的重要性是不同的，有的review包含信息量大，可能对建模用户或者商品更加有用 (usefulness), 而有的review可能没有作用。 因此这篇文章提出了review-level的注意力机制来刻画每一条review的权重。</p>
+<p><strong>方法</strong></p>
+<p>有了上述的动机，具体的方法就比较清晰了，同样的双塔框架图如下所示： <img src="http://cdn.htliu.cn/blog/review-based-rec/narre.png" alt="NARRE" /></p>
+<ul>
+<li>Review Encoder: 对每一条评论建模使用CNN+Max Pooling 得到review 的 feature, 也就是图中的<span class="math inline">\(O_{u1}, O_{u2}..\)</span></li>
+<li>User/Item Encoder: 使用Attention 聚合所有的 <span class="math inline">\(O_{u1}...O_{uj}\)</span>得到用户u的表示，聚合所有的<span class="math inline">\(O_{i1}...O_{ik}\)</span>得到商品i的表示。
+<ul>
+<li>Attention Score计算：在计算某一个review的score的时候，NARRE并没有随机初始化一个query vector直接做点乘， 而是借助于这条review对应的user 或者 item 的ID Embedding计算，不过是一种交叉计算。 比如聚合用户的review list的时候，使用的是当前review对应的item的 ID embedding, 聚合商品的review list的时候，用的是当前review对应的用户的ID Embedding。其实这里的动机解释的话，大概是这样。 有些用户总喜欢写一些无用的评论，有些用户则倾向于写信息量高的评论，所以融入user的ID embedding 能够包含用户本身usefulness的信息，具体的计算公式，以item为例: <span class="math display">\[a^*_{il}=h^TReLU(WO_{il} + W_uu_{il} + b_1) + b_2\]</span> 得到的<span class="math inline">\(a^*_{il}\)</span> 则是商品i的第l条review的权重.</li>
+<li>按照softmax将<span class="math inline">\(a^*\)</span>归一化权重，进而使用加权平均，得到商品从评论文本中得到的feature: 记为<span class="math inline">\(Y_i\)</span>, 同样方法得到user的feature, 记为<span class="math inline">\(X_i\)</span>.</li>
+</ul></li>
+<li>Rating Prediction: 本文考虑到传统的rating feature (即ID Embedding) 用到最后的评分预测中，即:<span class="math display">\[h= (q_u + X_u) \cdot (p_i + Y_i)\]</span>, 其中<span class="math inline">\(q_u,p_i\)</span>分别为用户u和商品i的ID Embedding。 之后使用Latent Factor Model 计算最终的评分: <span class="math inline">\(r_{u,i} = MLP(h) + b_u + b_i\)</span>，其中 <span class="math inline">\(b_u\)</span>为用户偏置，<span class="math inline">\(b_i\)</span>为商品偏置。</li>
+</ul>
+<p><strong>总结</strong></p>
+<p>这篇文章比较经典，我个人认为他的核心贡献有两点：</p>
+<ul>
+<li>引入review-level的注意力机制，研究不同评论的usefulness.</li>
+<li>ID Embedding的使用：（1）用于Attention的计算。 (2) 最后Rating Prediction中。 实际上在我们的实验中发现， 最后单纯使用id embedding做rating prediction, 在几个小的数据集上表现甚至优于很多复杂的深度学习模型。</li>
+</ul>
+<h3 id="tarmfwww18">TARMF(WWW'18)</h3>
+<blockquote>
+<p>Lu Y, Dong R, Smyth B. Coevolutionary recommendation model: Mutual learning between ratings and reviews[C]//Proceedings of the 2018 World Wide Web Conference. 2018: 773-782.</p>
+</blockquote>
+<p><strong>基本介绍</strong> 这篇文章跟NARRE类似，也是先学习出了用户/商品的每一条review的特征，然后再汇总得到用户/商品的评论特征。本文另外一个贡献点是把PMF融合进来，利用矩阵分解得到用户和商品基于rating matrix的特征，然后使两类特征接近，作为损失函数的正则项，有点类似ConvMFC的扩展版。</p>
+<p><strong>方法</strong></p>
+<p>简单介绍下方法，框架图其实基本一目了然 （前面ConvMF介绍很详细了）： <img src="http://cdn.htliu.cn/blog/review-based-rec/tarmf.png" alt="TARMF" /></p>
+<p>一共两大部分，一个是评论特征抽取， 一个是PMF模块。 (1) 首先对用户的每条评论使用RNN+Attention的方法得到每条评论的特征，然后对该用户的所有评论特征直接取平均，作为用户最终的特征向量U，同理可得到商品的评论特征向量V。 (2) 使用PMF分解评分矩阵， 得到用户和商品的latent feature 分别表示为<span class="math inline">\(\hat{U}, \hat{V}\)</span>。</p>
+<p>之后这两类特征，应该具有一定的相近性，因此直接将<span class="math inline">\(||U-\hat{U}||\)</span>和<span class="math inline">\(||V-\hat{V}||\)</span>作为PMF的后验概率目标函数的两个正则项共同去优化。</p>
+<p><strong>总结</strong></p>
+<p>本篇文章相比NARRE来说，亮点稍微少一点，毕竟重心不是在如何做review的聚合，不过整体思路很直接明了，在ConvMF的基础上，结合了attention机制去学习评论表示，在当时(2017)很不错的文章。这种神经网络+概率图模型结合的方向一般错不了~</p>
+<h3 id="mpcnkdd18">MPCN(KDD'18)</h3>
+<blockquote>
+<p>Tay Y, Luu A T, Hui S C. Multi-pointer co-attention networks for recommendation[C]//Proceedings of the 24th ACM SIGKDD International Conference on Knowledge Discovery &amp; Data Mining. 2018: 2309-2318.</p>
+</blockquote>
+<p><strong>基本介绍</strong></p>
+<p>这篇文章属于结合review-level和context-aware，且核心就是为了解决document-level的问题，出发点类似NARRE，用户或者商品的不同的review的重要性是完全不同的，<strong>需要侧重重要的信息</strong>不过这篇文章的思路与NARRE完全不同，从标题中也可以看文中利用text generation中的pointer network来挑出重要的评论从而用来建模当前的user-item，个人觉得动机很不错。</p>
+<p>代码: https://github.com/vanzytay/KDD2018_MPCN</p>
+<p><strong>方法</strong></p>
+<p>框架图如下: <img src="http://cdn.htliu.cn/blog/review-based-rec/mpcn.png" alt="MPCN" /></p>
+<p>首先对每一条评论建模，利用word embedding 得到评论矩阵，本文没有使用CNN/RNN直接将评论里面所有词的embedding求和作为当前review的特征。前面说这篇文章的核心就是在找出在当前user-item 对的情况下，哪些评论重要与否。因此文章首先对评论做一个预处理，利用一个类似RNN的那种门控机制，预期能够控制一些重要信息进入后面的步骤，这一块总感觉不太make sense（可能没太看明白)。 后面就是review-level co attention 部分挑出重要的review，在之后对挑出的review中的词进行word-level的 coattention，最后利用FM做rating prediction。</p>
+<ol type="1">
+<li><p>Review-level co attention: 前面得到了用户的评论集特征<span class="math inline">\(a\in R^{l_r \times d}\)</span>以及当前商品的评论集特征<span class="math inline">\(b\in R^{l_r \times d}\)</span>，其中<span class="math inline">\(l_r\)</span>是评论的条数。之后为了交互性(context-aware), 同样采用了Affinity Matrix的方法得到用户跟商品的评论相关性矩阵: <span class="math inline">\(s_{i,j} = a_iMb_i\)</span>, 得到的矩阵$s R^{l_r l_r} $的每一行与用户相关，每一列是关于商品的。</p></li>
+<li><p>考虑到要挑出最重要的review，因此一种直观的表示，需要根据相关性矩阵s得到一个one-hot的vector，其中的那个1就是最重要的review，为了达到这个目的，本文使用Gumbel-Max，具体的原理这里不再赘述: <span class="math display">\[a^{&#39;} = G(\max_{col}{(s)})a, b^{&#39;} = G(\max_{row}{(s)}) b\]</span> 这里的<span class="math inline">\(G()\)</span>就是Gumbel-Max function, 得到一个one-hot 向量，再从用户评论集合a中得到想要的那条review，记为<span class="math inline">\(a^{&#39;}\)</span>，同理在商品评论集合b中得到<span class="math inline">\(b^{&#39;}\)</span>。</p></li>
+<li><p>Word-level co attention: 通过Pointer Network 得到了具体usre-item的review pair之后， 本文继续对review中的word进行了co attention的计算。计算方法跟上面review类似，也是用中间矩阵。这样可以得到两个review的最终的feature vectors。</p></li>
+</ol>
+<p>上面介绍的只是一个pointer得到一条review，文中为了获取更丰富的表示，使用了 multi pointer, 最终可以为每个用户和商品得到K个reviews，这里又类似multi-head了。 最终本文将这2K个特征（user+item) 进行拼接，得到最终的feature，rating prediction使用的是FM进行评分预测。</p>
+<p><strong>总结</strong></p>
+<p>这篇文章的动机和解决方法都很直观清晰，为了找到更加有用的review，使用hard selection的方法直接point哪些review去建模用户和当前商品，在context-aware下，解决了 review usefulness的问题，值得精读。</p>
+<h2 id="其他">其他</h2>
+<p>这个目录下主要分享有意思的其他文章，注重思路。</p>
+<h3 id="parlcikm18">PARL(CIKM'18)</h3>
+<p>PARL: Let Strangers Speak Out What You Like这篇文章，出发点很简单， 即rating 是sparse的， review也存在sparse的问题，尤其是很多用户、商品的评论很少的时候。本文提出了一种很有意思的的想法，就是利用其他人的review来辅助对自己的建模，就2步： <img src="http://cdn.htliu.cn/blog/review-based-rec/parl.png" alt="PARL" /></p>
+<p>第一步选出跟对一商品，与当前用户u打同样分数的其他user，第二步随机选择一个user，将该user评论当前item的review加入到当前user的review 集合，作为补充信息。</p>
+<p>具体用什么模型建模都可以。总体来说，方法非常简单，却很有意思。</p>
+<h2 id="总结">总结</h2>
+<p>基于评论文本的推荐系统其实一定程度上跟NLP技术的结合更多，不过场景和动机都是出自推荐领域，本身在实际应用中远少于一些CTR系列的推荐工作，属于一个小领域。上面的几篇文章算是这个领域的有代表的，当然有很多其他优秀的文章由于时间，精力等原因并没有介绍进来，可能后续会继续补充。 从近几年的趋势来看， 大家基本都已经明了这块的工作基本上从框架中的三个部分着手进行改进：编码层，融合层和评分预测层。对于review来说，显然核心是编码层，毕竟融合层和评分预测层毕竟在其他推荐领域也都是共同问题。 虽然自己没有多少文章，还是很小白，不过我们也准备投一篇相关Survey去试试水~</p>
+<p>最后上述所有内容均是个人总结，如有纰漏，欢迎指出，共同讨论。</p>
+
+      
+    </div>
+
+
+    
+
+    
+	    <div class="article-footer-copyright">
+<!--<p>本文作者: shomy 发表于 <a href="http://shomy.top" target="_blank">个人博客</a></p> -->
+<p>
+本文标题: 基于评论文本的深度推荐系统总结<br/>
+</p>
+<p>
+发布时间: 2019-12-31, 23:44:37<br/>
+<p>
+<p>
+最后更新: 2021-12-16, 23:11:45<br/>
+<p>
+本文链接: <a href="/2019/12/31/neu-review-rec/" target="_blank">http://shomy.top/2019/12/31/neu-review-rec/</a>
+</p>
+<p>非商业转载请注明作者及出处。商业转载请联系<a href="mailto:shomyliu@gmail.com">作者</a>本人。</p>
+</div>
+
+    
+
+    <footer class="article-footer">
+      
+        <a href="http://shomy.top/2019/12/31/neu-review-rec/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/deep-learning/" rel="tag">deep learning</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/recommendation/" rel="tag">recommendation</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/review-based/" rel="tag">review-based</a></li></ul>
+
+    </footer>
+    
+	    <script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+    
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2020/02/14/python-futures-para/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          python使用futures进行并行处理
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2019/03/19/kg-ns-recsys/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">推荐系统结合知识图谱简单总结</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+
+
+<section id="comments">
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+<script>
+  var disqus_shortname = 'shomy';
+  
+  var disqus_url = 'http://shomy.top/2019/12/31/neu-review-rec/';
+  
+  (function(){
+    var dsq = document.createElement('script');
+    dsq.type = 'text/javascript';
+    dsq.async = true;
+    dsq.src = 'https://' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  }());
+</script>
+</section>
+
+
+
+
+</section>
+      </div>
+    </div>
+    
+    
+<a id="rocket" href="#top" ></a>
+
+<script src="https://cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <script src="http://cdn.htliu.cn/static/js/leancloud.js"></script>
+<script>AV.initialize("k883AKdzaz5jccQnH1eIrG2r-gzGzoHsz", "4HBQOmslEp3VdwK1SGL8vB9Y");</script>
+
+<script src="/js/Counter.js"></script>
+
+
+
+
+
+<script id="dsq-count-scr" src="//shomy.disqus.com/count.js" async></script>
+ 
+
+
+  <script src="https://cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.js"></script>
+  
+<script src="/js/fancybox.js"></script>
+
+
+
+
+  
+<script src="/js/search.js"></script>
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>机器学习基石笔记(3) | 天空的城</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="2016.11.30更新: VC维   上一节，我们把 leaning问题归结到了我们提到需要证明dichotomies是多项式的，这样就可以保证在N比较大的时候，BAD DATA出现的概率是很小的，这样就说明我们的 learning学到了东西，可以用来预测。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="机器学习基石笔记(3)">
+<meta property="og:url" content="http://shomy.top/2016/10/17/feasibility-of-learning-3/index.html">
+<meta property="og:site_name" content="天空的城">
+<meta property="og:description" content="2016.11.30更新: VC维   上一节，我们把 leaning问题归结到了我们提到需要证明dichotomies是多项式的，这样就可以保证在N比较大的时候，BAD DATA出现的概率是很小的，这样就说明我们的 learning学到了东西，可以用来预测。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://cdn.htliu.cn/ml03-1.png">
+<meta property="og:image" content="http://cdn.htliu.cn/ml03-2.png">
+<meta property="og:image" content="http://cdn.htliu.cn/ml03-3.png">
+<meta property="og:image" content="http://cdn.htliu.cn/ml03-4.png">
+<meta property="og:image" content="http://cdn.htliu.cn/ml03-5.png">
+<meta property="og:image" content="http://cdn.htliu.cn/ml03-6.png">
+<meta property="article:published_time" content="2016-10-17T09:59:49.000Z">
+<meta property="article:modified_time" content="2021-12-16T15:11:45.658Z">
+<meta property="article:author" content="ShomyLiu">
+<meta property="article:tag" content="machine learning">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://cdn.htliu.cn/ml03-1.png">
+  
+  
+    <link rel="icon" href="/image/favicon.ico">
+  
+
+  
+  <link href="https://cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.css" rel="stylesheet">
+  
+  <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  <link href="https://cdn.bootcss.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+<!-- Google Analytics -->
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-74368890-2', 'auto');
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+
+
+  
+
+  
+  <div class="site-search header-inner">
+    <div class="popup">
+        <span class="search-icon fa fa-search"></span>
+        <input type="text" id="local-search-input">
+        <div id="local-search-result"></div>
+        <span class="popup-btn-close">close</span>
+    </div>
+</div>
+
+
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      
+<header id="header">
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">天空的城</a>
+      </h1>
+      
+    </div>
+    <div id="header-menu">
+      <nav id="main-nav">
+        <ul>
+        
+          <li><a href="/"><i class="fa fa-home icon-setting"></i></a></li>
+        
+          <li><a href="/archives"><i class="fa fa-archive icon-setting"></i></a></li>
+        
+          <li><a href="/tags"><i class="fa fa-tag icon-setting"></i></a></li>
+        
+          <li><a href="/about"><i class="fa fa-user icon-setting"></i></a></li>
+        
+        
+          <li><a href="javascript:;" class="popup-trigger"><i class="fa fa-search > icon-setting"></i></a></li>
+        
+        </ul>
+      </nav>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-feasibility-of-learning-3" class="article article-type-post" itemscope itemprop="blogPost">
+  
+  <div class="article-meta">
+    <a href="/2016/10/17/feasibility-of-learning-3/" class="article-date">
+  <time datetime="2016-10-17T09:59:49.000Z" itemprop="datePublished">2016-10-17</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/">读书笔记</a>
+  </div>
+
+
+    
+        <div class="counter-tag counter">
+    <!-- 别忘记这个类名... post-title-link -->
+    <span id="/2016/10/17/feasibility-of-learning-3/" class="leancloud_visitors article-hits post-title-link"
+           data-flag-title="机器学习基石笔记(3)">
+        次阅读
+    </span>
+
+  </div>
+
+    
+
+  </div>
+  
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      机器学习基石笔记(3)
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+            <div id="toc" class="toc-article">
+                <strong class="toc-title">文章目录</strong>
+                <ol class="post-toc"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E6%9C%80%E5%A4%A7%E7%9A%84%E6%9C%80%E5%A4%A7bnk"><span class="post-toc-text">最大的最大:B(N,K)</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#vc-bound"><span class="post-toc-text">VC Bound</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#vc-dimension"><span class="post-toc-text">VC Dimension</span></a></li></ol>
+            </div>
+        
+        
+        <blockquote>
+<p>2016.11.30更新: VC维</p>
+</blockquote>
+<hr />
+<p>上一节，我们把 leaning问题归结到了我们提到需要证明dichotomies是多项式的，这样就可以保证在N比较大的时候，BAD DATA出现的概率是很小的，这样就说明我们的 learning学到了东西，可以用来预测。 <span id="more"></span></p>
+<p>下面求证<span class="math inline">\(m_{\mathcal{H}}\)</span> 是多项式</p>
+<h2 id="最大的最大bnk">最大的最大:B(N,K)</h2>
+<p>我们提到了 break point 是第一个满足: <span class="math inline">\(m_{\mathcal{H}}(N) &lt; 2^N\)</span> 的N，那我们可以得到什么信息呢？ 假设 <span class="math inline">\(K=k\)</span>，首先K之前的均被<span class="math inline">\(\mathcal{H}\)</span> shatter掉了， K及K之后的则没有，如下:</p>
+<ul>
+<li><span class="math inline">\(N &lt; K\)</span>: <strong>every</strong> $m_{}{N} = 2^N $</li>
+<li><span class="math inline">\(N \geq K\)</span>: <strong>every</strong> <span class="math inline">\(m_{\mathcal{H}}(N) &lt; 2^N\)</span>，对于 N &gt; K的D, 显然<span class="math inline">\(m &lt; 2^N\)</span></li>
+</ul>
+<p>举一个简单的例子: 假设K=2, 求<span class="math inline">\(m_{\mathcal{H}}(N=3)\)</span>， 如下: <img src="http://cdn.htliu.cn/ml03-1.png" /></p>
+<p>经过实验发现，其最大为4, 因为k=2,限制了<span class="math inline">\(x_1, x_2, x_3\)</span>中任意两个点都不能被<span class="math inline">\(\mathcal{H}\)</span>给shatter了，这里就会发现 break point的作用了, 限制<span class="math inline">\(m_{\mathcal{H}}\)</span>的上界。下面定义Bounding Function:<span class="math display">\[B(N,K) = max(m_{\mathcal{H}}(N)), s.t. break\ point = K \]</span></p>
+<p>因为成长函数<span class="math inline">\(m_{\mathcal{H}}(N)\)</span>就是<span class="math inline">\(\mathcal{H}\)</span>对输入<span class="math inline">\(x_1...x_N\)</span>可以产生的dichotomies的最大值， 所以B(N,K)就是最大值的最大。</p>
+<p>如下，我们分情况讨论： <span class="math display">\[
+\begin{align}
+B(N, 1) &amp;= 1 \\
+B(N, k) &amp;= 2^N,\  N &lt; k\\
+B(N, k) &amp;= 2^N-1,\ N=k \\
+B(N, k) &amp;= ? \ N&gt;K
+\end{align}
+\]</span></p>
+<p>在课程中，老师举了一个求B(4,3)=11的例子: 通过归纳法的思想，推导出N&gt;K下，<span class="math inline">\(B(N,K)\)</span>的递推公式:<span class="math display">\[B(N,K) \leq B(N-1,K) + B(N-1, K-1)\]</span> 正如下面的图所描述的: <img src="http://cdn.htliu.cn/ml03-2.png" /></p>
+<p>下面我们根据递推式，通过数学归纳法来证明:<span class="math inline">\(B(N,K) \leq \sum\limits_{i=0}^{K-1} \left( \begin{array}{c}N \\ i \end{array}\right)\)</span>.</p>
+<p>当N=1或者K=1时，显然成立。假设当<span class="math inline">\(N=N_0\)</span>时， <span class="math inline">\(B(N_0,K) \leq \sum\limits_{i=0}^{K-1} \left( \begin{array}{c}N_0 \\ i \end{array}\right)\)</span>，则当<span class="math inline">\(N=N_0 + 1\)</span>时: <span class="math display">\[
+\begin{align}
+B(N_0 +1, K) &amp; \leq B(N_0, K) + B(N_0, K-1) \\
+                        &amp; \leq  \sum\limits_{i=0}^{K-1} \left( \begin{array}{c}N_0 \\ i \end{array}\right) +  \sum\limits_{i=0}^{K-2} \left( \begin{array}{c}N_0 \\ i \end{array}\right) \\
+                        &amp; \leq 1 + \sum\limits_{i=1}^{K-1} \left( \left( \begin{array}{c}N_0\ i \end{array} \right)  + \left(\begin{array}{c}N_0\\i-1 \end{array}\right)     \right) \\
+                        &amp; \leq 1 + \sum\limits_{i=1}^{K-1} \left( \begin{array}{c}N_0+1 \\ i \end{array} \right) \\
+                        &amp; \leq \sum\limits_{i=0}^{K-1}\left( \begin{array}{c}N_0+1 \\ i \end{array} \right)
+\end{align}
+\]</span> 得证: <span class="math inline">\(B(N_0,K) \leq \sum\limits_{i=0}^{K-1} \left( \begin{array}{c}N_0 \\ i \end{array}\right)\)</span> 很明显,<span class="math inline">\(B(N_0,K) \leq \sum\limits_{i=0}^{K-1} \left( \begin{array}{c}N_0 \\ i \end{array}\right) = O(N^{K-1})\)</span>, 多项式复杂度,曙光出现。到这里，我们需要需要理一下思路了。 <span class="math display">\[P\left[  | E_{in}(h) - E_{out}(h)| &gt; \epsilon \right] \leq 2  m_{\mathcal{H}}(N)  exp(-2\epsilon^2N)\]</span> 我们知道当出现BAD DATA时候， 会导致<span class="math inline">\(E_{in}\)</span>与<span class="math inline">\(E_{out}\)</span>变大，此时learning并不可行，因此我们开始计算BAD DATA出现的概率，它与<span class="math inline">\(\mathcal{H}\)</span>的数目有关系，而很多情况，h都是无限的，于是我们转为求h中的类别数目，我们定义了<span class="math inline">\(dichotomies\)</span> 以及<span class="math inline">\(m_{\mathcal{H}}(N)\)</span>, 也就是上述的不等式，在一些简单的情况下，<span class="math inline">\(m_{\mathcal{H}}(N)\)</span>是很容易求的，比如postive rays里面, <span class="math inline">\(m_{\mathcal{H}} = N+1\)</span> 等，但是很多我们并不能求出来，比如2D percertron,(PLA), 这个时候，我们定义break point 转而去求<span class="math inline">\(m_{\mathcal{H}}\)</span>的上界<span class="math inline">\(B(N,K)\)</span>，最终我们证明了<span class="math inline">\(B(N,K) = O(N^{K-1})\)</span>。到这里我们基本证明以Perceptrons为例，说明了为什么机器可以学习，为什么训练数据集越大，测试效果越好。 不过还有点小问题，在下面说明。</p>
+<h2 id="vc-bound">VC Bound</h2>
+<p>我们前面基本都在围绕这训练数据也就是<span class="math inline">\(\mathcal{D}\)</span>或者<span class="math inline">\(E_{in}\)</span>讨论，把<span class="math inline">\(\mathcal{H}\)</span>根据在<span class="math inline">\(\mathcal{D}\)</span>上的表现分门别类，这样<span class="math inline">\(E_{in}\)</span>就会是有限个，但是却忽略了每一个<span class="math inline">\(h\)</span>的<span class="math inline">\(E_{out}\)</span> 是不一样的，也就是说<span class="math inline">\(E_{out}(h)\)</span>是无穷多个的，所以说上述的不等式是不太严谨的，实际上的不等式是下面的: <span class="math display">\[
+\begin{align} \mathbb{P}[BAD] &amp;= \mathbb{P}[\exists h \in \mathcal{H}\text{ s.t. } |E_{in}(h)-E_{out}(h)|\gt \epsilon] \\\ &amp;\leq 4m_{\mathcal{H}}(2N)exp(-\frac{1}{8}\epsilon^2N) \end{align}
+\]</span> 证明的主要原则是，如果某个<span class="math inline">\(E_{in}\)</span>与<span class="math inline">\(E_{out}\)</span>的差别很大时，那么我们重新找一份数据集<span class="math inline">\(D^{&#39;}\)</span>, 那么<span class="math inline">\(E_{in}^{&#39;}\)</span>也会有很大的几率与<span class="math inline">\(E_{in}\)</span>差别很大。 具体证明还没搞太明白，先记下了。另外，上面的不等式就是<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/VC_dimension">VC-bound</a>.</p>
+<h2 id="vc-dimension">VC Dimension</h2>
+<p>下面我们基于break point 给出 VC Dimension(VC 维)的定义:<span class="math display">\[d_{VC}(\mathcal{H})= \max\limits_{N} m_{\mathcal{H}} = 2^N\]</span>也就是break point K的前一个: <span class="math inline">\(d_{VC} = K - 1\)</span>(break point存在的前提下)。我们可以看看上述的4种<span class="math inline">\(\mathcal{H}\)</span>的VC Dimension <img src="http://cdn.htliu.cn/ml03-3.png" alt="pic" /></p>
+<p>下面我们看看VC维可以给我们带来什么信息。已知成长函数<span class="math inline">\(m_{\mathcal{H}} \leq N^{k-1}=N^{d_{vc}}\)</span>，然后代入上述的VC Bound:</p>
+<p><span class="math display">\[\begin{align*} \mathbb{P}[BAD] &amp;= \mathbb{P}[\exists h \in \mathcal{H}\text{ s.t. } |E_{in}(h)-E_{out}(h)|\gt \epsilon] \\ &amp;\leq 4m_{\mathcal{H}}(2N)exp(-\frac{1}{8}\epsilon^2N) \\ &amp;= 4(2N)^{d_{vc}}  exp(-\frac{1}{8}\epsilon^2N)\end{align*}\]</span> 那么怎么样才可以说明机器学到了东西呢？有以下三点:</p>
+<ul>
+<li>存在break point即 <span class="math inline">\(d_{vc}(\mathcal{H})\)</span>是有限的，这样的<span class="math inline">\(\mathcal{H}\)</span>才是good的</li>
+<li>训练数据足够多: N 够大，这样vc bound 可以约束<span class="math inline">\(E_{in} = E_{out}\)</span></li>
+<li>算法<span class="math inline">\(\mathcal{}A\)</span> 可以找到一个<span class="math inline">\(E_{in}\)</span>最小的h</li>
+</ul>
+<p>这样我们就可以说 learned something。以2D Perceptron 为例如下：</p>
+<figure>
+<img src="http://cdn.htliu.cn/ml03-4.png" alt="pic" /><figcaption>pic</figcaption>
+</figure>
+<p>当然实际中，<span class="math inline">\(E_{in}\)</span>很难为0。那我们可以怎么去理解这个VC 维度呢？ 由定义可以知道，VC 维与学习算法<span class="math inline">\(\mathcal{H}\)</span>，输入数据<span class="math inline">\(\mathcal{D}\)</span>，以及目标的理想函数<span class="math inline">\(f\)</span>都是无关的， 它是假设空间<span class="math inline">\(\mathcal{H}\)</span>的一个描述，刻画出了<span class="math inline">\(\mathcal{H}\)</span>的powerfulness，因为<span class="math inline">\(d_{vc}\)</span>越大，可以shatter的点就越多，能力就越强，也就是说我们的<span class="math inline">\(d_{vc}(\mathcal{H})\)</span>越大，那么就越可以保证存在一个 h,使得<span class="math inline">\(E_{in}(h)\)</span>越小。</p>
+<p>那我们应该如何去求解VC 维呢？ 总不能一个一个试，看看能不能被shatter掉。这时候就引入了模型自由度的概念。我们定义模型当中可以自由变动的参数的个数，也就是需要求的参数的个数作为模型自由度，比如在 PLA中，参数为<span class="math inline">\(w_0,w_1...w_d\)</span> 一共有<span class="math inline">\(d+1\)</span>个，那么模型的自由度就是<span class="math inline">\(d+1\)</span>，同时我们也知道假设空间<span class="math inline">\(\mathcal{H}\)</span>的VC 维是 <span class="math inline">\(d+1\)</span>。这不是巧合，有个经验规律：VC维 约等于 模型的自由度，即参数的个数。以后我们就可以用模型自由度近似代替<span class="math inline">\(d_{vc}\)</span>的数值了。</p>
+<p>再次回到VC Bound:<span class="math display">\[\mathbb{P}[\exists h \in \mathcal{H}\text{ s.t. } |E_{in}(h)-E_{out}(h)|\gt \epsilon] = 4(2N)^{d_{vc}}  exp(-\frac{1}{8}\epsilon^2N)\]</span>其中等式右边为坏数据发生的概率，我们设为<span class="math inline">\(\delta\)</span>,那么好数据的概率就是<span class="math inline">\(1-\delta\)</span>，在统计学中，这个<span class="math inline">\(1-\delta\)</span>又叫做置信度。有了<span class="math inline">\(\delta\)</span>，我们可以反解出误差率(也叫泛化误差)<span class="math inline">\(\epsilon\)</span>:</p>
+<p><span class="math display">\[ \epsilon= \sqrt{\frac{8}{N}ln(\frac{4(2N)^{d_{vc}}}{\delta})} \]</span>它就是<span class="math inline">\(E_{in}\)</span>和<span class="math inline">\(E_{out}\)</span>的差距，对于好数据来说，有很大的几率：<span class="math inline">\(\| E_{in} - E_{out} \| &lt; \epsilon\)</span>，代入 <span class="math inline">\(\epsilon\)</span>即:</p>
+<p><span class="math display">\[E_{in}(g)-\sqrt{\frac{8}{N}ln(\frac{4(2N)^{d_{vc}}}{\delta})} \leq E_{out}(g) \leq E_{in}(g)+\sqrt{\frac{8}{N}ln(\frac{4(2N)^{d_{vc}}}{\delta})}    \]</span>其中根号里面的式子<span class="math inline">\(\Omega (N,\mathcal{H},\delta)=\sqrt{...}\)</span> 称为model complexity(模型复杂度)。自始至终我们最关心的肯定是<span class="math inline">\(E_{out}\)</span>，我们的目标就是让它越小越好，这样才可以在未知数据中表现的好，从不等式中，我们可以看出<span class="math inline">\(E_{out}\)</span>的上限会被模型复杂度影响。根据上述的不等式，有了下述的一个关系图:</p>
+<figure>
+<img src="http://cdn.htliu.cn/ml03-5.png" alt="pic" /><figcaption>pic</figcaption>
+</figure>
+<p>这个图很重要，也很常用，随着<span class="math inline">\(d_{vc}\)</span>的上升，<span class="math inline">\(E_{in}\)</span>越来越低，但是 model complexity 会一直变大，这样就会导致<span class="math inline">\(E_{out}\)</span>也会慢慢变大！这并不是我们想要的结果。也就是说并不是你的<span class="math inline">\(\mathcal{H}\)</span>越强大越好其实这个就对应后面讲的过拟合的问题，因此我们需要的是图中的<span class="math inline">\(d_{vc}^{*}\)</span>的位置的模型，一个折中的选择，这个也可以对应奥卡姆剃刀理论，简单至上。</p>
+<p>最后再说明下样本复杂度的影响，以一个例子做说明，如下：</p>
+<figure>
+<img src="http://cdn.htliu.cn/ml03-6.png" alt="pic" /><figcaption>pic</figcaption>
+</figure>
+<p>就是对于2D percetron，给定了误差率<span class="math inline">\(\epsilon\)</span>，置信度<span class="math inline">\(1-\delta=0.9\)</span>。让求需要多少数据量才可以满足条件。很简单直接代入公式就好了，我们可以看出，大概需要3w左右也就是10000倍的<span class="math inline">\(d_{vc}\)</span>的训练数据量才可以达到90%的置信度，这可能有点难以接受。幸亏这只是上界，在实际经验中，仅仅需要10倍的<span class="math inline">\(d_{vc}\)</span>就可以达到要求。我们发现，VC Bound 的 losseness是十分松弛的，这正是因为我们一直都是再取上界的上界，都是在进行放缩操作，比如<span class="math inline">\(m_{\mathcal{H}}(N) \leq N^(k-1)\)</span>。再加上VC Bound的通用性，与数据的分布什么的都没关系。</p>
+<p>总结一下的话， 其实就是介绍了VC维的定义，以及我们可以用模型自由度来近似代替VC维的大小，最后介绍了VC维以及VCbound 带给我们什么信息，它与训练误差，测试误差之间的联系等。VC 维是个很重要的概念，是机器学习可以学习的理论基础，我们有了合适的<span class="math inline">\(d_{vc}\)</span>，有足够的训练数据量，有一个好的算法可以找到一个<span class="math inline">\(E_{in}\)</span>最小的h，就说明我们的机器学到东西了。总算总结完了，VC-Dimension 这个坑到今天总算填上了。</p>
+
+      
+    </div>
+
+
+    
+
+    
+	    <div class="article-footer-copyright">
+<!--<p>本文作者: shomy 发表于 <a href="http://shomy.top" target="_blank">个人博客</a></p> -->
+<p>
+本文标题: 机器学习基石笔记(3)<br/>
+</p>
+<p>
+发布时间: 2016-10-17, 17:59:49<br/>
+<p>
+<p>
+最后更新: 2021-12-16, 23:11:45<br/>
+<p>
+本文链接: <a href="/2016/10/17/feasibility-of-learning-3/" target="_blank">http://shomy.top/2016/10/17/feasibility-of-learning-3/</a>
+</p>
+<p>非商业转载请注明作者及出处。商业转载请联系<a href="mailto:shomyliu@gmail.com">作者</a>本人。</p>
+</div>
+
+    
+
+    <footer class="article-footer">
+      
+        <a href="http://shomy.top/2016/10/17/feasibility-of-learning-3/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/machine-learning/" rel="tag">machine learning</a></li></ul>
+
+    </footer>
+    
+	    <script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+    
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2016/10/22/hexo-markdown-mathjax/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          Hexo下mathjax的转义问题
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2016/10/09/feasibility-of-learning-2/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">机器学习基石笔记(2)</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+
+
+<section id="comments">
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+<script>
+  var disqus_shortname = 'shomy';
+  
+  var disqus_url = 'http://shomy.top/2016/10/17/feasibility-of-learning-3/';
+  
+  (function(){
+    var dsq = document.createElement('script');
+    dsq.type = 'text/javascript';
+    dsq.async = true;
+    dsq.src = 'https://' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  }());
+</script>
+</section>
+
+
+
+
+</section>
+      </div>
+    </div>
+    
+    
+<a id="rocket" href="#top" ></a>
+
+<script src="https://cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <script src="http://cdn.htliu.cn/static/js/leancloud.js"></script>
+<script>AV.initialize("k883AKdzaz5jccQnH1eIrG2r-gzGzoHsz", "4HBQOmslEp3VdwK1SGL8vB9Y");</script>
+
+<script src="/js/Counter.js"></script>
+
+
+
+
+
+<script id="dsq-count-scr" src="//shomy.disqus.com/count.js" async></script>
+ 
+
+
+  <script src="https://cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.js"></script>
+  
+<script src="/js/fancybox.js"></script>
+
+
+
+
+  
+<script src="/js/search.js"></script>
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

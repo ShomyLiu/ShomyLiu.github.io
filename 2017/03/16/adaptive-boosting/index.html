@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>机器学习技法笔记(10)-AdaBoost(提升算法) | 天空的城</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="继上一节的Aggregation和Bagging，这一节对那一堆的g函数的产生做更深的探究，对训练数据引入权重的机制(Weight-Based)，加大错误数据的权重，缩小正确数据的权重，从而得到更加 Powerful的算法-AdaBoost">
+<meta property="og:type" content="article">
+<meta property="og:title" content="机器学习技法笔记(10)-AdaBoost(提升算法)">
+<meta property="og:url" content="http://shomy.top/2017/03/16/adaptive-boosting/index.html">
+<meta property="og:site_name" content="天空的城">
+<meta property="og:description" content="继上一节的Aggregation和Bagging，这一节对那一堆的g函数的产生做更深的探究，对训练数据引入权重的机制(Weight-Based)，加大错误数据的权重，缩小正确数据的权重，从而得到更加 Powerful的算法-AdaBoost">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://cdn.htliu.cn/adaboost-1.png">
+<meta property="og:image" content="http://cdn.htliu.cn/adaboost-2.png">
+<meta property="og:image" content="http://cdn.htliu.cn/adaboost-3.png">
+<meta property="og:image" content="http://cdn.htliu.cn/adaboost-4.png">
+<meta property="og:image" content="http://cdn.htliu.cn/adaboost-5.png">
+<meta property="og:image" content="http://cdn.htliu.cn/adaboost-6.png">
+<meta property="og:image" content="http://cdn.htliu.cn/adaboost-7.png">
+<meta property="article:published_time" content="2017-03-16T12:55:55.000Z">
+<meta property="article:modified_time" content="2021-12-16T15:11:45.650Z">
+<meta property="article:author" content="ShomyLiu">
+<meta property="article:tag" content="machine learning">
+<meta property="article:tag" content="AdaBoost">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://cdn.htliu.cn/adaboost-1.png">
+  
+  
+    <link rel="icon" href="/image/favicon.ico">
+  
+
+  
+  <link href="https://cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.css" rel="stylesheet">
+  
+  <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  <link href="https://cdn.bootcss.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+<!-- Google Analytics -->
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-74368890-2', 'auto');
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+
+
+  
+
+  
+  <div class="site-search header-inner">
+    <div class="popup">
+        <span class="search-icon fa fa-search"></span>
+        <input type="text" id="local-search-input">
+        <div id="local-search-result"></div>
+        <span class="popup-btn-close">close</span>
+    </div>
+</div>
+
+
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      
+<header id="header">
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">天空的城</a>
+      </h1>
+      
+    </div>
+    <div id="header-menu">
+      <nav id="main-nav">
+        <ul>
+        
+          <li><a href="/"><i class="fa fa-home icon-setting"></i></a></li>
+        
+          <li><a href="/archives"><i class="fa fa-archive icon-setting"></i></a></li>
+        
+          <li><a href="/tags"><i class="fa fa-tag icon-setting"></i></a></li>
+        
+          <li><a href="/about"><i class="fa fa-user icon-setting"></i></a></li>
+        
+        
+          <li><a href="javascript:;" class="popup-trigger"><i class="fa fa-search > icon-setting"></i></a></li>
+        
+        </ul>
+      </nav>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-adaptive-boosting" class="article article-type-post" itemscope itemprop="blogPost">
+  
+  <div class="article-meta">
+    <a href="/2017/03/16/adaptive-boosting/" class="article-date">
+  <time datetime="2017-03-16T12:55:55.000Z" itemprop="datePublished">2017-03-16</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/">读书笔记</a>
+  </div>
+
+
+    
+        <div class="counter-tag counter">
+    <!-- 别忘记这个类名... post-title-link -->
+    <span id="/2017/03/16/adaptive-boosting/" class="leancloud_visitors article-hits post-title-link"
+           data-flag-title="机器学习技法笔记(10)-AdaBoost(提升算法)">
+        次阅读
+    </span>
+
+  </div>
+
+    
+
+  </div>
+  
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      机器学习技法笔记(10)-AdaBoost(提升算法)
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+            <div id="toc" class="toc-article">
+                <strong class="toc-title">文章目录</strong>
+                <ol class="post-toc"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E4%BB%8Ebagging%E5%BC%95%E5%85%A5%E6%9D%83%E9%87%8D"><span class="post-toc-text">从Bagging引入权重</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E6%9B%B4%E6%96%B0%E6%9D%83%E9%87%8D"><span class="post-toc-text">更新权重</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#adapive-boosting%E7%AE%97%E6%B3%95"><span class="post-toc-text">Adapive Boosting算法</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#vc-%E7%BB%B4%E4%BF%9D%E8%AF%81"><span class="post-toc-text">VC 维保证</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E6%80%BB%E7%BB%93"><span class="post-toc-text">总结</span></a></li></ol>
+            </div>
+        
+        
+        <p>继上一节的Aggregation和Bagging，这一节对那一堆的g函数的产生做更深的探究，对训练数据引入权重的机制(Weight-Based)，加大错误数据的权重，缩小正确数据的权重，从而得到更加 Powerful的算法-AdaBoost</p>
+<span id="more"></span>
+<h2 id="从bagging引入权重">从Bagging引入权重</h2>
+<p>回想上节的Bagging，通过Bootstrap来生成多份的数据<span class="math inline">\(D_t\)</span>，这里面可能会有重复，例如:</p>
+<p><img src="http://cdn.htliu.cn/adaboost-1.png" /></p>
+<p>以分类为例，计算0/1误差: <span class="math inline">\(E_{in}={1\over4}\sum||y \neq h(x)||\)</span>。现在引入新的变量: <span class="math inline">\(u_n\)</span>表示<span class="math inline">\(\mathcal D\)</span>中的第n个数据在采样得到的<span class="math inline">\(\tilde{\mathcal D_t}\)</span>中的个数，对于上面的例子，则有：<span class="math inline">\(u_1=2, u_2=1, u_3=0,u_4=1\)</span>, 那么误差可以换一种方式写:<span class="math inline">\(E_{in}={1\over4}\sum u_n||y \neq h(x)||\)</span>。这样就把<span class="math inline">\(u_n\)</span>引入了错误函数中，可以表示某个数据的权重，这种思想在数据挖掘中很常见，在分类的时候，对于分错的数据，我们需要特别关注，因此把错误数据的重要性放大，或者说人为多复制几份错误数据放进去，这样再迭代的时候，错误数据就会变少了。</p>
+<p>我们可以将权重引入一些之前的模型中，比如SVM：</p>
+<p><img src="http://cdn.htliu.cn/adaboost-2.png" /></p>
+<p>未加权重之前，每个错误的惩罚系数为<span class="math inline">\(C\)</span>，现在加了权重可以理解为错误惩罚变为了<span class="math inline">\(Cu_n\)</span>, 同时也体现在<span class="math inline">\(\alpha_n\)</span>的上限中。 在比如Logistic Regression中，同样可以引入权重:</p>
+<p><img src="http://cdn.htliu.cn/adaboost-3.png" /></p>
+<p>这里可以理解为，在使用随机梯度下降优化的时候，同bagging，<span class="math inline">\(u_n\)</span>代表取出的数据的份数。</p>
+<h2 id="更新权重">更新权重</h2>
+<p>再次回到模型融合，在前一章的aggregation中，我们提到了如果<span class="math inline">\(g_1, g_2,...,g_T\)</span>中效果差距越明显，那么通过融合可以取得更好的结果，现在考察怎么样才可以让<span class="math inline">\(g\)</span>与<span class="math inline">\(g\)</span>之间区分度更明显，考虑<span class="math inline">\(g_t\)</span>与<span class="math inline">\(g_{t+1}\)</span>:</p>
+<p><img src="http://cdn.htliu.cn/adaboost-4.png" /></p>
+<p><span class="math inline">\(g_t\)</span>的是通过权重系数为<span class="math inline">\(u^{(t)}\)</span>中在假设空间中误差最下的h来得到的，<span class="math inline">\(g_{t+1}\)</span>则是<span class="math inline">\(u^{(t+1)}\)</span>, 如果<span class="math inline">\(g_t\)</span>在权重为<span class="math inline">\(u^{(t+1)}\)</span>的条件下，<strong>表现不好</strong>的话，那么在<span class="math inline">\(t+1\)</span>的时候，我们就不会选择出<span class="math inline">\(g_t\)</span>或者与<span class="math inline">\(g_t\)</span>很近似的h了，而是在<span class="math inline">\(u^{(t+1)}\)</span>的条件下误差最小的<span class="math inline">\(g_{t+1}\)</span>，这样就会使得<span class="math inline">\(g_t\)</span>与<span class="math inline">\(g_{t+1}\)</span>更加diverse。 那么如何来衡量表现不好呢？ 很简单的思路，在二分类问题中，表现不好那就是跟随机瞎猜一样，正确率50%，写成表达式便是:</p>
+<p><img src="http://cdn.htliu.cn/adaboost-5.png" /></p>
+<p>再剖析这个式子，因为可以将<span class="math inline">\(u_n\)</span>理解为数据有多少份。在<span class="math inline">\(g_t\)</span>中，即分子就是分类错误的数据个数，分母就是所有数据的个数了。因此我们需要的是，在<span class="math inline">\(u^{(t+1)}\)</span>的条件下，<strong>正确的份数==错误的份数</strong>，那<span class="math inline">\(u^{(t+1)}\)</span>应该与<span class="math inline">\(u^{(t)}\)</span>有什么关系呢？ 举个例子，假设在<span class="math inline">\(u^{(t)}\)</span>下, 分类错误1126份，正确6211份，那么在<span class="math inline">\(u^{(t+1)}\)</span>下，二者应该相等，那应该怎么办呢？看下面的几步:</p>
+<p><span class="math display">\[\begin{align} &amp; A = \sum u_n^{(t)}||y_n\neq g_t(x_n|| = 1126,  \quad B= \sum u_n^{(t)}||y_n ==\ g_t(x_n)|| = 6211 \\ \Rightarrow &amp;A*6211 = B*1126  \\ \Rightarrow &amp;\left(\sum (6211*u_n^{(t)} \neq)\right)  \mathbf = \left( \sum 1126 * u_n^{(t)} ==   \right)  \end{align}\]</span></p>
+<p>因此想要达到在<span class="math inline">\(u^{(t+1)}\)</span>下，<span class="math inline">\(g_t\)</span>正确率到50%，只需要做一个放缩即可:</p>
+<ul>
+<li>错误的数据: <span class="math inline">\(u_n^{(t+1)} = 6211 * u_n^{(t)}\)</span></li>
+<li>正确的数据: <span class="math inline">\(u_n^{(t+1)} = 1126 * u_n^{(t)}\)</span></li>
+</ul>
+<p>一般来说，我们都是用比率来放缩，假设错误率是<span class="math inline">\(\epsilon_t\)</span>，那么根据上面的思路，就可以更新<span class="math inline">\(u_n^{(t+1)}\)</span>如下:</p>
+<ul>
+<li>错误数据: <span class="math inline">\(u_n^{(t+1)} = (1-\epsilon_t) * u_n^{(t)}\)</span></li>
+<li>正确数据: <span class="math inline">\(u_n^{(t+1)} = \epsilon_t * u_n^{(t)}\)</span></li>
+</ul>
+<p><span class="math inline">\(g_t\)</span>的效果是可以接受的，因此一般来说<span class="math inline">\(\epsilon_t &lt; {1 \over 2}\)</span>，这样定性来说，其实就是在下一轮的g中，加强了上一轮分类错误数据的权重。</p>
+<h2 id="adapive-boosting算法">Adapive Boosting算法</h2>
+<p>除了上面使用<span class="math inline">\(\epsilon_t\)</span>作为缩放系数之外，在实际中使用一种等价的方式，定义<span class="math inline">\(\blacklozenge_t = \sqrt{1-\epsilon_t \over \epsilon_t}\)</span>，之后采用下面的策略更新<span class="math inline">\(u^{(t+1)}\)</span>：</p>
+<ul>
+<li>错误的数据: <span class="math inline">\(u_n^{(t+1)} = u_n^{(t)} \cdot \blacklozenge_t\)</span></li>
+<li>正确的数据: <span class="math inline">\(u_n^{(t+1)} = u_n^{(t)} / \blacklozenge_t\)</span></li>
+</ul>
+<p>意义也是一样的，因为<span class="math inline">\(\blacklozenge_t &gt; 1\)</span>，因此每次对于错误数据加大权重，正确数据减少权重，从而得到一个同<span class="math inline">\(g_t\)</span>不一样的<span class="math inline">\(g_{t+1}\)</span>。</p>
+<p>这样我们就可以得到了区分度较大的一堆<span class="math inline">\(g_1, g_2,....,g_T\)</span>，然后就可以用用线性后者非线性的融合方式进行融合。比较常用的是Linear Aggregation，即需要对<span class="math inline">\(g_t\)</span>进行线性组合: <span class="math inline">\(G(\mathbf x ) =sign(\sum\limits_{t=1}^{T}\alpha_t g_t)\)</span>，下面开始考察如何确定<span class="math inline">\(\alpha_t\)</span>。基本思路便是，<strong>效果好的<span class="math inline">\(g_t\)</span>对应的权重<span class="math inline">\(\alpha_t\)</span>应该大一点，反之应该小一点</strong>。 再回想<span class="math inline">\(\blacklozenge_t\)</span>正好是正确率(<span class="math inline">\(1-\epsilon_t\)</span>)的单调增函数，因此在实际中，经常用: <span class="math inline">\(\alpha_t = \ln\blacklozenge_t\)</span>，这样的好处是在计算<span class="math inline">\(g_t\)</span>的时候，就把其对应的权重<span class="math inline">\(\alpha_t\)</span>得到了。比如两种极限情况:</p>
+<ul>
+<li>如果随机乱分，<span class="math inline">\(\epsilon_t=0.5\)</span>，此时<span class="math inline">\(\blacklozenge_t=1\)</span>，那么<span class="math inline">\(\alpha_t=0\)</span>，也就是说坏的g分配0权重</li>
+<li>如果<span class="math inline">\(\epsilon_t=0\)</span>，此时<span class="math inline">\(\blacklozenge_t=\infty\)</span>，那么<span class="math inline">\(\alpha_t=\infty\)</span>也就是说好的g分配无穷大权重</li>
+</ul>
+<p>最后一个问题，最初的<span class="math inline">\(u^{(1)}\)</span>应该怎么确定？ 因为是初始值，并不知道数据情况，因此一般情况直接将权重初始化为相同:</p>
+<p><span class="math display">\[u^{(1)} = [ {1\over N}, {1 \over N},..., {1 \over N}]\]</span></p>
+<p>这样AdaBoost算法就完整了，总结一下流程如下:</p>
+<p><img src="http://cdn.htliu.cn/adaboost-6.png" /></p>
+<p>这个算法也叫<strong>Linear Aggregation On the Fly</strong>，当然也是属于Adaptive Boosting，叫boosting的原因是因为我们只需要开始有一个很弱的演算法<span class="math inline">\(\mathcal A\)</span>，然后通过一点点增加错误数据的权重，降低正确数据的权重，最后得到一个效果很好的分类器，因此一般也用三个臭皮匠赛过诸葛亮来形容Adaboosting。</p>
+<h2 id="vc-维保证">VC 维保证</h2>
+<p>这里简单介绍AdaBoost算法的理论保证。有数学证明可以得到Adaboost的VC Bound：</p>
+<p><img src="http://cdn.htliu.cn/adaboost-7.png" /></p>
+<p>因为算法一共需要T个g，因此在第二项模型复杂度中多了<span class="math inline">\(TlogT\)</span>这一项，其余不变。有实验证明如果每次的<span class="math inline">\(\epsilon_t &lt; 0.5\)</span>的话，也就是说不是乱猜的话， 只需要经过<span class="math inline">\(T= O(logN)\)</span>次迭代就可以收敛到<span class="math inline">\(E_{in} = 0\)</span>。</p>
+<h2 id="总结">总结</h2>
+<p>为什么这个算法叫做Adaptive Boost(自适应提升)呢？ 是因为我们一开始只需要一个很简单的弱分类算法，只要比随机分类好就行，也就是<span class="math inline">\(\epsilon_t &lt;0.5\)</span>，然后通过每次加大错误数据的权重，着重训练错误数据，一点点可以提高正确率，直到收敛。这种算法最开始用在人脸检测上，并且取得了当时最好的效果。</p>
+
+      
+    </div>
+
+
+    
+
+    
+	    <div class="article-footer-copyright">
+<!--<p>本文作者: shomy 发表于 <a href="http://shomy.top" target="_blank">个人博客</a></p> -->
+<p>
+本文标题: 机器学习技法笔记(10)-AdaBoost(提升算法)<br/>
+</p>
+<p>
+发布时间: 2017-03-16, 20:55:55<br/>
+<p>
+<p>
+最后更新: 2021-12-16, 23:11:45<br/>
+<p>
+本文链接: <a href="/2017/03/16/adaptive-boosting/" target="_blank">http://shomy.top/2017/03/16/adaptive-boosting/</a>
+</p>
+<p>非商业转载请注明作者及出处。商业转载请联系<a href="mailto:shomyliu@gmail.com">作者</a>本人。</p>
+</div>
+
+    
+
+    <footer class="article-footer">
+      
+        <a href="http://shomy.top/2017/03/16/adaptive-boosting/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/AdaBoost/" rel="tag">AdaBoost</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/machine-learning/" rel="tag">machine learning</a></li></ul>
+
+    </footer>
+    
+	    <script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+    
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2017/05/09/alias-method-sampling/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          Alias Method离散分布随机取样
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2017/03/15/blending-bagging/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">机器学习技法笔记(9)-Blending and Bagging(模型融合)</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+
+
+<section id="comments">
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+<script>
+  var disqus_shortname = 'shomy';
+  
+  var disqus_url = 'http://shomy.top/2017/03/16/adaptive-boosting/';
+  
+  (function(){
+    var dsq = document.createElement('script');
+    dsq.type = 'text/javascript';
+    dsq.async = true;
+    dsq.src = 'https://' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  }());
+</script>
+</section>
+
+
+
+
+</section>
+      </div>
+    </div>
+    
+    
+<a id="rocket" href="#top" ></a>
+
+<script src="https://cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <script src="http://cdn.htliu.cn/static/js/leancloud.js"></script>
+<script>AV.initialize("k883AKdzaz5jccQnH1eIrG2r-gzGzoHsz", "4HBQOmslEp3VdwK1SGL8vB9Y");</script>
+
+<script src="/js/Counter.js"></script>
+
+
+
+
+
+<script id="dsq-count-scr" src="//shomy.disqus.com/count.js" async></script>
+ 
+
+
+  <script src="https://cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.js"></script>
+  
+<script src="/js/fancybox.js"></script>
+
+
+
+
+  
+<script src="/js/search.js"></script>
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Bert/ELMo文本分类小实验 | 天空的城</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="最近重新梳理了下Transformer和Bert的一些基本原理和概念，再加上之前做过关于ELMo的测试，于是这次就把Bert加进去，相对完整地在文本分类这任务上对不同的预训练词向量以及不同的编码器等做了简单的对比实验，代码如下Bert&#x2F;ELMo文本分类 ，使用Pytorch框架完成。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Bert&#x2F;ELMo文本分类小实验">
+<meta property="og:url" content="http://shomy.top/2020/07/06/bert-elmo-cls/index.html">
+<meta property="og:site_name" content="天空的城">
+<meta property="og:description" content="最近重新梳理了下Transformer和Bert的一些基本原理和概念，再加上之前做过关于ELMo的测试，于是这次就把Bert加进去，相对完整地在文本分类这任务上对不同的预训练词向量以及不同的编码器等做了简单的对比实验，代码如下Bert&#x2F;ELMo文本分类 ，使用Pytorch框架完成。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-07-06T03:12:28.000Z">
+<meta property="article:modified_time" content="2021-12-16T15:11:45.651Z">
+<meta property="article:author" content="ShomyLiu">
+<meta property="article:tag" content="Bert">
+<meta property="article:tag" content="ELMo">
+<meta name="twitter:card" content="summary">
+  
+  
+    <link rel="icon" href="/image/favicon.ico">
+  
+
+  
+  <link href="https://cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.css" rel="stylesheet">
+  
+  <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  <link href="https://cdn.bootcss.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+<!-- Google Analytics -->
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-74368890-2', 'auto');
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+
+
+  
+
+  
+  <div class="site-search header-inner">
+    <div class="popup">
+        <span class="search-icon fa fa-search"></span>
+        <input type="text" id="local-search-input">
+        <div id="local-search-result"></div>
+        <span class="popup-btn-close">close</span>
+    </div>
+</div>
+
+
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      
+<header id="header">
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">天空的城</a>
+      </h1>
+      
+    </div>
+    <div id="header-menu">
+      <nav id="main-nav">
+        <ul>
+        
+          <li><a href="/"><i class="fa fa-home icon-setting"></i></a></li>
+        
+          <li><a href="/archives"><i class="fa fa-archive icon-setting"></i></a></li>
+        
+          <li><a href="/tags"><i class="fa fa-tag icon-setting"></i></a></li>
+        
+          <li><a href="/about"><i class="fa fa-user icon-setting"></i></a></li>
+        
+        
+          <li><a href="javascript:;" class="popup-trigger"><i class="fa fa-search > icon-setting"></i></a></li>
+        
+        </ul>
+      </nav>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-bert-elmo-cls" class="article article-type-post" itemscope itemprop="blogPost">
+  
+  <div class="article-meta">
+    <a href="/2020/07/06/bert-elmo-cls/" class="article-date">
+  <time datetime="2020-07-06T03:12:28.000Z" itemprop="datePublished">2020-07-06</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/">读书笔记</a>
+  </div>
+
+
+    
+        <div class="counter-tag counter">
+    <!-- 别忘记这个类名... post-title-link -->
+    <span id="/2020/07/06/bert-elmo-cls/" class="leancloud_visitors article-hits post-title-link"
+           data-flag-title="Bert/ELMo文本分类小实验">
+        次阅读
+    </span>
+
+  </div>
+
+    
+
+  </div>
+  
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Bert/ELMo文本分类小实验
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+            <div id="toc" class="toc-article">
+                <strong class="toc-title">文章目录</strong>
+                <ol class="post-toc"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E5%9F%BA%E6%9C%AC%E6%A1%86%E6%9E%B6"><span class="post-toc-text">基本框架</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E5%AE%9E%E9%AA%8C%E8%AE%BE%E7%BD%AE"><span class="post-toc-text">实验设置</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E7%BB%93%E6%9E%9C%E5%AF%B9%E6%AF%94"><span class="post-toc-text">结果对比</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#todo"><span class="post-toc-text">TODO</span></a></li></ol>
+            </div>
+        
+        
+        <p>最近重新梳理了下Transformer和Bert的一些基本原理和概念，再加上之前做过关于ELMo的测试，于是这次就把Bert加进去，相对完整地在文本分类这任务上对不同的预训练词向量以及不同的编码器等做了简单的对比实验，代码如下<a target="_blank" rel="noopener" href="https://github.com/ShomyLiu/pytorch_bert_elmo_example">Bert/ELMo文本分类</a> ，使用Pytorch框架完成。</p>
+<span id="more"></span>
+<h2 id="基本框架">基本框架</h2>
+<p>文本分类 (text classification) 是NLP的基本任务之一，给定一个包含一堆词的句子，然后判断其类别。 文本分类主要包含三部分：</p>
+<ol type="1">
+<li><p>word embedding 比如使用经典的word2vec, glove或者近几年很火的ELMo和Bert等将word转换为词向量。</p></li>
+<li><p>Encoder 对word Embedding的输入进行下一步的特征提取，比如常用的CNN,RNN还有近年来很火的Transformer架构，都是能够抽取词的更high-level的语义特征。</p></li>
+<li><p>池化，将多个词特征进行池化得到一个句向量，进行最后的分类。比较常用的比如max-pooling，average-pooling，或者利用Attention机制计算每个词的不同权重，进行加权求和，得到句向量。</p></li>
+</ol>
+<p>本次实验集中在前两部分，测试在不同的词向量与不同的Encoder的文本分类的效果。</p>
+<h2 id="实验设置">实验设置</h2>
+<p>本次实验中选择了三类词向量，如下：</p>
+<ul>
+<li>GloVe: 使用Glove.6B.300d的词向量。</li>
+<li>ELMo: 使用<a target="_blank" rel="noopener" href="https://allennlp.org/elmo">AllenNLP</a>提供的预训练的Medium的上下文词向量，LSTM的隐层与输出层维度为2048/256。</li>
+<li>Bert：使用<a target="_blank" rel="noopener" href="https://huggingface.co/bert-base-uncased">Transformers</a>提供的Bert-base-uncased的词向量，结构为12层的transformer，输出层维度为512。</li>
+</ul>
+<p>使用四类Encoder的方法，如下：</p>
+<ul>
+<li>Mean：不适用Encoder，直接对所有的词向量取平均作为句向量。</li>
+<li>CNN：使用卷积神经网络抽取特征。</li>
+<li>RNN：使用GRU网络抽取特征。</li>
+<li>Transformer：结合Position Embedding+Transformer Encoder来抽取特征, 使用Pytorch提供的<code>nn.Transformer</code> 实现，其中<code>num_head=1</code>, <code>num_layer=1</code>。此外实验中发现<code>sin/cos</code>的位置向量效果很差，使用learning Embedding 而不是sin/cos</li>
+</ul>
+<p>由于本实验不考虑池化，因此统一使用<code>mean</code> 将所有词的特征取平均作为句向量。</p>
+<p>其余参数均保持一致，可以在<code>config.py</code> 里面查看，比如所有输出层都为64。需要注意的是，本次实验并没有刻意去调超参数，只有所有对比模型保持一致的原则。</p>
+<p>代码中模块分工比较明确，可以很方便制定或者修改参数，细节可以参考上述的github链接。</p>
+<blockquote>
+<p>对<code>bert</code>与<code>ELMo</code> 的内部参数，目前实验中均保持<code>freeze</code> , 后续会尝试进行fine-tuning测试。（目前算力不太足）</p>
+</blockquote>
+<p>接着是数据集，本次实验采用2分类的情感分类数据，总计约10k条数据。评价指标使用准确率(Accuracy)。</p>
+<h2 id="结果对比">结果对比</h2>
+<p>先直接上结果，其中second为每个epoch的training+evaluate的时间：</p>
+<table>
+<thead>
+<tr class="header">
+<th>Embedding</th>
+<th>Encoder</th>
+<th>Acc</th>
+<th>Second</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Bert</strong></td>
+<td>MEAN</td>
+<td>0.8031</td>
+<td>17.98s</td>
+</tr>
+<tr class="even">
+<td><strong>Bert</strong></td>
+<td>CNN</td>
+<td>0.8397</td>
+<td>18.35s</td>
+</tr>
+<tr class="odd">
+<td><strong>Bert</strong></td>
+<td>RNN</td>
+<td>0.8444</td>
+<td>18.93s</td>
+</tr>
+<tr class="even">
+<td><strong>Bert</strong></td>
+<td>Transformer</td>
+<td><strong>0.8472</strong></td>
+<td>20.95s</td>
+</tr>
+<tr class="odd">
+<td><em>ELMo</em></td>
+<td>Mean</td>
+<td>0.7572</td>
+<td>25.05s</td>
+</tr>
+<tr class="even">
+<td><em>ELMo</em></td>
+<td>CNN</td>
+<td>0.8172</td>
+<td>25.53s</td>
+</tr>
+<tr class="odd">
+<td><em>ELMo</em></td>
+<td>RNN</td>
+<td><strong>0.8219</strong></td>
+<td>27.18s</td>
+</tr>
+<tr class="even">
+<td><em>ELMo</em></td>
+<td>Transformer</td>
+<td>0.8051</td>
+<td>26.209</td>
+</tr>
+<tr class="odd">
+<td>GloVe</td>
+<td>Mean</td>
+<td>0.8003</td>
+<td>0.60s</td>
+</tr>
+<tr class="even">
+<td>GloVe</td>
+<td>CNN</td>
+<td>0.8031</td>
+<td>0.76s</td>
+</tr>
+<tr class="odd">
+<td>GloVe</td>
+<td>RNN</td>
+<td><strong>0.8219</strong></td>
+<td>1.45s</td>
+</tr>
+<tr class="even">
+<td>GloVe</td>
+<td>Transformer</td>
+<td>0.8153</td>
+<td>1.71s</td>
+</tr>
+</tbody>
+</table>
+<p><strong>分析：</strong></p>
+<ul>
+<li>性能
+<ul>
+<li>Bert实现了最好的性能：Bert+Transformer实现了0.8472的准确率。 此外，在所有的Encoder中Bert均取得了最高的准确率。总体来看Bert &gt; ELM0 ≈ GloVe。</li>
+<li>比较惊讶的ELMo在文本分类效果并未有所提升，与GloVe不相上下，甚至在Mean和Transformer中效果还不如GloVe， 可能原因是ELMo需要对内部参数进行微调， 后续探究深入原因<code>TODO</code>。</li>
+<li>Encoder的比较上，在文本分类中 RNN≈Transformer &gt; CNN &gt; Mean。其中实验中Transformer不如RNN稳定。</li>
+</ul></li>
+<li>效率
+<ul>
+<li>很直观： ELMo &lt; Bert &lt; GloVe. 其中ELMo和Bert都是Contextual的词向量，相比GloVe，速度肯定要慢非常多，这还是在ELMo和Bert并没有开启内部参数fine-tuning的情况下。</li>
+<li>Transformer &lt; RNN &lt; CNN 。CNN最快这个容易理解，不过Transformer比RNN还要慢一些，有点意外，不过总体效率比较接近。</li>
+</ul></li>
+</ul>
+<p><strong>总结</strong></p>
+<p>从这个很简单的文本分类任务中，可以看到Bert的确效果很好，领先其他的词向量模型，此外从实验中我们还发现Bert收敛速度也很快，基本前面几个Epoch就差不多了，很稳定。 Bert在NLP领域是一个划时代的产物，需要及时跟进。前面用了几年的word2vec/glove + cnn/rnn的结构，我们也准备一步一步转向Transformer+Bert的阵营。</p>
+<h2 id="todo">TODO</h2>
+<ul>
+<li>考虑不同池化层的影响，加入不同的<code>pooling method</code></li>
+<li>更新Bert以及ELMo的参数</li>
+</ul>
+
+      
+    </div>
+
+
+    
+
+    
+	    <div class="article-footer-copyright">
+<!--<p>本文作者: shomy 发表于 <a href="http://shomy.top" target="_blank">个人博客</a></p> -->
+<p>
+本文标题: Bert/ELMo文本分类小实验<br/>
+</p>
+<p>
+发布时间: 2020-07-06, 11:12:28<br/>
+<p>
+<p>
+最后更新: 2021-12-16, 23:11:45<br/>
+<p>
+本文链接: <a href="/2020/07/06/bert-elmo-cls/" target="_blank">http://shomy.top/2020/07/06/bert-elmo-cls/</a>
+</p>
+<p>非商业转载请注明作者及出处。商业转载请联系<a href="mailto:shomyliu@gmail.com">作者</a>本人。</p>
+</div>
+
+    
+
+    <footer class="article-footer">
+      
+        <a href="http://shomy.top/2020/07/06/bert-elmo-cls/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Bert/" rel="tag">Bert</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/ELMo/" rel="tag">ELMo</a></li></ul>
+
+    </footer>
+    
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2020/07/29/cqa1-rmrn/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          CQA-1：社区问答中的深度关联推理模型
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2020/04/06/2019-review/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">2019</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+
+
+<section id="comments">
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+<script>
+  var disqus_shortname = 'shomy';
+  
+  var disqus_url = 'http://shomy.top/2020/07/06/bert-elmo-cls/';
+  
+  (function(){
+    var dsq = document.createElement('script');
+    dsq.type = 'text/javascript';
+    dsq.async = true;
+    dsq.src = 'https://' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  }());
+</script>
+</section>
+
+
+
+
+</section>
+      </div>
+    </div>
+    
+    
+<a id="rocket" href="#top" ></a>
+
+<script src="https://cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <script src="http://cdn.htliu.cn/static/js/leancloud.js"></script>
+<script>AV.initialize("k883AKdzaz5jccQnH1eIrG2r-gzGzoHsz", "4HBQOmslEp3VdwK1SGL8vB9Y");</script>
+
+<script src="/js/Counter.js"></script>
+
+
+
+
+
+<script id="dsq-count-scr" src="//shomy.disqus.com/count.js" async></script>
+ 
+
+
+  <script src="https://cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.js"></script>
+  
+<script src="/js/fancybox.js"></script>
+
+
+
+
+  
+<script src="/js/search.js"></script>
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

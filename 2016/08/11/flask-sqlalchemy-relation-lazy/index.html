@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>flask-sqlalchemy中的lazy的解释 | 天空的城</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="最近在学习到Flask中的Sqlalchemy, 不过在看到数据库关系db.relations()时对lazy这个参数一直很模糊。主要是看到Flask Web开发这本书中对关注与被关注的关系建模中，被lazy的使用绕晕了。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="flask-sqlalchemy中的lazy的解释">
+<meta property="og:url" content="http://shomy.top/2016/08/11/flask-sqlalchemy-relation-lazy/index.html">
+<meta property="og:site_name" content="天空的城">
+<meta property="og:description" content="最近在学习到Flask中的Sqlalchemy, 不过在看到数据库关系db.relations()时对lazy这个参数一直很模糊。主要是看到Flask Web开发这本书中对关注与被关注的关系建模中，被lazy的使用绕晕了。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2016-08-11T08:37:01.000Z">
+<meta property="article:modified_time" content="2021-12-16T15:11:45.658Z">
+<meta property="article:author" content="ShomyLiu">
+<meta property="article:tag" content="flask">
+<meta property="article:tag" content="pyhton">
+<meta property="article:tag" content="sqlalchemy">
+<meta property="article:tag" content="lazy">
+<meta name="twitter:card" content="summary">
+  
+  
+    <link rel="icon" href="/image/favicon.ico">
+  
+
+  
+  <link href="https://cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.css" rel="stylesheet">
+  
+  <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  <link href="https://cdn.bootcss.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+<!-- Google Analytics -->
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-74368890-2', 'auto');
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+
+
+  
+
+  
+  <div class="site-search header-inner">
+    <div class="popup">
+        <span class="search-icon fa fa-search"></span>
+        <input type="text" id="local-search-input">
+        <div id="local-search-result"></div>
+        <span class="popup-btn-close">close</span>
+    </div>
+</div>
+
+
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      
+<header id="header">
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">天空的城</a>
+      </h1>
+      
+    </div>
+    <div id="header-menu">
+      <nav id="main-nav">
+        <ul>
+        
+          <li><a href="/"><i class="fa fa-home icon-setting"></i></a></li>
+        
+          <li><a href="/archives"><i class="fa fa-archive icon-setting"></i></a></li>
+        
+          <li><a href="/tags"><i class="fa fa-tag icon-setting"></i></a></li>
+        
+          <li><a href="/about"><i class="fa fa-user icon-setting"></i></a></li>
+        
+        
+          <li><a href="javascript:;" class="popup-trigger"><i class="fa fa-search > icon-setting"></i></a></li>
+        
+        </ul>
+      </nav>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-flask-sqlalchemy-relation-lazy" class="article article-type-post" itemscope itemprop="blogPost">
+  
+  <div class="article-meta">
+    <a href="/2016/08/11/flask-sqlalchemy-relation-lazy/" class="article-date">
+  <time datetime="2016-08-11T08:37:01.000Z" itemprop="datePublished">2016-08-11</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">编程语言</a>
+  </div>
+
+
+    
+        <div class="counter-tag counter">
+    <!-- 别忘记这个类名... post-title-link -->
+    <span id="/2016/08/11/flask-sqlalchemy-relation-lazy/" class="leancloud_visitors article-hits post-title-link"
+           data-flag-title="flask-sqlalchemy中的lazy的解释">
+        次阅读
+    </span>
+
+  </div>
+
+    
+
+  </div>
+  
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      flask-sqlalchemy中的lazy的解释
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+            <div id="toc" class="toc-article">
+                <strong class="toc-title">文章目录</strong>
+                <ol class="post-toc"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E5%9F%BA%E6%9C%AC%E4%BB%8B%E7%BB%8D"><span class="post-toc-text">基本介绍</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E5%AE%9E%E4%BE%8B"><span class="post-toc-text">实例</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E6%80%BB%E7%BB%93"><span class="post-toc-text">总结</span></a></li></ol>
+            </div>
+        
+        
+        <p>最近在学习到Flask中的Sqlalchemy, 不过在看到数据库关系<code>db.relations()</code>时对<code>lazy</code>这个参数一直很模糊。主要是看到<code>Flask Web开发</code>这本书中对<em>关注与被关注</em>的关系建模中，被lazy的使用绕晕了。 <span id="more"></span> 看官方文档，也得不到多少信息，于是就自己实践，从<code>lazy</code>参数的不同值所执行的<code>sql</code>语句出发，结合<code>one-to-many</code>和<code>many-to-many</code>的关系，分析lazy参数取不同值(<code>dynamic, joined, select</code>)在不同场景下的选择，因为涉及到数据库性能问题，选择不同差别很大，尤其在数据量比较大时。 以下的实例均是基于如下的模型和表:主要侧重对<code>relationship</code>中的backref的<code>lazy</code>属性做修改。 <figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">registrations = db.<span class="keyword">Table</span>(<span class="string">&#x27;registrations&#x27;</span>,</span><br><span class="line">                         db.<span class="keyword">Column</span>(<span class="string">&#x27;student_id&#x27;</span>, db.Integer, db.ForeignKey(<span class="string">&#x27;students.id&#x27;</span>)),</span><br><span class="line">                         db.<span class="keyword">Column</span>(<span class="string">&#x27;class_id&#x27;</span>, db.Integer, db.ForeignKey(<span class="string">&#x27;classes.id&#x27;</span>)))</span><br><span class="line"><span class="keyword">class</span> Student(db.Model):</span><br><span class="line">    __tablename__ = <span class="string">&#x27;students&#x27;</span></span><br><span class="line">    id = db.<span class="keyword">Column</span>(db.Integer, primary_key=<span class="keyword">True</span>)</span><br><span class="line">    <span class="type">name</span> = db.<span class="keyword">Column</span>(db.String(<span class="number">64</span>))</span><br><span class="line">    class_id = db.<span class="keyword">Column</span>(db.Integer, db.ForeignKey(<span class="string">&#x27;classes.id&#x27;</span>))</span><br><span class="line">    def __repr__(self):</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&#x27;&lt;Student: %r&gt;&#x27;</span> %self.name</span><br><span class="line"><span class="keyword">class</span> <span class="keyword">Class</span>(db.Model):</span><br><span class="line">    __tablename__ = <span class="string">&#x27;classes&#x27;</span></span><br><span class="line">    id = db.<span class="keyword">Column</span>(db.Integer, primary_key=<span class="keyword">True</span>)</span><br><span class="line">    students = db.relationship(<span class="string">&#x27;Student&#x27;</span>, backref=<span class="string">&#x27;_class&#x27;</span>, lazy=&quot;dynamic&quot;)</span><br><span class="line">    <span class="type">name</span> = db.<span class="keyword">Column</span>(db.String(<span class="number">64</span>))</span><br><span class="line">    def __repr__(self):</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&#x27;&lt;Class: %r&gt;&#x27;</span> %self.name</span><br></pre></td></tr></table></figure></p>
+<h2 id="基本介绍">基本介绍</h2>
+<p>首先看官网的关于<code>lazy</code>的说明:</p>
+<blockquote>
+<p><strong>lazy 决定了 SQLAlchemy 什么时候从数据库中加载数据:</strong>，有如下四个值:(其实还有个noload不常用) <code>select</code>: (which is the default) means that SQLAlchemy will load the data as necessary in one go using a standard select statement. <code>joined</code>: tells SQLAlchemy to load the relationship in the same query as the parent using a JOIN statement. <code>subquery</code>: works like 'joined' but instead SQLAlchemy will use a subquery. <code>dynamic</code> : is special and useful if you have many items. Instead of loading the items SQLAlchemy will return another query object which you can further refine before loading the items. This is usually what you want if you expect more than a handful of items for this relationship</p>
+</blockquote>
+<p>通俗了说，<code>select</code>就是访问到属性的时候，就会全部加载该属性的数据。<code>joined</code>则是在对关联的两个表进行<code>join</code>操作，从而获取到所有相关的对象。<code>dynamic</code>则不一样，在访问属性的时候，并没有在内存中加载数据，而是返回一个<code>query</code>对象, 需要执行相应方法才可以获取对象，比如<code>.all()</code>.下面结合实例解释这几个的使用场景。</p>
+<h2 id="实例">实例</h2>
+<p>首先是最开始一对多关系中，改动如下:将<code>一</code>的lazy改为select: <figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">students = db.relationship(<span class="string">&#x27;Student&#x27;</span>, <span class="attribute">backref</span>=<span class="string">&#x27;_class&#x27;</span>, <span class="attribute">lazy</span>=<span class="string">&quot;select&quot;</span>)</span><br></pre></td></tr></table></figure> 这样的话， class.students会直接返回结果列表: <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">from</span> app.models <span class="keyword">import</span> Student <span class="keyword">as</span> S, Class <span class="keyword">as</span> C</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>c1=C.query.first()</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>c1.students</span><br><span class="line">[&lt;Student: <span class="string">u&#x27;test&#x27;</span>&gt;, &lt;Student: <span class="string">u&#x27;test2&#x27;</span>&gt;, &lt;Student: <span class="string">u&#x27;test3&#x27;</span>&gt;]</span><br></pre></td></tr></table></figure> 这种情况下，在数据量较大或者想做进一步操作时候，不太方便，因此这个时候, <code>dynamic</code>就用上了: <figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">students = db.relationship(<span class="string">&#x27;Student&#x27;</span>, <span class="attribute">backref</span>=<span class="string">&#x27;_class&#x27;</span>, <span class="attribute">lazy</span>=<span class="string">&quot;dynamic&quot;</span>)</span><br></pre></td></tr></table></figure> 同样看看结果: <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">from</span> app.models <span class="keyword">import</span> Student <span class="keyword">as</span> S, Class <span class="keyword">as</span> C</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>s1=S.query.first()</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>c1=C.query.first()</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>c1.students</span><br><span class="line">&lt;sqlalchemy.orm.dynamic.AppenderBaseQuery <span class="built_in">object</span> at <span class="number">0x7f007d2e8ed0</span>&gt;</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="built_in">print</span> c1.students</span><br><span class="line">SELECT students.<span class="built_in">id</span> AS students_id, students.name AS students_name</span><br><span class="line">FROM students, registrations</span><br><span class="line">WHERE :param_1 = registrations.class_id AND students.<span class="built_in">id</span> = registrations.student_id</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>c1.students.<span class="built_in">all</span>()</span><br><span class="line">[&lt;Student: <span class="string">u&#x27;test&#x27;</span>&gt;, &lt;Student: <span class="string">u&#x27;test2&#x27;</span>&gt;, &lt;Student: <span class="string">u&#x27;test3&#x27;</span>&gt;]</span><br></pre></td></tr></table></figure> 可以看到, 执行<code>c1.student</code>返回的是是一个 <code>query</code>对象，并且该对象的<code>sql</code>语句也可以看到，就是简单查询了<code>Student</code>。而如果<code>lazy=select 或者 joined</code>均是直接返回结果。　需要注意的是，** <code>lazy="dynamic"</code>只可以用在一对多和多对对关系中，不可以用在一对一和多对一中**，如果返回结果只有一个的话，也就无需要延迟加载数据了。 前面说的都是给当前属性加<code>lazy</code>属性，backref的lazy默认都是<code>select</code>,如果给反向引用<code>backref</code>加lazy属性呢? 直接使用<code>backref=db.backref('students', lazy='dynamic'</code>　即可。这个在多对多关系需要进行考量。 先看一个最基本的多对多关系: <figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">registrations = db.<span class="keyword">Table</span>(<span class="string">&#x27;registrations&#x27;</span>,</span><br><span class="line">                         db.<span class="keyword">Column</span>(<span class="string">&#x27;student_id&#x27;</span>, db.Integer, db.ForeignKey(<span class="string">&#x27;students.id&#x27;</span>)),</span><br><span class="line">                         db.<span class="keyword">Column</span>(<span class="string">&#x27;class_id&#x27;</span>, db.Integer, db.ForeignKey(<span class="string">&#x27;classes.id&#x27;</span>)))</span><br><span class="line"><span class="keyword">class</span> Student(db.Model):</span><br><span class="line">    __tablename__ = <span class="string">&#x27;students&#x27;</span></span><br><span class="line">    id = db.<span class="keyword">Column</span>(db.Integer, primary_key=<span class="keyword">True</span>)</span><br><span class="line">    <span class="type">name</span> = db.<span class="keyword">Column</span>(db.String(<span class="number">64</span>))</span><br><span class="line">    # class_id = db.<span class="keyword">Column</span>(db.Integer, db.ForeignKey(<span class="string">&#x27;classes.id&#x27;</span>)) 这里需要注释，不需要外键了</span><br><span class="line">    def __repr__(self):</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&#x27;&lt;Student: %r&gt;&#x27;</span> %self.name</span><br><span class="line"><span class="keyword">class</span> <span class="keyword">Class</span>(db.Model):</span><br><span class="line">    __tablename__ = <span class="string">&#x27;classes&#x27;</span></span><br><span class="line">    id = db.<span class="keyword">Column</span>(db.Integer, primary_key=<span class="keyword">True</span>)</span><br><span class="line">    students = db.relationship(<span class="string">&#x27;Student&#x27;</span>, secondary=registrations, backref=<span class="string">&#x27;_class&#x27;</span>, lazy=&quot;dynamic&quot;)　#这里指定关联表</span><br><span class="line">    <span class="type">name</span> = db.<span class="keyword">Column</span>(db.String(<span class="number">64</span>))</span><br><span class="line">    def __repr__(self):</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&#x27;&lt;Class: %r&gt;&#x27;</span> %self.name</span><br></pre></td></tr></table></figure> 同样执行结果可以看到: <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span>s1=S.query.first()</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>c1=C.query.first()</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>s1._<span class="keyword">class</span></span><br><span class="line">[&lt;Class: <span class="string">u&#x27;class1&#x27;</span>&gt;, &lt;Class: <span class="string">u&#x27;class2&#x27;</span>&gt;]</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>c1.students</span><br><span class="line">&lt;sqlalchemy.orm.dynamic.AppenderBaseQuery <span class="built_in">object</span> at <span class="number">0x7ff8691a8610</span>&gt;</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>c1.students.<span class="built_in">all</span>()</span><br><span class="line">[&lt;Student: <span class="string">u&#x27;test&#x27;</span>&gt;, &lt;Student: <span class="string">u&#x27;test2&#x27;</span>&gt;, &lt;Student: <span class="string">u&#x27;test3&#x27;</span>&gt;]</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="built_in">print</span> c1.students</span><br><span class="line">SELECT students.<span class="built_in">id</span> AS students_id, students.name AS students_name</span><br><span class="line">FROM students, registrations</span><br><span class="line">WHERE :param_1 = registrations.class_id AND students.<span class="built_in">id</span> = registrations.student_id</span><br></pre></td></tr></table></figure> 可以看到这个跟一对多关系中的很类似，只不过<code>s1._class</code>成为了集合形式, 因为<code>backref="_class"</code>默认仍然是<code>select</code>，所以直接返回结果，而<code>c1.students</code>的sql语句也仅仅是查询了students。但是如果修改反向引用的<code>lazy</code>为<code>joined</code>:　 <figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">students = db.relationship(<span class="string">&#x27;Student&#x27;</span>, <span class="attribute">secondary</span>=registrations,</span><br><span class="line">                                           <span class="attribute">backref</span>=db.backref(&#x27;_class&#x27;, <span class="attribute">lazy</span>=<span class="string">&quot;joined&quot;</span>), <span class="attribute">lazy</span>=<span class="string">&quot;dynamic&quot;</span>)</span><br></pre></td></tr></table></figure> 然后看看结果: <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">....</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="built_in">print</span> c1.students</span><br><span class="line">SELECT students.<span class="built_in">id</span> AS students_id, students.name AS students_name, classes_1.<span class="built_in">id</span> AS classes_1_id, classes_1.name AS classes_1_name</span><br><span class="line">FROM registrations, students LEFT OUTER JOIN (registrations AS registrations_1 JOIN classes AS classes_1 ON classes_1.<span class="built_in">id</span> = registrations_1.class_id) ON students.<span class="built_in">id</span> = registrations_1.student_id</span><br><span class="line">WHERE :param_1 = registrations.class_id AND students.<span class="built_in">id</span> = registrations.student_id</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>c1.students.<span class="built_in">all</span>()</span><br><span class="line">[&lt;Student: <span class="string">u&#x27;test&#x27;</span>&gt;, &lt;Student: <span class="string">u&#x27;test2&#x27;</span>&gt;, &lt;Student: <span class="string">u&#x27;test3&#x27;</span>&gt;]</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>s1._<span class="keyword">class</span></span><br><span class="line">[&lt;Class: <span class="string">u&#x27;class1&#x27;</span>&gt;, &lt;Class: <span class="string">u&#x27;class2&#x27;</span>&gt;]</span><br></pre></td></tr></table></figure> 首先不变的还是<code>s1._class</code>还是直接返回数据。有变化的是<code>c1.students</code>的sql语句，　不仅仅是查询<code>Student</code>对象, 而且还通过与关联表做<code>join</code>操作，把相关联的<code>Class</code>也查询了。相关联的意思是什么呢？看下直接执行sql语句的结果就知道了: <figure class="highlight asciidoc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">mysql&gt; SELECT students.id AS students_id, students.name AS students_name, classes_1.id AS classes_1_id, classes_1.name AS classes_1_name  FROM registrations, students LEFT OUTER JOIN (registrations AS registrations_1 JOIN classes AS classes_1 ON classes_1.id = registrations_1.class_id) ON students.id = registrations_1.student_id  WHERE 1 = registrations.class_id AND students.id = registrations.student_id;</span></span><br><span class="line"><span class="section">+-------------+---------------+--------------+----------------+</span></span><br><span class="line"><span class="section">| students_id | students_name | classes_1_id | classes_1_name |</span></span><br><span class="line"><span class="section">+-------------+---------------+--------------+----------------+</span></span><br><span class="line">|           1 | test          |            1 | class1         |</span><br><span class="line">|           1 | test          |            2 | class2         |</span><br><span class="line">|           2 | test2         |            1 | class1         |</span><br><span class="line"><span class="section">|           3 | test3         |            1 | class1         |</span></span><br><span class="line"><span class="section">+-------------+---------------+--------------+----------------+</span></span><br><span class="line">4 rows in set (0.00 sec)</span><br></pre></td></tr></table></figure> 也就是说把查询得到的students的对应的class实体也都查询出来了。　但是貌似在这个例子中没有意义，因为这种多对多的关系比较简单，关联表甚至都不是模型，只有两个外键的id, 上述代码中的<code>registrations</code>是直接被<code>sqlalchemy</code>接管的，程序无法直接访问的。 在下面的多对多例子中，我们可以看到上述的<code>lazy</code>方式的优势，我们把关联表改为实体model，并且额外增加一个时间信息。模型代码如下: <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Registration</span>(<span class="params">db.Model</span>):</span></span><br><span class="line">    <span class="string">&#x27;&#x27;&#x27;关联表&#x27;&#x27;&#x27;</span></span><br><span class="line">    __tablename__ = <span class="string">&#x27;registrations&#x27;</span></span><br><span class="line">    student_id = db.Column(db.Integer, db.ForeignKey(<span class="string">&#x27;students.id&#x27;</span>), primary_key=<span class="literal">True</span>)</span><br><span class="line">    class_id = db.Column(db.Integer, db.ForeignKey(<span class="string">&#x27;classes.id&#x27;</span>), primary_key=<span class="literal">True</span>)</span><br><span class="line">    create_at = db.Column(db.DateTime, default=datetime.utcnow)</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Student</span>(<span class="params">db.Model</span>):</span></span><br><span class="line">    __tablename__ = <span class="string">&#x27;students&#x27;</span></span><br><span class="line">    <span class="built_in">id</span> = db.Column(db.Integer, primary_key=<span class="literal">True</span>)</span><br><span class="line">    name = db.Column(db.String(<span class="number">64</span>))</span><br><span class="line">    _<span class="keyword">class</span> = db.relationship(<span class="string">&#x27;Registration&#x27;</span>, foreign_keys=[Registration.student_id],</span><br><span class="line">                             backref=db.backref(<span class="string">&#x27;student&#x27;</span>, lazy=<span class="string">&quot;joined&quot;</span>), lazy=<span class="string">&quot;dynamic&quot;</span>)</span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__repr__</span>(<span class="params">self</span>):</span></span><br><span class="line">        <span class="keyword">return</span> <span class="string">&#x27;&lt;Student: %r&gt;&#x27;</span> %self.name</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Class</span>(<span class="params">db.Model</span>):</span></span><br><span class="line">    __tablename__ = <span class="string">&#x27;classes&#x27;</span></span><br><span class="line">    <span class="built_in">id</span> = db.Column(db.Integer, primary_key=<span class="literal">True</span>)</span><br><span class="line">    students = db.relationship(<span class="string">&#x27;Registration&#x27;</span>, foreign_keys=[Registration.class_id],</span><br><span class="line">                               backref=db.backref(<span class="string">&#x27;_class&#x27;</span>, lazy=<span class="string">&quot;joined&quot;</span>), lazy=<span class="string">&quot;dynamic&quot;</span>)</span><br><span class="line">    name = db.Column(db.String(<span class="number">64</span>))</span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__repr__</span>(<span class="params">self</span>):</span></span><br><span class="line">        <span class="keyword">return</span> <span class="string">&#x27;&lt;Class: %r&gt;&#x27;</span> %self.name</span><br></pre></td></tr></table></figure> 提前准备数据: <figure class="highlight asciidoc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">mysql&gt; select * from classes;</span></span><br><span class="line"><span class="section">+----+--------+</span></span><br><span class="line"><span class="section">| id | name   |</span></span><br><span class="line"><span class="section">+----+--------+</span></span><br><span class="line">|  1 | class1 |</span><br><span class="line"><span class="section">|  2 | class2 |</span></span><br><span class="line"><span class="section">+----+--------+</span></span><br><span class="line">2 rows in set (0.00 sec)</span><br><span class="line"><span class="section">mysql&gt; select * from students;</span></span><br><span class="line"><span class="section">+----+-------+</span></span><br><span class="line"><span class="section">| id | name  |</span></span><br><span class="line"><span class="section">+----+-------+</span></span><br><span class="line">|  1 | test  |</span><br><span class="line">|  2 | test2 |</span><br><span class="line"><span class="section">|  3 | test3 |</span></span><br><span class="line"><span class="section">+----+-------+</span></span><br><span class="line">3 rows in set (0.00 sec)</span><br><span class="line"><span class="section">mysql&gt; select * from registrations;</span></span><br><span class="line"><span class="section">+------------+----------+-----------+</span></span><br><span class="line"><span class="section">| student_id | class_id | create_at |</span></span><br><span class="line"><span class="section">+------------+----------+-----------+</span></span><br><span class="line">|          1 |        1 | NULL      |</span><br><span class="line">|          2 |        1 | NULL      |</span><br><span class="line">|          3 |        1 | NULL      |</span><br><span class="line"><span class="section">|          1 |        2 | NULL      |</span></span><br><span class="line"><span class="section">+------------+----------+-----------+</span></span><br><span class="line">4 rows in set (0.00 sec)</span><br></pre></td></tr></table></figure> 之后看看结果: <figure class="highlight fsharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; s1._class.all()</span><br><span class="line"><span class="meta">[&lt;app.models.Registration object at 0x7f0348018ed0&gt;, &lt;app.models.Registration object at 0x7f0348018f50&gt;]</span></span><br><span class="line">&gt;&gt;&gt; c1.students.all()</span><br><span class="line"><span class="meta">[&lt;app.models.Registration object at 0x7f0348018ed0&gt;, &lt;app.models.Registration object at 0x7f03480412d0&gt;, &lt;app.models.Registration object at 0x7f034c32f250&gt;]</span></span><br></pre></td></tr></table></figure> 可以看到返回值是Registration两个对象，　不再直接返回<code>Student</code>和<code>Class</code>对象了。如果想要获取的话，可以使用给Registration加的反向引用: <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="built_in">map</span>(<span class="keyword">lambda</span> x: x._<span class="keyword">class</span>, s1._<span class="keyword">class</span>.<span class="built_in">all</span>())</span><br><span class="line">[&lt;Class: <span class="string">u&#x27;class1&#x27;</span>&gt;, &lt;Class: <span class="string">u&#x27;class2&#x27;</span>&gt;]</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="built_in">map</span>(<span class="keyword">lambda</span> x: x.student, c1.students.<span class="built_in">all</span>())</span><br><span class="line">[&lt;Student: <span class="string">u&#x27;test&#x27;</span>&gt;, &lt;Student: <span class="string">u&#x27;test2&#x27;</span>&gt;, &lt;Student: <span class="string">u&#x27;test3&#x27;</span>&gt;]</span><br></pre></td></tr></table></figure> &gt;那么问题就来了，这里在调用Registration的<code>_class</code>和<code>student</code>时候，　还需不需要再查询一遍数据库呢？　</p>
+<p>下面通过查看执行的sql语句来看看: <figure class="highlight n1ql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&gt;&gt;&gt; print s1._class</span><br><span class="line"><span class="keyword">SELECT</span> registrations.student_id <span class="keyword">AS</span> registrations_student_id, registrations.class_id <span class="keyword">AS</span> registrations_class_id, registrations.create_at <span class="keyword">AS</span> registrations_create_at, classes_1.id <span class="keyword">AS</span> classes_1_id, classes_1.name <span class="keyword">AS</span> classes_1_name, students_1.id <span class="keyword">AS</span> students_1_id, students_1.name <span class="keyword">AS</span> students_1_name</span><br><span class="line"><span class="keyword">FROM</span> registrations <span class="keyword">LEFT</span> <span class="keyword">OUTER</span> <span class="keyword">JOIN</span> classes <span class="keyword">AS</span> classes_1 <span class="keyword">ON</span> classes_1.id = registrations.class_id <span class="keyword">LEFT</span> <span class="keyword">OUTER</span> <span class="keyword">JOIN</span> students <span class="keyword">AS</span> students_1 <span class="keyword">ON</span> students_1.id = registrations.student_id</span><br><span class="line"><span class="keyword">WHERE</span> :param_1 = registrations.student_id</span><br></pre></td></tr></table></figure> 我们可以发现: 跟上一个例子一样，<code>s1._class</code>不仅查询了对应的<code>class</code>信息，而且通过<code>join</code>操作，获取到了相应的<code>Student</code>和<code>Class</code>对象，换句话说，把Registration的<code>student</code>和<code>_class</code>两个回引属性均指向了对应的对象，　也就是说，<code>s1._class</code>这一条查询语句就可以把上述操作都完成。这个就是<code>backref=db.backref('_class', lazy='joined')</code>的作用。　 下面再看看把<code>lazy</code>改为<code>select</code>的情况: <figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">###</span></span><br><span class="line">_class = db.relationship(<span class="string">&#x27;Registration&#x27;</span>, foreign_keys=[Registration.student_id],</span><br><span class="line">                         <span class="attribute">backref</span>=db.backref(&#x27;student&#x27;, <span class="attribute">lazy</span>=<span class="string">&quot;select&quot;</span>), <span class="attribute">lazy</span>=<span class="string">&quot;dynamic&quot;</span>)</span><br><span class="line"><span class="comment">###</span></span><br><span class="line">students = db.relationship(<span class="string">&#x27;Registration&#x27;</span>, foreign_keys=[Registration.class_id],</span><br><span class="line">                           <span class="attribute">backref</span>=db.backref(&#x27;_class&#x27;, <span class="attribute">lazy</span>=<span class="string">&quot;select&quot;</span>), <span class="attribute">lazy</span>=<span class="string">&quot;dynamic&quot;</span>)</span><br></pre></td></tr></table></figure> 这样看看查询语句: <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span>s1=S.query.first()</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="built_in">print</span> s1._<span class="keyword">class</span></span><br><span class="line">SELECT registrations.student_id AS registrations_student_id, registrations.class_id AS registrations_class_id, registrations.create_at AS registrations_create_at</span><br><span class="line">FROM registrations</span><br><span class="line">WHERE :param_1 = registrations.student_id</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="built_in">map</span>(<span class="keyword">lambda</span> x : x._<span class="keyword">class</span> , s1._<span class="keyword">class</span>)</span><br><span class="line">[&lt;Class: <span class="string">u&#x27;class1&#x27;</span>&gt;, &lt;Class: <span class="string">u&#x27;class2&#x27;</span>&gt;]</span><br></pre></td></tr></table></figure> 十分简单的sql语句，仅仅查询返回了　<code>Registration</code>对象，　虽然结果一样，但是每一个<code>Registration</code>对象访问<code>_class</code>属性时，又各自都查询了一遍数据库！　这是很重的！　比如一个class有100个student, 那么获取<code>class.students</code>需要<strong>额外查询100次数据库</strong>！　每一次数据库的查询代价很大，因此这就是<code>joined</code>的作用了。</p>
+<h2 id="总结">总结</h2>
+<p>本文主要是为了更加清楚的认识Flask-Sqlalchmey中<code>relationship</code>的<code>lazy</code>参数的作用和使用说明，分析了<code>joined</code>在多对多关系中的一些优势。因为处于<code>flask</code>新手阶段，有描述错误的地方，烦请指出。</p>
+
+      
+    </div>
+
+
+    
+
+    
+	    <div class="article-footer-copyright">
+<!--<p>本文作者: shomy 发表于 <a href="http://shomy.top" target="_blank">个人博客</a></p> -->
+<p>
+本文标题: flask-sqlalchemy中的lazy的解释<br/>
+</p>
+<p>
+发布时间: 2016-08-11, 16:37:01<br/>
+<p>
+<p>
+最后更新: 2021-12-16, 23:11:45<br/>
+<p>
+本文链接: <a href="/2016/08/11/flask-sqlalchemy-relation-lazy/" target="_blank">http://shomy.top/2016/08/11/flask-sqlalchemy-relation-lazy/</a>
+</p>
+<p>非商业转载请注明作者及出处。商业转载请联系<a href="mailto:shomyliu@gmail.com">作者</a>本人。</p>
+</div>
+
+    
+
+    <footer class="article-footer">
+      
+        <a href="http://shomy.top/2016/08/11/flask-sqlalchemy-relation-lazy/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/flask/" rel="tag">flask</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/lazy/" rel="tag">lazy</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/pyhton/" rel="tag">pyhton</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/sqlalchemy/" rel="tag">sqlalchemy</a></li></ul>
+
+    </footer>
+    
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2016/10/06/feasibility-of-learning-1/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          机器学习基石笔记(1)
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2016/07/09/twilio-flask-slack/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">使用Twilio构建SlackBot</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+
+
+<section id="comments">
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+<script>
+  var disqus_shortname = 'shomy';
+  
+  var disqus_url = 'http://shomy.top/2016/08/11/flask-sqlalchemy-relation-lazy/';
+  
+  (function(){
+    var dsq = document.createElement('script');
+    dsq.type = 'text/javascript';
+    dsq.async = true;
+    dsq.src = 'https://' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  }());
+</script>
+</section>
+
+
+
+
+</section>
+      </div>
+    </div>
+    
+    
+<a id="rocket" href="#top" ></a>
+
+<script src="https://cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <script src="http://cdn.htliu.cn/static/js/leancloud.js"></script>
+<script>AV.initialize("k883AKdzaz5jccQnH1eIrG2r-gzGzoHsz", "4HBQOmslEp3VdwK1SGL8vB9Y");</script>
+
+<script src="/js/Counter.js"></script>
+
+
+
+
+
+<script id="dsq-count-scr" src="//shomy.disqus.com/count.js" async></script>
+ 
+
+
+  <script src="https://cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.js"></script>
+  
+<script src="/js/fancybox.js"></script>
+
+
+
+
+  
+<script src="/js/search.js"></script>
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

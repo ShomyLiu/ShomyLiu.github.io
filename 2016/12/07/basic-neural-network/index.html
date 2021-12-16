@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>机器学习技法笔记(1)-神经网络 | 天空的城</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="前段时间看完了机器学习基石课程，不过还有regularzation和 validation 没有整理，由于需要，先看了技法课程中的神经网络(Neural Network)。林老师讲的依然很好，将神经网络笔记记录于此。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="机器学习技法笔记(1)-神经网络">
+<meta property="og:url" content="http://shomy.top/2016/12/07/basic-neural-network/index.html">
+<meta property="og:site_name" content="天空的城">
+<meta property="og:description" content="前段时间看完了机器学习基石课程，不过还有regularzation和 validation 没有整理，由于需要，先看了技法课程中的神经网络(Neural Network)。林老师讲的依然很好，将神经网络笔记记录于此。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://cdn.htliu.cn/ml201-1.png">
+<meta property="og:image" content="http://cdn.htliu.cn/ml201-2.png">
+<meta property="og:image" content="http://cdn.htliu.cn/ml201-3.png">
+<meta property="og:image" content="http://cdn.htliu.cn/ml201-4.png">
+<meta property="og:image" content="http://cdn.htliu.cn/ml201-5.png">
+<meta property="og:image" content="http://cdn.htliu.cn/ml201-6.png">
+<meta property="og:image" content="http://cdn.htliu.cn/ml201-7.png">
+<meta property="og:image" content="http://cdn.htliu.cn/ml201-7.png">
+<meta property="og:image" content="http://cdn.htliu.cn/ml201-8.png">
+<meta property="og:image" content="http://cdn.htliu.cn/ml201-9.png">
+<meta property="og:image" content="http://cdn.htliu.cn/ml201-10.png">
+<meta property="article:published_time" content="2016-12-07T15:45:42.000Z">
+<meta property="article:modified_time" content="2021-12-16T15:11:45.651Z">
+<meta property="article:author" content="ShomyLiu">
+<meta property="article:tag" content="machine learning">
+<meta property="article:tag" content="neural network">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://cdn.htliu.cn/ml201-1.png">
+  
+  
+    <link rel="icon" href="/image/favicon.ico">
+  
+
+  
+  <link href="https://cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.css" rel="stylesheet">
+  
+  <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  <link href="https://cdn.bootcss.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+<!-- Google Analytics -->
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-74368890-2', 'auto');
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+
+
+  
+
+  
+  <div class="site-search header-inner">
+    <div class="popup">
+        <span class="search-icon fa fa-search"></span>
+        <input type="text" id="local-search-input">
+        <div id="local-search-result"></div>
+        <span class="popup-btn-close">close</span>
+    </div>
+</div>
+
+
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      
+<header id="header">
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">天空的城</a>
+      </h1>
+      
+    </div>
+    <div id="header-menu">
+      <nav id="main-nav">
+        <ul>
+        
+          <li><a href="/"><i class="fa fa-home icon-setting"></i></a></li>
+        
+          <li><a href="/archives"><i class="fa fa-archive icon-setting"></i></a></li>
+        
+          <li><a href="/tags"><i class="fa fa-tag icon-setting"></i></a></li>
+        
+          <li><a href="/about"><i class="fa fa-user icon-setting"></i></a></li>
+        
+        
+          <li><a href="javascript:;" class="popup-trigger"><i class="fa fa-search > icon-setting"></i></a></li>
+        
+        </ul>
+      </nav>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-basic-neural-network" class="article article-type-post" itemscope itemprop="blogPost">
+  
+  <div class="article-meta">
+    <a href="/2016/12/07/basic-neural-network/" class="article-date">
+  <time datetime="2016-12-07T15:45:42.000Z" itemprop="datePublished">2016-12-07</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/">读书笔记</a>
+  </div>
+
+
+    
+        <div class="counter-tag counter">
+    <!-- 别忘记这个类名... post-title-link -->
+    <span id="/2016/12/07/basic-neural-network/" class="leancloud_visitors article-hits post-title-link"
+           data-flag-title="机器学习技法笔记(1)-神经网络">
+        次阅读
+    </span>
+
+  </div>
+
+    
+
+  </div>
+  
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      机器学习技法笔记(1)-神经网络
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+            <div id="toc" class="toc-article">
+                <strong class="toc-title">文章目录</strong>
+                <ol class="post-toc"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E7%9A%84%E6%8F%90%E5%87%BA"><span class="post-toc-text">神经网络的提出</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#hypothesis-%E5%81%87%E8%AE%BE%E7%A9%BA%E9%97%B4"><span class="post-toc-text">Hypothesis 假设空间</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E6%A8%A1%E5%9E%8B%E7%9A%84%E8%AE%AD%E7%BB%83"><span class="post-toc-text">模型的训练</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E7%A5%9E%E7%BB%8F%E7%BD%91%E7%BB%9C%E7%9A%84%E4%BC%98%E5%8C%96"><span class="post-toc-text">神经网络的优化</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#vc%E7%BB%B4"><span class="post-toc-text">VC维</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#%E6%AD%A3%E5%88%99%E5%8C%96"><span class="post-toc-text">正则化</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#early-stopping"><span class="post-toc-text">Early Stopping</span></a></li></ol></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E6%80%BB%E7%BB%93"><span class="post-toc-text">总结</span></a></li></ol>
+            </div>
+        
+        
+        <p>前段时间看完了机器学习基石课程，不过还有regularzation和 validation 没有整理，由于需要，先看了技法课程中的神经网络(Neural Network)。林老师讲的依然很好，将神经网络笔记记录于此。 <span id="more"></span></p>
+<h2 id="神经网络的提出">神经网络的提出</h2>
+<p>首先之前讲过了PLA(Percetron), 对于一个线性可分的数据，我们可以用一条直线来分开; 下面看一个多个percetrons的模型，直接看下面的图: 稍微复杂点的2层的percetron:</p>
+<p><img src="http://cdn.htliu.cn/ml201-1.png" /></p>
+<p>首先给了输入<span class="math inline">\(\textbf{x}\)</span>，是<span class="math inline">\(d\)</span>维的vector, 然后首先经过一堆的sign函数，得到了T个g函数，然后再次通过一层<span class="math inline">\(\alpha\)</span>参数选出最终的结果G，用以下的假设空间函数表示:<span class="math display">\[G(\textbf{x})=sign(\sum\limits_{t=1}^{T} \alpha_t sign(\textbf{w}_t^T\textbf{x}))\]</span>这个2层的percetron其实就可以表示一些简单的逻辑操作了，比如下面的两个g的例子:</p>
+<p><img src="http://cdn.htliu.cn/ml201-2.png" /></p>
+<p>我们如果要表示最右边的区域，即<span class="math inline">\(AND(g_1, g_2)\)</span>，我们可以这样赋值:<span class="math inline">\(\alpha_0 = -1, \alpha_1=1, \alpha_2=1\)</span>，这样方程式变为:<span class="math display">\[G(\textbf{x})=sign(g_1(\textbf{x}) + g_2(\textbf{x}) - 1)\]</span>也就是说只有当<span class="math inline">\(g_1 = g_2 = 1\)</span>时，<span class="math inline">\(G=1\)</span>，其余情况都为0。这样就可以分类了。同样我们可以用<span class="math display">\[G(\textbf{x})=sign(0.5  g_1(\textbf{x}) + 0.5 g_2(\textbf{x}) +1 )\]</span>来表示<span class="math inline">\(OR(g_1, g_2)\)</span>等等。我们可以发现这种两层的percetron十分的powerful，只要我们有足够多的Percetron，就可以划分更细致区域，比如说有足够多的直线，然后执行AND操作，就可以围出来一个近似圆的情况:</p>
+<p><img src="http://cdn.htliu.cn/ml201-3.png" /></p>
+<p>但是这样还是有很多不足的，首先是percetron越多，那么模型的复杂度或者说<span class="math inline">\(d_{vc}\)</span>就会变大。再者上述的两层模型是无法表示出<span class="math inline">\(XOR\)</span>(异或)操作的，也就是说，我们经过两次转化，是无法实现<span class="math inline">\(XOR\)</span>的操作的，但是如果我们再加一层呢？ 是不是就可以解决了，如下：</p>
+<p><img src="http://cdn.htliu.cn/ml201-4.png" /></p>
+<p>转换为方程式，即:<span class="math inline">\(XOR(g_1,g_2)=OR(AND(-g1, g_2), AND(g_1,-g_2))\)</span>，我们会发现，只有<span class="math inline">\(g_1 \neq g_2\)</span>时，该式才为1，因而达到了XOR。</p>
+<p>从最简单的一层Percetron只可以分类线性可分的数据，到二层的可以分出凸多边形的数据，再到三层的可以分XOR这种无法线性可分的数据，我们发现，层数越多，能力就越强。这里也就引出了<strong>神经网络</strong>，即：多层感知机(Multi-Layer Percetrons)，为什么叫做神经网络呢？想想人类的神经元组织，是不是也就是一个一个神经元互相连接，跟我们的感知机很类似，神经元就是上述的一个个的<span class="math inline">\(g\)</span>，神经元的连接就对应这感知机中的权重，最后神经元需要对其它神经元传过来的信号作处理，这个过程就对应上述的sign函数，即转换函数(也叫激活函数)。因此上述一层层的感知机就组成神经网络。</p>
+<h2 id="hypothesis-假设空间">Hypothesis 假设空间</h2>
+<p>前面引出了神经网络，这一节主要深入探究层与层之间的联系方式。首先再看一下我们的神经网络模型:</p>
+<p><img src="http://cdn.htliu.cn/ml201-5.png" /></p>
+<p>先考虑最后的输出层，这个比较容易，因为我们一般解决分类或者回归问题的，所以说一般我们就用一个前面介绍过的linear model 即可，如下</p>
+<p><img src="http://cdn.htliu.cn/ml201-6.png" /></p>
+<p>在文中会以linear regression作为例子讲解，这就意味着使用square error作为cost funtion。如果我们想分类的话，最后一层的激活函数就可以使用logistic regression记性二分类，或者 softmax 进行多分类，这时候就用 cross-entropy作为cost funtion了，别的地方都不会变化。</p>
+<p>现在开始考虑中间层的神经元的(也叫隐含层Hidden Layer)的激活函数，分别考察上述三种函数：</p>
+<ul>
+<li><p>如果层与层之间激活函数都用线性函数表示，其实没有意义了，想想我们这么多层都使用线性连接，其实最终整理出来，输出层还是关于输入层的线性关系，没有意义！</p></li>
+<li><p>使用sign函数的话，输出0或者1，正对应到了神经元的激活与否，然而依然存在老问题，由于是离散值函数，很难去优化。</p></li>
+<li><p>使用第三种的非线性但是平滑的函数作为激活函数(转化函数)是最常见的选择。因为是很接近sign的一个平滑函数，因而很容易优化。常用的有<span class="math inline">\(\sigma(s) = sigmoid(s)= \frac{1}{1+e^{-s}}\)</span>，<span class="math inline">\(tanh(s)=\frac{e^{s} - e^{-s}}{e^s + e^{-s}}=2\sigma(2s)-1\)</span>等，还有其它选择如 Relu等，在某些场景下效果很好。</p></li>
+</ul>
+<p>接下来会以<span class="math inline">\(tanh\)</span>作为我们的激活函数。</p>
+<p>至此，我们已经将所有层之间的激活函数确定好了，因此神经网络的Hypothesis就很明确了，输入层将数据传给后续的隐含层，一直得到最后的输出即可，为了方便描述，我们定义好各个参数，变量的名字，如下图:</p>
+<p><img src="http://cdn.htliu.cn/ml201-7.png" /></p>
+<p>假设我们一共有包含输入层和输出层<span class="math inline">\(L+1\)</span>层的网络，且第<span class="math inline">\(i\)</span>层的神经元(节点)个数为<span class="math inline">\(d^{(i)}\)</span>，这样就构成了<span class="math inline">\(d^{(0)}-d^{(1)}- ... - d^{(L)}\)</span> Neural Network。 下面解释上述参数的意义:<span class="math display">\[w_{ij}^{(l)}: \begin{cases} 1 \leq l \leq L &amp; layers  \\ 0 \leq i \leq d^{(l-1)} &amp; inputs \\ 1 \leq j \leq d^{(l)} &amp;outputs   \end{cases}\]</span> <span class="math inline">\(w_{ij}^{(l)}\)</span>指的是第<span class="math inline">\(l-1\)</span>层的第<span class="math inline">\(i\)</span>个神经元与第<span class="math inline">\(l\)</span>层的第<span class="math inline">\(j\)</span>个神经元之间的权重值。<span class="math display">\[\ s_j^{l} = \sum\limits_{i=0}^{d^{(l-1)}}x_i w_{ij}^{(l)}\]</span> <span class="math inline">\(s_{j}^{(l)}\)</span>指的是第<span class="math inline">\(l\)</span>层的第<span class="math inline">\(j\)</span>个神经元的score(得分)，也可以当作该神经元的输入。<span class="math display">\[x_{j}^{(l)} =\begin{cases} tanh(s_{j}^{(l)}) &amp; \text{ l = L} \\ s_{j}^{(l)} &amp;l=L \end{cases}\]</span> <span class="math inline">\(x_{j}^{(l)}\)</span>是第<span class="math inline">\(l\)</span>层第<span class="math inline">\(j\)</span>个神经元的经过激活函数对其输入<span class="math inline">\(s_{j}^{(l)}\)</span>的输出，特别的是最后的输出层，因为我们以Linear Regression为例子，直接将 <span class="math inline">\(s_1^{L}\)</span>作为最后的输出: <span class="math inline">\(x_{1}^{(L)}\)</span>(最后一层仅仅有一个神经元)。</p>
+<p>这样我们只需要将输入数据赋给<span class="math inline">\(\textbf{x}^{0}\)</span>，然后一层一层计算<span class="math inline">\(\textbf{x}^{l}\)</span>，最后得到我们的预测值: <span class="math inline">\(\textbf{x}_{1}^{(L)}\)</span>。到此Hypothesis已经明确了，下面就是如何使用训练数据学到所有的参数。一般都说NN的训练时间很长，我们先看看有多少参数需要计算:<span class="math display">\[count(W) = \sum\limits_{i=0}^{L-1} (1+d^{(i)})d^{(i+1)}\]</span> 每一层需要加一个常数，上图中的最上面那个(就是偏置项bias)。所以说参数经常上万，因此训练时间很长。这个问题后续还会讲到，下面就是开始如何从数据中学到那一堆的参数，也就是training的过程。</p>
+<h2 id="模型的训练">模型的训练</h2>
+<p>训练的目标很简单，跟之前的模型一样，就是要求出最小化cost function的值<span class="math inline">\(E_{in}\)</span>的各个参数<span class="math inline">\(w_{ij}^{(l)}\)</span>，上面我们也提到了使用平方误差表示cost function，即: <span class="math inline">\(e_{n} = (y_n - NNet(\textbf{x}_n))^2\)</span>，其中NNet是神经网络预测的值，<span class="math inline">\(y_n\)</span>是数据的真实值。有了cost function，那我们就可以尝试使用梯度下降(Gradient Descent)来求最优解，即: <span class="math display">\[ w_{ij}^{(l)} \gets w_{ij}^{(l)}- \eta \ \frac{\partial e_n}{\partial w_{ij}^{(l)}}\]</span>这里我们使用随机梯度下降(SGD)来计算梯度，也就是每次只选择一个数据点。接下来就是求梯度了<span class="math inline">\(\triangledown e_{n}\)</span>，这里会介绍误差反向传播的算法(Back Propagation)</p>
+<p>再看神经网络的图模型:</p>
+<p><img src="http://cdn.htliu.cn/ml201-7.png" /></p>
+<p>我们先尝试看看最后一层的参数: <span class="math inline">\(w_{i1}^{(L)}\)</span>，先看看<span class="math inline">\(e_{n}\)</span>与<span class="math inline">\(w_{i1}^{(L)}\)</span>的关系: <span class="math display">\[e_{n}=(y_n - s_{1}^{(L)})^2 =(y_n - \sum\limits_{i=0}^{d^{(L-1)}}w_{i1}^{L}x_{i}^{(L-1)})^2 \]</span>我们可以看到<span class="math inline">\(e_{n}\)</span>是先影响了<span class="math inline">\(s_{1}^{L}\)</span>，然后<span class="math inline">\(s_{1}^{(L)}\)</span>再影响<span class="math inline">\(w_{i1}^{(L)}\)</span>。所以我们可以用求微分的链式法则，来间接求梯度，如下:</p>
+<p><span class="math display">\[\begin{align*}\frac{\partial e_{n}}{\partial  w_{i1}^{(L)}} &amp;= \frac{\partial e_{n}}{\partial s_{1}^{(L)}} \cdot \frac{\partial s_1^{(L)}}{w_{i1}^{(L)}} \\ &amp;= -2(y_n - s_1^{(L)}) (x_i^{(L-1)}) \end{align*}\]</span>这个式子的变量都是已知的，我们可以很轻松的求出最后一层的参数: <span class="math inline">\(w_{i1}^{(L)}\)</span>。那么隐含层(Hidden Layer)的呢？同理，我们也可以写出类似上述的等式:<span class="math display">\[\begin{align*}\frac{\partial e_{n}}{\partial  w_{ij}^{(l)}} &amp;= \frac{\partial e_{n}}{\partial s_{j}^{(l)}} \cdot \frac{\partial s_j^{(l)}}{w_{ij}^{(l)}} \\ &amp;= \delta_j{(l)}(x_i^{(l-1)}) \end{align*}\]</span>这是对<span class="math inline">\(w_{ij}^{(l)}\)</span>的求微分，其中<span class="math inline">\(1 \leq l &lt; L,\ 0 \leq i \leq d^{(l-1)},\ 0 \leq j \leq d^{(l)}\)</span>，这里我们新引入了一个变量<span class="math inline">\(\delta\)</span>: <span class="math inline">\(\delta_{j}^{(l)} = \frac{\partial e_n}{s_j^{l}}\)</span>，来表示cost function 对第<span class="math inline">\(l\)</span>层的第<span class="math inline">\(j\)</span>个神经元的输入的微分，只需要求出了<span class="math inline">\(\delta\)</span>那么<span class="math inline">\(\frac{\partial e_{n}}{\partial w_{ij}^{(l)}}\)</span> 也就知道了，下面开始求，这也是反向传播的核心所在。</p>
+<p>首先看看<span class="math inline">\(e_n\)</span>是如何一层层的影响着<span class="math inline">\(s_j^{(l)}\)</span>的，如下:</p>
+<p><img src="http://cdn.htliu.cn/ml201-8.png" /></p>
+<p>只考察最近三层的影响如下，我们同样应用链式法则，首先考虑上图绿色的<span class="math inline">\(s_k^{l+1}\)</span>，继而是前一层的<span class="math inline">\(x_j^{(l)}\)</span>，最后通过激活函数作用到<span class="math inline">\(s_j^{(l)}\)</span>：</p>
+<p><img src="http://cdn.htliu.cn/ml201-9.png" /></p>
+<p>这样我们就可以得到了一个递推关系： <span class="math inline">\(\delta_{j}^{(l)}\)</span>是由<span class="math inline">\(\delta_{k}^{(l+1)}\)</span>表示的，也就是要计算<span class="math inline">\(l\)</span>层的参数，需要使用<span class="math inline">\(l+1\)</span>的<span class="math inline">\(\delta\)</span>，这就是为什么叫Back Propagation反向传播的原因，训练过程需要从后往前计算。因为我们已经求出了最后一层的参数: <span class="math inline">\(\delta_1^{(L)} = -2(y_n - s_1^{(L)})\)</span>，这里面的都是已知的，其中<span class="math inline">\(s_1^{(L)}\)</span>就是我们的预测值，是因为最后一层的激活函数是采用了Linear Regression的线性函数，$  = s_1^{(L)}<span class="math inline">\(，那么我们就可以计算出\)</span>L-1<span class="math inline">\(的\)</span>$: <span class="math display">\[\begin{align*}\delta_{i}^{(L-1)} &amp;= \frac{\partial  e_n}{\partial s_j^{(L-1)}} \\ &amp;= \frac{\partial e_n}{s_1^{(L)}} \cdot \frac{s_1^{(L)}}{x_j^{L-1}}  \cdot \frac{\partial x_i^{(L-1)}}{\partial s_j^{(L-1)}} \\ &amp;= \delta_1^{L} \cdot w_{i1}^{L} \cdot tanh^{&#39;}(s_j^{(L-1)})\end{align*} \]</span>这样我们就把所有的倒数第二层<span class="math inline">\(L-1\)</span>的<span class="math inline">\(\delta\)</span>求出来了，然后再依次向后求出所有的<span class="math inline">\(\delta\)</span>，从而可以使用SGD得到所有的<span class="math inline">\(w_{ij}^{(l)}\)</span>，这样一轮训练完成。</p>
+<p>现在就可以给出整个训练算法(BackPropagation)的流程了:</p>
+<p><img src="http://cdn.htliu.cn/ml201-10.png" /></p>
+<p>需要注意的是，算法主要分为两部分，开始需要初始化所有参数<span class="math inline">\(w_{ij}\)</span>，一般情况是随机化，而非0, 然后就是随机梯度下降的过程，选择一个点，利用当前的参数，从前向后依次计算所有的<span class="math inline">\(x_i^{(l)}\)</span>，之后反向计算所有的<span class="math inline">\(\delta_{j}^{(l)}\)</span>， 最后更新<span class="math inline">\(w_{ij}^{(l)}\)</span>，经过多次迭代或者达到设定误差函数的一个阈值之后，模型就训练完毕，返回 <span class="math inline">\(g_{NNET}\)</span>。 这里有一点优化是，除了使用SGD之外，我们一次不再训练一个数据，也不训练所有的数据，而是可以一次性训练一批数据，这样是一种折中的方式，叫做Mini-batch Gradient Densent(MBGD)，这样会加快训练速度，在后续实现中，会使用。</p>
+<h2 id="神经网络的优化">神经网络的优化</h2>
+<h3 id="vc维">VC维</h3>
+<p>首先看看神经网络的复杂度，这里给出神经网络的VC-Dimension: <span class="math inline">\(d_{vc} = O(VD)\)</span>，其中<span class="math inline">\(V\)</span>是神经元的个数，<span class="math inline">\(D\)</span>是权重或者说参数的个数，这个是根据参数的个数得到模型的自由度近似得到的。我们可以发现，如果神经元的数量很多，那么可以解决几乎所有的问题，但是同样神经元越多，那么VC维也就越大，就越容易产生 overfitting，泛化误差可能会很大。</p>
+<h3 id="正则化">正则化</h3>
+<p>我们知道，神经网络的参数很多，为了防止过拟合，就需要加上正则项进行约束，尽可能的减少参数的个数，但是应该加入什么正则项呢？首先考虑常用的二范式:<span class="math display">\[\Omega(\textbf{w})=\sum(w_{ij}^{(l)})^2\]</span>然而这里并不是最好的。因为它并不能减少参数的个数，因为这个正则项属于一个等比缩放，大的权重就缩小比较厉害，小的权重缩小的比较轻，比如一个参数是10，缩放之后是8，那么假设有个参数是5，那么放缩之后就得到了4。这样大的变小了，小的同样也变小了，但是都不会变成0。这样我们的复杂度其实并没有降低。当然那<span class="math inline">\(\sum\|w_{ij}^{(l)} \|\)</span>虽然可以减少复杂度，然而并不能微分，这样就不能优化了。我们需要的是，他们变化的幅度应该差不多，就是说，大的参数缩小缩小一个中等范围，小的参数也缩小中等效果，这样小的参数就会慢慢变成0。在 实际中，经常使用如下的 regualizer: <span class="math display">\[\sum\frac{(w_{ij}^{(l)})^2}{1+(w_{ij}^{(l)})^2}\]</span></p>
+<h3 id="early-stopping">Early Stopping</h3>
+<p>除了正则化，还有一个常用的方式就是EarlyStopping，就是再达到<span class="math inline">\(E_{in}\)</span>最小之前就停止迭代，争取找到最优的参数，至于具体迭代多少次，这个就是需要用Validation里面的方法了，使用交叉验证等方式来找到<span class="math inline">\(E_{test}\)</span>最小的迭代次数。</p>
+<h2 id="总结">总结</h2>
+<p>这一章主要介绍了最基本的神经网络(Neural Network)，层数越多，能做的事情就越多，数据通过一层层的神经元以及激活函数，萃取有用的特征。后续又介绍了BackPropagation算法去训练。由于神经网络的参数众多，因此要使用一些trick来加快训练和避免过拟合，主要是正则化以及提前停止。看完之后，对神经网络有了基本的认识，后续还需要自己实践一遍才能加深理解！</p>
+
+      
+    </div>
+
+
+    
+
+    
+	    <div class="article-footer-copyright">
+<!--<p>本文作者: shomy 发表于 <a href="http://shomy.top" target="_blank">个人博客</a></p> -->
+<p>
+本文标题: 机器学习技法笔记(1)-神经网络<br/>
+</p>
+<p>
+发布时间: 2016-12-07, 23:45:42<br/>
+<p>
+<p>
+最后更新: 2021-12-16, 23:11:45<br/>
+<p>
+本文链接: <a href="/2016/12/07/basic-neural-network/" target="_blank">http://shomy.top/2016/12/07/basic-neural-network/</a>
+</p>
+<p>非商业转载请注明作者及出处。商业转载请联系<a href="mailto:shomyliu@gmail.com">作者</a>本人。</p>
+</div>
+
+    
+
+    <footer class="article-footer">
+      
+        <a href="http://shomy.top/2016/12/07/basic-neural-network/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/machine-learning/" rel="tag">machine learning</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/neural-network/" rel="tag">neural network</a></li></ul>
+
+    </footer>
+    
+	    <script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+    
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2016/12/29/gpu-tensorflow-install/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          Ubuntu安装GPU版TensorFlow
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2016/12/02/nonlinera-transformation/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">机器学习基石笔记(7)-非线性转换</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+
+
+<section id="comments">
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+<script>
+  var disqus_shortname = 'shomy';
+  
+  var disqus_url = 'http://shomy.top/2016/12/07/basic-neural-network/';
+  
+  (function(){
+    var dsq = document.createElement('script');
+    dsq.type = 'text/javascript';
+    dsq.async = true;
+    dsq.src = 'https://' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  }());
+</script>
+</section>
+
+
+
+
+</section>
+      </div>
+    </div>
+    
+    
+<a id="rocket" href="#top" ></a>
+
+<script src="https://cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <script src="http://cdn.htliu.cn/static/js/leancloud.js"></script>
+<script>AV.initialize("k883AKdzaz5jccQnH1eIrG2r-gzGzoHsz", "4HBQOmslEp3VdwK1SGL8vB9Y");</script>
+
+<script src="/js/Counter.js"></script>
+
+
+
+
+
+<script id="dsq-count-scr" src="//shomy.disqus.com/count.js" async></script>
+ 
+
+
+  <script src="https://cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.js"></script>
+  
+<script src="/js/fancybox.js"></script>
+
+
+
+
+  
+<script src="/js/search.js"></script>
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

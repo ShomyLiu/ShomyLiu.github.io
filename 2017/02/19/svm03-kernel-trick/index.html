@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>机器学习技法笔记(4)-Kernel SVM | 天空的城</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="接着上一节的Dual SVM，我们解决了非线性转换维度变高导致求解困难的问题，但是仍然有问题，那就是在求Q矩阵的时候，由于涉及到了高维的内积,计算量仍然很大，这一节引入核机制(Kernel Trick)来高效的求解这一过程，完全不再依赖高维空间。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="机器学习技法笔记(4)-Kernel SVM">
+<meta property="og:url" content="http://shomy.top/2017/02/19/svm03-kernel-trick/index.html">
+<meta property="og:site_name" content="天空的城">
+<meta property="og:description" content="接着上一节的Dual SVM，我们解决了非线性转换维度变高导致求解困难的问题，但是仍然有问题，那就是在求Q矩阵的时候，由于涉及到了高维的内积,计算量仍然很大，这一节引入核机制(Kernel Trick)来高效的求解这一过程，完全不再依赖高维空间。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://cdn.htliu.cn/svm03-1.png">
+<meta property="og:image" content="http://cdn.htliu.cn/svm03-2.png">
+<meta property="og:image" content="http://cdn.htliu.cn/svm03-3.png">
+<meta property="og:image" content="http://cdn.htliu.cn/svm03-4.png">
+<meta property="og:image" content="http://cdn.htliu.cn/svm03-5.png">
+<meta property="og:image" content="http://cdn.htliu.cn/svm03-6.png">
+<meta property="og:image" content="http://cdn.htliu.cn/svm03-7.png">
+<meta property="og:image" content="http://cdn.htliu.cn/svm03-8.png">
+<meta property="og:image" content="http://cdn.htliu.cn/svm03-9.png">
+<meta property="og:image" content="http://cdn.htliu.cn/svm04-1.png">
+<meta property="article:published_time" content="2017-02-19T05:28:36.000Z">
+<meta property="article:modified_time" content="2021-12-16T15:11:45.672Z">
+<meta property="article:author" content="ShomyLiu">
+<meta property="article:tag" content="machine learning">
+<meta property="article:tag" content="kernel">
+<meta property="article:tag" content="svm">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://cdn.htliu.cn/svm03-1.png">
+  
+  
+    <link rel="icon" href="/image/favicon.ico">
+  
+
+  
+  <link href="https://cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.css" rel="stylesheet">
+  
+  <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  <link href="https://cdn.bootcss.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+<!-- Google Analytics -->
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-74368890-2', 'auto');
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+
+
+  
+
+  
+  <div class="site-search header-inner">
+    <div class="popup">
+        <span class="search-icon fa fa-search"></span>
+        <input type="text" id="local-search-input">
+        <div id="local-search-result"></div>
+        <span class="popup-btn-close">close</span>
+    </div>
+</div>
+
+
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      
+<header id="header">
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">天空的城</a>
+      </h1>
+      
+    </div>
+    <div id="header-menu">
+      <nav id="main-nav">
+        <ul>
+        
+          <li><a href="/"><i class="fa fa-home icon-setting"></i></a></li>
+        
+          <li><a href="/archives"><i class="fa fa-archive icon-setting"></i></a></li>
+        
+          <li><a href="/tags"><i class="fa fa-tag icon-setting"></i></a></li>
+        
+          <li><a href="/about"><i class="fa fa-user icon-setting"></i></a></li>
+        
+        
+          <li><a href="javascript:;" class="popup-trigger"><i class="fa fa-search > icon-setting"></i></a></li>
+        
+        </ul>
+      </nav>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-svm03-kernel-trick" class="article article-type-post" itemscope itemprop="blogPost">
+  
+  <div class="article-meta">
+    <a href="/2017/02/19/svm03-kernel-trick/" class="article-date">
+  <time datetime="2017-02-19T05:28:36.000Z" itemprop="datePublished">2017-02-19</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/">读书笔记</a>
+  </div>
+
+
+    
+        <div class="counter-tag counter">
+    <!-- 别忘记这个类名... post-title-link -->
+    <span id="/2017/02/19/svm03-kernel-trick/" class="leancloud_visitors article-hits post-title-link"
+           data-flag-title="机器学习技法笔记(4)-Kernel SVM">
+        次阅读
+    </span>
+
+  </div>
+
+    
+
+  </div>
+  
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      机器学习技法笔记(4)-Kernel SVM
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+            <div id="toc" class="toc-article">
+                <strong class="toc-title">文章目录</strong>
+                <ol class="post-toc"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E6%A0%B8%E7%9A%84%E5%BC%95%E5%85%A5"><span class="post-toc-text">核的引入</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E5%A4%9A%E9%A1%B9%E5%BC%8F%E6%A0%B8"><span class="post-toc-text">多项式核</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E9%AB%98%E6%96%AF%E6%A0%B8"><span class="post-toc-text">高斯核</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E6%A0%B8%E6%AF%94%E8%BE%83"><span class="post-toc-text">核比较</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E5%90%8E%E7%BB%AD"><span class="post-toc-text">后续</span></a></li></ol>
+            </div>
+        
+        
+        <p>接着上一节的Dual SVM，我们解决了非线性转换维度变高导致求解困难的问题，但是仍然有问题，那就是在求Q矩阵的时候，由于涉及到了高维的内积,计算量仍然很大，这一节引入核机制(Kernel Trick)来高效的求解这一过程，完全不再依赖高维空间。</p>
+<span id="more"></span>
+<h2 id="核的引入">核的引入</h2>
+<p>由上一节可以知道，计算量集中在Q矩阵中元素的计算:</p>
+<p><span class="math display">\[\begin{align}q_{n,m} &amp;= y_ny_m\mathbf{z}_n^T\mathbf{z}_m \\ &amp;=y_ny_m\phi(\mathbf{x}_n)^T\phi(\mathbf{x}_m)\end{align}\]</span></p>
+<p>这里分为两步，首先是空间转换，然后在高维空间中进行内积运算，这个计算量会很大的，尤其是后面还会有无穷维的转换，那么这一步根本无法完成。 如果我们将这两步合成一步的话， 就会降低计算量。下面以二阶多项式转换为例介绍: 假设原始数据有d维: <span class="math inline">\(\mathbf{x}=(x_1...x_d)\)</span>,</p>
+<p><span class="math display">\[\phi_2(\mathbf{x}) =(1, x_1,x_2...,x_d, x_1^2,x_1x_2,...,x_1x_d,...,x_2x_1,x_2^2,...,x_d^2)\]</span></p>
+<p>那么对两个数据<span class="math inline">\(\mathbf{x}, \mathbf{x}^{&#39;}\)</span>计算内积如下:</p>
+<p><span class="math display">\[\begin{align}\phi_2(\mathbf{x})\phi_2(\mathbf{x}^{&#39;}) &amp;= 1 + \sum\limits_{i=1}^{d}x_ix_{i}^{&#39;} + \sum\limits_{i=1}^{d}\sum\limits_{j=1}^{d}x_ix_jx_i^{&#39;}x_j^{&#39;} \\ &amp;= 1 + \sum\limits_{i=1}^{d}x_ix_{i}^{&#39;} + \sum\limits_{i=1}^{d}x_ix_i^{&#39;}\sum\limits_{j=1}^{d}x_jx_j^{&#39;} \\ &amp;=1 + \mathbf{x}\mathbf{x}^{&#39;} + (\mathbf{x}\mathbf{x}^{&#39;})^2 \end{align}\]</span></p>
+<p>可以发现，我们将转换与计算内积的过程转为了一步完成，就是上式，而且计算仅仅在原始维度上进行，复杂度从<span class="math inline">\(O(\tilde{d})\)</span>降到了<span class="math inline">\(O(d)\)</span>，完全去除了对<span class="math inline">\(\tilde{d}\)</span>的依赖。</p>
+<p>我们称<span class="math inline">\(K_{\phi}(\mathbf{x},\mathbf{x}^{&#39;}) = \phi_2(\mathbf{x})\phi_2(\mathbf{x}^{&#39;})\)</span>为核函数(Kernel Function)。比如<span class="math inline">\(K_{\phi_2} = 1 + \mathbf{x}\mathbf{x}^{&#39;} + (\mathbf{x}\mathbf{x}^{&#39;})^2\)</span> 。<strong>核函数主要作用就会使得内积计算都在原始维度上，与高维空间无关，属于一种内积的运算简化技巧(Kernel Trick)。</strong></p>
+<p>有了核函数，我们便可以将Q矩阵改写如下:</p>
+<p><span class="math display">\[q_{n,m} = y_ny_mK(x_n,x_m)\]</span></p>
+<p>其余变量不变，求解新的二次规划问题，得到拉格朗日乘子<span class="math inline">\(\alpha\)</span>，由于我们跳过了转换过程，所以无法计算单独的<span class="math inline">\(\mathbf{z}\)</span>，因此利用<span class="math inline">\(\alpha\)</span>求<span class="math inline">\(\mathbf{w},b\)</span>的方法也得做一定修改。</p>
+<p>先看<span class="math inline">\(b\)</span>,利用某个SV即<span class="math inline">\(\alpha_s &gt;0\)</span>来求:</p>
+<p><span class="math display">\[\begin{align}b &amp;= y_s - \mathbf{w}^T\mathbf{z}_s \\&amp;=y_s - \sum\limits_{n=1}^{N}\alpha_ny_n\mathbf{z}_n\mathbf{z}_s \\&amp;=y_s - \sum\limits_{n=1}^{N}\alpha_ny_nK(\mathbf{x}_n, \mathbf{x}_s) \end{align}\]</span></p>
+<p>这样就得到了<span class="math inline">\(b\)</span>的表达式。</p>
+<p>再看<span class="math inline">\(\mathbf{w} = \sum\alpha_ny_n\mathbf{z}_n\)</span>,貌似无法求解，因为这里面的<span class="math inline">\(\mathbf{z}_n\)</span>没有办法求解。但是从另一个角度想，我们计算<span class="math inline">\(\mathbf{w}\)</span>的目的就是为了计算<span class="math inline">\(\mathbf{w}^T\mathbf{z}\)</span>，那么我们整体计算看看得到什么:</p>
+<p><span class="math display">\[\mathbf{w}^T\mathbf{z} = \sum\limits_{n=1}^{N}\alpha_ny_n\mathbf{z}_n\mathbf{z} = \sum\limits_{n=1}^{N}\alpha_ny_nK(\mathbf{x}_n\mathbf{x} \]</span></p>
+<p>这样也间接完成了我们的目的。这样利用Kernel Function，我们就避开了在高维空间的计算，甚至不需要知道用的什么映射，就直接在原始低维数据进行等价计算。</p>
+<p>总结一下核机制SVM的一般流程：</p>
+<p><img src="http://cdn.htliu.cn/svm03-1.png" /></p>
+<p>再来看看每一步的复杂度，如下，第一步的<span class="math inline">\(O(N^2)\)</span>是因为Q矩阵的规模是<span class="math inline">\(N*N\)</span>的。</p>
+<p><img src="http://cdn.htliu.cn/svm03-2.png" /></p>
+<p>上面举的例子是二阶的核函数，下面介绍几个常用的核函数。</p>
+<h2 id="多项式核">多项式核</h2>
+<p>我们将<span class="math inline">\(K_{\phi_2} = 1 + \mathbf{x}\mathbf{x}^{&#39;} + (\mathbf{x}\mathbf{x}^{&#39;})^2\)</span> 加一些系数，得到更加简单更加常用的<span class="math inline">\(K_2(\mathbf{x},\mathbf{x}^{&#39;})=(1+\gamma\mathbf{x}\mathbf{x}^{&#39;})^2\)</span>，如下:</p>
+<p><img src="http://cdn.htliu.cn/svm03-3.png" /></p>
+<p>需要注意的是，<span class="math inline">\(K_2,K_{\phi_2}\)</span>这两种核函数的能力本质上是相同的，也就是说解决同一类问题结果类似，只不过最后求出的边界不同。</p>
+<p>此外，多项式核可以推向更一般的情况，如下:</p>
+<p><img src="http://cdn.htliu.cn/svm03-4.png" /></p>
+<p>其中<span class="math inline">\(\zeta,\gamma\)</span>是超参数，<span class="math inline">\(Q\)</span>是阶数。</p>
+<p>这里面有一个特殊的: 线性核(Linear Kernel)，计算简单高效:</p>
+<p><span class="math display">\[K_1(\mathbf{x},\mathbf{x}^{&#39;}) = (0 + 1 *\mathbf{x}\mathbf{x}^{&#39;})^1 = \mathbf{x}\mathbf{x}^{&#39;}, \quad \zeta=0, \gamma=1, Q=1\]</span></p>
+<p>在实际应用中，还是需要遵循<strong>Linear First</strong>的原则，首先尝试<strong>Linear Kernel</strong>，高阶的核函数虽然能力强，但是相对容易造成OverfFitting。</p>
+<h2 id="高斯核">高斯核</h2>
+<p>除了多项式核函数，另外常用的核函数还有高斯核函数，也叫做径向基函数(Radial Basis Function, RBF):</p>
+<p><span class="math display">\[K(\mathbf{x},\mathbf{x}^{&#39;}) = exp(-\gamma\Arrowvert \mathbf{x}-\mathbf{x}^{&#39;}\Arrowvert^2), \quad \gamma &gt;0\]</span></p>
+<p>RBF核实现的是无限维的转换，证明思路就是将高斯核函数可以表示为无穷项的和，并且需要是两个向量内积的形式。下面以一维为例，即<span class="math inline">\(\mathbf{x}=(x_1)\)</span>，基于泰勒展开来证明：</p>
+<p><img src="http://cdn.htliu.cn/svm03-5.png" /></p>
+<p>高斯核<span class="math inline">\(K(\mathbf{x},\mathbf{x}^{&#39;}) = exp(-\gamma\Arrowvert \mathbf{x}-\mathbf{x}^{&#39;}\Arrowvert^2), \quad \gamma &gt;0\)</span> 只有一个参数<span class="math inline">\(\gamma\)</span>，在实际应用中，<span class="math inline">\(\gamma\)</span>一般不应该太大，否则很容易过拟合，还有一点高斯核完成的是到无穷维的转换，因此它的描述能力很强，可以作出很复杂的边界，但是由于是无穷维的转换，这个转换过程类似黑盒子，也就是说<span class="math inline">\(\mathbf{w}\)</span>也是无穷维的，我们无法计算出它，因此也就缺乏了物理意义。</p>
+<h2 id="核比较">核比较</h2>
+<p>下面对线性核，多项式核，高斯核(RBF)做个对比。</p>
+<p><strong>线性核(Linear Kernel)</strong> <span class="math inline">\(K(\mathbf{x}, \mathbf{x}^{&#39;}) = \mathbf{x}\mathbf{x}^{&#39;}\)</span>:</p>
+<p><img src="http://cdn.htliu.cn/svm03-6.png" /></p>
+<ul>
+<li>优点: 泛化性能好，计算快速，应该优先考虑，解释性强，因为各个特征的重要性就直接体现在权重内。</li>
+<li>缺点: 模型太简单，限制较大，比如线性不可分的数据</li>
+</ul>
+<p>主要用于线性可分的情形，速度快，优先考虑。</p>
+<p><strong>多项式核(Ploy Kernel)</strong></p>
+<p><img src="http://cdn.htliu.cn/svm03-7.png" /></p>
+<ul>
+<li>优点: 比线性核更加Powerful， 可以解决线性不可分的数据。</li>
+<li>缺点: 超参数多(<span class="math inline">\(\zeta, \gamma, Q\)</span>)，不易选择; 另外 Q如果比较大的时候，矩阵的数值范围过大或者过小，不易计算，此外需要注意过拟合</li>
+</ul>
+<p>一般使用的比较小的Q。 不过使用较少，因为速度不如Linear，能力不如RBF</p>
+<p><strong>高斯核(RBF Kernel)</strong></p>
+<p><img src="http://cdn.htliu.cn/svm03-8.png" /></p>
+<ul>
+<li>优点: 分类更加Powful，可以得到很复杂的边界，; 只有一参数<span class="math inline">\(\gamma\)</span>，模型选择更加简单。</li>
+<li>缺点: 解释性差，因为无法计算无限维的<span class="math inline">\(w\)</span>,无法知道各个特征的权重; 过拟合更加严重，需要严格控制<span class="math inline">\(\gamma\)</span>。</li>
+</ul>
+<p>与Linear Kernel 一样，很常用，用于线性不可分的情形，参数多，因为计算量多，相对耗时较多。</p>
+<p><strong>总结</strong></p>
+<p>一般情况，使用线性核或者高斯核，RBF更加通用，参数好的话，基本会比Linear好，但是耗时多。</p>
+<p>吴恩达NG教程中提到的以下经验:</p>
+<ul>
+<li>如果Features数量大，与样本数量持平或者大于，这时候一般用Linear Kernal</li>
+<li>如果Features较少，采用RBF Kernel</li>
+<li>如果样本量过大的话，使用带Kernel的SVM优势就不大了。</li>
+</ul>
+<p>最好的方式是根据具体数据来尝试哪种效果最好。</p>
+<p>那么除了上述的Linear Kernel，Poly Kernel，RBF Kernel 之外，还有其它的核函数吗？</p>
+<p>我们已经知道核函数是为了简化内积运算的trick，只知道<span class="math inline">\(K(\mathbf{x}, \mathbf{x}^{&#39;}) = \phi(\mathbf{x})\phi(\mathbf{x}^{&#39;})\)</span>，此外我们知道向量内积就是描述向量的相似度，(比如向量垂直,内积为0; 相反，内积为负数)，那么我们能否从某个相似性出发，随意指定某个函数来作为相似度的描述？Not Really。<strong>Mercer Condition</strong>是用来判断一个函数能否作为核函数的条件。我们将数据写成核矩阵<span class="math inline">\(K\)</span>的形式:<span class="math inline">\(K_{i,j} = K(\mathbf{x}_i, \mathbf{x}_j)\)</span>，整个矩阵如下:</p>
+<p><img src="http://cdn.htliu.cn/svm03-9.png" /></p>
+<p>很显然，K应该满足<strong>对称性，半正定</strong>的性质，事实上，<strong>对称，半正定</strong>也是K可以作为核矩阵的充要条件(证明略过)，虽然可以指定某个函数作为核函数，但是在实际中，Linear Kernel和RBF Kernel已经足够用了。</p>
+<h2 id="后续">后续</h2>
+<p>这一节主要介绍了 Kernel Trick SVM，首先引入核的概念，用来简化内积运算，再到几种常见核函数的优缺点的比较，最后稍微提了Mercer's Condition指出了作为核函数的充要条件。 到这里似乎SVM的分类问题貌似解决了，但是正如前面提到的，一直存在一个OverFitting的问题，比如说如果存在某些错误噪音数据，那么就算转到高维空间仍然存在线性不可分的情况，此时，就会产生很复杂的分类边界，造成OverFitting，但是我们更希望，忽略个别的错误数据，如下图:</p>
+<p><img src="http://cdn.htliu.cn/svm04-1.png" /></p>
+<p>这个问题就是下一节要解决的问题: Soft-Margin。</p>
+
+      
+    </div>
+
+
+    
+
+    
+	    <div class="article-footer-copyright">
+<!--<p>本文作者: shomy 发表于 <a href="http://shomy.top" target="_blank">个人博客</a></p> -->
+<p>
+本文标题: 机器学习技法笔记(4)-Kernel SVM<br/>
+</p>
+<p>
+发布时间: 2017-02-19, 13:28:36<br/>
+<p>
+<p>
+最后更新: 2021-12-16, 23:11:45<br/>
+<p>
+本文链接: <a href="/2017/02/19/svm03-kernel-trick/" target="_blank">http://shomy.top/2017/02/19/svm03-kernel-trick/</a>
+</p>
+<p>非商业转载请注明作者及出处。商业转载请联系<a href="mailto:shomyliu@gmail.com">作者</a>本人。</p>
+</div>
+
+    
+
+    <footer class="article-footer">
+      
+        <a href="http://shomy.top/2017/02/19/svm03-kernel-trick/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/kernel/" rel="tag">kernel</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/machine-learning/" rel="tag">machine learning</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/svm/" rel="tag">svm</a></li></ul>
+
+    </footer>
+    
+	    <script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+    
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2017/02/20/svm04-soft-margin/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          机器学习技法笔记(5)-Soft Margin SVM
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2017/02/17/svm-02-dual/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">机器学习技法笔记(3)-对偶SVM</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+
+
+<section id="comments">
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+<script>
+  var disqus_shortname = 'shomy';
+  
+  var disqus_url = 'http://shomy.top/2017/02/19/svm03-kernel-trick/';
+  
+  (function(){
+    var dsq = document.createElement('script');
+    dsq.type = 'text/javascript';
+    dsq.async = true;
+    dsq.src = 'https://' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  }());
+</script>
+</section>
+
+
+
+
+</section>
+      </div>
+    </div>
+    
+    
+<a id="rocket" href="#top" ></a>
+
+<script src="https://cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <script src="http://cdn.htliu.cn/static/js/leancloud.js"></script>
+<script>AV.initialize("k883AKdzaz5jccQnH1eIrG2r-gzGzoHsz", "4HBQOmslEp3VdwK1SGL8vB9Y");</script>
+
+<script src="/js/Counter.js"></script>
+
+
+
+
+
+<script id="dsq-count-scr" src="//shomy.disqus.com/count.js" async></script>
+ 
+
+
+  <script src="https://cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.js"></script>
+  
+<script src="/js/fancybox.js"></script>
+
+
+
+
+  
+<script src="/js/search.js"></script>
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

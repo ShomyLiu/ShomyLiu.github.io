@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>pytorch关系抽取实验 | 天空的城</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="接前面笔记:关系抽取总结中最后说的，在关系抽取基于Distant Supervision的NYT+Freebase的数据集有两个版本，目前大部分文章都是在这两份数据集上做的。通过纵向实验发现，同一个模型在不同版本数据集上的表现有不少差异，这篇笔记是基于自己使用Pytorch复现的PCNN(Zeng 2015)与PCNN+ATT(Lin 2016)的实验结果来简单对比。  代码地址: pytorc">
+<meta property="og:type" content="article">
+<meta property="og:title" content="pytorch关系抽取实验">
+<meta property="og:url" content="http://shomy.top/2018/07/05/pytorch-relation-extraction/index.html">
+<meta property="og:site_name" content="天空的城">
+<meta property="og:description" content="接前面笔记:关系抽取总结中最后说的，在关系抽取基于Distant Supervision的NYT+Freebase的数据集有两个版本，目前大部分文章都是在这两份数据集上做的。通过纵向实验发现，同一个模型在不同版本数据集上的表现有不少差异，这篇笔记是基于自己使用Pytorch复现的PCNN(Zeng 2015)与PCNN+ATT(Lin 2016)的实验结果来简单对比。  代码地址: pytorc">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://cdn.htliu.cn/blog/pytorch-relation-extraction/large.png">
+<meta property="og:image" content="http://cdn.htliu.cn/blog/pytorch-relation-extraction/small.png">
+<meta property="article:published_time" content="2018-07-04T16:02:54.000Z">
+<meta property="article:modified_time" content="2021-12-16T15:11:45.669Z">
+<meta property="article:author" content="ShomyLiu">
+<meta property="article:tag" content="pytorch">
+<meta property="article:tag" content="relation extraction">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://cdn.htliu.cn/blog/pytorch-relation-extraction/large.png">
+  
+  
+    <link rel="icon" href="/image/favicon.ico">
+  
+
+  
+  <link href="https://cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.css" rel="stylesheet">
+  
+  <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  <link href="https://cdn.bootcss.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+<!-- Google Analytics -->
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-74368890-2', 'auto');
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+
+
+  
+
+  
+  <div class="site-search header-inner">
+    <div class="popup">
+        <span class="search-icon fa fa-search"></span>
+        <input type="text" id="local-search-input">
+        <div id="local-search-result"></div>
+        <span class="popup-btn-close">close</span>
+    </div>
+</div>
+
+
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      
+<header id="header">
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">天空的城</a>
+      </h1>
+      
+    </div>
+    <div id="header-menu">
+      <nav id="main-nav">
+        <ul>
+        
+          <li><a href="/"><i class="fa fa-home icon-setting"></i></a></li>
+        
+          <li><a href="/archives"><i class="fa fa-archive icon-setting"></i></a></li>
+        
+          <li><a href="/tags"><i class="fa fa-tag icon-setting"></i></a></li>
+        
+          <li><a href="/about"><i class="fa fa-user icon-setting"></i></a></li>
+        
+        
+          <li><a href="javascript:;" class="popup-trigger"><i class="fa fa-search > icon-setting"></i></a></li>
+        
+        </ul>
+      </nav>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-pytorch-relation-extraction" class="article article-type-post" itemscope itemprop="blogPost">
+  
+  <div class="article-meta">
+    <a href="/2018/07/05/pytorch-relation-extraction/" class="article-date">
+  <time datetime="2018-07-04T16:02:54.000Z" itemprop="datePublished">2018-07-05</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/">读书笔记</a>
+  </div>
+
+
+    
+        <div class="counter-tag counter">
+    <!-- 别忘记这个类名... post-title-link -->
+    <span id="/2018/07/05/pytorch-relation-extraction/" class="leancloud_visitors article-hits post-title-link"
+           data-flag-title="pytorch关系抽取实验">
+        次阅读
+    </span>
+
+  </div>
+
+    
+
+  </div>
+  
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      pytorch关系抽取实验
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+            <div id="toc" class="toc-article">
+                <strong class="toc-title">文章目录</strong>
+                <ol class="post-toc"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E6%95%B0%E6%8D%AE%E9%9B%86"><span class="post-toc-text">数据集</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E5%AE%9E%E9%AA%8C%E7%BB%93%E6%9E%9C"><span class="post-toc-text">实验结果</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#large%E6%95%B0%E6%8D%AE%E9%9B%86"><span class="post-toc-text">LARGE数据集</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#small%E6%95%B0%E6%8D%AE%E9%9B%86"><span class="post-toc-text">SMALL数据集</span></a></li></ol></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E6%80%BB%E7%BB%93"><span class="post-toc-text">总结</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E5%8F%82%E8%80%83"><span class="post-toc-text">参考</span></a></li></ol>
+            </div>
+        
+        
+        <blockquote>
+<p>接前面笔记:<a href="http://shomy.top/2018/02/28/relation-extraction/">关系抽取总结</a>中最后说的，在关系抽取基于Distant Supervision的NYT+Freebase的数据集有两个版本，目前大部分文章都是在这两份数据集上做的。通过纵向实验发现，同一个模型在不同版本数据集上的表现有不少差异，这篇笔记是基于自己使用Pytorch复现的PCNN(Zeng 2015)与PCNN+ATT(Lin 2016)的实验结果来简单对比。</p>
+</blockquote>
+<p>代码地址: <a target="_blank" rel="noopener" href="https://github.com/ShomyLiu/pytorch-relation-extraction">pytorch-relation-extraction</a>，关于实现的细节，调参，踩过的一些坑等，会记录在readme中，这里不再赘述。</p>
+<span id="more"></span>
+<p>个人属于入门级别, 复现代码可能有问题, 结果供参考.</p>
+<h2 id="数据集">数据集</h2>
+<p>首先描述一下这两份数据集：</p>
+<ul>
+<li><p>27类关系，Zeng2015 发布的数据集，做了一些过滤，如删除了两个实体之间距离大于40个词的句子，以及去掉了实例少的关系，相对较小，以SMALL表示：详细数据如下所示: 训练数据集:</p>
+<ul>
+<li>实体对: 65726; 句子数: 112941; 关系数: 27</li>
+</ul>
+测试数据集:
+<ul>
+<li>实体对: 93574; 句子数: 152416</li>
+</ul></li>
+<li><p>53类关系，Lin2016 发布的数据集，没有做过滤，相对较大，训练数据大概是小数据的4倍，以LARGE表示，详细如下: 训练数据集:</p>
+<ul>
+<li>实体对: 281270; 句子数: 522611; 关系数: 53</li>
+</ul>
+测试数据集:
+<ul>
+<li>实体对: 96678; 句子数: 172448;</li>
+</ul></li>
+</ul>
+<p>下面分数据集分别看这两种模型的效果，目的有两个: (1) 验证自己复现的模型是否达到了论文模型的效果。(2) 比较模型在不同数据集上的效果。</p>
+<p>此外如果读过两篇论文的代码的话，可以看出关于最后的Evaluation的步骤是有所差异的：</p>
+<ul>
+<li>在Zeng 2015 中，直接遍历所有的测试数据集的实体对，然后预测其关系，接着按照预测的概率从大到小排序，忽略那些标签为NA并且预测为NA的样例，因为这部分没有意义且数据量巨大，这样保存好precision和recall，来绘制PR曲线。</li>
+<li>在Lin2016中，则是取了预测概率Top N (N=2000+) 的样例，然后同样忽略了NA的情况，然后用这部分数据来绘制PR曲线。</li>
+</ul>
+<p>总体来说：这两种方法很类似，因为在绘制PR曲线的时候，最后有一个截断，本质相同。</p>
+<h2 id="实验结果">实验结果</h2>
+<h3 id="large数据集">LARGE数据集</h3>
+<p>直接上跑的结果， PR曲线: <img src="http://cdn.htliu.cn/blog/pytorch-relation-extraction/large.png" /></p>
+<p>其中:</p>
+<ul>
+<li>PCNN+ATT: Lin2016 论文中给出的结果，直接拿来用</li>
+<li>PCNN+ONE+MY: 自己复现的Zeng 2015的模型</li>
+<li>PCNN+ATT+MY: 自己复现的Lin 2016的模型</li>
+</ul>
+<p>当时看到结果的时候，很惊讶：</p>
+<ul>
+<li>PCNN+ATT+MY 的PR曲线略高于Lin2016的PCNN+ATT，这个结果说明复现的模型基本吻合原模型，可能因为一些框架不同，优化上的因素导致效果更好。</li>
+<li>PCNN+ONE+My的 PR曲线基本与Lin 2016的PCNN+ATT 持平，有的位置还要高一些。 这个就有点不太理解了。</li>
+<li>PCNN+ONE+My 与 PCNN+ATT+MY 并没有想象中的差距那么多， 这个也很有意思，说明Attention 没有起到很大的作用？</li>
+</ul>
+<h3 id="small数据集">SMALL数据集</h3>
+<p>PR曲线的结果: <img src="http://cdn.htliu.cn/blog/pytorch-relation-extraction/small.png" /></p>
+<p>结果:</p>
+<ul>
+<li>测了很多参数，自己实现的PCNN+ONE <strong>在recall比较小的时候，达不到Zeng2015使用Theano实现的模型效果</strong>， 原因还会继续查找。在recall相对较大的时候，基本可以达到Zeng2015的效果。</li>
+<li>自己实现的PCNN+ATT 在SMALL数据集上效果一般, 很差异的是, ATT与PCNN+ONE的效果差很多. 复现基本上是参考C++代码来写的,还有调参数等.</li>
+</ul>
+<h2 id="总结">总结</h2>
+<ul>
+<li>大部分模型在LARGE数据集上效果要比SMALL数据集要好，可能原因是LARGE训练数据量大，因此模型可以训练得更好。</li>
+<li>从个人实现结果来看，对于减弱Distant Supervision的噪音来看，在LARGE数据集上，Attention的效果与Multi Instance(仅仅去最可能正确的instance) 基本差不多， 但是在SMALL数据集上，Attention的效果并没有Multi Instance 的好。</li>
+</ul>
+<p>当然这个是我个人的实验结果(另外一师弟实现的结果与此类似）， 后续如有可能的话， 会补充一下在Lin2016的C++源码上跑一下SMALL数据集，以及在Zeng2015的Theano数据集上跑一下LARGE数据集，最终的结果会更有说服力。个人复现难免会有遗漏,如果错误,烦请指出.</p>
+<h2 id="参考">参考</h2>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://github.com/smilelhh/ds_pcnns">PCNN+ONE Zeng 2015</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/thunlp/NRE">PCNN+ATT Lin 2016</a></li>
+</ul>
+
+      
+    </div>
+
+
+    
+
+    
+	    <div class="article-footer-copyright">
+<!--<p>本文作者: shomy 发表于 <a href="http://shomy.top" target="_blank">个人博客</a></p> -->
+<p>
+本文标题: pytorch关系抽取实验<br/>
+</p>
+<p>
+发布时间: 2018-07-05, 00:02:54<br/>
+<p>
+<p>
+最后更新: 2021-12-16, 23:11:45<br/>
+<p>
+本文链接: <a href="/2018/07/05/pytorch-relation-extraction/" target="_blank">http://shomy.top/2018/07/05/pytorch-relation-extraction/</a>
+</p>
+<p>非商业转载请注明作者及出处。商业转载请联系<a href="mailto:shomyliu@gmail.com">作者</a>本人。</p>
+</div>
+
+    
+
+    <footer class="article-footer">
+      
+        <a href="http://shomy.top/2018/07/05/pytorch-relation-extraction/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/pytorch/" rel="tag">pytorch</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/relation-extraction/" rel="tag">relation extraction</a></li></ul>
+
+    </footer>
+    
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2018/10/14/ubuntu-proxy/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          Ubuntu常用代理设置方法
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/06/26/neo4j-aminer-import/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">Neo4j导入Aminer论文数据</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+
+
+<section id="comments">
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+<script>
+  var disqus_shortname = 'shomy';
+  
+  var disqus_url = 'http://shomy.top/2018/07/05/pytorch-relation-extraction/';
+  
+  (function(){
+    var dsq = document.createElement('script');
+    dsq.type = 'text/javascript';
+    dsq.async = true;
+    dsq.src = 'https://' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  }());
+</script>
+</section>
+
+
+
+
+</section>
+      </div>
+    </div>
+    
+    
+<a id="rocket" href="#top" ></a>
+
+<script src="https://cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <script src="http://cdn.htliu.cn/static/js/leancloud.js"></script>
+<script>AV.initialize("k883AKdzaz5jccQnH1eIrG2r-gzGzoHsz", "4HBQOmslEp3VdwK1SGL8vB9Y");</script>
+
+<script src="/js/Counter.js"></script>
+
+
+
+
+
+<script id="dsq-count-scr" src="//shomy.disqus.com/count.js" async></script>
+ 
+
+
+  <script src="https://cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.js"></script>
+  
+<script src="/js/fancybox.js"></script>
+
+
+
+
+  
+<script src="/js/search.js"></script>
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

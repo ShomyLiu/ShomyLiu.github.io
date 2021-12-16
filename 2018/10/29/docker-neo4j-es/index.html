@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>docker搭建neo4j与elasticsearch数据同步 | 天空的城</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="需求 现在有图数据，包含节点和边，节点或者关系都有大段的文本属性，并且需要对全文文本进行检索，因此计划使用Neo4j 进行关系存储以及图算法的应用，使用Elastic Search 进行全文搜索，因此需要Neo4j的数据与Elastic Search进行自动同步，从而实现节点&#x2F;关系搜索使用Neo4j, 全文搜索使用Elastic Search, 各发挥自己的长处。 方案 正巧的Neo4j官方提供了">
+<meta property="og:type" content="article">
+<meta property="og:title" content="docker搭建neo4j与elasticsearch数据同步">
+<meta property="og:url" content="http://shomy.top/2018/10/29/docker-neo4j-es/index.html">
+<meta property="og:site_name" content="天空的城">
+<meta property="og:description" content="需求 现在有图数据，包含节点和边，节点或者关系都有大段的文本属性，并且需要对全文文本进行检索，因此计划使用Neo4j 进行关系存储以及图算法的应用，使用Elastic Search 进行全文搜索，因此需要Neo4j的数据与Elastic Search进行自动同步，从而实现节点&#x2F;关系搜索使用Neo4j, 全文搜索使用Elastic Search, 各发挥自己的长处。 方案 正巧的Neo4j官方提供了">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2018-10-29T15:13:28.000Z">
+<meta property="article:modified_time" content="2021-12-16T15:11:45.655Z">
+<meta property="article:author" content="ShomyLiu">
+<meta property="article:tag" content="docker">
+<meta property="article:tag" content="neo4j">
+<meta property="article:tag" content="elasticsearch">
+<meta name="twitter:card" content="summary">
+  
+  
+    <link rel="icon" href="/image/favicon.ico">
+  
+
+  
+  <link href="https://cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.css" rel="stylesheet">
+  
+  <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  <link href="https://cdn.bootcss.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+<!-- Google Analytics -->
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-74368890-2', 'auto');
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+
+
+  
+
+  
+  <div class="site-search header-inner">
+    <div class="popup">
+        <span class="search-icon fa fa-search"></span>
+        <input type="text" id="local-search-input">
+        <div id="local-search-result"></div>
+        <span class="popup-btn-close">close</span>
+    </div>
+</div>
+
+
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      
+<header id="header">
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">天空的城</a>
+      </h1>
+      
+    </div>
+    <div id="header-menu">
+      <nav id="main-nav">
+        <ul>
+        
+          <li><a href="/"><i class="fa fa-home icon-setting"></i></a></li>
+        
+          <li><a href="/archives"><i class="fa fa-archive icon-setting"></i></a></li>
+        
+          <li><a href="/tags"><i class="fa fa-tag icon-setting"></i></a></li>
+        
+          <li><a href="/about"><i class="fa fa-user icon-setting"></i></a></li>
+        
+        
+          <li><a href="javascript:;" class="popup-trigger"><i class="fa fa-search > icon-setting"></i></a></li>
+        
+        </ul>
+      </nav>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-docker-neo4j-es" class="article article-type-post" itemscope itemprop="blogPost">
+  
+  <div class="article-meta">
+    <a href="/2018/10/29/docker-neo4j-es/" class="article-date">
+  <time datetime="2018-10-29T15:13:28.000Z" itemprop="datePublished">2018-10-29</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E5%B7%A5%E5%85%B7%E4%BD%BF%E7%94%A8/">工具使用</a>
+  </div>
+
+
+    
+        <div class="counter-tag counter">
+    <!-- 别忘记这个类名... post-title-link -->
+    <span id="/2018/10/29/docker-neo4j-es/" class="leancloud_visitors article-hits post-title-link"
+           data-flag-title="docker搭建neo4j与elasticsearch数据同步">
+        次阅读
+    </span>
+
+  </div>
+
+    
+
+  </div>
+  
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      docker搭建neo4j与elasticsearch数据同步
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+            <div id="toc" class="toc-article">
+                <strong class="toc-title">文章目录</strong>
+                <ol class="post-toc"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E9%9C%80%E6%B1%82"><span class="post-toc-text">需求</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E6%96%B9%E6%A1%88"><span class="post-toc-text">方案</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#%E5%AE%89%E8%A3%85elasticsearch"><span class="post-toc-text">安装ElasticSearch</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#%E5%AE%89%E8%A3%85neo4j%E5%8F%8Aneo-elasticsearch%E6%8F%92%E4%BB%B6"><span class="post-toc-text">安装Neo4j及neo-elasticsearch插件</span></a></li></ol></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E6%B5%8B%E8%AF%95"><span class="post-toc-text">测试</span></a></li></ol>
+            </div>
+        
+        
+        <h2 id="需求">需求</h2>
+<p>现在有图数据，包含节点和边，节点或者关系都有大段的文本属性，并且需要对全文文本进行检索，因此计划使用Neo4j 进行关系存储以及图算法的应用，使用Elastic Search 进行全文搜索，因此需要Neo4j的数据与Elastic Search进行自动同步，从而实现节点/关系搜索使用Neo4j, 全文搜索使用Elastic Search, 各发挥自己的长处。</p>
+<h2 id="方案">方案</h2>
+<p>正巧的Neo4j官方提供了一个插件<a target="_blank" rel="noopener" href="https://github.com/neo4j-contrib/neo4j-elasticsearch">neo-elasticsearch</a>, 可以直接Neo4j的数据实时同步到ElasticSearch中。 不过由于官网文档的说明比较简单，以及本人对docker的熟练度有限，在使用docker搭建的过程中，遇到了很大的坑,记录于此。</p>
+<span id="more"></span>
+<p>环境如下:</p>
+<ul>
+<li>Ubuntu 16.04LST</li>
+<li>Docker 18.06.0-ce</li>
+<li>Neo4j:3.4</li>
+<li>ElasticSearch:6.4.2</li>
+</ul>
+<h3 id="安装elasticsearch">安装ElasticSearch</h3>
+<p>ES的安装比较简单，直接按照<a target="_blank" rel="noopener" href="https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html">官网说明</a> 即可（2018.10当前版本号6.4.2）。 <figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">docker run -<span class="selector-tag">p</span> <span class="number">9200</span>:<span class="number">9200</span> -<span class="selector-tag">p</span> <span class="number">9300</span>:<span class="number">9300</span> --name es  \</span><br><span class="line">-d -e <span class="string">&quot;discovery.type=single-node&quot;</span> docker<span class="selector-class">.elastic</span>.co/elasticsearch/elasticsearch:<span class="number">6.4</span>.<span class="number">2</span></span><br></pre></td></tr></table></figure> 这样我们新建了一个名称为<code>es</code>，web端口为9200，在后台运行的的elastic search容器，可以访问<code>http://ip:9200</code>查看</p>
+<h3 id="安装neo4j及neo-elasticsearch插件">安装Neo4j及neo-elasticsearch插件</h3>
+<p>前面一篇博客<a href="http://shomy.top/2018/06/08/neo4j-start/">Neo4j初探</a> 已经提到了使用Docker安装Neo4j的启动失败的大坑，这里就不再赘述。因为在后续安装插件的时候，需要修改配置文件和拷贝插件，所以在新建neo4j容器的时候暴露出来conf和plugins目录，具体的命令如下: <figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">docker run -p <span class="number">7474</span>:<span class="number">7474</span> -p <span class="number">7687</span>:<span class="number">7687</span> -v <span class="variable">$HOME</span><span class="regexp">/neo4j/</span>data:/data   \ </span><br><span class="line">-v <span class="variable">$HOME</span><span class="regexp">/neo4j/</span>conf:<span class="regexp">/var/</span>lib<span class="regexp">/neo4j/</span>conf  \</span><br><span class="line">-v <span class="variable">$HOME</span><span class="regexp">/neo4j/</span>plugins:<span class="regexp">/var/</span>lib<span class="regexp">/neo4j/</span>plugins \</span><br><span class="line">--name neo4j  --link es:es -d  neo4j:<span class="number">3.4</span></span><br></pre></td></tr></table></figure> 其中 <code>--link=es:es</code> 表示neo4j这个容器依赖于es容器，可以使用<code>docker ps</code> 以及<code>docker logs -f -t neo4j</code> 查看运行状态和日志。 下面开始安装插件:</p>
+<ul>
+<li>下载插件jar包: https://github.com/neo4j-contrib/neo4j-elasticsearch/releases 然后将jar包拷到<code>plugins</code> 目录里面</li>
+<li>修改配置文件（假设在Neo4j中有两类节点Person与Place）: <figure class="highlight reasonml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">elasticsearch.host_name=http:<span class="comment">//es:9200</span></span><br><span class="line">elasticsearch.index_spec=people:<span class="constructor">Person(<span class="params">first_name</span>,<span class="params">last_name</span>)</span>, places:<span class="constructor">Place(<span class="params">name</span>)</span></span><br></pre></td></tr></table></figure></li>
+<li>重启neo4j即可 <code>docker restart neo4j</code>，可以通过日志来验证是否载入了 <code>docker exec neo4j cat /var/lib/neo4j/logs/debug.log | grep elastic</code> <figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">    396:2018-10-29 11:58:13.988+0000 <span class="builtin-name">INFO</span> [o.n.k.i.DiagnosticsManager] elasticsearch.<span class="attribute">index_spec</span>=people:Person(first_name,last_name),                places:Place(name)</span><br><span class="line">403:2018-10-29 11:58:13.989+0000 <span class="builtin-name">INFO</span> [o.n.k.i.DiagnosticsManager] elasticsearch.<span class="attribute">host_name</span>=http://es:9200</span><br><span class="line">530:2018-10-29 11:58:14.023+0000 <span class="builtin-name">INFO</span> [o.n.k.i.DiagnosticsManager] [classpath + loader.0] file:/var/lib/neo4j/plugins/neo4j-elasticsearch-3.4.5.jar</span><br></pre></td></tr></table></figure></li>
+</ul>
+<p>这里面有一点很关键的是host_name, 因为官方的文档是直接在主机搭建因此直接是<code>localhost</code>， 但是在docker中两个容器是独立的ip，独立的服务，这里需要讲host_name改成上面创建elastic search容器的名称即<code>es</code>， 这是因为在docker中，如果使用了<code>--link</code>的话，docker会给当前容器内部写入一个连接容器的名字的环境变量。通过<code>docker inspect</code>查看两个容器的ip地址，假设neo4j的ip为<code>172.17.0.3</code>, es的ip为<code>172.17.0.2</code>，这样docker会给neo4j注册一个名称为es，指向es容器的环境变量，因此需要这样填写：<code>elasticsearch.host_name=http://es:9200</code>。</p>
+<p>此外，<code>elasticsearch.index_spec=people:Person(first_name,last_name), places:Place(name)</code> 这条命令表示将neo4j中的Person节点存为es的people索引，Place节点存为places索引。</p>
+<h2 id="测试">测试</h2>
+<p>首先使用neo4j新建节点： <figure class="highlight lisp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">CREATE (<span class="name">n</span><span class="symbol">:Person</span> &#123; first_name : <span class="string">&quot;A&quot;</span>, last_name: <span class="string">&quot;Han&quot;</span> &#125;) RETURN n<span class="comment">;</span></span><br></pre></td></tr></table></figure> 执行了之后，查看es中是否存在新插入的节点: http://ip:9200/people/_search?pretty=<br />
+当然修改，删除等操作都可以来实时同步到es。比较方便</p>
+<p>当然也可以使用<code>docker-compose</code>来同时集成两个容器, 附<code>docker-compose.yml</code>:</p>
+<figure class="highlight dts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="symbol">version:</span> <span class="string">&#x27;2&#x27;</span></span><br><span class="line"><span class="symbol">services:</span></span><br><span class="line"><span class="symbol">    es:</span></span><br><span class="line"><span class="symbol">        container_name:</span> es</span><br><span class="line"><span class="symbol">        image:</span> docker.elastic.co<span class="meta-keyword">/elasticsearch/</span>elasticsearch:<span class="number">6.4</span><span class="number">.2</span></span><br><span class="line"><span class="symbol">        ports:</span></span><br><span class="line">            - <span class="number">9200</span>:<span class="number">9200</span></span><br><span class="line">            - <span class="number">9300</span>:<span class="number">9300</span></span><br><span class="line"><span class="symbol">        environment:</span></span><br><span class="line">            - <span class="string">&quot;discovery.type=single-node&quot;</span></span><br><span class="line"><span class="symbol">    neo4j:</span></span><br><span class="line"><span class="symbol">        image:</span> neo4j:<span class="number">3.4</span></span><br><span class="line"><span class="symbol">        container_name:</span> neo4j</span><br><span class="line"><span class="symbol">        volumes:</span></span><br><span class="line">            - $HOME<span class="meta-keyword">/neo4j/</span>data:/data</span><br><span class="line">            - /$HOME<span class="meta-keyword">/neo4j/</span>plugins:<span class="meta-keyword">/var/</span>lib<span class="meta-keyword">/neo4j/</span>plugins</span><br><span class="line">            - /$HOME<span class="meta-keyword">/neo4j/</span>conf:<span class="meta-keyword">/var/</span>lib<span class="meta-keyword">/neo4j/</span>conf</span><br><span class="line"><span class="symbol">        links:</span></span><br><span class="line">            - es</span><br><span class="line"><span class="symbol">        ports:</span></span><br><span class="line">            - <span class="number">7474</span>:<span class="number">7474</span></span><br><span class="line">            - <span class="number">7687</span>:<span class="number">7687</span></span><br></pre></td></tr></table></figure>
+
+      
+    </div>
+
+
+    
+
+    
+	    <div class="article-footer-copyright">
+<!--<p>本文作者: shomy 发表于 <a href="http://shomy.top" target="_blank">个人博客</a></p> -->
+<p>
+本文标题: docker搭建neo4j与elasticsearch数据同步<br/>
+</p>
+<p>
+发布时间: 2018-10-29, 23:13:28<br/>
+<p>
+<p>
+最后更新: 2021-12-16, 23:11:45<br/>
+<p>
+本文链接: <a href="/2018/10/29/docker-neo4j-es/" target="_blank">http://shomy.top/2018/10/29/docker-neo4j-es/</a>
+</p>
+<p>非商业转载请注明作者及出处。商业转载请联系<a href="mailto:shomyliu@gmail.com">作者</a>本人。</p>
+</div>
+
+    
+
+    <footer class="article-footer">
+      
+        <a href="http://shomy.top/2018/10/29/docker-neo4j-es/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/docker/" rel="tag">docker</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/elasticsearch/" rel="tag">elasticsearch</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/neo4j/" rel="tag">neo4j</a></li></ul>
+
+    </footer>
+    
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2018/12/31/factorization-machine/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          Factorization Machine笔记及Pytorch 实现
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2018/10/14/ubuntu-proxy/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">Ubuntu常用代理设置方法</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+
+
+<section id="comments">
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+<script>
+  var disqus_shortname = 'shomy';
+  
+  var disqus_url = 'http://shomy.top/2018/10/29/docker-neo4j-es/';
+  
+  (function(){
+    var dsq = document.createElement('script');
+    dsq.type = 'text/javascript';
+    dsq.async = true;
+    dsq.src = 'https://' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  }());
+</script>
+</section>
+
+
+
+
+</section>
+      </div>
+    </div>
+    
+    
+<a id="rocket" href="#top" ></a>
+
+<script src="https://cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <script src="http://cdn.htliu.cn/static/js/leancloud.js"></script>
+<script>AV.initialize("k883AKdzaz5jccQnH1eIrG2r-gzGzoHsz", "4HBQOmslEp3VdwK1SGL8vB9Y");</script>
+
+<script src="/js/Counter.js"></script>
+
+
+
+
+
+<script id="dsq-count-scr" src="//shomy.disqus.com/count.js" async></script>
+ 
+
+
+  <script src="https://cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.js"></script>
+  
+<script src="/js/fancybox.js"></script>
+
+
+
+
+  
+<script src="/js/search.js"></script>
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

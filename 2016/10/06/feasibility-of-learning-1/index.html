@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>机器学习基石笔记(1) | 天空的城</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="整理自台大林轩田老师的机器学习基石在线课程，以及参考了beader的文章，作为笔记。 一些机器学习入门的书籍大部分都是直接讲模型，却没有来龙去脉，感觉很虚。而林老师的第一部分是机器学习的基石，就是背后的东西，并没有直接去讲各种模型, 在第二部分机器学习技法才开始介绍模型。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="机器学习基石笔记(1)">
+<meta property="og:url" content="http://shomy.top/2016/10/06/feasibility-of-learning-1/index.html">
+<meta property="og:site_name" content="天空的城">
+<meta property="og:description" content="整理自台大林轩田老师的机器学习基石在线课程，以及参考了beader的文章，作为笔记。 一些机器学习入门的书籍大部分都是直接讲模型，却没有来龙去脉，感觉很虚。而林老师的第一部分是机器学习的基石，就是背后的东西，并没有直接去讲各种模型, 在第二部分机器学习技法才开始介绍模型。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://cdn.htliu.cn/ml01-1.png">
+<meta property="og:image" content="http://cdn.htliu.cn/ml01-2.png">
+<meta property="og:image" content="http://cdn.htliu.cn/ml01-3.png">
+<meta property="og:image" content="http://cdn.htliu.cn/ml01-4.png">
+<meta property="og:image" content="http://cdn.htliu.cn/ml01-5.png">
+<meta property="og:image" content="http://cdn.htliu.cn/ml01-6.png">
+<meta property="article:published_time" content="2016-10-06T09:56:18.000Z">
+<meta property="article:modified_time" content="2021-12-16T15:11:45.657Z">
+<meta property="article:author" content="ShomyLiu">
+<meta property="article:tag" content="machine learning">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://cdn.htliu.cn/ml01-1.png">
+  
+  
+    <link rel="icon" href="/image/favicon.ico">
+  
+
+  
+  <link href="https://cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.css" rel="stylesheet">
+  
+  <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  <link href="https://cdn.bootcss.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+<!-- Google Analytics -->
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-74368890-2', 'auto');
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+
+
+  
+
+  
+  <div class="site-search header-inner">
+    <div class="popup">
+        <span class="search-icon fa fa-search"></span>
+        <input type="text" id="local-search-input">
+        <div id="local-search-result"></div>
+        <span class="popup-btn-close">close</span>
+    </div>
+</div>
+
+
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      
+<header id="header">
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">天空的城</a>
+      </h1>
+      
+    </div>
+    <div id="header-menu">
+      <nav id="main-nav">
+        <ul>
+        
+          <li><a href="/"><i class="fa fa-home icon-setting"></i></a></li>
+        
+          <li><a href="/archives"><i class="fa fa-archive icon-setting"></i></a></li>
+        
+          <li><a href="/tags"><i class="fa fa-tag icon-setting"></i></a></li>
+        
+          <li><a href="/about"><i class="fa fa-user icon-setting"></i></a></li>
+        
+        
+          <li><a href="javascript:;" class="popup-trigger"><i class="fa fa-search > icon-setting"></i></a></li>
+        
+        </ul>
+      </nav>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-feasibility-of-learning-1" class="article article-type-post" itemscope itemprop="blogPost">
+  
+  <div class="article-meta">
+    <a href="/2016/10/06/feasibility-of-learning-1/" class="article-date">
+  <time datetime="2016-10-06T09:56:18.000Z" itemprop="datePublished">2016-10-06</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/">读书笔记</a>
+  </div>
+
+
+    
+        <div class="counter-tag counter">
+    <!-- 别忘记这个类名... post-title-link -->
+    <span id="/2016/10/06/feasibility-of-learning-1/" class="leancloud_visitors article-hits post-title-link"
+           data-flag-title="机器学习基石笔记(1)">
+        次阅读
+    </span>
+
+  </div>
+
+    
+
+  </div>
+  
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      机器学习基石笔记(1)
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+            <div id="toc" class="toc-article">
+                <strong class="toc-title">文章目录</strong>
+                <ol class="post-toc"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#learning%E7%9A%84%E6%A6%82%E8%A7%88"><span class="post-toc-text">learning的概览</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#learning%E6%98%AF%E5%90%A6%E5%8F%AF%E8%A1%8Cfeasibility"><span class="post-toc-text">learning是否可行?（Feasibility）</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#learning%E6%98%AF-impossible"><span class="post-toc-text">learning是 impossible?</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#inferring-something-unknown%E4%B8%8E%E7%BB%9F%E8%AE%A1%E7%BB%93%E5%90%88"><span class="post-toc-text">Inferring Something Unknown与统计结合</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#bad-data-%E5%9D%8F%E6%95%B0%E6%8D%AE"><span class="post-toc-text">Bad Data 坏数据</span></a></li></ol></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E6%80%BB%E7%BB%93"><span class="post-toc-text">总结</span></a></li></ol>
+            </div>
+        
+        
+        <p>整理自台大林轩田老师的<a target="_blank" rel="noopener" href="https://www.youtube.com/playlist?list=PLXVfgk9fNX2I7tB6oIINGBmW50rrmFTqf">机器学习基石</a>在线课程，以及参考了<a target="_blank" rel="noopener" href="http://beader.me/">beader</a>的文章，作为笔记。</p>
+<p>一些机器学习入门的书籍大部分都是直接讲模型，却没有来龙去脉，感觉很虚。而林老师的第一部分是机器学习的基石，就是背后的东西，并没有直接去讲各种模型, 在第二部分机器学习技法才开始介绍模型。</p>
+<span id="more"></span>
+<p>课程前三节主要介绍了机器学习的一些基本概念(未知函数f, 学习算法A, 假设空间H等等)，以及讲了一个最简单的线性分类器: 感知器模型(PLA). 相对简单，比较容易接受。 这节开始主要介绍一些算法背后的理论，比如为什么机器学习为什么可行，以及为什么训练数据集越大，训练结果就越好。</p>
+<h2 id="learning的概览"><code>learning</code>的概览</h2>
+<p>learning的流程图: <img src="http://cdn.htliu.cn/ml01-1.png" alt="learning-flow" /> 下面仔细说明每个符号代表的意义: 当时看的时候，没搞透彻这几个符号，后面就很费劲了。</p>
+<ul>
+<li><span class="math inline">\(\mathcal{f}: \chi \to \gamma\)</span>
+<ul>
+<li><span class="math inline">\(\chi\)</span> 表示输入空间，里面包含了很多组输入数据<span class="math inline">\(x_i\)</span>. 比如拿信用卡审核的例子来说，输入空间<span class="math inline">\(\chi\)</span>可以是 (age, gender, annual salary, year in residence, year in job, current debt) 表示的六维的输入空间. (23, male, 10000,1,0.5, 20000)可能就是一组输入的数据。</li>
+<li><span class="math inline">\(\gamma\)</span> 则代表的是输出空间。比如前面提到的PLA的输出空间是<span class="math inline">\(\{+1, -1\}^1\)</span>, 在信用卡例子中，可以用+1表示未来会违约，-1表示未来不会违约。</li>
+<li><span class="math inline">\(f\)</span> 是很核心的概念，表示现实中<strong>未知</strong>的某个规律或者某个函数， 我们只能知道的是，把训练数据<span class="math inline">\(\mathcal{D}\)</span>中的数据<span class="math inline">\(x_i\)</span>作为输入，它会输出 <span class="math inline">\(y_i\)</span>.正因为它的未知，learning要做的事情就是找到一个函数<span class="math inline">\(\mathcal{g}\)</span>能构接近<span class="math inline">\(\mathcal{f}\)</span>.接近的意思是指，<span class="math inline">\(\mathcal{g}\)</span>对于训练数据<span class="math inline">\(\mathcal{D}\)</span>中的运行情况与<span class="math inline">\(\mathcal{f}\)</span>的运行情况类似。</li>
+</ul></li>
+<li><span class="math inline">\(\mathcal{D}: {(x_1, y_1), (x_2, y_2),..., (x_N, y_N)}\)</span>： 表示由输入空间<span class="math inline">\(\chi\)</span>中的<span class="math inline">\(x\)</span>以及输出空间<span class="math inline">\(gamma\)</span>中的<span class="math inline">\(y\)</span>组成的N条数据的训练数据集。</li>
+<li><span class="math inline">\(\mathcal{H}\)</span>: 表示假设空间，也就是一堆函数的集合:<span class="math inline">\(\{ h_1, h_2, ...\}\)</span>，我们要找的<span class="math inline">\(\mathcal{g}\)</span>就在这里面寻找。</li>
+<li><span class="math inline">\(\mathcal{A}\)</span>：学习算法，通过<span class="math inline">\(\mathcal{A}\)</span>，我们才可以在<span class="math inline">\(\mathcal{H}\)</span>中找到最接近<span class="math inline">\(f\)</span>的那个<span class="math inline">\(h\)</span>. 因为<span class="math inline">\(\mathcal{H}\)</span>的数量是未知的，因此我们必须把学习算法设计的合适，才可以高效的找到那个<span class="math inline">\(h\)</span>。</li>
+<li><span class="math inline">\(\mathcal{g}\)</span>：这个就是我们最后找到的hypothsis,就是通过学习算法<span class="math inline">\(\mathcal{A}\)</span>找到的那个最接近f的函数。</li>
+</ul>
+<p>有几个注意的点:</p>
+<ul>
+<li><span class="math inline">\(\mathcal{D}\)</span>是一个训练数据集，后面会区分多个训练数据集。</li>
+<li><span class="math inline">\(f\)</span> 一定是未知。learning的过程就是在<span class="math inline">\(\mathcal{H}\)</span>里面找到在训练数据集<span class="math inline">\(\mathcal{D}\)</span>表现接近f的那个hypothesis.</li>
+</ul>
+<p>那么问题来了，假设我们找到了那个<span class="math inline">\(g\)</span>, 它在训练数据集上表现不错，但是在<span class="math inline">\(\mathcal{D}\)</span>之外的其它数据表现也会跟<span class="math inline">\(f\)</span>很接近吗？ 我们关心的不是它在训练数据集上表现多好，而是在未知数据集上的结果是不是很好，那么如果一个hypothesis在训练数据集上接近f，那么是不是在测试数据上跟f也差不多呢。这就是检验learning是不是真正学到了东西。</p>
+<h2 id="learning是否可行feasibility">learning是否可行?（Feasibility）</h2>
+<h3 id="learning是-impossible">learning是 impossible?</h3>
+<p>我们经验上感觉g如果在<span class="math inline">\(\mathcal{D}\)</span>上的表现好的话， 那么它就是一个好的hypothesis。但是事实是这样吗？有这么一个二分类的简单例子：看训练数据如下： <img src="http://cdn.htliu.cn/ml01-2.png" alt="binary-classify-sample" /></p>
+<p>其中<span class="math inline">\(\chi \in \{ 0, 1\}^3, \gamma \in \{ o, X\}^1\)</span>.</p>
+<p>举着个例子是因为很简单， 所有的数据以及<span class="math inline">\(\mathcal{H}\)</span>里面所有的<span class="math inline">\(h\)</span>都可以列举出来，如下: <img src="http://cdn.htliu.cn/ml01-3.png" alt="all-h-in-H" /></p>
+<p>我们发现8个<span class="math inline">\(h\)</span> 在<span class="math inline">\(\mathcal{D}\)</span>上都等于 <span class="math inline">\(f\)</span>. 但是在<span class="math inline">\(\mathcal{D}\)</span>之外，却各不相同，那么我们应该选择那个作为我们最终的<span class="math inline">\(g\)</span>呢？这里看来，好像机器学习并不能学到东西，我们好像并不能保证在训练数据集之外<span class="math inline">\(g\)</span>是否还能跟<span class="math inline">\(f\)</span>很接近。 这个问题需要后面解释</p>
+<h3 id="inferring-something-unknown与统计结合">Inferring Something Unknown与统计结合</h3>
+<p>我们在统计里面知道抽样的概念，使用样本估计总体，比如样本均值估计总体期望， 或者用样本构造一些统计量来估计总体分布的参数。 比如下面的摸球的例子，一个罐子里面有橙色的球和绿色的球，但是不知道各自所占的比例。这时候我们呢经常采用抽样的方式，在罐子中抽出N个球，看看橙色和绿色占的比例，依次作为总体的概率。 如下: <img src="http://cdn.htliu.cn/ml01-4.png" alt="sample" /></p>
+<p>那我们可不可以使用 样本中的<span class="math inline">\(\nu\)</span>来代替总体中的<span class="math inline">\(\mu\)</span>呢？ 似乎可以，但是好像仍有风险， 比如总体中，橙色，绿色占比例差不多，但是碰巧有一个Sample抽了10个都是绿色的(后面提到的BadData) ， 那这个时候，我们不能使用<span class="math inline">\(\nu\)</span>代替 <span class="math inline">\(mu\)</span>, 不过经验还告诉我们好像10个都是绿色的发生概率并不是很大，尤其是随着样本数目的增加。 在统计中的<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Hoeffding%27s_inequality">Hoeffdiing's inequality</a> 给出了具体的计算公式: <span class="math display">\[P[\| \nu - \mu \| &gt; \epsilon]  \leq 2 exp \lgroup -2 \epsilon ^2 N \rgroup \]</span></p>
+<p>称式子中的<span class="math inline">\(\epsilon\)</span> 是允许误差的容忍度， 我们可以看到就是说 <span class="math inline">\(\nu\)</span>与<span class="math inline">\(\mu\)</span>的差距由<span class="math inline">\(\epsilon, N\)</span> 控制的。当<span class="math inline">\(N\)</span>变大的时候，<span class="math inline">\(\mu, \nu\)</span>的差距的上限会降低。当<span class="math inline">\(\mu, \nu\)</span>的差距小到一定程度了， 可以说它俩是差不多一样(PAC, probably approximately correct)。</p>
+<p>以上是基于统计的观点，使用样本估计总体。 那该怎么与我们的 learning 对应起来呢？我们假设那一罐子球是假设空间<span class="math inline">\(\chi\)</span>, 对于某个hypothesis h，开始抽样，作如下对应:</p>
+<ul>
+<li><span class="math inline">\(h(x_i) \neq f(x_i)\)</span> 时， 对应球是橙色</li>
+<li>$h(x_i) = f(x_i) $时， 对应球是绿色</li>
+</ul>
+<p>有了这个对应之后，样本中橙色球的概率<span class="math inline">\(\nu\)</span>就是当前hypothesis的错误率<span class="math inline">\(error\)</span>。 总体中的橙色球概率<span class="math inline">\(\mu\)</span>则是<span class="math inline">\(h\)</span>在总体分布下的错误率。这里我们定义两个新的变量:</p>
+<ul>
+<li><span class="math inline">\(E_{in}(h) = \frac{1}{N} \sum_{n=1}^{N} \lVert h(x_n) \neq f(x_n) \rVert\)</span>, <strong>IN-SAMPLE-ERROR</strong>，h在训练集的错误率</li>
+<li><span class="math inline">\(E_{out}(h) = \epsilon_{x \sim P} \lVert h(x) \neq f(x) \rVert\)</span>, <strong>OUT-SAMPLE-ERROR</strong>,在总体中<span class="math inline">\(h\)</span>的错误率</li>
+</ul>
+<p>很容易可以知道: <span class="math display">\[
+\begin{align}
+\mu &amp;= E_{out}\\
+\nu  &amp;= E_{in}
+\end{align}
+\]</span></p>
+<p>代入Hoeffdiing's inequality 可以得到:</p>
+<p><span class="math display">\[P[\| E_{in} - E_{out} \| &gt; \epsilon]  \leq 2 exp \lgroup -2 \epsilon ^2 N \rgroup\]</span></p>
+<p>这就意味着，在不等式的上限在足够小的情况下，我们貌似可以说，<span class="math inline">\(E_{in}\)</span>和<span class="math inline">\(E_{out}\)</span> 达到了 PAC, 也就是说 h 在训练集中的表现与在总体中的表现接近，即：用已知的<span class="math inline">\(E_{in}\)</span>去推断未知的<span class="math inline">\(E_{out}\)</span> 。 但现在还不可以说，<span class="math inline">\(h\)</span>是一个好的learning， 因为我们的目的不是<span class="math inline">\(h\)</span>, 而是一个接近<span class="math inline">\(f\)</span>的<span class="math inline">\(g\)</span>, 因此我们需要的不仅仅<span class="math inline">\(E_{in}\)</span>与<span class="math inline">\(E_{out}\)</span>接近，更需要他们尽可能小，这样才是一个最好的最接近真理<span class="math inline">\(f\)</span>的<span class="math inline">\(h\)</span>。</p>
+<h3 id="bad-data-坏数据">Bad Data 坏数据</h3>
+<p>前面说了，使用某个训练集或者说抽样的样本，然后找一个<span class="math inline">\(E_{in}\)</span>尽可能小的<span class="math inline">\(h\)</span>, 作为我们的<span class="math inline">\(g\)</span>. 但是如果训练数据集有问题呢？尤其是当N小的时候，误差是不可避免的，或者说噪音数据集。比如说想知道硬币朝上的概率，然后连续扔了5次，都出现了正面，这种情况下，显然不能说硬币朝上的概率是1吧。因为这样的样本本身是有误差的，对于整体 来说: <span class="math inline">\(E_{in} = 0; E_{out} = \frac{1}{2}\)</span>.这样使<span class="math inline">\(E_{in}\)</span> 和 <span class="math inline">\(E_{out}\)</span>差别很大的样本就称为<strong>BAD SAMPLE</strong> 说到learning, 对于某个 <span class="math inline">\(h\)</span>, 如果某个<span class="math inline">\(\mathcal{D}\)</span>使得 <span class="math inline">\(E_{in}(h)\)</span>与<span class="math inline">\(E_{out}(h)\)</span> 差别很大，比如说<span class="math inline">\(E_{in}(h)\)</span>很小，也就说在训练数据中表现很好，结果我们的算法<span class="math inline">\(\mathcal{A}\)</span>就选择了它， 但是没想到<span class="math inline">\(\mathcal{D}\)</span>之外的数据表现很差，<span class="math inline">\(E_{out}(h)\)</span>很大， 这样就称这个<span class="math inline">\(\mathcal{D}\)</span>对<span class="math inline">\(h\)</span>来说是<strong>BAD DATA</strong>, 它会使得 <span class="math inline">\(\|E_{in} - E_{out}\| &gt; \epsilon\)</span>。那是不是机器学习啥也没学到呢？ 白忙活了？ 很显然，我们不希望遇见<strong>BAD DATA</strong>, 它对我们的learning很不好，那么出现<strong>BAD DATA</strong>的概率有多大呢？ 首先只要某个<span class="math inline">\(\mathcal{D}_i\)</span> 对 <span class="math inline">\(h(h \in \mathcal{H})\)</span> 是BAD DATA, 那么就称该<span class="math inline">\(\mathcal{D}\)</span>是BAD DATA, 如下</p>
+<figure>
+<img src="http://cdn.htliu.cn/ml01-5.png" alt="bad-data" /><figcaption>bad-data</figcaption>
+</figure>
+<p>那我们就需要计算: <img src="http://cdn.htliu.cn/ml01-6.png" alt="bad-data-prob" /> 其中<span class="math inline">\(M = \| \mathcal{H} \|\)</span>, 从式子中我们可以看出，遇到<strong>BAD DATA</strong>的概率的上限 与<span class="math inline">\(N, M, \epsilon\)</span>有关。 因而也可以看出如果训练数据N越大，也就更不容易遇见BAD DATA, 对应到硬币则是，连续投硬币10次均出现正面的概率 小于 连续投5次。同理如果 M 越小，BAD DATA概率越小。</p>
+<h2 id="总结">总结</h2>
+<p>说完了<span class="math inline">\(P[\| E_{in}(h) - E_{out}(h) \| &gt; \epsilon] \leq 2 exp \lgroup -2 \epsilon ^2 N \rgroup\)</span>， 我们知道<span class="math inline">\(E_{in}(h)\)</span>与<span class="math inline">\(E_{out}(h)\)</span>可以很接近,我们就可以大胆的选择<span class="math inline">\(E_{in}\)</span>最小的<span class="math inline">\(h\)</span>来作为我们的<span class="math inline">\(g\)</span>。但是<strong>BAD DATA</strong>又告诉我们群众里面有坏人，如果遇到了，那么会影响我们的<span class="math inline">\(\mathcal{A}\)</span> 挑选<span class="math inline">\(h\)</span>. 幸好，Hoeffding's Inequality 告诉我们 出现 BAD DATA的概率有个bound。 所以我们只要控制了BAD DATA出现的几率，还可以继续选择最小的<span class="math inline">\(E_{in}(h)\)</span>了。 不过还有问题，<span class="math inline">\(M\)</span> 如果很大了，比如在PAL中，<span class="math inline">\(\mathcal{H}\)</span> 就是无穷多的直线，这时候，Hoeffding's Inequality貌似也不能起作用了，这就是后面要讨论的问题了: 当<span class="math inline">\(\| \mathcal{H} \| \to infty\)</span>，我们该怎么办。</p>
+
+      
+    </div>
+
+
+    
+
+    
+	    <div class="article-footer-copyright">
+<!--<p>本文作者: shomy 发表于 <a href="http://shomy.top" target="_blank">个人博客</a></p> -->
+<p>
+本文标题: 机器学习基石笔记(1)<br/>
+</p>
+<p>
+发布时间: 2016-10-06, 17:56:18<br/>
+<p>
+<p>
+最后更新: 2021-12-16, 23:11:45<br/>
+<p>
+本文链接: <a href="/2016/10/06/feasibility-of-learning-1/" target="_blank">http://shomy.top/2016/10/06/feasibility-of-learning-1/</a>
+</p>
+<p>非商业转载请注明作者及出处。商业转载请联系<a href="mailto:shomyliu@gmail.com">作者</a>本人。</p>
+</div>
+
+    
+
+    <footer class="article-footer">
+      
+        <a href="http://shomy.top/2016/10/06/feasibility-of-learning-1/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/machine-learning/" rel="tag">machine learning</a></li></ul>
+
+    </footer>
+    
+	    <script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+    
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2016/10/09/feasibility-of-learning-2/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          机器学习基石笔记(2)
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2016/08/11/flask-sqlalchemy-relation-lazy/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">flask-sqlalchemy中的lazy的解释</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+
+
+<section id="comments">
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+<script>
+  var disqus_shortname = 'shomy';
+  
+  var disqus_url = 'http://shomy.top/2016/10/06/feasibility-of-learning-1/';
+  
+  (function(){
+    var dsq = document.createElement('script');
+    dsq.type = 'text/javascript';
+    dsq.async = true;
+    dsq.src = 'https://' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  }());
+</script>
+</section>
+
+
+
+
+</section>
+      </div>
+    </div>
+    
+    
+<a id="rocket" href="#top" ></a>
+
+<script src="https://cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <script src="http://cdn.htliu.cn/static/js/leancloud.js"></script>
+<script>AV.initialize("k883AKdzaz5jccQnH1eIrG2r-gzGzoHsz", "4HBQOmslEp3VdwK1SGL8vB9Y");</script>
+
+<script src="/js/Counter.js"></script>
+
+
+
+
+
+<script id="dsq-count-scr" src="//shomy.disqus.com/count.js" async></script>
+ 
+
+
+  <script src="https://cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.js"></script>
+  
+<script src="/js/fancybox.js"></script>
+
+
+
+
+  
+<script src="/js/search.js"></script>
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

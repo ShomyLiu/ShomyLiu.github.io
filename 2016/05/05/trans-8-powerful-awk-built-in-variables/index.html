@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>&lt;译&gt;8个有力的Awk内建变量 | 天空的城</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="翻译原文:8 Powerful Awk Built-in Variables http:&#x2F;&#x2F;www.thegeekstuff.com&#x2F;这个博客真是不错。  这篇文章是Awk Tutorial Examples系列的一部分。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="&lt;译&gt;8个有力的Awk内建变量">
+<meta property="og:url" content="http://shomy.top/2016/05/05/trans-8-powerful-awk-built-in-variables/index.html">
+<meta property="og:site_name" content="天空的城">
+<meta property="og:description" content="翻译原文:8 Powerful Awk Built-in Variables http:&#x2F;&#x2F;www.thegeekstuff.com&#x2F;这个博客真是不错。  这篇文章是Awk Tutorial Examples系列的一部分。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2016-05-05T06:43:51.000Z">
+<meta property="article:modified_time" content="2021-12-16T15:11:45.675Z">
+<meta property="article:author" content="ShomyLiu">
+<meta property="article:tag" content="AWK">
+<meta property="article:tag" content="translate">
+<meta name="twitter:card" content="summary">
+  
+  
+    <link rel="icon" href="/image/favicon.ico">
+  
+
+  
+  <link href="https://cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.css" rel="stylesheet">
+  
+  <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  <link href="https://cdn.bootcss.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+<!-- Google Analytics -->
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-74368890-2', 'auto');
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+
+
+  
+
+  
+  <div class="site-search header-inner">
+    <div class="popup">
+        <span class="search-icon fa fa-search"></span>
+        <input type="text" id="local-search-input">
+        <div id="local-search-result"></div>
+        <span class="popup-btn-close">close</span>
+    </div>
+</div>
+
+
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      
+<header id="header">
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">天空的城</a>
+      </h1>
+      
+    </div>
+    <div id="header-menu">
+      <nav id="main-nav">
+        <ul>
+        
+          <li><a href="/"><i class="fa fa-home icon-setting"></i></a></li>
+        
+          <li><a href="/archives"><i class="fa fa-archive icon-setting"></i></a></li>
+        
+          <li><a href="/tags"><i class="fa fa-tag icon-setting"></i></a></li>
+        
+          <li><a href="/about"><i class="fa fa-user icon-setting"></i></a></li>
+        
+        
+          <li><a href="javascript:;" class="popup-trigger"><i class="fa fa-search > icon-setting"></i></a></li>
+        
+        </ul>
+      </nav>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-trans-8-powerful-awk-built-in-variables" class="article article-type-post" itemscope itemprop="blogPost">
+  
+  <div class="article-meta">
+    <a href="/2016/05/05/trans-8-powerful-awk-built-in-variables/" class="article-date">
+  <time datetime="2016-05-05T06:43:51.000Z" itemprop="datePublished">2016-05-05</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/">编程语言</a>
+  </div>
+
+
+    
+        <div class="counter-tag counter">
+    <!-- 别忘记这个类名... post-title-link -->
+    <span id="/2016/05/05/trans-8-powerful-awk-built-in-variables/" class="leancloud_visitors article-hits post-title-link"
+           data-flag-title="&lt;译&gt;8个有力的Awk内建变量">
+        次阅读
+    </span>
+
+  </div>
+
+    
+
+  </div>
+  
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      &lt;译&gt;8个有力的Awk内建变量
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+            <div id="toc" class="toc-article">
+                <strong class="toc-title">文章目录</strong>
+                <ol class="post-toc"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#fs-%E8%BE%93%E5%85%A5%E5%AD%97%E6%AE%B5%E5%88%86%E9%9A%94%E7%AC%A6%E5%8F%98%E9%87%8F"><span class="post-toc-text">FS: 输入字段分隔符变量</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#ors-%E8%BE%93%E5%87%BA%E8%AE%B0%E5%BD%95%E5%88%86%E9%9A%94%E7%AC%A6%E5%8F%98%E9%87%8F"><span class="post-toc-text">ORS: 输出记录分隔符变量</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#nr-%E8%AE%B0%E5%BD%95%E6%95%B0%E5%8F%98%E9%87%8F"><span class="post-toc-text">NR: 记录数变量</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#nf%E4%B8%80%E6%9D%A1%E8%AE%B0%E5%BD%95%E7%9A%84%E8%AE%B0%E5%BD%95%E6%95%B0%E7%9B%AE"><span class="post-toc-text">NF:一条记录的记录数目</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#filename-%E5%BD%93%E5%89%8D%E8%BE%93%E5%85%A5%E6%96%87%E4%BB%B6%E7%9A%84%E5%90%8D%E5%AD%97"><span class="post-toc-text">FILENAME: 当前输入文件的名字</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#fnr-%E5%BD%93%E5%89%8D%E8%BE%93%E5%85%A5%E6%96%87%E4%BB%B6%E7%9A%84%E8%AE%B0%E5%BD%95%E6%95%B0%E7%9B%AE"><span class="post-toc-text">FNR: 当前输入文件的记录数目</span></a></li></ol>
+            </div>
+        
+        
+        <blockquote>
+<p>翻译原文:<a target="_blank" rel="noopener" href="http://www.thegeekstuff.com/2010/01/8-powerful-awk-built-in-variables-fs-ofs-rs-ors-nr-nf-filename-fnr/">8 Powerful Awk Built-in Variables</a> <a target="_blank" rel="noopener" href="http://www.thegeekstuff.com/">http://www.thegeekstuff.com/</a>这个博客真是不错。</p>
+</blockquote>
+<p>这篇文章是<a target="_blank" rel="noopener" href="http://www.thegeekstuff.com/tag/awk-tutorial-examples/">Awk Tutorial Examples</a>系列的一部分。 <span id="more"></span> Awk有几个非常强力的内置变量.通常来说，分为两种类型的内置变量: - 第一种是定义的变量可以改变,　比如字段分隔(FS)与记录分隔(RS) - 第二种是可以用来数据处理或者数据总结，比如记录数(NR)与字段数目(NF) 文中 介绍了:<code>FS</code>,<code>OFS</code>, <code>RS</code>, <code>ORS</code>, <code>NR</code>, <code>NR</code>, <code>FNR</code></p>
+<h2 id="fs-输入字段分隔符变量">FS: 输入字段分隔符变量</h2>
+<p><code>FS</code>(Field Separator)读取并解析输入文件中的每一行时，默认按照空格分隔为字段变量,<code>$1,$2...</code>等。<code>FS</code>变量被用来设置每一记录的字段分隔符号。<code>FS</code>可以是任意的字符串或者正则表达式.你可以使用下面两种方式来声名<code>FS</code>:</p>
+<ol type="1">
+<li>使用<code>-F</code>命令选项</li>
+<li>作为设置为普通变量使用</li>
+</ol>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">Syntax:</span><br><span class="line"></span><br><span class="line"><span class="variable">$</span> awk <span class="operator">-F</span> <span class="string">&#x27;FS&#x27;</span> <span class="string">&#x27;commands&#x27;</span> inputfilename</span><br><span class="line"></span><br><span class="line">(or)</span><br><span class="line"></span><br><span class="line"><span class="variable">$</span> awk <span class="string">&#x27;BEGIN&#123;FS=&quot;FS&quot;;&#125;&#x27;</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li><em>FS</em> 可以是任意字符或者正则表达式</li>
+<li><em>FS</em> 可以多次改变, 不过会保持不变直到被明确修改。不过如果想要改变字段分隔符,　最好是在读入文本之前就改变FS, 这样改变才会在你读入的文本生效。</li>
+</ul>
+<p>下面是一个使用<code>FS</code>读取<code>/etc/passwd｀以</code>:<code>作为分隔符的例子 <figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">$ cat etc_passwd.awk</span><br><span class="line">BEGIN&#123;</span><br><span class="line"><span class="attribute">FS</span>=<span class="string">&quot;:&quot;</span>;</span><br><span class="line"><span class="builtin-name">print</span> <span class="string">&quot;Name\tUserID\tGroupID\tHomeDirectory&quot;</span>;</span><br><span class="line">&#125;</span><br><span class="line">&#123;</span><br><span class="line">	<span class="builtin-name">print</span> <span class="variable">$1</span><span class="string">&quot;\t&quot;</span><span class="variable">$3</span><span class="string">&quot;\t&quot;</span><span class="variable">$4</span><span class="string">&quot;\t&quot;</span><span class="variable">$6</span>;</span><br><span class="line">&#125;</span><br><span class="line">END &#123;</span><br><span class="line">	<span class="builtin-name">print</span> NR,<span class="string">&quot;Records Processed&quot;</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure> 使用结果: <figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$awk</span> -f etc_passwd.awk <span class="regexp">/etc/</span>passwd</span><br><span class="line">Name    UserID  GroupID        HomeDirectory</span><br><span class="line">gnats	<span class="number">41</span>	<span class="number">41</span>	<span class="regexp">/var/</span>lib/gnats</span><br><span class="line">libuuid	<span class="number">100</span>	<span class="number">101</span>	<span class="regexp">/var/</span>lib/libuuid</span><br><span class="line">syslog	<span class="number">101</span>	<span class="number">102</span>	<span class="regexp">/home/</span>syslog</span><br><span class="line">hplip	<span class="number">103</span>	<span class="number">7</span>	<span class="regexp">/var/</span>run/hplip</span><br><span class="line">avahi	<span class="number">105</span>	<span class="number">111</span>	<span class="regexp">/var/</span>run/avahi-daemon</span><br><span class="line">saned	<span class="number">110</span>	<span class="number">116</span>	<span class="regexp">/home/</span>saned</span><br><span class="line">pulse	<span class="number">111</span>	<span class="number">117</span>	<span class="regexp">/var/</span>run/pulse</span><br><span class="line">gdm	<span class="number">112</span>	<span class="number">119</span>	<span class="regexp">/var/</span>lib/gdm</span><br><span class="line"><span class="number">8</span> Records Processed</span><br></pre></td></tr></table></figure> ## OFS: 输出字段分隔符变量</code>OFS<code>(Output Field Separator) 相当与输出上的</code>FS<code>, 默认是以一个空格字符作为输出分隔符的，下面是一个OFS的例子: <figure class="highlight dns"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">$ awk -F&#x27;:&#x27; &#x27;&#123;print $<span class="number">3</span>,$<span class="number">4</span><span class="comment">;&#125;&#x27; /etc/passwd</span></span><br><span class="line"><span class="number">41</span> <span class="number">41</span></span><br><span class="line"><span class="number">100 101</span></span><br><span class="line"><span class="number">101 102</span></span><br><span class="line"><span class="number">103</span> <span class="number">7</span></span><br><span class="line"><span class="number">105 111</span></span><br><span class="line"><span class="number">110 116</span></span><br><span class="line"><span class="number">111 117</span></span><br><span class="line"><span class="number">112 119</span></span><br><span class="line"></span><br></pre></td></tr></table></figure> 注意命令中的</code>print<code>语句的</code>,<code>表示的使用一个空格连接两个参数，也就是默认的</code>OFS<code>的值。因此</code>OFS<code>可以像下面那样插入到输出的字段之间: <figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">$ awk -F<span class="string">&#x27;:&#x27;</span> <span class="string">&#x27;BEGIN&#123;OFS=&quot;=&quot;;&#125; &#123;print $3,$4;&#125;&#x27;</span> /etc/passwd</span><br><span class="line"><span class="attribute">41</span>=41</span><br><span class="line"><span class="attribute">100</span>=101</span><br><span class="line"><span class="attribute">101</span>=102</span><br><span class="line"><span class="attribute">103</span>=7</span><br><span class="line"><span class="attribute">105</span>=111</span><br><span class="line"><span class="attribute">110</span>=116</span><br><span class="line"><span class="attribute">111</span>=117</span><br><span class="line"><span class="attribute">112</span>=11</span><br><span class="line"></span><br></pre></td></tr></table></figure> ## RS: 记录分隔符</code>RS<code>(Record Separator)定义了</code>一行记录<code>。读取文件时，默认将一行作为一条记录。 下面的例子以student.txt作为输入文件，记录之间用两行空行分隔，并且每条记录的每个字段用一个换行符分隔: <figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">$cat</span> <span class="string">student.txt</span></span><br><span class="line"><span class="string">Jones</span></span><br><span class="line"><span class="number">2143</span></span><br><span class="line"><span class="number">78</span></span><br><span class="line"><span class="number">84</span></span><br><span class="line"><span class="number">77</span></span><br><span class="line"></span><br><span class="line"><span class="string">Gondrol</span></span><br><span class="line"><span class="number">2321</span></span><br><span class="line"><span class="number">56</span></span><br><span class="line"><span class="number">58</span></span><br><span class="line"><span class="number">45</span></span><br><span class="line"></span><br><span class="line"><span class="string">RinRao</span></span><br><span class="line"><span class="number">2122</span></span><br><span class="line"><span class="number">38</span></span><br><span class="line"><span class="number">37</span></span><br><span class="line"><span class="number">65</span></span><br><span class="line"></span><br><span class="line"><span class="string">Edwin</span></span><br><span class="line"><span class="number">2537</span></span><br><span class="line"><span class="number">78</span></span><br><span class="line"><span class="number">67</span></span><br><span class="line"><span class="number">45</span></span><br><span class="line"></span><br><span class="line"><span class="string">Dayan</span></span><br><span class="line"><span class="number">2415</span></span><br><span class="line"><span class="number">30</span></span><br><span class="line"><span class="number">47</span></span><br><span class="line"><span class="number">20</span></span><br></pre></td></tr></table></figure> 然后下面的脚本就会从student.txt输出两项内容: <figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$cat</span> student.awk</span><br><span class="line">BEGIN &#123;</span><br><span class="line">	<span class="attribute">RS</span>=<span class="string">&quot;\n\n&quot;</span>;</span><br><span class="line">	<span class="attribute">FS</span>=<span class="string">&quot;\n&quot;</span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line">&#123;</span><br><span class="line">	<span class="builtin-name">print</span> <span class="variable">$1</span>,<span class="variable">$2</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">$ awk -f student.awk  student.txt</span><br><span class="line">Jones 2143</span><br><span class="line">Gondrol 2321</span><br><span class="line">RinRao 2122</span><br><span class="line">Edwin 2537</span><br><span class="line">Dayan 2415</span><br><span class="line"></span><br></pre></td></tr></table></figure> 在</code>student.awk`中，把每个学生的详细信息作为一条记录，　这是因为RS(记录分隔符)是被设置为两个换行符。并且因为FS(字段分隔符)是一个换行符，所以一行就是一个字段。</p>
+<h2 id="ors-输出记录分隔符变量">ORS: 输出记录分隔符变量</h2>
+<p><code>ORS</code>(Output Record Separator)顾名思义就相当与输出的<code>RS</code>. 每条记录在输出时候会用分隔符隔开，看下面的 <em>ORS</em>的例子: <figure class="highlight tap"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$  awk &#x27;BEGIN&#123;ORS=&quot;=&quot;;&#125; &#123;print;&#125;&#x27; student-marks</span><br><span class="line">Jones<span class="number"> 2143 </span>78<span class="number"> 84 </span>77=Gondrol<span class="number"> 2321 </span>56<span class="number"> 58 </span>45=RinRao<span class="number"> 2122 </span>38<span class="number"> 37 </span>65=Edwin<span class="number"> 2537 </span>78<span class="number"> 67 </span>45=Dayan<span class="number"> 2415 </span>30<span class="number"> 47 </span>20=</span><br></pre></td></tr></table></figure> 上面的脚本，输入文件的每条记录被"="分隔开. 附:<em>student-marks</em>便是上面的输出.</p>
+<h2 id="nr-记录数变量">NR: 记录数变量</h2>
+<p><code>NR</code>(Number of Record) 表示的是已经处理过的总记录数目，或者说行号(不一定是一个文件，可能是多个)。下面的例子，<code>NR</code>表示行号，在<code>END</code>部分，<code>NR</code>就是文件中的所有记录数目。</p>
+<figure class="highlight ada"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">$ awk &#x27;&#123;print <span class="string">&quot;Processing Record - &quot;</span>,NR;&#125;<span class="keyword">END</span> &#123;print NR, <span class="string">&quot;Students Records are processed&quot;</span>;&#125;&#x27; student-marks</span><br><span class="line">Processing <span class="keyword">Record</span> -  <span class="number">1</span></span><br><span class="line">Processing <span class="keyword">Record</span> -  <span class="number">2</span></span><br><span class="line">Processing <span class="keyword">Record</span> -  <span class="number">3</span></span><br><span class="line">Processing <span class="keyword">Record</span> -  <span class="number">4</span></span><br><span class="line">Processing <span class="keyword">Record</span> -  <span class="number">5</span></span><br><span class="line"><span class="number">5</span> Students Records are processed</span><br></pre></td></tr></table></figure>
+<h2 id="nf一条记录的记录数目">NF:一条记录的记录数目</h2>
+<p><code>NF</code>(Number for Field)表示的是，一条记录的字段的数目.　它在判断某条记录是否所有字段都存在时非常有用。 让我们观察<em>student-mark</em>文件：如下: <figure class="highlight tap"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$cat student-marks</span><br><span class="line">Jones<span class="number"> 2143 </span>78<span class="number"> 84 </span>77</span><br><span class="line">Gondrol<span class="number"> 2321 </span>56<span class="number"> 58 </span>45</span><br><span class="line">RinRao<span class="number"> 2122 </span>38 37</span><br><span class="line">Edwin<span class="number"> 2537 </span>78<span class="number"> 67 </span>45</span><br><span class="line">Dayan<span class="number"> 2415 </span>30 47</span><br></pre></td></tr></table></figure> 接着下面的Awk程序，打印了记录数(NR),以及该记录的字段数目: 因此可以非常容易的发现那些数据丢失了。 <figure class="highlight elixir"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$ </span>awk <span class="string">&#x27;&#123;print NR,&quot;-&gt;&quot;,NF&#125;&#x27;</span> student-marks</span><br><span class="line"><span class="number">1</span> -&gt; <span class="number">5</span></span><br><span class="line"><span class="number">2</span> -&gt; <span class="number">5</span></span><br><span class="line"><span class="number">3</span> -&gt; <span class="number">4</span></span><br><span class="line"><span class="number">4</span> -&gt; <span class="number">5</span></span><br><span class="line"><span class="number">5</span> -&gt; <span class="number">4</span></span><br><span class="line"></span><br></pre></td></tr></table></figure></p>
+<h2 id="filename-当前输入文件的名字">FILENAME: 当前输入文件的名字</h2>
+<p><code>FILENAME</code> 表示当前正在输入的文件的名字. <em>AWK</em>可以接受读取很多个文件去处理。看下面的例子: <figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ awk <span class="string">&#x27;&#123;print FILENAME&#125;&#x27;</span> student-<span class="attribute">marks</span></span><br><span class="line">student-<span class="attribute">marks</span></span><br><span class="line">student-<span class="attribute">marks</span></span><br><span class="line">student-<span class="attribute">marks</span></span><br><span class="line">student-<span class="attribute">marks</span></span><br><span class="line">student-<span class="attribute">marks</span></span><br></pre></td></tr></table></figure> 在输入的文件的每一条记录都会输出该名字。</p>
+<h2 id="fnr-当前输入文件的记录数目">FNR: 当前输入文件的记录数目</h2>
+<p>当awk读取多个文件时，<code>NR</code>代表的是当前输入所有文件的全部记录数，而<code>FNR</code>则是当前文件的记录数。如下面的例子: <figure class="highlight nix"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">$ awk &#x27;&#123;print FILENAME, <span class="string">&quot;FNR= &quot;</span>, FNR,<span class="string">&quot;  NR= &quot;</span>, NR&#125;&#x27; student-marks bookdetails</span><br><span class="line">student-marks <span class="attr">FNR=</span>  <span class="number">1</span>   <span class="attr">NR=</span>  <span class="number">1</span></span><br><span class="line">student-marks <span class="attr">FNR=</span>  <span class="number">2</span>   <span class="attr">NR=</span>  <span class="number">2</span></span><br><span class="line">student-marks <span class="attr">FNR=</span>  <span class="number">3</span>   <span class="attr">NR=</span>  <span class="number">3</span></span><br><span class="line">student-marks <span class="attr">FNR=</span>  <span class="number">4</span>   <span class="attr">NR=</span>  <span class="number">4</span></span><br><span class="line">student-marks <span class="attr">FNR=</span>  <span class="number">5</span>   <span class="attr">NR=</span>  <span class="number">5</span></span><br><span class="line">bookdetails <span class="attr">FNR=</span>  <span class="number">1</span>   <span class="attr">NR=</span>  <span class="number">6</span></span><br><span class="line">bookdetails <span class="attr">FNR=</span>  <span class="number">2</span>   <span class="attr">NR=</span>  <span class="number">7</span></span><br><span class="line">bookdetails <span class="attr">FNR=</span>  <span class="number">3</span>   <span class="attr">NR=</span>  <span class="number">8</span></span><br><span class="line">bookdetails <span class="attr">FNR=</span>  <span class="number">4</span>   <span class="attr">NR=</span>  <span class="number">9</span></span><br><span class="line">bookdetails <span class="attr">FNR=</span>  <span class="number">5</span>   <span class="attr">NR=</span>  <span class="number">10</span></span><br></pre></td></tr></table></figure> 附: bookdetails与student-marks内容一样，作例子. 可以看出来<code>NR</code>与<code>FNR</code>的区别。</p>
+<p>经常使用<code>NR</code>与<code>FNR</code>结合来处理两个文件，比如: 有两个文件: <figure class="highlight gherkin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">shomy<span class="meta">@LiuPC:awk$</span> cat a.txt</span><br><span class="line">李四|<span class="string">000002</span></span><br><span class="line"><span class="string">张三</span>|000001</span><br><span class="line">王五|<span class="string">000003</span></span><br><span class="line"><span class="string">赵六</span>|000004</span><br><span class="line">shomy<span class="meta">@LiuPC:awk$</span> cat b.txt</span><br><span class="line">000001|<span class="string">10</span></span><br><span class="line"><span class="string">000001</span>|20</span><br><span class="line">000002|<span class="string">30</span></span><br><span class="line"><span class="string">000002</span>|15</span><br><span class="line">000002|<span class="string">45</span></span><br><span class="line"><span class="string">000003</span>|40</span><br><span class="line">000003|<span class="string">25</span></span><br><span class="line"><span class="string">000004</span>|60</span><br></pre></td></tr></table></figure> 如果想作对应的话,　比如<em>张三|000001|10</em> <figure class="highlight gherkin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">shomy<span class="meta">@LiuPC:awk$</span> awk -F &#x27;|<span class="string">&#x27; &#x27;NR == FNR&#123;a[$2]=$1;&#125; NR&gt;FNR &#123;print a[$1],&quot;</span>|<span class="string">&quot;, $0&#125;&#x27; a.txt b.txt</span></span><br><span class="line"><span class="string">张三 </span>|<span class="string"> 000001</span>|10</span><br><span class="line">张三 |<span class="string"> 000001</span>|20</span><br><span class="line">李四 |<span class="string"> 000002</span>|30</span><br><span class="line">李四 |<span class="string"> 000002</span>|15</span><br><span class="line">李四 |<span class="string"> 000002</span>|45</span><br><span class="line">王五 |<span class="string"> 000003</span>|40</span><br><span class="line">王五 |<span class="string"> 000003</span>|25</span><br><span class="line">赵六 |<span class="string"> 000004</span>|60</span><br></pre></td></tr></table></figure> 完</p>
+
+      
+    </div>
+
+
+    
+
+    
+	    <div class="article-footer-copyright">
+<!--<p>本文作者: shomy 发表于 <a href="http://shomy.top" target="_blank">个人博客</a></p> -->
+<p>
+本文标题: &lt;译&gt;8个有力的Awk内建变量<br/>
+</p>
+<p>
+发布时间: 2016-05-05, 14:43:51<br/>
+<p>
+<p>
+最后更新: 2021-12-16, 23:11:45<br/>
+<p>
+本文链接: <a href="/2016/05/05/trans-8-powerful-awk-built-in-variables/" target="_blank">http://shomy.top/2016/05/05/trans-8-powerful-awk-built-in-variables/</a>
+</p>
+<p>非商业转载请注明作者及出处。商业转载请联系<a href="mailto:shomyliu@gmail.com">作者</a>本人。</p>
+</div>
+
+    
+
+    <footer class="article-footer">
+      
+        <a href="http://shomy.top/2016/05/05/trans-8-powerful-awk-built-in-variables/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/AWK/" rel="tag">AWK</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/translate/" rel="tag">translate</a></li></ul>
+
+    </footer>
+    
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2016/07/09/twilio-flask-slack/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          使用Twilio构建SlackBot
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2016/04/14/git-server-hook/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">搭建git服务器以及web自动化部署</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+
+
+<section id="comments">
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+<script>
+  var disqus_shortname = 'shomy';
+  
+  var disqus_url = 'http://shomy.top/2016/05/05/trans-8-powerful-awk-built-in-variables/';
+  
+  (function(){
+    var dsq = document.createElement('script');
+    dsq.type = 'text/javascript';
+    dsq.async = true;
+    dsq.src = 'https://' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  }());
+</script>
+</section>
+
+
+
+
+</section>
+      </div>
+    </div>
+    
+    
+<a id="rocket" href="#top" ></a>
+
+<script src="https://cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <script src="http://cdn.htliu.cn/static/js/leancloud.js"></script>
+<script>AV.initialize("k883AKdzaz5jccQnH1eIrG2r-gzGzoHsz", "4HBQOmslEp3VdwK1SGL8vB9Y");</script>
+
+<script src="/js/Counter.js"></script>
+
+
+
+
+
+<script id="dsq-count-scr" src="//shomy.disqus.com/count.js" async></script>
+ 
+
+
+  <script src="https://cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.js"></script>
+  
+<script src="/js/fancybox.js"></script>
+
+
+
+
+  
+<script src="/js/search.js"></script>
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>机器学习技法笔记(8)-SVR(支持向量回归) | 天空的城</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="这一节是核模型的最后一部分了，将Kernel引入到一般的回归模型中: 核岭回归(Kernel Ridge Regression)以及支持向量回归(Support Vector Regression)，此外文末对这一占了整个课程40%的大块内容做了简单总结。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="机器学习技法笔记(8)-SVR(支持向量回归)">
+<meta property="og:url" content="http://shomy.top/2017/03/09/support-vector-regression/index.html">
+<meta property="og:site_name" content="天空的城">
+<meta property="og:description" content="这一节是核模型的最后一部分了，将Kernel引入到一般的回归模型中: 核岭回归(Kernel Ridge Regression)以及支持向量回归(Support Vector Regression)，此外文末对这一占了整个课程40%的大块内容做了简单总结。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://cdn.htliu.cn/svr-1.png">
+<meta property="og:image" content="http://cdn.htliu.cn/svr-2.png">
+<meta property="og:image" content="http://cdn.htliu.cn/svr-3.png">
+<meta property="og:image" content="http://cdn.htliu.cn/svr-4.png">
+<meta property="article:published_time" content="2017-03-09T04:08:28.000Z">
+<meta property="article:modified_time" content="2021-12-16T15:11:45.671Z">
+<meta property="article:author" content="ShomyLiu">
+<meta property="article:tag" content="machine learning">
+<meta property="article:tag" content="svr">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://cdn.htliu.cn/svr-1.png">
+  
+  
+    <link rel="icon" href="/image/favicon.ico">
+  
+
+  
+  <link href="https://cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.css" rel="stylesheet">
+  
+  <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  <link href="https://cdn.bootcss.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+<!-- Google Analytics -->
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-74368890-2', 'auto');
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+
+
+  
+
+  
+  <div class="site-search header-inner">
+    <div class="popup">
+        <span class="search-icon fa fa-search"></span>
+        <input type="text" id="local-search-input">
+        <div id="local-search-result"></div>
+        <span class="popup-btn-close">close</span>
+    </div>
+</div>
+
+
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      
+<header id="header">
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">天空的城</a>
+      </h1>
+      
+    </div>
+    <div id="header-menu">
+      <nav id="main-nav">
+        <ul>
+        
+          <li><a href="/"><i class="fa fa-home icon-setting"></i></a></li>
+        
+          <li><a href="/archives"><i class="fa fa-archive icon-setting"></i></a></li>
+        
+          <li><a href="/tags"><i class="fa fa-tag icon-setting"></i></a></li>
+        
+          <li><a href="/about"><i class="fa fa-user icon-setting"></i></a></li>
+        
+        
+          <li><a href="javascript:;" class="popup-trigger"><i class="fa fa-search > icon-setting"></i></a></li>
+        
+        </ul>
+      </nav>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-support-vector-regression" class="article article-type-post" itemscope itemprop="blogPost">
+  
+  <div class="article-meta">
+    <a href="/2017/03/09/support-vector-regression/" class="article-date">
+  <time datetime="2017-03-09T04:08:28.000Z" itemprop="datePublished">2017-03-09</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/">读书笔记</a>
+  </div>
+
+
+    
+        <div class="counter-tag counter">
+    <!-- 别忘记这个类名... post-title-link -->
+    <span id="/2017/03/09/support-vector-regression/" class="leancloud_visitors article-hits post-title-link"
+           data-flag-title="机器学习技法笔记(8)-SVR(支持向量回归)">
+        次阅读
+    </span>
+
+  </div>
+
+    
+
+  </div>
+  
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      机器学习技法笔记(8)-SVR(支持向量回归)
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+            <div id="toc" class="toc-article">
+                <strong class="toc-title">文章目录</strong>
+                <ol class="post-toc"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E6%A0%B8%E5%B2%AD%E5%9B%9E%E5%BD%92"><span class="post-toc-text">核岭回归</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E6%94%AF%E6%8C%81%E5%90%91%E9%87%8F%E5%9B%9E%E5%BD%92"><span class="post-toc-text">支持向量回归</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E6%A0%B8%E6%A8%A1%E5%9E%8Bkernel-model%E6%80%BB%E7%BB%93"><span class="post-toc-text">核模型(Kernel Model)总结</span></a></li></ol>
+            </div>
+        
+        
+        <p>这一节是核模型的最后一部分了，将Kernel引入到一般的回归模型中: 核岭回归(Kernel Ridge Regression)以及支持向量回归(Support Vector Regression)，此外文末对这一占了整个课程40%的大块内容做了简单总结。</p>
+<span id="more"></span>
+<h2 id="核岭回归">核岭回归</h2>
+<p>上一节的表示定理(Representer Theorem)说明，任何<span class="math inline">\(L_2\)</span>正则化的线性模型的最优解都可以表示成数据的线性组合，也就可以引入Kernel了，进而更加Powerful。现在看之前的岭回归(<span class="math inline">\(L_2\)</span>正则化的线性回归):</p>
+<p><span class="math display">\[\min_{\mathbf w} \quad {\lambda\over N}\mathbf w^T\mathbf w+{1\over N}\sum_{n=1}^N\left(y_n-\mathbf w^T\mathbf z_n\right)^2\]</span></p>
+<p>显然最优解<span class="math inline">\(\mathbf w_{*} = \sum \beta_n \mathbf z_n\)</span>,那么完全按照上一节KLR的形式，引入Kernel Function，用<span class="math inline">\(\beta\)</span>替换<span class="math inline">\(\mathbf w\)</span>:</p>
+<p><span class="math display">\[\begin{align} &amp; \min_\beta \quad {\lambda\over N}\sum_{n=1}^N\sum_{m=1}^N\beta_n\beta_mK(\mathbf x_n,\mathbf x_m)+{1\over N}\sum_{n=1}^N\left(y_n-\sum_{n=1}^N\beta_mK(\mathbf x_n,\mathbf x_m)\right)^2 \\   \Leftrightarrow &amp; \min_\beta \quad {\lambda \over N } \beta^TK\beta +{1 \over N} \left( \mathbf y^T \mathbf y  - 2\beta^TK^T\mathbf y +  \beta^TK^TK\beta\right)\end{align}\]</span></p>
+<p>用矩阵表示一来看起来简介，求微分简单，二来矩阵计算比循环要快很多。(PS: 每一个<span class="math inline">\(\sum\)</span>都可以表示为矩阵的乘积，如果一眼看不出来，就展开只能一点点的凑)。</p>
+<p>同样得到一个这个无约束的优化问题了， 可以用梯度方式来直接接线性方程(KLR则需要梯度下降来求):</p>
+<p><span class="math display">\[{\partial E_{in} \over \partial \beta} = {2 \over N}\left( \lambda K^TI\beta+K^TK\beta - K^T\mathbf y \right)\]</span></p>
+<p>(引入<span class="math inline">\(I\)</span>是为了后面与<span class="math inline">\(\lambda\)</span>计算方便)然后令微分为0，得到下面的结果:</p>
+<p><span class="math display">\[\beta = (\lambda I +K)^{-1}\mathbf y\]</span></p>
+<p>前面在介绍SVM的时候提到过核函数矩阵K是半正定对称方阵，因此逆矩阵一定存在，对于<span class="math inline">\(N \times N\)</span>的矩阵求逆矩阵复杂大是<span class="math inline">\(O(N^3)\)</span>，而且由于核函数矩阵大部分都不为0，最后得到的<span class="math inline">\(\beta\)</span>也是非稀疏矩阵，因此在数据量比较大的时候，计算量还是蛮大的。</p>
+<p>到此，上述的模型就称为: Kernel Ridge Regression，完整如下为:</p>
+<p><span class="math display">\[g(\mathbf x) = \sum\limits_{n=1}^{N}\beta_nK(\mathbf x_n, \mathbf x)\]</span></p>
+<p>通过引入核，可以解决非线性的回归预测问题了。下面对比带核与否的Ridge Regression的一些区别:</p>
+<p><img src="http://cdn.htliu.cn/svr-1.png" /></p>
+<p>两种模型的优缺点与适用场合也就很明显了，只要数据量没有远大于数据维度的话，就可以用kernel ridge regression, 不过还是有一个原则: Linear First。</p>
+<h2 id="支持向量回归">支持向量回归</h2>
+<p>上面的核岭回归由于核函数矩阵不稀疏，计算量比较大。而之前SVM则只考虑少部分的Support Vectors，得到的<span class="math inline">\(\alpha\)</span>是sparse的，这一节就从Soft-Margin的角度来重新设计Linear Regression的误差衡量。</p>
+<p>定义Tube Regression的误差为:</p>
+<p><span class="math display">\[err(y,s)=\max(0, |s-y|-\epsilon), \quad s=\mathbf w^Tz_n +b, \ \epsilon &gt; 0\]</span></p>
+<p>也就是说，同Soft-Margin SVM分类问题容许偏差的存在，如果预测值与实际值的差距小于<span class="math inline">\(\epsilon\)</span>的时候，就认为err=0，tube可以理解为预测误差在允许范围内，如下图对比tube error与 square error：</p>
+<p><img src="http://cdn.htliu.cn/svr-2.png" /></p>
+<p>仿照SVM，加上<span class="math inline">\(L_2\)</span>正则项的Tube Regression的目标函数定义为:</p>
+<p><span class="math display">\[\min\limits_{b,\mathbf w}\left({1\over 2}\mathbf w^T\mathbf w+C\sum_{n=1}^N\max\left(0, \left\lvert \mathbf w^T\mathbf z_n+b-y_n\right\rvert-\epsilon\right)\right)\]</span></p>
+<p>不过由于含有max项，无法微分因此求解很困难，我们可以参考在SVM的方法将问题转为二次规划问题来解决。下面引入新的松弛变量<span class="math inline">\(\xi_n \geq 0\)</span>表示第n个数据的误差，这样目标函数转化为:</p>
+<p><span class="math display">\[\begin{align} \min\limits_{b,\mathbf w} \quad  &amp;\left({1\over 2}\mathbf w^T\mathbf w+C\sum_{n=1}^N\xi_n)\right) \\ s.t. \quad &amp; \left\lvert \mathbf w^T\mathbf z_n+b-y_n\right\rvert \leq\epsilon+\xi_n \\ &amp;for \ all \ n, \xi_n \geq 0 \end{align}\]</span></p>
+<p>这样的话，对于误差不大于<span class="math inline">\(\epsilon\)</span>的数据，<span class="math inline">\(\xi_n=0\)</span>，反之则<span class="math inline">\(\xi_n &gt; 0\)</span>，不过到此为止，还是不够的，因为约束条件里面有绝对值，这个还是无法用二次规划求解的。下面去掉绝对值，根绝取值的正负分两种情况，把<span class="math inline">\(\xi_n\)</span>拆成两个个<span class="math inline">\(\xi_n^{\wedge}, \xi_n^{\vee}\)</span>，分别真实值大于模型得到的值，以及真实值小于模型得到的值的情形，得到的最终目标函数:</p>
+<p><span class="math display">\[\begin{align} \min\limits_{b,\mathbf w} \quad  &amp;\left({1\over 2}\mathbf w^T\mathbf w+C\sum_{n=1}^N(\xi_n^{\vee}+\xi_n^{\wedge})\right) \\ s.t. \quad &amp;  \mathbf y_n-\mathbf w^T\mathbf z_n-b \leq\epsilon+\xi_n^{\wedge} \ \ \ \quad (1) \\ &amp; \mathbf y_n-\mathbf w^T\mathbf z_n-b \geq -\epsilon-\xi_n^{\vee}  \quad (2)\\&amp;\xi_n^{\wedge}, \xi_n^{\vee} \geq 0 \end{align}\]</span></p>
+<p>当真实值大于模型值的时候，需要满足约束条件(1)，当真实值小于模型值的时候，需要满足约束条件(2)，这样就是一个标准的二次规划的问题了。</p>
+<p>到此为止，支持向量回归的原始问题(SVR Primal)就得到了，考察一下这个QP的规模: 一共有<span class="math inline">\(\tilde{d}+1+2N\)</span>个变量(<span class="math inline">\(\mathbf w\)</span>是Z-Space的权重，维度为<span class="math inline">\(\tilde{d}+1\)</span>)，<span class="math inline">\(2N+2N\)</span>个约束条件，跟SVM的原始问题存在一样的缺陷，原始数据映射到Z-Space之后，维度太高，计算量过大。因此就引出了SVR Dual(支持向量回归的对偶问题)。</p>
+<p><strong>SVR Dual</strong></p>
+<p>对偶问题首先需要加入拉格朗日乘子，因为每个数据有四个约束条件，因此引入四个<span class="math inline">\(\alpha_n^{\wedge}, \alpha_n^{\vee},\beta_n^{\wedge}, \beta_n^{\vee}\geq0\)</span>:</p>
+<p><span class="math display">\[\begin{align}\mathcal L(b, \mathbf w, \alpha^{\vee}, \alpha^{\wedge}) = &amp;{1\over 2}\mathbf w^T \mathbf w+C\sum(\xi_n^{\vee}+\xi_n^{\wedge}) \\ +&amp;\sum\alpha_n^{\wedge}(\mathbf y_n - \mathbf w^T\mathbf z_n -b-\epsilon-\xi_n^{\wedge}) \\+&amp;\sum\alpha_n^{\vee}(-\epsilon-\xi_n^{\wedge}-\mathbf y_n + \mathbf w^T\mathbf z_n +b) \\+ &amp; \sum\beta_n^{\wedge}(-\xi_n^{\wedge}) + \sum\beta_n^{\vee}(-\xi_n^{\vee})\end{align}\]</span></p>
+<p>根据强对偶理论，以及在<a href="http://shomy.top/2017/02/17/svm-02-dual/">对偶SVM</a>介绍的内容，Primal SVR 与下面的对偶问题等价:</p>
+<p><span class="math display">\[\max \limits_{\alpha_n^{\vee}, \alpha_{n}^{\wedge}&gt;0} \left( \min\limits_{b, \mathbf w, \epsilon} \mathcal L(b, \mathbf w, \xi^{\vee}, \xi^{\wedge})\right)\]</span></p>
+<p>下面推导Dual SVR(课程中略):</p>
+<p>首先求各个变量微分优化<span class="math inline">\(\min\)</span>:</p>
+<p><span class="math display">\[\begin{align} &amp;{ \partial \mathcal L \over \partial \xi_n^{\wedge}} = C-\alpha_n^{\wedge}-\beta_n^{\wedge} = 0 \quad \quad \quad \quad(1) \\ &amp; {\partial \mathcal L \over \partial \xi_n^{\vee}} = C-\alpha_n^{\vee}-\beta_n^{\vee} = 0 \quad \quad \quad \quad (2)\\ &amp;{\partial  \mathcal L \over \partial b} = \sum(\alpha_n^{\vee}-\alpha_n^{\wedge}) = 0 \quad \quad \quad\quad (3)\\ &amp; {\partial \mathcal L \over \partial \mathbf w } = \mathbf w - \sum(\alpha_n^{\wedge}- \alpha_n^{\vee})\mathbf z_n = 0 \quad(4)\end{align}\]</span></p>
+<p>一共得到了4个(组)等式，这几个等式最优解也会满足，其中<span class="math inline">\(1 \leq\alpha_n \leq C\)</span>，将<span class="math inline">\(\beta^{\vee}, \beta^{\wedge}\)</span>,以及(3)式代入到<span class="math inline">\(\mathcal L\)</span>中，消去<span class="math inline">\(\beta,b,\xi_n\)</span>,经过化简得到:</p>
+<p><span class="math display">\[\begin{align}\min\limits_{\mathbf w}  \mathcal{L}(b, \mathbf w, \xi_{\vee}, \xi^{\wedge}) &amp;\Leftrightarrow \min \quad {1\over 2}\mathbf w^T\mathbf w + \sum(\alpha_n^{\vee}-\alpha_n^{\wedge})\mathbf w^T\mathbf z_n +\sum(\alpha_n^{\wedge}(y_n-\epsilon) + \alpha_n^{\vee}(-\epsilon-y_n) ) \\ &amp;\Leftrightarrow \min \quad  {1\over 2}\mathbf w^T\mathbf w -\mathbf w^T\mathbf w +\sum(\alpha_n^{\wedge}(y_n-\epsilon) + \alpha_n^{\vee}(-\epsilon-y_n) ) \\ &amp;\Leftrightarrow -{1 \over 2}\sum\limits_{n=1}^N\sum\limits_{m=1}^N(\alpha_n^{\wedge}- \alpha_n^{\vee}) (\alpha_m^{\wedge}- \alpha_m^{\vee})K(\mathbf x_n, \mathbf x_m)\\ &amp; \quad \quad  +\sum(\alpha_n^{\wedge}(y_n-\epsilon) + \alpha_n^{\vee}(-\epsilon-y_n) ) \end{align}\]</span></p>
+<p>上面的过程我们已经引入了核函数代替<span class="math inline">\(\mathbf {z_nz_m}\)</span>，至此最小化过程完成，开始考虑最外面<span class="math inline">\(\max\)</span>部分，取相反数，结合约束来求最小值，最后的问题如下:</p>
+<p><img src="http://cdn.htliu.cn/svr-3.png" /></p>
+<p>上式就是一个标准的二次规划问题，一共有<span class="math inline">\(2N\)</span>个变量，按照格式写出QP Solver的Q,p,A,c，即可得到最优解<span class="math inline">\(\alpha_n^{\vee}, \alpha_n^{\wedge}\)</span>。</p>
+<p>最后返回到模型，在对偶问题中，我们还有一个很重要的互补条件(complementary slackness)，如下:</p>
+<p><span class="math display">\[\begin{align}\alpha_n^\wedge\left(\epsilon+\xi_n^\wedge-y_n+\mathbf w^T\mathbf z_n+b\right)&amp;=0\\ \alpha_n^\vee\left(\epsilon+\xi_n^\vee+y_n-\mathbf w^T\mathbf z_n-b\right)&amp;=0 \\ \beta_n^{\vee}\xi_n^{\vee}=(C-\alpha_n^{\vee})\xi_{n}^{\vee} &amp;=0 \\ \beta_n^{\wedge}\xi_n^{\wedge}=(C-\alpha_n^{\wedge})\xi_{n}^{\wedge} &amp;=0 \end{align}\]</span></p>
+<p>现在考虑一些点: <span class="math inline">\(|\mathbf w^T\mathbf z_n +b - y_n| &lt; \epsilon\)</span>,也就是那些在tube内部的，预测值与真实值的误差在允许范围内的点，对于它们，以下条件成立:</p>
+<p><span class="math display">\[\begin{align} &amp; \xi_n^{\vee} = \xi_n^{\wedge} = 0 \\ \Rightarrow &amp;\epsilon -y_n+\mathbf w^T\mathbf z +b\neq0  \\ &amp; \epsilon +y_n-\mathbf w^T\mathbf z -b\neq0 \\ \Rightarrow &amp; \alpha_n^{\vee} =0 \\ &amp; \alpha_n^{\wedge}=0 \end{align}\]</span></p>
+<p>根据前面条件<span class="math inline">\(\mathbf w=\sum\limits_{n=1}^N(\alpha_n^{\wedge}-\alpha_n^{\vee})\mathbf z_n\)</span>，我们开始的目标之一便是想得到一个比较稀疏的系数, 现在对于在误差范围内的点<span class="math inline">\(\mathbf z_n\)</span>的系数已经为0。只有在tube外面的数据点的不为0，这些点也就是Supports Vectors。</p>
+<p>对于<span class="math inline">\(b\)</span>的解法，同soft-margin SVM，从Support Vectors中考虑，只需要找到某个<span class="math inline">\(0&lt;\alpha_s&lt;C\)</span>的数据，这样由互补约束便可知<span class="math inline">\(\xi_s=0\)</span>，从而得到b:</p>
+<p><span class="math display">\[b = \epsilon + y_s -\mathbf w^T\mathbf z_s = \epsilon + y_s -\sum(\alpha_n^{\wedge}-\alpha_n^{\vee})K(\mathbf x_s, x_n)\]</span></p>
+<p>最后得到<strong>Support Vector Regression(SVR)</strong>模型: <span class="math inline">\(g(\mathbf x)=\sum(\alpha_n^{\wedge}-\alpha_n^{\vee})K(\mathbf x_n, \mathbf x) + b\)</span></p>
+<h2 id="核模型kernel-model总结">核模型(Kernel Model)总结</h2>
+<p>到此为止，线性模型/核模型这一大块的内容基本完结了，占了技法课程的40%。回顾一下，整理一下，有如下约10个模型或者算法那:</p>
+<p><img src="http://cdn.htliu.cn/svr-4.png" /></p>
+<p>在实际中我们一般使用较少的有 PLA, Linear SVR,因为效果不好，限制很大。而至于Kernel Ridge Regression(核岭回归), Kernel Logistic Regression(核逻辑回归)也使用较少，因为其权重矩阵是稠密的(dense)，计算量较大。相比核岭回归，在实际中更加倾向使用SVR; 相比核逻辑回归，更倾向于使用概率SVM。常用的一般有SVM, SVR, 线性岭回归，L2正则化的逻辑回归等。</p>
+
+      
+    </div>
+
+
+    
+
+    
+	    <div class="article-footer-copyright">
+<!--<p>本文作者: shomy 发表于 <a href="http://shomy.top" target="_blank">个人博客</a></p> -->
+<p>
+本文标题: 机器学习技法笔记(8)-SVR(支持向量回归)<br/>
+</p>
+<p>
+发布时间: 2017-03-09, 12:08:28<br/>
+<p>
+<p>
+最后更新: 2021-12-16, 23:11:45<br/>
+<p>
+本文链接: <a href="/2017/03/09/support-vector-regression/" target="_blank">http://shomy.top/2017/03/09/support-vector-regression/</a>
+</p>
+<p>非商业转载请注明作者及出处。商业转载请联系<a href="mailto:shomyliu@gmail.com">作者</a>本人。</p>
+</div>
+
+    
+
+    <footer class="article-footer">
+      
+        <a href="http://shomy.top/2017/03/09/support-vector-regression/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/machine-learning/" rel="tag">machine learning</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/svr/" rel="tag">svr</a></li></ul>
+
+    </footer>
+    
+	    <script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+    
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2017/03/11/tensorflow-basic-api/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          TensorFlow常用API
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2017/03/07/kernel-lr/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">机器学习技法笔记(7)-Kernel LR(核逻辑回归)</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+
+
+<section id="comments">
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+<script>
+  var disqus_shortname = 'shomy';
+  
+  var disqus_url = 'http://shomy.top/2017/03/09/support-vector-regression/';
+  
+  (function(){
+    var dsq = document.createElement('script');
+    dsq.type = 'text/javascript';
+    dsq.async = true;
+    dsq.src = 'https://' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  }());
+</script>
+</section>
+
+
+
+
+</section>
+      </div>
+    </div>
+    
+    
+<a id="rocket" href="#top" ></a>
+
+<script src="https://cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <script src="http://cdn.htliu.cn/static/js/leancloud.js"></script>
+<script>AV.initialize("k883AKdzaz5jccQnH1eIrG2r-gzGzoHsz", "4HBQOmslEp3VdwK1SGL8vB9Y");</script>
+
+<script src="/js/Counter.js"></script>
+
+
+
+
+
+<script id="dsq-count-scr" src="//shomy.disqus.com/count.js" async></script>
+ 
+
+
+  <script src="https://cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.js"></script>
+  
+<script src="/js/fancybox.js"></script>
+
+
+
+
+  
+<script src="/js/search.js"></script>
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>机器学习技法笔记(3)-对偶SVM | 天空的城</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="对偶SVM主要解决在非线性转换之后维度变高二次规划问题求解困难的问题。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="机器学习技法笔记(3)-对偶SVM">
+<meta property="og:url" content="http://shomy.top/2017/02/17/svm-02-dual/index.html">
+<meta property="og:site_name" content="天空的城">
+<meta property="og:description" content="对偶SVM主要解决在非线性转换之后维度变高二次规划问题求解困难的问题。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://cdn.htliu.cn/svm02-1.png">
+<meta property="og:image" content="http://cdn.htliu.cn/svm02-3.png">
+<meta property="og:image" content="http://cdn.htliu.cn/svm02-4.png">
+<meta property="og:image" content="http://cdn.htliu.cn/svm02-5.png">
+<meta property="article:published_time" content="2017-02-17T08:31:05.000Z">
+<meta property="article:modified_time" content="2021-12-16T15:11:45.671Z">
+<meta property="article:author" content="ShomyLiu">
+<meta property="article:tag" content="machine learning">
+<meta property="article:tag" content="svm">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://cdn.htliu.cn/svm02-1.png">
+  
+  
+    <link rel="icon" href="/image/favicon.ico">
+  
+
+  
+  <link href="https://cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.css" rel="stylesheet">
+  
+  <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  <link href="https://cdn.bootcss.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+<!-- Google Analytics -->
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-74368890-2', 'auto');
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+
+
+  
+
+  
+  <div class="site-search header-inner">
+    <div class="popup">
+        <span class="search-icon fa fa-search"></span>
+        <input type="text" id="local-search-input">
+        <div id="local-search-result"></div>
+        <span class="popup-btn-close">close</span>
+    </div>
+</div>
+
+
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      
+<header id="header">
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">天空的城</a>
+      </h1>
+      
+    </div>
+    <div id="header-menu">
+      <nav id="main-nav">
+        <ul>
+        
+          <li><a href="/"><i class="fa fa-home icon-setting"></i></a></li>
+        
+          <li><a href="/archives"><i class="fa fa-archive icon-setting"></i></a></li>
+        
+          <li><a href="/tags"><i class="fa fa-tag icon-setting"></i></a></li>
+        
+          <li><a href="/about"><i class="fa fa-user icon-setting"></i></a></li>
+        
+        
+          <li><a href="javascript:;" class="popup-trigger"><i class="fa fa-search > icon-setting"></i></a></li>
+        
+        </ul>
+      </nav>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-svm-02-dual" class="article article-type-post" itemscope itemprop="blogPost">
+  
+  <div class="article-meta">
+    <a href="/2017/02/17/svm-02-dual/" class="article-date">
+  <time datetime="2017-02-17T08:31:05.000Z" itemprop="datePublished">2017-02-17</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/">读书笔记</a>
+  </div>
+
+
+    
+        <div class="counter-tag counter">
+    <!-- 别忘记这个类名... post-title-link -->
+    <span id="/2017/02/17/svm-02-dual/" class="leancloud_visitors article-hits post-title-link"
+           data-flag-title="机器学习技法笔记(3)-对偶SVM">
+        次阅读
+    </span>
+
+  </div>
+
+    
+
+  </div>
+  
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      机器学习技法笔记(3)-对偶SVM
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+            <div id="toc" class="toc-article">
+                <strong class="toc-title">文章目录</strong>
+                <ol class="post-toc"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E5%AF%B9%E5%81%B6%E7%9A%84%E5%BC%95%E5%85%A5"><span class="post-toc-text">对偶的引入</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#%E6%8B%89%E6%A0%BC%E6%9C%97%E6%97%A5%E5%87%BD%E6%95%B0"><span class="post-toc-text">拉格朗日函数</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#%E5%AF%B9%E5%81%B6%E9%97%AE%E9%A2%98%E8%BD%AC%E5%8C%96"><span class="post-toc-text">对偶问题转化</span></a></li></ol></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E6%B1%82%E8%A7%A3%E5%AF%B9%E5%81%B6%E9%97%AE%E9%A2%98"><span class="post-toc-text">求解对偶问题</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#%E6%9C%80%E5%B0%8F%E5%8C%96"><span class="post-toc-text">最小化</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#%E6%9C%80%E5%A4%A7%E5%8C%96"><span class="post-toc-text">最大化</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#%E6%A8%A1%E5%9E%8B%E6%B1%82%E8%A7%A3"><span class="post-toc-text">模型求解</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#%E6%95%B0%E6%8D%AE%E8%A1%A8%E7%A4%BA%E6%A8%A1%E5%9E%8B"><span class="post-toc-text">数据表示模型</span></a></li></ol></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E5%90%8E%E7%BB%AD"><span class="post-toc-text">后续</span></a></li></ol>
+            </div>
+        
+        
+        <blockquote>
+<p>对偶SVM主要解决在非线性转换之后维度变高二次规划问题求解困难的问题。</p>
+</blockquote>
+<span id="more"></span>
+<blockquote>
+<p>在上一节的Linear SVM的最后提到了，在非线性分类问题中，我们一般作非线性转换<span class="math inline">\(\textbf{z}_n = \phi(\textbf{x}_n)\)</span>，从而在<span class="math inline">\(\textbf{z}\)</span>空间里面进行线性分类，在非线性转换过程一般是一个升维的过程，将<span class="math inline">\(\textbf{z}\)</span>的维度一般设为<span class="math inline">\(\tilde{d}\)</span>, 一般情况 <span class="math inline">\(\tilde{d} &gt;&gt; d\)</span>，(比如2维变5维，3维变19维等是一个非线性升高)，这样在高维空间内部，在二次规划问题中的就会有<span class="math inline">\(\tilde{d}+1\)</span>个变量，那么权值维度同样也为<span class="math inline">\(\tilde{d}+1\)</span>维，以及<span class="math inline">\(N\)</span>个约束，此外<span class="math inline">\(Q\)</span> 矩阵维度会十分大，达到<span class="math inline">\(\tilde{d}^2\)</span>，因此，一旦<span class="math inline">\(\tilde{d}\)</span>变大了， 二次规划问题求解就会变得很困难。</p>
+</blockquote>
+<p>这一节就是通过引入对偶问题以及下一节的核，来消除SVM解决非线性问题转换到高维空间中对<span class="math inline">\(\tilde{d}\)</span>依赖问题。</p>
+<h2 id="对偶的引入">对偶的引入</h2>
+<p>我们的目标是<strong>将原始的非线性问题，转化为另外一个对等问题，使得新的对等问题的规模或者说复杂度(主要指二次规划问题的规模，比如变量数目，约束条件数目等)仅仅与原始数据的规模(样本量)有关，与转换的高维空间无关</strong>，如下:</p>
+<p><img src="http://cdn.htliu.cn/svm02-1.png" /></p>
+<h3 id="拉格朗日函数">拉格朗日函数</h3>
+<p>在引入对偶问题之前，在回顾上一节的二次规划问题<strong>SVM</strong>:</p>
+<p><span class="math display">\[ \begin{align} &amp; \min \limits_{b, \textbf{w}}  \quad \frac{1}{2}\textbf{w}^T\textbf{w} \\&amp; s.t. \quad y_n(\textbf{w}^T\textbf{x}+b) \geq 1 \end{align} \]</span></p>
+<p>我们从另一个角度考虑，这里我们引入拉格朗日函数(Lagrange Function)来将约束条件和目标函数结合到一个式子:</p>
+<p><span class="math display">\[\mathcal{L}(b, \textbf{w}, \mathbf{\alpha}) = \frac{1}{2}\textbf{w}^T \textbf{w} + \sum\limits_{n=1}^{N}\alpha_n(1-y_n(\mathbf{w}^T\mathbf{x}+b)), \quad \alpha_n \geq 0\]</span></p>
+<p>其中<span class="math inline">\(\mathbf{\alpha}\)</span> 为拉格朗日乘子(Lagrange Multiplier)。</p>
+<p>下面我们将说明原始SVM二次规划问题与下式等价，即:</p>
+<p><span class="math display">\[\mathbf{SVM} \equiv \min \limits_{b, \mathbf{w}} (\max \limits_{\alpha_n \geq 0} \mathcal{L}(b, \mathbf{w},\alpha))\]</span></p>
+<p>首先右式表示多元变量的优化问题，首先在固定<span class="math inline">\(b,\mathbf{w}\)</span>下，通过调整<span class="math inline">\(\alpha\)</span>,使得<span class="math inline">\(\mathcal{L}(b, \textbf{w}, \alpha)\)</span> 最大，进而再优化外面的<span class="math inline">\(\min\)</span>部分。</p>
+<p>再看<span class="math inline">\(\max\)</span>部分，分两种情况叙述:</p>
+<ul>
+<li><span class="math inline">\(\mathbf{w},b\)</span>不满足约束条件<span class="math inline">\(y_n(\mathbf{w}^Tx+b) \geq 1\)</span>，即: <span class="math inline">\(1-y_n(\mathbf{w}^T\textbf{x}+b) &gt; 0\)</span>，再结合<span class="math inline">\(\alpha_n \geq 0\)</span>,很显然, <span class="math inline">\(\max(\mathcal{L}) \to \infty\)</span></li>
+<li><span class="math inline">\(\mathbf{w},b\)</span>满足<span class="math inline">\(1-y_n(\mathbf{w}^T\textbf{x}+b) \leq 0\)</span>，那么在求<span class="math inline">\(\max\)</span>的时候，显然需要<span class="math inline">\(\alpha_n(1-y_n(\mathbf{\mathbf{w}^T\mathbf{x}+b})) = 0\)</span>,此时<span class="math inline">\(\max(\mathcal{L}) = \frac{1}{2}\textbf{w}^T \textbf{w}\)</span></li>
+</ul>
+<p>显然，求完了<span class="math inline">\(\max\)</span>之后，在优化外层求<span class="math inline">\(\min\)</span>的时候，对于上述第一种<span class="math inline">\(\infty\)</span>情况，肯定不会是最优解，因此最后的优化方程为: <span class="math inline">\(\min \frac{1}{2}\textbf{w}^T \textbf{w}\)</span>，因此与原始问题等价。这样，我们就把原始的含有约束条件的优化问题，转为不含条件的表达式。</p>
+<h3 id="对偶问题转化">对偶问题转化</h3>
+<p>接着化简，因为<span class="math inline">\(\max \geq any\)</span>，则对于任意一个给定的<span class="math inline">\(\alpha^{&#39;}\)</span>，下式显然成立:</p>
+<p><span class="math display">\[ \min \limits_{b, \mathbf{w}} (\max \limits_{\alpha_n \geq 0} \mathcal{L}(b, \mathbf{w},\alpha)) \geq \min\limits_{b, \mathbf{w}} \mathcal{L}(b, \mathbf{w},\alpha^{&#39;})\]</span></p>
+<p>既然上述的<span class="math inline">\(\alpha^{&#39;}\)</span>是任意给定的，那么左式也一定大于等于其中的那个最大的，那么下式也显然成立:</p>
+<p><span class="math display">\[ \min \limits_{b, \mathbf{w}} (\max \limits_{\alpha_n \geq 0} \mathcal{L}(b, \mathbf{w},\alpha)) \geq \max\limits _{all \ \alpha_n \geq 0} (\min\limits_{b, \mathbf{w}} \mathcal{L}(b, \mathbf{w},\alpha^{&#39;}))\]</span></p>
+<p>到此为止: 观察上述不等式，最大化与最小化做了交换，这样的不等式，右式就称为左式的<strong>对偶问题</strong>，左式的下限就是右式。</p>
+<p>此外，上述不等式关系属于一种<strong>弱对偶关系(Weak Duality)</strong>。如果满足下面的几个条件，则可以去掉不等号，从而转为<strong>强对偶关系(Strong Duality)</strong>：</p>
+<ul>
+<li>原始问题为是凸优化问题 (convex primal)</li>
+<li>原始问题线性可分的(feasible primal)</li>
+<li>约束条件是线性的(Linear constraints)</li>
+</ul>
+<p>显然，原始问题满足以上强对偶条件，也就是说存在一组最优解<span class="math inline">\(\mathbf{w},b,\alpha\)</span>同时满足式子两边。到此，我们将原始的问题转化为其如下的对偶问题:</p>
+<p><span class="math display">\[\begin{align*}\max\limits_{all \ \alpha_n \geq 0}{\left ( \min\limits_{b,\mathbf{w}}{ \underbrace{\frac{1}{2}\mathbf{w}^T\mathbf{w}+\sum\limits_{n=1}^{N}\alpha_n(1-y_n(\mathbf{w}^T\mathbf{z}_n+b))}_{\mathcal{L}(b, \mathcal{w}, \alpha)}}\right)}\end{align*}\]</span></p>
+<p><strong>为什么要将原始问题，转换为对偶问题去求解呢？</strong></p>
+<p>开始说了， 目标是降低算法的规模或者说是复杂度。原始问题的最关于后需要解决的<span class="math inline">\(\min\limits_{b,\mathbf{w}}\)</span>部分的复杂度是关于<span class="math inline">\(\mathbf{w}\)</span>的，也就是高维空间的维度，求解很困难。而对偶问题最后要解决的<span class="math inline">\(\max\limits_{\alpha}\)</span>则是关于<span class="math inline">\(\alpha_n\)</span>的，复杂度跟样本数量<span class="math inline">\(N\)</span>有关，在非线性分类中一般情况升维会达到很大的数量级(比如后续的高斯核是无穷维)，远远大于样本数量，这个时候用对偶问题来求解就会容易。</p>
+<p>此外，如果是线性分类且样本维度低于样本数量的话，那就直接使用原始问题求解即可，无需对偶。</p>
+<h2 id="求解对偶问题">求解对偶问题</h2>
+<h3 id="最小化">最小化</h3>
+<p>固定<span class="math inline">\(\alpha\)</span>, 对拉格朗日函数<span class="math inline">\(\mathcal{L}\)</span>最小化(凸函数)，<span class="math inline">\(\mathcal{L}\)</span>含有<span class="math inline">\(b, \mathbf{w}\)</span>两个变量，因此分别求一阶微分:</p>
+<p>首先对<span class="math inline">\(b\)</span>求偏微分，得到:</p>
+<p><span class="math display">\[\begin{align*} \frac{\partial\mathcal{L}(b, \mathbf{w}, \alpha)}{\partial \ b} = \sum\limits_{n=1}^{N}\alpha_ny_n = 0\end{align*}\]</span></p>
+<p>因此我们最终得到的最优解应该满足上述条件，接着作一步转化:</p>
+<p><span class="math display">\[\min\mathcal{L}(b, \mathbf{w},\alpha) = \min \frac{1}{2}\mathbf{w}^T\mathbf{w} + \sum\alpha_n(1-y_n\mathbf{w}^T\mathbf{z}^n) -  {b*\sum\alpha_ny_n}\]</span></p>
+<p>既然我们的最优解需要满足<span class="math inline">\(\sum\alpha_ny_n = 0\)</span>，那么上式也应该满足，那么蓝色部分就会变成0，问题得到了简化。</p>
+<p>接着对<span class="math inline">\(\mathbf{w}\)</span>求微分如下:</p>
+<p><span class="math display">\[\begin{align*} \frac{\partial\mathcal{L}(b, \mathbf{w}, \alpha)}{\partial \ \mathbf{w}} = \mathbf{w} - \sum\limits_{n=1}^{N}\alpha_ny_n\mathbf{z}_n = \mathbf{0}\end{align*}\]</span></p>
+<p>即最优解满足: <span class="math inline">\(\mathbf{w} = \sum\limits_{n=1}^{N}\alpha_ny_n\mathbf{z}_n\)</span>，接着继续化简<span class="math inline">\(\min\mathcal{L}\)</span>:</p>
+<p><span class="math display">\[\begin{align} \min\mathcal{L}(b, \mathbf{w},\alpha) &amp; \Leftrightarrow \min \frac{1}{2}\mathbf{w}^T\mathbf{w} + \sum\alpha_n(1-y_n\mathbf{w}^T\mathbf{z}^n) \\ &amp;\Leftrightarrow \min \frac{1}{2}\mathbf{w}^T\mathbf{w} - \sum \alpha_ny_n\mathbf{z}^n\mathbf{w}^T+ \sum\alpha_n \\ &amp; \Leftrightarrow {\min} -\frac{1}{2}\mathbf{w}^T\mathbf{w}  + \sum\limits_{n=1}^{N}\alpha_n \\ &amp; \Leftrightarrow -\frac{1}{2} \Arrowvert \sum\limits_{n=1}^{N}\alpha_ny_n\mathbf{z}_n\Arrowvert + \sum\limits_{n=1}^{N}\alpha_{n}\end{align} \]</span></p>
+<p>经过分别求偏微分，并且将得到的条件代入到优化方程，最终去掉了<span class="math inline">\(\min\)</span>，仅仅与<span class="math inline">\(\alpha\)</span>有关。</p>
+<p>现在我们的问题化简至下式:</p>
+<p><span class="math display">\[\begin{align*}\max\limits_{\alpha_n \geq 0, \  \sum\alpha_ny_n =0, \ \mathbf{w}=\sum\alpha_ny_n\mathbf{z}^n}\left( -\frac{1}{2}\Arrowvert\sum\limits_{n=1}^{N}\alpha_ny_n\mathbf{z}_n\Arrowvert^2+ \sum\limits_{n=1}^{N}\alpha_{n}\right)\end{align*}\]</span></p>
+<p>至此最小化部分完成，完全转为了<span class="math inline">\(\alpha\)</span>的问题。</p>
+<h3 id="最大化">最大化</h3>
+<p>上一步的最小化结束了，这一部分做外层的最大化，这里仅仅与<span class="math inline">\(\alpha\)</span>有关。首先做一个转化，变为求<span class="math inline">\(\min\)</span>，然后展开平方如下:</p>
+<p><span class="math display">\[\begin{align} \min\limits_{\alpha} &amp; \quad \frac{1}{2}\sum\limits_{n=1}^{N}\sum\limits_{m=1}^{N}{\alpha_n\alpha_m} y_ny_m\mathbf{z}_n\mathbf{z}_m {-}\sum\limits_{n=1}^{N}\alpha_n \\ s.t. &amp; \quad \alpha _n \geq 0, \ \sum\limits_{n=1}^{N}\alpha_ny_n  =0 \end{align} \]</span></p>
+<p>相当与将条件再提出来，就转化为QP问题求解！并且上式中<span class="math inline">\(N\)</span>个变量<span class="math inline">\(\alpha_1...\alpha_N\)</span>，以及<span class="math inline">\(N+1\)</span>个约束条件，这样就看着摆脱了高维，求解相对容易，这便得到就是<strong>标准SVM对偶问题</strong>。</p>
+<p>下面便是根据QP问题的格式，写出对应的<span class="math inline">\(Q,p,A,c\)</span>：</p>
+<p><img src="http://cdn.htliu.cn/svm02-3.png" /></p>
+<p>这里需要说明一下:</p>
+<ul>
+<li><span class="math inline">\(q_{m,n}\)</span>表示矩阵<span class="math inline">\(Q\)</span>的第<span class="math inline">\(m\)</span>行第<span class="math inline">\(n\)</span>列的元素</li>
+<li>对于<span class="math inline">\(\sum y_n\alpha_n =0\)</span>，改为两个不等式条件: <span class="math inline">\(\sum y_n \alpha_n \leq 0,\ \sum y_n\alpha_n \geq 0\)</span>,因此一共有<span class="math inline">\(N+2\)</span>个约束条件。</li>
+</ul>
+<h3 id="模型求解">模型求解</h3>
+<p>利用QP Solver 就可以解决上述的二次规划问题，得到最优的<span class="math inline">\(\alpha=[\alpha_1...\alpha_N]\)</span>，下面介绍如何根据<span class="math inline">\(\alpha\)</span>求解最优的<span class="math inline">\(\mathbf{w},b\)</span>，进而得到模型。</p>
+<p>到这里整理一下已经有的条件:</p>
+<ul>
+<li>对于原始问题有: <span class="math inline">\(y_n(\mathbf{w}^T\mathbf{z}_n+b) \geq 1\)</span></li>
+<li>对于对偶问题有: <span class="math inline">\(\alpha_n \geq 0\)</span></li>
+<li>对于对偶问题里层的<span class="math inline">\(\min\)</span>优化求解中，有: <span class="math inline">\(\sum \alpha_ny_n =0; \ \mathbf{w}=\sum\alpha_ny_n\mathbf{z}_n\)</span></li>
+<li>对于原始问题里层的<span class="math inline">\(\max\)</span>问题中：上面得到结论有: <span class="math inline">\(\alpha_n(1-y_n(\mathbf{\mathbf{w}^T\mathbf{z}_n+b})) = 0\)</span> ，被称为complementary slackness</li>
+</ul>
+<p>注:上述条件即使二次规划问题中的 <strong>KKT条件(Karush-Kuhn-Tucker Conditions)</strong></p>
+<p>根据条件3，便可得到 <span class="math inline">\(\mathbf{w} = \sum\limits_{n=1}^{N}\alpha_ny_n\mathbf{z}_n\)</span>。</p>
+<p>根据条件4，我们知道<span class="math inline">\(\alpha_n\)</span>以及<span class="math inline">\(1-y_n(\mathbf{w}^T\mathbf{z}_n + b)\)</span> 至少有一个为0，我们只需要找到一个<span class="math inline">\(\alpha_n &gt; 0\)</span>的数据点，这样就会有:<span class="math inline">\(1-y_n(\mathbf{w}^T\mathbf{z}_n + b) = 0\)</span>，进而得到:</p>
+<p><span class="math display">\[b = y_n - \mathbf{w}^T \mathbf{z}_n, \quad \alpha_n &gt; 0\]</span></p>
+<p>这里需要注意的是: <span class="math inline">\(\alpha_n &gt; 0\)</span>的点满足<span class="math inline">\(y_n(\mathbf{w}^T\mathbf{z}_n + b) = 1\)</span>,即分类边界上的点，也就是<strong>SV</strong>(Support Vector)，这也就说明了 ，我们只需要SV就可以得到<span class="math inline">\(\mathbf{w},b\)</span>，这时候其它的点不需要。</p>
+<p>简略总结一下<strong>标准对偶SVM的流程</strong></p>
+<ol type="1">
+<li>根据训练数据，(非线性转换<span class="math inline">\(z_n = \phi(x_n)\)</span>， 写出QP问题的<span class="math inline">\(Q,p,a,c\)</span></li>
+<li>使用QP Solover 求出最优的<span class="math inline">\(\alpha\)</span></li>
+<li>根据条件约束，求出<span class="math inline">\(\mathbf{w},b\)</span></li>
+<li>得到模型：<span class="math inline">\(g_{svm} = sign(\mathbf{w}^T\phi(\mathbf{x})+b)\)</span></li>
+</ol>
+<h3 id="数据表示模型">数据表示模型</h3>
+<p>在开始介绍SVM的时候，就是以PLA为基础的，下面看看二者:</p>
+<p><img src="http://cdn.htliu.cn/svm02-4.png" /></p>
+<p>首先在Dual SVM中，<span class="math inline">\(\mathbf{w}\)</span>是以<span class="math inline">\(y_n\mathbf{z}_n\)</span>的线性组合求解的，其中参数为<span class="math inline">\(\alpha_n\)</span>; 在PLA中 同样，每个分类错误的点，都会加上<span class="math inline">\(y_n\mathbf{z}_n\)</span>，因此实质上<span class="math inline">\(\mathbf{w}\)</span>同样线性组合求解得到。</p>
+<p>其实还有很多线性模型或者算法，比如前面的Linear Regresson, Logistic Regression等如果初始化的<span class="math inline">\(\mathbf{w} = \mathbf{0}\)</span>，最终得到的最优解同样是数据的线性组合。</p>
+<p>这个时候，我们就称参数w是被训练数据表示出来的(represented by data)，只不过SVM的权重参数只需通过<span class="math inline">\(\alpha_n &gt;0\)</span>的SV表示即可。(PS：数据表示的模型可能造成数据泄漏?)</p>
+<h2 id="后续">后续</h2>
+<p>这一节主要讲的是 <strong>标准对偶SVM</strong>，旨在解决高维空间下，二次规划问题求解困难的问题，下面对比Linear SVM与Dual SVM:</p>
+<p><img src="http://cdn.htliu.cn/svm02-5.png" /></p>
+<p>看起来我们的对偶问题的规模成功做到了只与数据样本量<span class="math inline">\(N\)</span>有关，与高维空间的维度<span class="math inline">\(\tilde{d}\)</span>无关，其实不然，实际内部的计算量还是很大的:</p>
+<p><span class="math inline">\(Q\)</span>矩阵的元素: <span class="math inline">\(q_{n,m} = y_ny_m\mathbf{z}_m\mathbf{z}_n\)</span>，实际为<span class="math inline">\(R^{\tilde{d}}\)</span>内的内积！ 还是没有摆脱高维。不过对偶问题相比原始问题在非线性数据 的处理上，求解已经更加容易了。 至于如何在求解<span class="math inline">\(q_{n,m}\)</span>的时候，彻底不再依赖<span class="math inline">\(\tilde{d}\)</span>，那就是下节的内容了，引入带核的SVM。</p>
+
+      
+    </div>
+
+
+    
+
+    
+	    <div class="article-footer-copyright">
+<!--<p>本文作者: shomy 发表于 <a href="http://shomy.top" target="_blank">个人博客</a></p> -->
+<p>
+本文标题: 机器学习技法笔记(3)-对偶SVM<br/>
+</p>
+<p>
+发布时间: 2017-02-17, 16:31:05<br/>
+<p>
+<p>
+最后更新: 2021-12-16, 23:11:45<br/>
+<p>
+本文链接: <a href="/2017/02/17/svm-02-dual/" target="_blank">http://shomy.top/2017/02/17/svm-02-dual/</a>
+</p>
+<p>非商业转载请注明作者及出处。商业转载请联系<a href="mailto:shomyliu@gmail.com">作者</a>本人。</p>
+</div>
+
+    
+
+    <footer class="article-footer">
+      
+        <a href="http://shomy.top/2017/02/17/svm-02-dual/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/machine-learning/" rel="tag">machine learning</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/svm/" rel="tag">svm</a></li></ul>
+
+    </footer>
+    
+	    <script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+    
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2017/02/19/svm03-kernel-trick/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          机器学习技法笔记(4)-Kernel SVM
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2017/02/16/svm-01/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">机器学习技法笔记(2)-Linear SVM</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+
+
+<section id="comments">
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+<script>
+  var disqus_shortname = 'shomy';
+  
+  var disqus_url = 'http://shomy.top/2017/02/17/svm-02-dual/';
+  
+  (function(){
+    var dsq = document.createElement('script');
+    dsq.type = 'text/javascript';
+    dsq.async = true;
+    dsq.src = 'https://' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  }());
+</script>
+</section>
+
+
+
+
+</section>
+      </div>
+    </div>
+    
+    
+<a id="rocket" href="#top" ></a>
+
+<script src="https://cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <script src="http://cdn.htliu.cn/static/js/leancloud.js"></script>
+<script>AV.initialize("k883AKdzaz5jccQnH1eIrG2r-gzGzoHsz", "4HBQOmslEp3VdwK1SGL8vB9Y");</script>
+
+<script src="/js/Counter.js"></script>
+
+
+
+
+
+<script id="dsq-count-scr" src="//shomy.disqus.com/count.js" async></script>
+ 
+
+
+  <script src="https://cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.js"></script>
+  
+<script src="/js/fancybox.js"></script>
+
+
+
+
+  
+<script src="/js/search.js"></script>
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

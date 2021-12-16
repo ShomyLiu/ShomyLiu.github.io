@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>机器学习基石笔记(5)-逻辑回归 | 天空的城</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="11.27更新: logistic regression练习    前面一节介绍的是一个线性回归模型，不能直接用作分类问题。但是我们可以做一下修正，就可以达到分类的效果，其中逻辑回归(Logistic Regression)就是线性回归的一个延伸，专门用来做分类的模型，而且实际应用很广泛。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="机器学习基石笔记(5)-逻辑回归">
+<meta property="og:url" content="http://shomy.top/2016/11/16/logistic-regression-1/index.html">
+<meta property="og:site_name" content="天空的城">
+<meta property="og:description" content="11.27更新: logistic regression练习    前面一节介绍的是一个线性回归模型，不能直接用作分类问题。但是我们可以做一下修正，就可以达到分类的效果，其中逻辑回归(Logistic Regression)就是线性回归的一个延伸，专门用来做分类的模型，而且实际应用很广泛。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://cdn.htliu.cn/ml05-1.png">
+<meta property="article:published_time" content="2016-11-16T12:04:57.000Z">
+<meta property="article:modified_time" content="2021-12-16T15:11:45.664Z">
+<meta property="article:author" content="ShomyLiu">
+<meta property="article:tag" content="machine learning">
+<meta property="article:tag" content="logistic regression">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://cdn.htliu.cn/ml05-1.png">
+  
+  
+    <link rel="icon" href="/image/favicon.ico">
+  
+
+  
+  <link href="https://cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.css" rel="stylesheet">
+  
+  <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  <link href="https://cdn.bootcss.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+<!-- Google Analytics -->
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-74368890-2', 'auto');
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+
+
+  
+
+  
+  <div class="site-search header-inner">
+    <div class="popup">
+        <span class="search-icon fa fa-search"></span>
+        <input type="text" id="local-search-input">
+        <div id="local-search-result"></div>
+        <span class="popup-btn-close">close</span>
+    </div>
+</div>
+
+
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      
+<header id="header">
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">天空的城</a>
+      </h1>
+      
+    </div>
+    <div id="header-menu">
+      <nav id="main-nav">
+        <ul>
+        
+          <li><a href="/"><i class="fa fa-home icon-setting"></i></a></li>
+        
+          <li><a href="/archives"><i class="fa fa-archive icon-setting"></i></a></li>
+        
+          <li><a href="/tags"><i class="fa fa-tag icon-setting"></i></a></li>
+        
+          <li><a href="/about"><i class="fa fa-user icon-setting"></i></a></li>
+        
+        
+          <li><a href="javascript:;" class="popup-trigger"><i class="fa fa-search > icon-setting"></i></a></li>
+        
+        </ul>
+      </nav>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-logistic-regression-1" class="article article-type-post" itemscope itemprop="blogPost">
+  
+  <div class="article-meta">
+    <a href="/2016/11/16/logistic-regression-1/" class="article-date">
+  <time datetime="2016-11-16T12:04:57.000Z" itemprop="datePublished">2016-11-16</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/">读书笔记</a>
+  </div>
+
+
+    
+        <div class="counter-tag counter">
+    <!-- 别忘记这个类名... post-title-link -->
+    <span id="/2016/11/16/logistic-regression-1/" class="leancloud_visitors article-hits post-title-link"
+           data-flag-title="机器学习基石笔记(5)-逻辑回归">
+        次阅读
+    </span>
+
+  </div>
+
+    
+
+  </div>
+  
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      机器学习基石笔记(5)-逻辑回归
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+            <div id="toc" class="toc-article">
+                <strong class="toc-title">文章目录</strong>
+                <ol class="post-toc"><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#%E6%A8%A1%E5%9E%8B"><span class="post-toc-text">模型</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E6%A8%A1%E5%9E%8B%E6%96%B9%E7%A8%8B"><span class="post-toc-text">模型方程</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E6%8D%9F%E5%A4%B1%E5%87%BD%E6%95%B0"><span class="post-toc-text">损失函数</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E4%BC%98%E5%8C%96%E6%8D%9F%E5%A4%B1%E5%87%BD%E6%95%B0"><span class="post-toc-text">优化损失函数</span></a></li></ol></li><li class="post-toc-item post-toc-level-1"><a class="post-toc-link" href="#%E6%80%BB%E7%BB%93"><span class="post-toc-text">总结</span></a></li></ol>
+            </div>
+        
+        
+        <blockquote>
+<p>11.27更新: <a target="_blank" rel="noopener" href="https://github.com/ShomyLiu/stat-learn/blob/master/linear-model/logistic-regression/logistic-regression.ipynb">logistic regression练习</a></p>
+</blockquote>
+<hr />
+<blockquote>
+<p>前面一节介绍的是一个线性回归模型，不能直接用作分类问题。但是我们可以做一下修正，就可以达到分类的效果，其中逻辑回归(Logistic Regression)就是线性回归的一个延伸，专门用来做分类的模型，而且实际应用很广泛。</p>
+</blockquote>
+<span id="more"></span>
+<h1 id="模型">模型</h1>
+<h2 id="模型方程">模型方程</h2>
+<p>前面的PLA(感知机)是一个简单的二元分类模型，属于硬分类，即输出结果要么是+1,要么是-1。但是Logstic Regression是一个SOFT分类器，它计算的是某个数据属于某一类的概率，例:<span class="math inline">\(f(x) = P(+1|x)\)</span>，这样<span class="math inline">\(P(-1|X)=1-P(+1|x)\)</span>，我们选择概率大的作为我们的类别即可，但是我们知道线性模型的score的计算方法如下:<span class="math display">\[s=\sum w_ix_i,\quad s \in R\]</span>那我们如何把s转化为概率呢？也就是说找一个函数f使得: <span class="math inline">\(f: R-&gt;[0, 1]\)</span>, 还要保持原来的一些基本性质比如单调性等不变，这里面常用的一个[0,1]映射函数就是sigmoid函数<span class="math inline">\(\theta\)</span>: <span class="math display">\[\theta(s)=\frac{e^s}{1+e^s}\]</span>它的函数图像如下所示: <img src="http://cdn.htliu.cn/ml05-1.png" /> 现在我们就可以使用这样的输出在[0,1]的函数<span class="math inline">\(\theta(W^TX)=\frac{e^{W^TX}}{1+e^{W^TX}}=\frac{1}{1+e^{-W^TX}}\)</span>，来作为我们的hypothesis。即我们的Logistic Regression方程就是:<span class="math display">\[h(x)=P(+1|x)=\frac{1}{1+e^{-W^TX}}\]</span>也就是数据x取+1的概率。</p>
+<h2 id="损失函数">损失函数</h2>
+<p>下面就开始考虑如何求解模型参数，最关键就是定义损失函数<span class="math inline">\(E_{in}\)</span>，不同于前面linear的平方损失，这里我们使用似然的思想来考虑，首先确定概率密度函数:<span class="math display">\[h(x)=P(+1 | X) \Leftrightarrow P(y|x)= \left\{ \begin{matrix} h(x) &amp; y=+1\\ 1-h(x) &amp; y=-1\end{matrix} \right.\]</span>另外需要注意的是，对于sigmoid函数<span class="math inline">\(h(X)=\theta(W^TX)\)</span>时，有:<span class="math inline">\(1 - h(x) = h(-x)\)</span>，因而整理为:<span class="math display">\[P(y|x)=\left\{ \begin{matrix}h(x) &amp; y=+1 \\ h(-x) &amp; y=-1 \end{matrix} \right.=h(yx)\]</span>这样我们就可以定义我们的似然函数了：<span class="math display">\[L(W)=\prod\limits_{n=1}^{N}h(y_nx_n)=\prod\limits_{n=1}^{N}\theta(y_nW^Tx_n)=\prod\limits_{n=1}^{N}\frac{1}{1+e^{-y_nW^Tx_n}}\]</span>然后求对数似然函数:<span class="math display">\[l(W)=\sum\limits_{n=1}^{N}-ln(1+e^{-y_nW^Tx_n})\]</span>我们需要最大化这个似然函数，但是我们知道的都是最小化的优化，我们可以直接求最小化负似然函数的<span class="math inline">\(W\)</span>, 也可以认为是我们的cost function, 如下:<span class="math display">\[E_{in}(W)=\sum\limits_{n=1}^{N}ln(1+exp(-y_nW^Tx_n))\]</span></p>
+<h2 id="优化损失函数">优化损失函数</h2>
+<p>我们通过对<span class="math inline">\(E_{in}(W)\)</span>求二阶微分矩阵是正定矩阵(类似与一维中二阶导数大于0),可知<span class="math inline">\(E_{in}(W)\)</span>是二阶连续，可微的凸函数，因此也可以梯度来求解。我们可以只需要求解一阶微分为0然后求解<span class="math inline">\(W\)</span>即可，通过求一阶微分如下:<span class="math display">\[\triangledown E_{in}(W)=\frac{\partial E_{in}(W)}{\partial W}=\frac{1}{N}\sum\limits_{n=1}^{N}\frac{1}{1+e^{y_nW^Tx_n}}(-y_nx_n)\]</span>现在我们将求<span class="math inline">\(\min(E_{in})\)</span>转为求解<span class="math inline">\(\triangledown E_{in}(W) = \textbf{0}\)</span>，这里是向量0。然而跟Linear Regression直接解线性方程就能得到答案不一样的地方是，这是个非线性方程，很难去求解。因此让一阶微分为0去解<span class="math inline">\(W\)</span>这条路走不下去了，那就只可以去迭代解了，就跟PLA的迭代求解一样，就是梯度下降(Gradient Descent)的方法来求最优解。我们知道梯度下降更新的方向是梯度的反方向，再考虑到更新布长，可以写出如下的梯度下降更新方程:<span class="math display">\[\textbf{W}_{t+1}=\textbf{W}_t - \eta \triangledown E_{in}(\textbf{W})\]</span>至于终止条件，最好的是<span class="math inline">\(\triangledown E_{in} = \textbf{0}\)</span>, 当然迭代到一定次数也可以。到这里，我们给出Logistic Regression 算法的一般过程:</p>
+<ol type="1">
+<li>初始化 <span class="math inline">\(\textbf{w}_0\)</span></li>
+<li>对<span class="math inline">\(t=0,1,2...\)</span>,
+<ul>
+<li>计算<span class="math inline">\(\triangledown E_{in}(W)=\frac{\partial E_{in}(W)}{\partial W}=\frac{1}{N}\sum\limits_{n=1}^{N}\frac{1}{1+e^{y_nW^Tx_n}}(-y_nx_n)\)</span></li>
+<li>更新: <span class="math inline">\(\textbf{W}_{t+1}=\textbf{W}_t - \eta \triangledown E_{in}(\textbf{W})\)</span></li>
+</ul></li>
+<li>直到 <span class="math inline">\(\triangledown E_{in} = \textbf{0}\)</span>或者到一定的迭代次数。</li>
+</ol>
+<p>这里的<span class="math inline">\(\eta\)</span>是学习速率，在实际中，根据经验一般取0.1效果比较好。学出了参数<span class="math inline">\(W\)</span>，我们就可以用最优的hypothesis去给新数据分类了，即<span class="math inline">\(P(+1 | x_t) = \frac{1}{1+e^{-W^Tx_n}}\)</span>，看看是否大于设定的阈值(大部分是0.5)即可。</p>
+<h1 id="总结">总结</h1>
+<p>这一节主要讲了最基本的Logistic Regression的方程建立以及优化求解的过程，虽然带有回归两个字，但却是实实在在的分类算法。这一部分是最简单的逻辑回归，有很多地方可以优化。比如在梯度下降的部分每次需要计算所有训练数据对梯度的贡献值，与Pocket PLA 比较类似，复杂度稍高，可以用随机梯度下降的方式来优化，还有可以加正则项防止过拟合等等。另外这里只介绍了二分类的情况，下一节会在总结线性模型的基础上，介绍多分类的方法。</p>
+
+      
+    </div>
+
+
+    
+
+    
+	    <div class="article-footer-copyright">
+<!--<p>本文作者: shomy 发表于 <a href="http://shomy.top" target="_blank">个人博客</a></p> -->
+<p>
+本文标题: 机器学习基石笔记(5)-逻辑回归<br/>
+</p>
+<p>
+发布时间: 2016-11-16, 20:04:57<br/>
+<p>
+<p>
+最后更新: 2021-12-16, 23:11:45<br/>
+<p>
+本文链接: <a href="/2016/11/16/logistic-regression-1/" target="_blank">http://shomy.top/2016/11/16/logistic-regression-1/</a>
+</p>
+<p>非商业转载请注明作者及出处。商业转载请联系<a href="mailto:shomyliu@gmail.com">作者</a>本人。</p>
+</div>
+
+    
+
+    <footer class="article-footer">
+      
+        <a href="http://shomy.top/2016/11/16/logistic-regression-1/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/logistic-regression/" rel="tag">logistic regression</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/machine-learning/" rel="tag">machine learning</a></li></ul>
+
+    </footer>
+    
+	    <script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+      }
+    });
+</script>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for(i=0; i < all.length; i += 1) {
+            all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+    });
+</script>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+
+    
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2016/11/17/linear-models-summary/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          机器学习基石笔记(6)-线性模型总结
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2016/11/12/focus-linear-regression/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">机器学习基石笔记(4)-线性回归</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+
+
+<section id="comments">
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+<script>
+  var disqus_shortname = 'shomy';
+  
+  var disqus_url = 'http://shomy.top/2016/11/16/logistic-regression-1/';
+  
+  (function(){
+    var dsq = document.createElement('script');
+    dsq.type = 'text/javascript';
+    dsq.async = true;
+    dsq.src = 'https://' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  }());
+</script>
+</section>
+
+
+
+
+</section>
+      </div>
+    </div>
+    
+    
+<a id="rocket" href="#top" ></a>
+
+<script src="https://cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <script src="http://cdn.htliu.cn/static/js/leancloud.js"></script>
+<script>AV.initialize("k883AKdzaz5jccQnH1eIrG2r-gzGzoHsz", "4HBQOmslEp3VdwK1SGL8vB9Y");</script>
+
+<script src="/js/Counter.js"></script>
+
+
+
+
+
+<script id="dsq-count-scr" src="//shomy.disqus.com/count.js" async></script>
+ 
+
+
+  <script src="https://cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.js"></script>
+  
+<script src="/js/fancybox.js"></script>
+
+
+
+
+  
+<script src="/js/search.js"></script>
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>
