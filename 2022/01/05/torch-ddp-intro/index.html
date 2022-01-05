@@ -14,7 +14,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="http://cdn.htliu.cn/blog/torch-ddp-1/distributed_gpu.png">
 <meta property="article:published_time" content="2022-01-05T15:29:32.000Z">
-<meta property="article:modified_time" content="2022-01-05T15:56:34.362Z">
+<meta property="article:modified_time" content="2022-01-05T16:11:35.313Z">
 <meta property="article:author" content="ShomyLiu">
 <meta property="article:tag" content="torch">
 <meta property="article:tag" content="DistributedDataParallel">
@@ -284,7 +284,7 @@ ga('send', 'pageview');
 <p>在evaluation的时候，可以拿到所有进程中模型的输出，最后统一计算指标，基本流程如下：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">pred_list = []</span><br><span class="line"><span class="keyword">for</span> data <span class="keyword">in</span> Dataloader:</span><br><span class="line">    pred = model(data)</span><br><span class="line">    batch_pred = [torch.zeros_like(label) <span class="keyword">for</span> _ <span class="keyword">in</span> <span class="built_in">range</span>(world_size)]</span><br><span class="line">    dist.all_gather(batch_pred, pred)</span><br><span class="line">    pred_list.extend(batch_pred)</span><br><span class="line">pred_list = torch.cat(pred_list, <span class="number">1</span>)</span><br><span class="line"><span class="comment"># 所有进程pred_list是一致的，保存所有数据模型预测的值</span></span><br></pre></td></tr></table></figure>
 <h2 id="第三方库">第三方库</h2>
-<p>前面一部分基本介绍了Pytorch DDP的基本概念，启动方式和如何将单进程代码 改成分布式训练的步骤，总体来看，其实DDP的使用方法已经足够简洁了。 不过近年来还是产生了不少优秀的封装更加higher，使用起来更简单的分布式训练库，本文主要介绍三个亲测还不错的框架。</p>
+<p>前面一部分基本介绍了Pytorch DDP的基本概念，启动方式和如何将单进程代码 改成分布式训练的步骤，总体来看，其实DDP的使用方法已经足够简洁了。 不过近年来还是产生了不少优秀的封装更加higher，使用起来更简单的分布式训练库，本文主要介绍2个亲测还不错的框架。</p>
 <p>其实不管哪个分布式框架，都是把上述的几个流程进行一层封装【初始化、包装模型、优化器、数据加载】。一般从以下几个方面衡量框架的易用性：</p>
 <ul>
 <li>支持分布式训练模式丰富，如CPU，单机单卡，单机多卡，多机多卡，FP16等</li>
@@ -351,7 +351,7 @@ ga('send', 'pageview');
 发布时间: 2022-01-05, 23:29:32<br/>
 <p>
 <p>
-最后更新: 2022-01-05, 23:56:34<br/>
+最后更新: 2022-01-06, 00:11:35<br/>
 <p>
 本文链接: <a href="/2022/01/05/torch-ddp-intro/" target="_blank">http://shomy.top/2022/01/05/torch-ddp-intro/</a>
 </p>
