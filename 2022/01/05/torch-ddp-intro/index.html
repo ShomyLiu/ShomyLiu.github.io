@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Pytorch DDP分布式训练介绍 | 天空的城</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="近期一直在用torch的分布式训练，本文调研了目前Pytorch的分布式并行训练常使用DDP模式(Distributed DataParallell )，从基本概念，初始化启动，以及第三方的分布式训练框架展开介绍。最后以一个Bert情感分类给出完整的代码例子：torch-ddp-examples。 基本概念">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Pytorch DDP分布式训练介绍">
+<meta property="og:url" content="http://shomy.top/2022/01/05/torch-ddp-intro/index.html">
+<meta property="og:site_name" content="天空的城">
+<meta property="og:description" content="近期一直在用torch的分布式训练，本文调研了目前Pytorch的分布式并行训练常使用DDP模式(Distributed DataParallell )，从基本概念，初始化启动，以及第三方的分布式训练框架展开介绍。最后以一个Bert情感分类给出完整的代码例子：torch-ddp-examples。 基本概念">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://cdn.htliu.cn/blog/torch-ddp-1/distributed_gpu.png">
+<meta property="article:published_time" content="2022-01-05T15:29:32.000Z">
+<meta property="article:modified_time" content="2022-01-05T15:56:34.362Z">
+<meta property="article:author" content="ShomyLiu">
+<meta property="article:tag" content="torch">
+<meta property="article:tag" content="DistributedDataParallel">
+<meta property="article:tag" content="DDP">
+<meta property="article:tag" content="Horovod">
+<meta property="article:tag" content="accelerate">
+<meta property="article:tag" content="分布式训练">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://cdn.htliu.cn/blog/torch-ddp-1/distributed_gpu.png">
+  
+  
+    <link rel="icon" href="/image/favicon.ico">
+  
+
+  
+  <link href="https://cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.css" rel="stylesheet">
+  
+  <link href="https://fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  <link href="https://cdn.bootcss.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+<!-- Google Analytics -->
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-74368890-2', 'auto');
+ga('send', 'pageview');
+
+</script>
+<!-- End Google Analytics -->
+
+
+  
+
+  
+  <div class="site-search header-inner">
+    <div class="popup">
+        <span class="search-icon fa fa-search"></span>
+        <input type="text" id="local-search-input">
+        <div id="local-search-result"></div>
+        <span class="popup-btn-close">close</span>
+    </div>
+</div>
+
+
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      
+<header id="header">
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">天空的城</a>
+      </h1>
+      
+    </div>
+    <div id="header-menu">
+      <nav id="main-nav">
+        <ul>
+        
+          <li><a href="/"><i class="fa fa-home icon-setting"></i></a></li>
+        
+          <li><a href="/archives"><i class="fa fa-archive icon-setting"></i></a></li>
+        
+          <li><a href="/tags"><i class="fa fa-tag icon-setting"></i></a></li>
+        
+          <li><a href="/about"><i class="fa fa-user icon-setting"></i></a></li>
+        
+        
+          <li><a href="javascript:;" class="popup-trigger"><i class="fa fa-search > icon-setting"></i></a></li>
+        
+        </ul>
+      </nav>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-torch-ddp-intro" class="article article-type-post" itemscope itemprop="blogPost">
+  
+  <div class="article-meta">
+    <a href="/2022/01/05/torch-ddp-intro/" class="article-date">
+  <time datetime="2022-01-05T15:29:32.000Z" itemprop="datePublished">2022-01-05</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E5%B7%A5%E5%85%B7%E4%BD%BF%E7%94%A8/">工具使用</a>
+  </div>
+
+
+    
+        <div class="counter-tag counter">
+    <!-- 别忘记这个类名... post-title-link -->
+    <span id="/2022/01/05/torch-ddp-intro/" class="leancloud_visitors article-hits post-title-link"
+           data-flag-title="Pytorch DDP分布式训练介绍">
+        次阅读
+    </span>
+
+  </div>
+
+    
+
+  </div>
+  
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Pytorch DDP分布式训练介绍
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        
+            <div id="toc" class="toc-article">
+                <strong class="toc-title">文章目录</strong>
+                <ol class="post-toc"><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5"><span class="post-toc-text">基本概念</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#ddp%E5%90%AF%E5%8A%A8"><span class="post-toc-text">DDP启动</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#%E5%88%9D%E5%A7%8B%E5%8C%96"><span class="post-toc-text">初始化</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#mp.spawn"><span class="post-toc-text">mp.spawn</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#launchrun"><span class="post-toc-text">launch&#x2F;run</span></a></li></ol></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#ddp%E6%A8%A1%E5%9E%8B%E8%AE%AD%E7%BB%83"><span class="post-toc-text">DDP模型训练</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E7%AC%AC%E4%B8%89%E6%96%B9%E5%BA%93"><span class="post-toc-text">第三方库</span></a><ol class="post-toc-child"><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#accelerator"><span class="post-toc-text">Accelerator</span></a></li><li class="post-toc-item post-toc-level-3"><a class="post-toc-link" href="#horovod"><span class="post-toc-text">Horovod</span></a></li></ol></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E6%80%BB%E7%BB%93"><span class="post-toc-text">总结</span></a></li><li class="post-toc-item post-toc-level-2"><a class="post-toc-link" href="#%E5%8F%82%E8%80%83"><span class="post-toc-text">参考</span></a></li></ol>
+            </div>
+        
+        
+        <p>近期一直在用torch的分布式训练，本文调研了目前Pytorch的分布式并行训练常使用DDP模式(<code>Distributed DataParallell</code> )，从基本概念，初始化启动，以及第三方的分布式训练框架展开介绍。最后以一个Bert情感分类给出完整的代码例子：<a target="_blank" rel="noopener" href="https://github.com/ShomyLiu/torch-ddp-examples">torch-ddp-examples</a>。</p>
+<h2 id="基本概念">基本概念</h2>
+<span id="more"></span>
+<p>DistributedDataParallel（DDP）是依靠多进程来实现数据并行的分布式训练方法（简单说，能够扩大batch_size，每个进程负责一部分数据)。在使用DDP分布式训练前，有几个概念或者变量，需要弄清楚，这样后面出了bug大概知道从哪里入手，包括：</p>
+<ul>
+<li>group: 进程组，一般就需要一个默认的</li>
+<li>world size: 所有的进程数量</li>
+<li>rank: 全局的进程id</li>
+<li>local rank：某个节点上的进程id</li>
+<li>local_word_size: 某个节点上的进程数 (相对比较少见)</li>
+</ul>
+<p>这里需要注意的是，目前为止所有的概念的基本单元都是进程，与<strong>GPU没有关系</strong>，一个进程可以对应若干个GPU。 所以world_size 并不是等于所有的GPU数量，而人为设定的，这一点网上的很多描述并不准确。只不过平时用的最多的情况是一个进程使用一块GPU，这种情况下 world_size 可以等于所有节点的GPU数量。</p>
+<blockquote>
+<p>假设所有进程数即 world_size为W，每个节点上的进程数即local_world_size为L，则每个进程上的两个ID：</p>
+<ul>
+<li>rank的取值范围：[0, W-1]，rank=0的进程为主进程，会负责一些同步分发的工作</li>
+<li>local_rank的取值：[0, L-1]</li>
+</ul>
+</blockquote>
+<p>官方的示意图的非常形象，如下，</p>
+<p><img src="http://cdn.htliu.cn/blog/torch-ddp-1/distributed_gpu.png" /></p>
+<p>假定有2个机器或者节点，每个机器上有4块GPU。图中一共有4个进程，即world_size=4，那这样每个进程占用两块GPU，其中rank就是[0,1,2,3]，每个节点的local_rank就是[0,1]了，其中local_world_size 也就是2。 这里需要注意的是，local_rank是隐式参数，即torch自动分配的。比如local_rank 可以通过自动注入命令行参数或者环境变量来获得) 。</p>
+<p>从torch1.10开始，官方建议使用环境变量的方式来获取local_rank, 在后期版本中，会移除命令行的方式。</p>
+<p>一些简单的测试：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> torch.distributed <span class="keyword">as</span> dist</span><br><span class="line"><span class="keyword">import</span> argparse, os</span><br><span class="line"></span><br><span class="line">parser = argparse.ArgumentParser()</span><br><span class="line">parser.add_argument(<span class="string">&quot;--local_rank&quot;</span>, <span class="built_in">type</span>=ine, default=<span class="number">0</span>)</span><br><span class="line">args = parser.parse_args()</span><br><span class="line"></span><br><span class="line">dist.init_process_group(<span class="string">&quot;nccl&quot;</span>)</span><br><span class="line">rank = dist.get_rank()</span><br><span class="line">local_rank_arg = args.local_rank               <span class="comment"># 命令行形式ARGS形式</span></span><br><span class="line">local_rank_env = <span class="built_in">int</span>(os.environ[<span class="string">&#x27;LOCAL_RANK&#x27;</span>]) <span class="comment"># 在利用env初始ENV环境变量形式</span></span><br><span class="line">local_world_size = <span class="built_in">int</span>(os.environ[<span class="string">&#x27;LOCAL_WORLD_SIZE&#x27;</span>])</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&quot;<span class="subst">&#123;rank=&#125;</span>; <span class="subst">&#123;local_rank_arg=&#125;</span>; <span class="subst">&#123;local_rank_env=&#125;</span>; <span class="subst">&#123;local_world_size=&#125;</span>&quot;</span>)</span><br></pre></td></tr></table></figure>
+<p>使用<code>python3 -m torch.distributed.launch --nproc_per_node=4 test.py</code> 在一台4卡机器上执行, 样例输出：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">rank</span>=2; <span class="attribute">local_rank_arg</span>=2; <span class="attribute">local_rank_env</span>=2, <span class="attribute">local_world_size</span>=4</span><br><span class="line"><span class="attribute">rank</span>=0; <span class="attribute">local_rank_arg</span>=0; <span class="attribute">local_rank_env</span>=0, <span class="attribute">local_world_size</span>=4</span><br><span class="line"><span class="attribute">rank</span>=3; <span class="attribute">local_rank_arg</span>=3; <span class="attribute">local_rank_env</span>=3, <span class="attribute">local_world_size</span>=4</span><br><span class="line"><span class="attribute">rank</span>=1; <span class="attribute">local_rank_arg</span>=1; <span class="attribute">local_rank_env</span>=1, <span class="attribute">local_world_size</span>=4</span><br></pre></td></tr></table></figure>
+<p>一般的分布式训练都是为每个进程赋予一块GPU，这样比较简单而且容易调试。 这种情况下，可以通过local_rank作为当前进程GPU的id。</p>
+<p>分布式训练的场景很多，单机多卡，多机多卡，模型并行，数据并行等等。接下来就以常见的<strong>单机多卡</strong>的情况进行记录。</p>
+<h2 id="ddp启动">DDP启动</h2>
+<h3 id="初始化">初始化</h3>
+<p>torch的distributed分布式训练首先需要对进程组进行初始化，这是核心的一个步骤，其关键参数如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">torch.distributed.init_process_group(backend, init_method=<span class="literal">None</span>, world_size=-<span class="number">1</span>, rank=-<span class="number">1</span>, store=<span class="literal">None</span>,...)</span><br></pre></td></tr></table></figure>
+<p>首先需要指定分布式的后端，torch提供了<code>NCCL, GLOO,MPI</code>三种可用的后端，这三类支持的分布式操作有所不同，因此选择的时候，需要考虑具体的场景，按照官网说明，CPU的分布式训练选择<code>GLOO</code>, GPU的分布式训练就用<code>NCCL</code>即可。</p>
+<p>接下来是初始化方法，有两种方法：</p>
+<ul>
+<li>显式指定<code>init_method</code>，可以是TCP连接、File共享文件系统、ENV环境变量三种方式，后面具体介绍。</li>
+<li>显式指定<code>store</code>，同时指定world_size 和 rank参数。这里的store是一种分布式中核心的key-value存储，用于不同的进程间共享信息。</li>
+</ul>
+<p>这两种方法是互斥的，其实本质上第一种方式是对第二种的一个更高的封装，最后都要落到store上进行实现。如果这两种方法都没有使用，默认使用<code>init_method='env'</code>的方式来初始化。</p>
+<p>对于三种init_method：</p>
+<ul>
+<li><code>init_method='tcp://ip:port'</code>： 通过指定rank 0（即：MASTER进程）的IP和端口，各个进程进行信息交换。 需指定 rank 和 world_size 这两个参数。</li>
+<li><code>init_method='file://path'</code>：通过所有进程都可以访问共享文件系统来进行信息共享。需要指定rank和world_size参数。</li>
+<li><code>init_method=env://</code>：从环境变量中读取分布式的信息(os.environ)，主要包括 <code>MASTER_ADDR, MASTER_PORT, RANK, WORLD_SIZE</code>。 其中，rank和world_size可以选择手动指定，否则从环境变量读取。</li>
+</ul>
+<p>可以发现，tcp和env两种方式比较类似（其实env就是对tcp的一层封装），都是通过网络地址的方式进行通信，也是最常用的初始化方法。</p>
+<p>接下来看具体TCP/ENV初始化的的一个小例子：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> os, argparse</span><br><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"><span class="keyword">import</span> torch.distributed <span class="keyword">as</span> dist</span><br><span class="line"></span><br><span class="line">parse = argparse.ArgumentParser()</span><br><span class="line">parse.add_argument(<span class="string">&#x27;--init_method&#x27;</span>, <span class="built_in">type</span>=<span class="built_in">str</span>)</span><br><span class="line">parse.add_argument(<span class="string">&#x27;--rank&#x27;</span>, <span class="built_in">type</span>=<span class="built_in">int</span>)</span><br><span class="line">parse.add_argument(<span class="string">&#x27;--ws&#x27;</span>, <span class="built_in">type</span>=<span class="built_in">int</span>)</span><br><span class="line">args = parse.parse_args()</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> args.init_method == <span class="string">&#x27;TCP&#x27;</span>:</span><br><span class="line">	dist.init_process_group(<span class="string">&#x27;nccl&#x27;</span>, init_method=<span class="string">&#x27;tcp://127.0.0.1:28765&#x27;</span>, rank=args.rank, world_size=args.ws)</span><br><span class="line"><span class="keyword">elif</span> args.init_method == <span class="string">&#x27;ENV&#x27;</span>:</span><br><span class="line">    dist.init_process_group(<span class="string">&#x27;nccl&#x27;</span>, init_method=<span class="string">&#x27;env://&#x27;</span>)</span><br><span class="line"></span><br><span class="line">rank = dist.get_rank()</span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&quot;rank = <span class="subst">&#123;rank&#125;</span> is initialized&quot;</span>)</span><br><span class="line"><span class="comment"># 单机多卡情况下，localrank = rank. 严谨应该是local_rank来设置device</span></span><br><span class="line">torch.cuda.set_device(rank)</span><br><span class="line">tensor = torch.tensor([<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>]).cuda()</span><br><span class="line"><span class="built_in">print</span>(tensor)</span><br></pre></td></tr></table></figure>
+<p>假设单机双卡的机器上运行，则开两个终端，同时运行下面的命令，</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># TCP方法</span></span><br><span class="line">python3 test_ddp.py <span class="attribute">--init_method</span>=TCP <span class="attribute">--rank</span>=0 <span class="attribute">--ws</span>=2</span><br><span class="line">python3 test_ddp.py <span class="attribute">--init_method</span>=TCP <span class="attribute">--rank</span>=1 <span class="attribute">--ws</span>=2</span><br><span class="line"><span class="comment"># ENV方法</span></span><br><span class="line"><span class="attribute">MASTER_ADDR</span>=<span class="string">&#x27;localhost&#x27;</span> <span class="attribute">MASTER_PORT</span>=28765 <span class="attribute">RANK</span>=0 <span class="attribute">WORLD_SIZE</span>=2 python3 test_gpu.py <span class="attribute">--init_method</span>=ENV</span><br><span class="line"><span class="attribute">MASTER_ADDR</span>=<span class="string">&#x27;localhost&#x27;</span> <span class="attribute">MASTER_PORT</span>=28765 <span class="attribute">RANK</span>=1 <span class="attribute">WORLD_SIZE</span>=2 python3 test_gpu.py <span class="attribute">--init_method</span>=ENV</span><br></pre></td></tr></table></figure>
+<p>如果开启的进程未达到 <code>word_size</code> 的数量，则所有进程会一直等待，直到都开始运行，可以得到输出如下：</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># rank0 的终端：</span></span><br><span class="line"><span class="attribute">rank</span> <span class="number">0</span> is initialized</span><br><span class="line"><span class="attribute">tensor</span>([<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>], device=&#x27;cuda:<span class="number">0</span>&#x27;)</span><br><span class="line"><span class="comment"># rank1的终端</span></span><br><span class="line"><span class="attribute">rank</span> <span class="number">1</span> is initialized</span><br><span class="line"><span class="attribute">tensor</span>([<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>], device=&#x27;cuda:<span class="number">1</span>&#x27;)</span><br></pre></td></tr></table></figure>
+<p>可以看出，在初始化DDP的时候，能够给后端提供主进程的地址端口、本身的RANK，以及进程数量即可。初始化完成后，就可以执行很多分布式的函数了，比如<code>dist.get_rank, dist.all_gather</code>等等。</p>
+<p>上面的例子是最基本的使用方法，需要手动运行多个程序，相对繁琐。实际上本身DDP就是一个python 的多进程，因此完全可以直接通过多进程的方式来启动分布式程序。 torch提供了以下两种启动工具来更加方便的运行torch的DDP程序。</p>
+<h3 id="mp.spawn">mp.spawn</h3>
+<p>第一种方法便是使用<code>torch.multiprocessing</code>（python的<code>multiprocessing</code>的封装类) 来自动生成多个进程，使用方法也很简单，先看看基本的调用函数<code>spawn</code>:</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mp.spawn(fn, args=(), <span class="attribute">nprocs</span>=1, <span class="attribute">join</span>=<span class="literal">True</span>, <span class="attribute">daemon</span>=<span class="literal">False</span>)</span><br></pre></td></tr></table></figure>
+<p>其中:</p>
+<ul>
+<li>fn: 进程的入口函数，该函数的第一个参数会被默认自动加入当前进程的rank， 即实际调用： <code>fn(rank, *args)</code></li>
+<li>nprocs: 进程数量，即：world_size</li>
+<li>args: 函数fn的其他常规参数以tuple的形式传递</li>
+</ul>
+<p>具体看一个例子：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"><span class="keyword">import</span> torch.distributed <span class="keyword">as</span> dist</span><br><span class="line"><span class="keyword">import</span> torch.multiprocessing <span class="keyword">as</span> mp</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">fn</span>(<span class="params">rank, ws, nums</span>):</span></span><br><span class="line">    dist.init_process_group(<span class="string">&#x27;nccl&#x27;</span>, init_method=<span class="string">&#x27;tcp://127.0.0.1:28765&#x27;</span>,</span><br><span class="line">                            rank=rank, world_size=ws)</span><br><span class="line">    rank = dist.get_rank()</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&quot;rank = <span class="subst">&#123;rank&#125;</span> is initialized&quot;</span>)</span><br><span class="line">    torch.cuda.set_device(rank)</span><br><span class="line">    tensor = torch.tensor(nums).cuda()</span><br><span class="line">    <span class="built_in">print</span>(tensor)</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&quot;__main__&quot;</span>:</span><br><span class="line">    ws = <span class="number">2</span></span><br><span class="line">    mp.spawn(fn, nprocs=ws, args=(ws, [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>]))</span><br></pre></td></tr></table></figure>
+<p>直接执行一次命令 <code>python3 test_ddp.py</code> 即可，输出如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">rank = <span class="number">0</span> <span class="keyword">is</span> initialized</span><br><span class="line">rank = <span class="number">1</span> <span class="keyword">is</span> initialized</span><br><span class="line">tensor([<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>], device=<span class="string">&#x27;cuda:1&#x27;</span>)</span><br><span class="line">tensor([<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>], device=<span class="string">&#x27;cuda:0&#x27;</span>)</span><br></pre></td></tr></table></figure>
+<p>这种方式同时适用于TCP和ENV初始化。</p>
+<h3 id="launchrun">launch/run</h3>
+<p>第二种方法则是torch提供的 <code>torch.distributed.launch</code>工具，可以以模块的形式直接执行：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">python3 -m torch.distributed.launch --配置 train.py --args参数</span><br></pre></td></tr></table></figure>
+<p>常用配置有:</p>
+<ul>
+<li>--nnodes: 使用的机器数量，单机的话，就默认是1了</li>
+<li>--nproc_per_node: 单机的进程数，即单机的worldsize</li>
+<li>--master_addr/port: 使用的主进程rank0的地址和端口</li>
+<li>--node_rank: 当前的进程rank</li>
+</ul>
+<p>在单机情况下， 只有<code>--nproc_per_node</code> 是必须指定的，<code>--master_addr/port</code>和<code>node_rank</code>都是可以由<code>launch</code>通过环境自动配置，举例如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"><span class="keyword">import</span> torch.distributed <span class="keyword">as</span> dist</span><br><span class="line"><span class="keyword">import</span> torch.multiprocessing <span class="keyword">as</span> mp</span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"></span><br><span class="line">dist.init_process_group(<span class="string">&#x27;nccl&#x27;</span>, init_method=<span class="string">&#x27;env://&#x27;</span>)</span><br><span class="line"></span><br><span class="line">rank = dist.get_rank()</span><br><span class="line">local_rank = os.environ[<span class="string">&#x27;LOCAL_RANK&#x27;</span>]</span><br><span class="line">master_addr = os.environ[<span class="string">&#x27;MASTER_ADDR&#x27;</span>]</span><br><span class="line">master_port = os.environ[<span class="string">&#x27;MASTER_PORT&#x27;</span>]</span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&quot;rank = <span class="subst">&#123;rank&#125;</span> is initialized in <span class="subst">&#123;master_addr&#125;</span>:<span class="subst">&#123;master_port&#125;</span>; local_rank = <span class="subst">&#123;local_rank&#125;</span>&quot;</span>)</span><br><span class="line">torch.cuda.set_device(rank)</span><br><span class="line">tensor = torch.tensor([<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>]).cuda()</span><br><span class="line"><span class="built_in">print</span>(tensor)</span><br></pre></td></tr></table></figure>
+<p>使用也很方便，通过<code>python3 -m torch.distribued.launch --nproc_per_node=2 test_ddp.py</code> 运行，输出如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">rank = <span class="number">0</span> <span class="keyword">is</span> initialized <span class="keyword">in</span> <span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span>:<span class="number">29500</span>; local_rank = <span class="number">0</span></span><br><span class="line">rank = <span class="number">1</span> <span class="keyword">is</span> initialized <span class="keyword">in</span> <span class="number">127.0</span><span class="number">.0</span><span class="number">.1</span>:<span class="number">29500</span>; local_rank = <span class="number">1</span></span><br><span class="line">tensor([<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>], device=<span class="string">&#x27;cuda:1&#x27;</span>)</span><br><span class="line">tensor([<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>], device=<span class="string">&#x27;cuda:0&#x27;</span>)</span><br></pre></td></tr></table></figure>
+<p>torch1.10开始用终端命令<code>torchrun</code>来代替<code>torch.distributed.launch</code>，具体来说，torchrun实现了launch的一个超集，不同的地方在于：</p>
+<ul>
+<li>完全使用环境变量配置各类参数，如<code>RANK,LOCAL_RANK, WORLD_SIZE</code>等，尤其是<code>local_rank</code>不再支持用命令行隐式传递的方式</li>
+<li>能够更加优雅的处理某个worker失败的情况，重启worker。需要代码中有<code>load_checkpoint(path)</code>和<code>save_checkpoint(path)</code> 这样有worker失败的话，可以通过load最新的模型，重启所有的worker接着训练。具体参考 <a target="_blank" rel="noopener" href="https://github.com/pytorch/elastic/blob/master/examples/imagenet/main.py">imagenet-torchrun</a></li>
+<li>训练的节点数目可以弹性变化。</li>
+</ul>
+<p>同样上面的代码，直接使用 <code>torchrun --nproc_per_node=2 test_gpu.py</code> 运行即可，不用写那么长长的命令了。</p>
+<p>需要注意的是， torchrun或者launch对上面<strong>ENV</strong>的初始化方法支持最完善，TCP初始化方法的可能会出现问题，因此尽量使用env来初始化dist。</p>
+<h2 id="ddp模型训练">DDP模型训练</h2>
+<p>上面部分介绍了一些细节如何启动分布式训练，接下来介绍如何把单机训练模型的代码改成分布式运行。基本流程如下：</p>
+<ul>
+<li><p>分布式训练数据加载。Dataloader需要把所有数据分成N份(N为worldsize), 并能正确的分发到不同的进程中，每个进程可以拿到一个数据的子集，不重叠，不交叉。这部分工作靠 DistributedSampler完成，具体的函数签名如下:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">torch.utils.data.distributed.DistributedSampler(dataset,</span><br><span class="line">				num_replicas=<span class="literal">None</span>, rank=<span class="literal">None</span>, shuffle=<span class="literal">True</span>, seed=<span class="number">0</span>, drop_last=<span class="literal">False</span>)</span><br></pre></td></tr></table></figure>
+<ul>
+<li>dataset: 需要加载的完整数据集</li>
+<li>num_replicas： 把数据集分成多少份，默认是当前dist的world_size</li>
+<li>rank: 当前进程的id，默认从dist的rank</li>
+<li>shuffle：是否打乱</li>
+<li>drop_last: 如果数据长度不能被world_size整除，可以考虑是否将剩下的扔掉</li>
+<li>seed：随机数种子。这里需要注意，从源码中可以看出，真正的种子其实是 <code>self.seed+self.epoch</code> 这样的好处是，不同的epoch每个进程拿到的数据是不一样，因此需要在每个epoch开始前设置下：<code>sampler.set_epoch(epoch)</code></li>
+</ul>
+<p>其实Sampler的实现也很简单，核心代码就一句：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">indices[self.rank: self.total_size: self.num_replicas]</span><br></pre></td></tr></table></figure>
+<p>假设4卡12条数据的话，rank=0,1,2,3, num_replicas=4, 那么每个卡取的数据索引就是：</p>
+<figure class="highlight gcode"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ra<span class="symbol">nk0</span>: [<span class="number">0</span> <span class="number">4</span> <span class="number">8</span>]; ra<span class="symbol">nk1</span>: [<span class="number">1</span> <span class="number">5</span> <span class="number">9</span>]; ra<span class="symbol">nk2</span>: [<span class="number">2</span> <span class="number">6</span> <span class="number">10</span>]; ra<span class="symbol">nk3</span>: [<span class="number">3</span> <span class="number">7</span> <span class="number">11</span>]</span><br></pre></td></tr></table></figure>
+<p>保证不重复不交叉。这样在分布式训练的时候，只需要给Dataloader指定DistributedSampler即可，简单示例如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">sampler = DistributedSampler(dataset)</span><br><span class="line">loader = DataLoader(dataset, sampler=sampler)</span><br><span class="line"><span class="keyword">for</span> epoch <span class="keyword">in</span> <span class="built_in">range</span>(start_epoch, n_epochs):</span><br><span class="line">  sampler.set_epoch(epoch) <span class="comment"># 设置epoch 更新种子</span></span><br><span class="line">  train(loader)</span><br></pre></td></tr></table></figure></li>
+<li><p>模型的分布式训练封装。将单机模型使用<code>torch.nn.parallel.DistributedDataParallel</code> 进行封装，如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">torch.cuda.set_device(local_rank)</span><br><span class="line">model = Model().cuda()</span><br><span class="line">model = DistributedDataParallel(model, device_ids=[local_rank])</span><br><span class="line"><span class="comment"># 要调用model内的函数或者属性. model.module.xxxx</span></span><br></pre></td></tr></table></figure>
+<p>这样在多卡训练时，每个进程有一个model副本和optimizer，使用自己的数据进行训练，之后反向传播计算完梯度的时候，所有进程的梯度会进行all-reduce操作进行同步，进而保证每个卡上的模型更新梯度是一样的，模型参数也是一致的。</p>
+<p>这里有一个需要注意的地方，在save和load模型时候，为了减小所有进程同时读写磁盘，一般处理方法是以主进程为主，rank0先save模型，在map到其他进程。这样的另外一个好处，在最开始训练时，模型随机初始化之后，保证了所有进程的模型参数保持一致。</p>
+<p>【注：其实在torch的DDP封装的时候，已经做到了这一点，即使开始随机初始化不同，经过DDP封装，所有进程都一样的参数】简洁代码如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">model = DistributedDataParallel(model, device_ids=[local_rank])</span><br><span class="line">CHECKPOINT_PATH =<span class="string">&quot;./model.checkpoint&quot;</span></span><br><span class="line"><span class="keyword">if</span> rank == <span class="number">0</span>:</span><br><span class="line">  torch.save(ddp_model.state_dict(), CHECKPOINT_PATH)</span><br><span class="line"><span class="comment"># barrier()其他保证rank 0保存完成</span></span><br><span class="line">dist.barrier()</span><br><span class="line">map_location = &#123;<span class="string">&quot;cuda:0&quot;</span>: <span class="string">f&quot;cuda:<span class="subst">&#123;local_rank&#125;</span>&quot;</span>&#125;</span><br><span class="line">model.load_state_dict(torch.load(CHECKPOINT_PATH, map_location=map_location))</span><br><span class="line"><span class="comment"># 后面正常训练代码</span></span><br><span class="line">optimizer = xxx</span><br><span class="line"><span class="keyword">for</span> epoch:</span><br><span class="line">  <span class="keyword">for</span> data <span class="keyword">in</span> Dataloader:</span><br><span class="line">      model(data)</span><br><span class="line">      xxx</span><br><span class="line">    <span class="comment"># 训练完成 只需要保存rank 0上的即可</span></span><br><span class="line">    <span class="comment"># 不需要dist.barrior()， all_reduce 操作保证了同步性</span></span><br><span class="line">  <span class="keyword">if</span> rank == <span class="number">0</span>:</span><br><span class="line">     torch.save(ddp_model.state_dict(), CHECKPOINT_PATH)</span><br></pre></td></tr></table></figure></li>
+</ul>
+<p>总结一下的话，使用DDP分布式训练的话，一共就如下个步骤：</p>
+<ul>
+<li>初始化进程组 <code>dist.init_process_group</code></li>
+<li>设置分布式采样器 <code>DistributedSampler</code></li>
+<li>使用<code>DistributedDataParallel</code>封装模型</li>
+<li>使用<code>torchrun</code> 或者 <code>mp.spawn</code> 启动分布式训练</li>
+</ul>
+<p>补充一点使用分布式做evaluation的时候，一般需要先所有进程的输出结果进行gather，再进行指标的计算，两个常用的函数:</p>
+<ul>
+<li><code>dist.all_gather(tensor_list, tensor)</code> : 将所有进程的tensor进行收集并拼接成新的tensorlist返回，比如:</li>
+<li><code>dist.all_reduce(tensor, op)</code> 这是对<code>tensor</code>的in-place的操作, 对所有进程的某个tensor进行合并操作，op可以是求和等：</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> torch</span><br><span class="line"><span class="keyword">import</span> torch.distributed <span class="keyword">as</span> dist</span><br><span class="line"></span><br><span class="line">dist.init_process_group(<span class="string">&#x27;nccl&#x27;</span>, init_method=<span class="string">&#x27;env://&#x27;</span>)</span><br><span class="line">rank = dist.get_rank()</span><br><span class="line">torch.cuda.set_device(rank)</span><br><span class="line"></span><br><span class="line">tensor = torch.arange(<span class="number">2</span>) + <span class="number">1</span> + <span class="number">2</span> * rank</span><br><span class="line">tensor = tensor.cuda()</span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&quot;rank <span class="subst">&#123;rank&#125;</span>: <span class="subst">&#123;tensor&#125;</span>&quot;</span>)</span><br><span class="line"></span><br><span class="line">tensor_list = [torch.zeros_like(tensor).cuda() <span class="keyword">for</span> _ <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">2</span>)]</span><br><span class="line">dist.all_gather(tensor_list, tensor)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&quot;after gather, rank <span class="subst">&#123;rank&#125;</span>: tensor_list: <span class="subst">&#123;tensor_list&#125;</span>&quot;</span>)</span><br><span class="line"></span><br><span class="line">dist.barrier()</span><br><span class="line">dist.all_reduce(tensor, op=dist.ReduceOp.SUM)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&quot;after reduce, rank <span class="subst">&#123;rank&#125;</span>: tensor: <span class="subst">&#123;tensor&#125;</span>&quot;</span>)</span><br></pre></td></tr></table></figure>
+<p>通过<code>torchrun --nproc_per_node=2 test_ddp.py</code> 输出结果如下:</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">rank 1: tensor([3, 4], <span class="attribute">device</span>=<span class="string">&#x27;cuda:1&#x27;</span>)</span><br><span class="line">rank 0: tensor([1, 2], <span class="attribute">device</span>=<span class="string">&#x27;cuda:0&#x27;</span>)</span><br><span class="line">after gather, rank 1: tensor_list: [tensor([1, 2], <span class="attribute">device</span>=<span class="string">&#x27;cuda:1&#x27;</span>), tensor([3, 4], <span class="attribute">device</span>=<span class="string">&#x27;cuda:1&#x27;</span>)]</span><br><span class="line">after gather, rank 0: tensor_list: [tensor([1, 2], <span class="attribute">device</span>=<span class="string">&#x27;cuda:0&#x27;</span>), tensor([3, 4], <span class="attribute">device</span>=<span class="string">&#x27;cuda:0&#x27;</span>)]</span><br><span class="line">after reduce, rank 0: tensor: tensor([4, 6], <span class="attribute">device</span>=<span class="string">&#x27;cuda:0&#x27;</span>)</span><br><span class="line">after reduce, rank 1: tensor: tensor([4, 6], <span class="attribute">device</span>=<span class="string">&#x27;cuda:1&#x27;</span>)</span><br></pre></td></tr></table></figure>
+<p>在evaluation的时候，可以拿到所有进程中模型的输出，最后统一计算指标，基本流程如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">pred_list = []</span><br><span class="line"><span class="keyword">for</span> data <span class="keyword">in</span> Dataloader:</span><br><span class="line">    pred = model(data)</span><br><span class="line">    batch_pred = [torch.zeros_like(label) <span class="keyword">for</span> _ <span class="keyword">in</span> <span class="built_in">range</span>(world_size)]</span><br><span class="line">    dist.all_gather(batch_pred, pred)</span><br><span class="line">    pred_list.extend(batch_pred)</span><br><span class="line">pred_list = torch.cat(pred_list, <span class="number">1</span>)</span><br><span class="line"><span class="comment"># 所有进程pred_list是一致的，保存所有数据模型预测的值</span></span><br></pre></td></tr></table></figure>
+<h2 id="第三方库">第三方库</h2>
+<p>前面一部分基本介绍了Pytorch DDP的基本概念，启动方式和如何将单进程代码 改成分布式训练的步骤，总体来看，其实DDP的使用方法已经足够简洁了。 不过近年来还是产生了不少优秀的封装更加higher，使用起来更简单的分布式训练库，本文主要介绍三个亲测还不错的框架。</p>
+<p>其实不管哪个分布式框架，都是把上述的几个流程进行一层封装【初始化、包装模型、优化器、数据加载】。一般从以下几个方面衡量框架的易用性：</p>
+<ul>
+<li>支持分布式训练模式丰富，如CPU，单机单卡，单机多卡，多机多卡，FP16等</li>
+<li>代码简单，不需要改动大量代码即可进行分布式训练</li>
+<li>接口丰富，方便自定义。比如能调用和访问底层分布式的一些变量如rank，worldsize，或实现或封装一些分布式函数，比如dist.gather/reduce等。</li>
+</ul>
+<h3 id="accelerator">Accelerator</h3>
+<p>第一个是由大名鼎鼎的huggingface发布的Accelerator，专门适用于Pytorch的分布式训练框架：</p>
+<ul>
+<li>GitHub: https://github.com/huggingface/accelerate</li>
+<li>官网教程：https://huggingface.co/docs/accelerate/</li>
+</ul>
+<p>将单进程代码改为多进程分布式的非常简单：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> accelerate</span><br><span class="line">accelerator = accelerate.Accelerator()</span><br><span class="line">device = accelerator.device <span class="comment">#获取当前进程的设备</span></span><br><span class="line">...</span><br><span class="line"><span class="comment"># 进行封装</span></span><br><span class="line">model, optimizer, dataloader = accelerator.prepare(model, optimizer, dataloader)</span><br><span class="line"></span><br><span class="line"><span class="comment">#训练时 loss.backward() 换为：</span></span><br><span class="line">accelerator.backward(loss)</span><br></pre></td></tr></table></figure>
+<p>运行方法使用CLI命令行的方式，先使用<code>accelerator config</code> 配置一次分布式训练的参数，之后就使用 <code>acceleratoe launch</code>运行。具体的可以看官网例子。</p>
+<p>除此之外，accelerator还提供了一些很便利的接口，基本覆盖了分布式训练中需要用到的方法，比如：</p>
+<ul>
+<li><code>accelerator.print</code>：仅仅在主进程输出</li>
+<li><code>accelerator.process_index</code>: 当前进程ID，没有使用rank命名，而是用的process_index来表示</li>
+<li><code>accelerator.is_local_main_process/is_main_processs:</code>: 是否local_rank 或则rank为0， 主进程</li>
+<li><code>accelerator.wait_for_everyone()</code> ： 类似 dist.barrier() , 等所有进程到达这一步。</li>
+<li><code>accelerator.save</code>： 保存模型</li>
+<li><p><code>kwargs_handlers</code>: 可以定义DDP初始化的一些参数，比如最常用的就是 <strong>find_unused_parameters</strong>，比如：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> accelerate</span><br><span class="line"><span class="keyword">from</span> accelerate <span class="keyword">import</span> DistributedDataParallelKwargs <span class="keyword">as</span> DDPK</span><br><span class="line">kwargs = DDPK(find_unused_parameters=<span class="literal">True</span>)</span><br><span class="line">accelerator = accelerate.Accelerator(kwargs_handlers=[kwargs])</span><br></pre></td></tr></table></figure></li>
+</ul>
+<p>总体来说，accelerator这个库基本已经满足使用Pytorch进行分布训练的需求。 而且十分的符合huggingface的风格，把某个小项目做到最好用，类似的还有transformers, tokenizers, datasets等等。</p>
+<p>不足的话，就是accelerate支持的collective function比较少，目前只有all_gather。</p>
+<h3 id="horovod">Horovod</h3>
+<p>第二个常用的分布式库Horovod是一个通用的深度学习分布式训练框架，支持Tensorflow，Pytorch，MXNet，Keras等等，因此比Accelerator要更加重些，但是功能也会更加丰富，这里以Pytorch为例来简单介绍。多说一下，Horovod的安装相对复杂一些，需要针对具体的环境参考readme进行安装。</p>
+<ul>
+<li>GitHub：https://github.com/horovod/horovod</li>
+<li>官网：https://horovod.ai/</li>
+</ul>
+<p>Horovod的使用也很简单，基本也是那几个流程：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> horovod.torch <span class="keyword">as</span> hvd</span><br><span class="line"><span class="comment"># 初始化</span></span><br><span class="line">hvd.init()</span><br><span class="line"><span class="comment"># Samapler</span></span><br><span class="line"><span class="comment"># *此处num_replicas=hvd.size(), rank=hvd.rank()必须*</span></span><br><span class="line">train_sampler = torch.utils.data.distributed.DistributedSampler(</span><br><span class="line">    train_dataset, num_replicas=hvd.size(), rank=hvd.rank())</span><br><span class="line"></span><br><span class="line">train_loader = torch.utils.data.DataLoader(train_dataset, batch_size=..., sampler=train_sampler)</span><br><span class="line"><span class="comment"># 优化器包装</span></span><br><span class="line">optimizer = hvd.DistributedOptimizer(optimizer, named_parameters=model.named_parameters())</span><br><span class="line"><span class="comment"># 模型分发广播</span></span><br><span class="line">hvd.broadcast_parameters(model.state_dict(), root_rank=<span class="number">0</span>)</span><br><span class="line"><span class="comment"># 模型训练不需要修改</span></span><br></pre></td></tr></table></figure>
+<p>horovod支持的运行方式非常多，最常用的就是<code>horovodrun</code>了，比如单机四卡运行：</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">horovodrun</span> -np <span class="number">4</span> -H localhost:<span class="number">4</span> python<span class="number">3</span> train.py</span><br></pre></td></tr></table></figure>
+<p>horovod相比accelerate来说，功能更加丰富，支持的接口，函数，框架都要多， 比如 hvd.all_reduce, hvd.all_gather等等。</p>
+<p>综合看，这两个其实都是非常易用的分布式框架了，选择哪个都可以。 当然除了这两个外， 还有一些其他的，比如pytorch-lightning，deepspeed这里就不多介绍了。</p>
+<p>最后，以bert情感分类为例子，介绍了如何使用原生DDP和上面2个框架来进行分布式训练，代码见：https://github.com/ShomyLiu/torch-ddp-examples</p>
+<h2 id="总结">总结</h2>
+<p>总算把这篇鸽了很旧的博客写完了， 内容比较基础。目前网上一些教程要么直接给出一个代码例子，要么翻译下官方的例子或者API，很少有比较系统完整的讲解。 本文算是结合自己在用分布式训练时候遇到的一些问题或者困惑来展开介绍的。 其实分布式训练是非常复杂的，比如需要考虑弹性训练恢复等，本文并未涉及。 文中有不严谨的地方，欢迎指出。</p>
+<h2 id="参考">参考</h2>
+<ul>
+<li>https://www.cnblogs.com/rossiXYZ/ 从源码角度全方位解析了分布式训练的一系列内容，如果想深入了解机制和架构的话，建议细读</li>
+<li>https://zhuanlan.zhihu.com/p/76638962</li>
+<li>https://github.com/pytorch/examples/blob/master/distributed/ddp/README.md</li>
+<li>https://pytorch.org/tutorials/beginner/dist_overview.html</li>
+</ul>
+
+      
+    </div>
+
+
+    
+
+    
+	    <div class="article-footer-copyright">
+<!--<p>本文作者: shomy 发表于 <a href="http://shomy.top" target="_blank">个人博客</a></p> -->
+<p>
+本文标题: Pytorch DDP分布式训练介绍<br/>
+</p>
+<p>
+发布时间: 2022-01-05, 23:29:32<br/>
+<p>
+<p>
+最后更新: 2022-01-05, 23:56:34<br/>
+<p>
+本文链接: <a href="/2022/01/05/torch-ddp-intro/" target="_blank">http://shomy.top/2022/01/05/torch-ddp-intro/</a>
+</p>
+<p>非商业转载请注明作者及出处。商业转载请联系<a href="mailto:shomyliu@gmail.com">作者</a>本人。</p>
+</div>
+
+    
+
+    <footer class="article-footer">
+      
+        <a href="http://shomy.top/2022/01/05/torch-ddp-intro/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/DDP/" rel="tag">DDP</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/DistributedDataParallel/" rel="tag">DistributedDataParallel</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Horovod/" rel="tag">Horovod</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/accelerate/" rel="tag">accelerate</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/torch/" rel="tag">torch</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E8%AE%AD%E7%BB%83/" rel="tag">分布式训练</a></li></ul>
+
+    </footer>
+    
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2021/05/21/torch-loss/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">PyTorch中NLLLoss|CrossEntropy|BCELoss记录</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+
+
+<section id="comments">
+  <div id="disqus_thread">
+    <noscript>Please enable JavaScript to view the <a target="_blank" rel="noopener" href="//disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  </div>
+<script>
+  var disqus_shortname = 'shomy';
+  
+  var disqus_url = 'http://shomy.top/2022/01/05/torch-ddp-intro/';
+  
+  (function(){
+    var dsq = document.createElement('script');
+    dsq.type = 'text/javascript';
+    dsq.async = true;
+    dsq.src = 'https://' + disqus_shortname + '.disqus.com/embed.js';
+    (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+  }());
+</script>
+</section>
+
+
+
+
+</section>
+      </div>
+    </div>
+    
+    
+<a id="rocket" href="#top" ></a>
+
+<script src="https://cdn.bootcss.com/jquery/2.0.3/jquery.min.js"></script>
+
+
+  <script src="http://cdn.htliu.cn/static/js/leancloud.js"></script>
+<script>AV.initialize("k883AKdzaz5jccQnH1eIrG2r-gzGzoHsz", "4HBQOmslEp3VdwK1SGL8vB9Y");</script>
+
+<script src="/js/Counter.js"></script>
+
+
+
+
+
+<script id="dsq-count-scr" src="//shomy.disqus.com/count.js" async></script>
+ 
+
+
+  <script src="https://cdn.bootcss.com/fancybox/3.1.20/jquery.fancybox.min.js"></script>
+  
+<script src="/js/fancybox.js"></script>
+
+
+
+
+  
+<script src="/js/search.js"></script>
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+  </div>
+</body>
+</html>

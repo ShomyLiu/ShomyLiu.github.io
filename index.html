@@ -92,6 +92,82 @@ ga('send', 'pageview');
       <div class="outer">
         <section id="main">
   
+    <article id="post-torch-ddp-intro" class="article article-type-post" itemscope itemprop="blogPost">
+  
+  <div class="article-meta">
+    <a href="/2022/01/05/torch-ddp-intro/" class="article-date">
+  <time datetime="2022-01-05T15:29:32.000Z" itemprop="datePublished">2022-01-05</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E5%B7%A5%E5%85%B7%E4%BD%BF%E7%94%A8/">工具使用</a>
+  </div>
+
+
+    
+        <div class="counter-tag counter">
+    <!-- 别忘记这个类名... post-title-link -->
+    <span id="/2022/01/05/torch-ddp-intro/" class="leancloud_visitors article-hits post-title-link"
+           data-flag-title="Pytorch DDP分布式训练介绍">
+        次阅读
+    </span>
+
+  </div>
+
+    
+
+  </div>
+  
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2022/01/05/torch-ddp-intro/">Pytorch DDP分布式训练介绍</a>
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>近期一直在用torch的分布式训练，本文调研了目前Pytorch的分布式并行训练常使用DDP模式(<code>Distributed DataParallell</code> )，从基本概念，初始化启动，以及第三方的分布式训练框架展开介绍。最后以一个Bert情感分类给出完整的代码例子：<a target="_blank" rel="noopener" href="https://github.com/ShomyLiu/torch-ddp-examples">torch-ddp-examples</a>。</p>
+<h2 id="基本概念">基本概念</h2>
+        
+          <p class="article-more-link">
+            <a href="/2022/01/05/torch-ddp-intro/#more">Read More</a>
+          </p>
+        
+      
+    </div>
+
+
+    
+
+    
+
+    <footer class="article-footer">
+      
+        <a href="http://shomy.top/2022/01/05/torch-ddp-intro/#disqus_thread" class="article-comment-link">Comments</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/DDP/" rel="tag">DDP</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/DistributedDataParallel/" rel="tag">DistributedDataParallel</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Horovod/" rel="tag">Horovod</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/accelerate/" rel="tag">accelerate</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/torch/" rel="tag">torch</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F%E8%AE%AD%E7%BB%83/" rel="tag">分布式训练</a></li></ul>
+
+    </footer>
+    
+  </div>
+  
+</article>
+
+
+
+
+
+
+
+
+  
     <article id="post-torch-loss" class="article article-type-post" itemscope itemprop="blogPost">
   
   <div class="article-meta">
@@ -208,39 +284,18 @@ ga('send', 'pageview');
     
     <div class="article-entry" itemprop="articleBody">
       
-        
-        
         <p>读博带来的拖延症越来越严重，但是去年一年还是比较值得单独说一下的。预答辩推迟了，这两天就想把这件事补上。</p>
 <figure>
 <img src="http://cdn.htliu.cn/blog/2020-review/2020-1.jpg" alt="home" /><figcaption>home</figcaption>
 </figure>
-<!-- more  -->
 <p>最近比较喜欢听的一首歌：</p>
 <iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width="80%" height="86" src="//music.163.com/outchain/player?type=2&amp;id=1840192925&amp;auto=0&amp;height=66">
 </iframe>
-<h2 id="家">家</h2>
-<p>前半年一直在家中，这基本是从小学六年级开始寄宿上学以来在家待得时间最长的一次了，从穿着羽绒服放假到T恤返校。在家的生活远比在学校丰富多彩的多。</p>
-<p>家里养了一些猪，所以这半年干的最多的就是拌料喂猪，农活等。虽然累，手上8个老茧子出满了，不过能给家人分担一些活还是很充实的，不过虽然都快30了，但是在家里还是小孩一样。 还有养猪时间长了，发现猪也很可爱[笑哭]。突然想起家里这小动物很多，除了猪，鸡、鹅、猫、狗都全了，也是即使我们几个在外面上学上班时候，他们也能让家里热闹起来了。</p>
-<p><img src="http://cdn.htliu.cn/blog/2020-review/2020-2.jpg" /></p>
-<p>此外也终于隔了15年之久，终于赶上了村里的庙会，虽然早已经没有了小时候那种兴奋感。在家待得时间越长，其实心里牵挂就会越多。记得刚返校后，还时不时在摄像头里看一看。</p>
-<h2 id="业">业</h2>
-<p>当然去年科研情况也是很滞后的一年，基本上自己就1,2个新工作，作为一个科研成型的老博士来说，这已经是极低的产出了。一方面因为疫情，前半年在家有其他事情要做，只能没事读读论文。 后半年返校之后，因为某些项目一直拖累着的原因，自己的科研相对耽搁。自身原因主要是拖延症，以及重心放在低年级同学上了，另外可能也是因为自己中了一些能够毕业论文，动力不足了。 当然因为疫情， 也放弃CSC出国了。</p>
-<p>2020年也完成了博士中期答辩，还比较幸运的拿了国奖，感谢各位小伙伴们。</p>
-<p>估计2021年底毕业吧，对自己的未来也逐渐向工业界倾斜，可能自己本身是纯计算机专业出身，还是喜欢写代码一些，另外就是这几年对学术圈没(shi)有(qu)兴(xin)趣(xin)了。主要是穷怕了，哈哈哈。 接下来开始往实战方面偏移了，coding~</p>
-<h1 id="思">思</h1>
-<p>路上走走停停，很多人最终成了过客。2020年一段很长的感情因为某些原因终结，可能说不上谁对谁错，只希望在后续的路途中，吸取教训，开启新的生活。当然也有些不同的。不管是每天互安的lhy还是每天kdk的kedixa，还是一些虽然平时不怎么联系但是友谊一直在的老朋友们，都很不错。</p>
-<p>发现自己也慢慢的也有焦虑症了，睡眠很浅，半夜总醒，不自觉的惶惶然，自责，胡思乱想。 相由心生，整天一副苦瓜脸。 不过还好已经开始在调整了，争取早睡早起吧。</p>
-<p>啊对了，虽然去年疫情，不过后半年还是出了几次门，新乡，郑州，绍兴，西安，重庆，都不错，还是值得纪念的</p>
-<p><img src="http://cdn.htliu.cn/blog/2020-review/2020-3.jpg" /></p>
-<p>絮絮叨叨了一篇回顾。虽然过去一年博客没写几篇，但是这个一年一度的回顾还是得必须的。</p>
-<p>最后希望家人朋友幸福快乐，被世界能温柔以待。 希望自己2021顺利毕业，找一个还过得去的offer吧！</p>
-<p>加油吧，天空的城</p>
-<p><img src="http://cdn.htliu.cn/blog/2020-review/2020-4.jpg" /></p>
-<p>其实，这个版本的《海底》，更符合我的心境:</p>
-<iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width="80%" height="86" src="//music.163.com/outchain/player?type=2&amp;id=1430583016&amp;auto=0&amp;height=66">
-</iframe>
-<p>于北洋园</p>
-
+        
+          <p class="article-more-link">
+            <a href="/2021/05/15/2020-review/#more">Read More</a>
+          </p>
+        
       
     </div>
 
@@ -1219,84 +1274,6 @@ ga('send', 'pageview');
       
       
   <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Ubuntu/" rel="tag">Ubuntu</a></li></ul>
-
-    </footer>
-    
-  </div>
-  
-</article>
-
-
-
-
-
-
-
-
-  
-    <article id="post-pytorch-relation-extraction" class="article article-type-post" itemscope itemprop="blogPost">
-  
-  <div class="article-meta">
-    <a href="/2018/07/05/pytorch-relation-extraction/" class="article-date">
-  <time datetime="2018-07-04T16:02:54.000Z" itemprop="datePublished">2018-07-05</time>
-</a>
-    
-  <div class="article-category">
-    <a class="article-category-link" href="/categories/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/">读书笔记</a>
-  </div>
-
-
-    
-        <div class="counter-tag counter">
-    <!-- 别忘记这个类名... post-title-link -->
-    <span id="/2018/07/05/pytorch-relation-extraction/" class="leancloud_visitors article-hits post-title-link"
-           data-flag-title="pytorch关系抽取实验">
-        次阅读
-    </span>
-
-  </div>
-
-    
-
-  </div>
-  
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2018/07/05/pytorch-relation-extraction/">pytorch关系抽取实验</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <blockquote>
-<p>接前面笔记:<a href="http://shomy.top/2018/02/28/relation-extraction/">关系抽取总结</a>中最后说的，在关系抽取基于Distant Supervision的NYT+Freebase的数据集有两个版本，目前大部分文章都是在这两份数据集上做的。通过纵向实验发现，同一个模型在不同版本数据集上的表现有不少差异，这篇笔记是基于自己使用Pytorch复现的PCNN(Zeng 2015)与PCNN+ATT(Lin 2016)的实验结果来简单对比。</p>
-</blockquote>
-<p>代码地址: <a target="_blank" rel="noopener" href="https://github.com/ShomyLiu/pytorch-relation-extraction">pytorch-relation-extraction</a>，关于实现的细节，调参，踩过的一些坑等，会记录在readme中，这里不再赘述。</p>
-        
-          <p class="article-more-link">
-            <a href="/2018/07/05/pytorch-relation-extraction/#more">Read More</a>
-          </p>
-        
-      
-    </div>
-
-
-    
-
-    
-
-    <footer class="article-footer">
-      
-        <a href="http://shomy.top/2018/07/05/pytorch-relation-extraction/#disqus_thread" class="article-comment-link">Comments</a>
-      
-      
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/pytorch/" rel="tag">pytorch</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/relation-extraction/" rel="tag">relation extraction</a></li></ul>
 
     </footer>
     
